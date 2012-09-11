@@ -1,0 +1,17 @@
+*.bak
+*.class
+.project
+.classpath
+.settings
+*.tmp
+*.log
+bin
+build.sh
+integration-repo
+build
+
+# IDEA metadata and output dirs
+*.iml
+*.ipr
+*.iws
+out
