@@ -87,4 +87,5 @@ Blog()这行代码也不是必须)**
         }
     }
 
- Javadoc: http://www.osctools.net/apidocs/apidoc?api=jfinal 
+
+Javadoc: http://www.osctools.net/apidocs/apidoc?api=jfinal 
