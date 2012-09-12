@@ -1,8 +1,5 @@
 *.bak
 *.class
-.project
-.classpath
-.settings
 *.tmp
 *.log
 bin
