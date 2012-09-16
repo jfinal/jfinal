@@ -343,24 +343,56 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * Return a value from cookie.
+	 * Get cookie value by cookie name.
 	 */
-	public String getCookieValue(String name, String defaultValue) {
-		Cookie cookie = getCookie(name);
+	public String getCookie(String name, String defaultValue) {
+		Cookie cookie = getCookieObject(name);
 		return cookie != null ? cookie.getValue() : defaultValue;
 	}
 	
 	/**
-	 * Return a value from cookie.
+	 * Get cookie value by cookie name.
 	 */
-	public String getCookieValue(String name) {
-		return getCookieValue(name, null);
+	public String getCookie(String name) {
+		return getCookie(name, null);
 	}
 	
 	/**
-	 * Return a cookie.
+	 * Get cookie value by cookie name and convert to Integer.
 	 */
-	public Cookie getCookie(String name) {
+	public Integer getCookieToInt(String name) {
+		String result = getCookie(name);
+		return result != null ? Integer.parseInt(result) : null;
+	}
+	
+	/**
+	 * Get cookie value by cookie name and convert to Integer.
+	 */
+	public Integer getCookieToInt(String name, Integer defaultValue) {
+		String result = getCookie(name);
+		return result != null ? Integer.parseInt(result) : defaultValue;
+	}
+	
+	/**
+	 * Get cookie value by cookie name and convert to Long.
+	 */
+	public Long getCookieToLong(String name) {
+		String result = getCookie(name);
+		return result != null ? Long.parseLong(result) : null;
+	}
+	
+	/**
+	 * Get cookie value by cookie name and convert to Long.
+	 */
+	public Long getCookieToLong(String name, Long defaultValue) {
+		String result = getCookie(name);
+		return result != null ? Long.parseLong(result) : defaultValue;
+	}
+	
+	/**
+	 * Get cookie object by cookie name.
+	 */
+	public Cookie getCookieObject(String name) {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null)
 			for (Cookie cookie : cookies)
@@ -370,10 +402,11 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * Return cookies array
+	 * Get all cookie objects.
 	 */
-	public Cookie[] getCookies() {
-		return request.getCookies();
+	public Cookie[] getCookieObjects() {
+		Cookie[] result = request.getCookies();
+		return result != null ? result : new Cookie[0];
 	}
 	
 	/**
@@ -392,10 +425,7 @@ public abstract class Controller {
 	 * @param path see Cookie.setPath(String)
 	 */
 	public Controller setCookie(String name, String value, int maxAgeInSeconds, String path) {
-		Cookie cookie = new Cookie(name, value);
-		cookie.setMaxAge(maxAgeInSeconds);
-		cookie.setPath(path);
-		response.addCookie(cookie);
+		setCookie(name, value, maxAgeInSeconds, path, null);
 		return this;
 	}
 	
@@ -409,7 +439,8 @@ public abstract class Controller {
 	 */
 	public Controller setCookie(String name, String value, int maxAgeInSeconds, String path, String domain) {
 		Cookie cookie = new Cookie(name, value);
-		cookie.setDomain(domain);
+		if (domain != null)
+			cookie.setDomain(domain);
 		cookie.setMaxAge(maxAgeInSeconds);
 		cookie.setPath(path);
 		response.addCookie(cookie);
@@ -420,7 +451,7 @@ public abstract class Controller {
 	 * Set Cookie with path = "/".
 	 */
 	public Controller setCookie(String name, String value, int maxAgeInSeconds) {
-		setCookie(name, value, maxAgeInSeconds, "/");
+		setCookie(name, value, maxAgeInSeconds, "/", null);
 		return this;
 	}
 	
@@ -428,7 +459,7 @@ public abstract class Controller {
 	 * Remove Cookie with path = "/".
 	 */
 	public Controller removeCookie(String name) {
-		setCookie(name, null, 0, "/");
+		setCookie(name, null, 0, "/", null);
 		return this;
 	}
 	
@@ -436,7 +467,15 @@ public abstract class Controller {
 	 * Remove Cookie.
 	 */
 	public Controller removeCookie(String name, String path) {
-		setCookie(name, null, 0, path);
+		setCookie(name, null, 0, path, null);
+		return this;
+	}
+	
+	/**
+	 * Remove Cookie.
+	 */
+	public Controller removeCookie(String name, String path, String domain) {
+		setCookie(name, null, 0, path, domain);
 		return this;
 	}
 	
@@ -628,7 +667,7 @@ public abstract class Controller {
 	}
 	
 	private Locale getLocaleFromCookie() {
-		Cookie cookie = getCookie(I18N_LOCALE);
+		Cookie cookie = getCookieObject(I18N_LOCALE);
 		if (cookie != null) {
 			return I18N.localeFromString(cookie.getValue());
 		}
