@@ -53,7 +53,7 @@ public class I18N {
 	
 	public static I18N me() {
 		if (me == null) {
-			synchronized (me) {
+			synchronized (I18N.class) {
 				me = new I18N();
 			}
 		}
