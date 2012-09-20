@@ -71,7 +71,7 @@ public class DruidStatViewHandler extends Handler {
 	        }
 	        // String uri = contextPath + servletPath;
 	        // String path = requestURI.substring(contextPath.length() + servletPath.length());
-	        int index = visitPath.length();
+	        int index = contextPath.length() + visitPath.length();
 	        String uri = requestURI.substring(0, index);
 	        String path = requestURI.substring(index);
 

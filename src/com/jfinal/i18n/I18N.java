@@ -46,14 +46,14 @@ public class I18N {
 	private static final NullResourceBundle NULL_RESOURCE_BUNDLE = new NullResourceBundle();
 	private static final ConcurrentMap<String, ResourceBundle> bundlesMap = new ConcurrentHashMap<String, ResourceBundle>();
 	
-	private static I18N me;
+	private static volatile I18N me;
 	
 	private I18N() {
 	}
 	
 	public static I18N me() {
 		if (me == null) {
-			synchronized (me) {
+			synchronized (I18N.class) {
 				me = new I18N();
 			}
 		}

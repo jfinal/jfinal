@@ -154,7 +154,7 @@ public class CaptchaRender extends Render {
 			return false;
 		try {
 			inputRandomCode = encrypt(inputRandomCode);
-			return inputRandomCode.equals(controller.getCookieValue(randomCodeKey));
+			return inputRandomCode.equals(controller.getCookie(randomCodeKey));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

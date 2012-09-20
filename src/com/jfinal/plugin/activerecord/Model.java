@@ -249,7 +249,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Danger! The update method will ignore the attribute if you change it directly.
 	 * You must use set method to change attribute that update method can handle it.
 	 */
-	Map<String, Object> getAttrs() {
+	protected Map<String, Object> getAttrs() {
 		return attrs;
 	}
 	
@@ -674,6 +674,22 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
 		return paginateByCache(cacheName, key, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
+	}
+	
+	/**
+	 * Return attribute names of this model.
+	 */
+	public String[] getAttrNames() {
+		Set<String> attrNameSet = attrs.keySet();
+		return attrNameSet.toArray(new String[attrNameSet.size()]);
+	}
+	
+	/**
+	 * Return attribute values of this model.
+	 */
+	public Object[] getAttrValues() {
+		java.util.Collection<Object> attrValueCollection = attrs.values();
+		return attrValueCollection.toArray(new Object[attrValueCollection.size()]);
 	}
 }
 

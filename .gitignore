@@ -2,7 +2,7 @@
 *.class
 *.tmp
 *.log
-bin
+/bin
 build.sh
 integration-repo
 build

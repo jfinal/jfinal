@@ -28,7 +28,7 @@ public class SessionIdGenerator {
 	
     protected static Random random;
     private static boolean weakRandom;
-    private static final Object lock = new Object();
+    private static volatile Object lock = new Object();
     
     private static final SessionIdGenerator me = new SessionIdGenerator();
     
@@ -54,8 +54,8 @@ public class SessionIdGenerator {
     
 	public String generate(HttpServletRequest request, HttpServletResponse response) {
         synchronized (lock) {
-            String id=null;
-            while (id==null || id.length()==0) {	//)||idInUse(id))
+            String id = null;
+            while (id == null || id.length() == 0) {	//)||idInUse(id))
                 long r0 = weakRandom ? (hashCode()^Runtime.getRuntime().freeMemory()^random.nextInt()^(((long)request.hashCode())<<32)) : random.nextLong();
                 long r1 = random.nextLong();
                 if (r0<0) r0 = -r0;
