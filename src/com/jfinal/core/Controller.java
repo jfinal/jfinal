@@ -928,12 +928,27 @@ public abstract class Controller {
 	}
 	
 	/**
+	 * Redirect to ContextPath url
+	 */
+	public void redirectAction(String url) {
+		url = getRequest().getContextPath() + url;
+		render = renderFactory.getRedirectRender(url);
+	}
+	
+	/**
 	 * Redirect to url
 	 */
 	public void redirect(String url, boolean withOutQueryString) {
 		render = renderFactory.getRedirectRender(url, withOutQueryString);
 	}
 	
+	/**
+	 * Redirect to ContextPath url
+	 */
+	public void redirectAction(String url, boolean withOutQueryString) {
+		url = getRequest().getContextPath() + url;
+		render = renderFactory.getRedirectRender(url, withOutQueryString);
+	}
 	/**
 	 * Render with view and status use default type Render configured in JFinalConfig
 	 */
