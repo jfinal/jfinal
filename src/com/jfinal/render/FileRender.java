@@ -69,6 +69,7 @@ class FileRender extends Render {
 			return ;
         }
 		
+		response.addHeader("Content-disposition", "attachment; filename=" + file.getName());
         String contentType = servletContext.getMimeType(file.getName());
         if (contentType == null) {
         	contentType = DEFAULT_FILE_CONTENT_TYPE;		// "application/octet-stream";

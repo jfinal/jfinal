@@ -62,13 +62,12 @@ public final class JFinal {
 		
 		initPathUtil();
 		
-		Config.configJFinal(jfinalConfig);
+		Config.configJFinal(jfinalConfig);	// start plugin and init logger factory in this method
 		constants = Config.getConstants();
 		
 		initActionMapping();
 		initHandler();
 		initRender();
-		initLoggerFactory();
 		initActiveRecord();
 		initOreillyCos();
 		initI18n();
@@ -123,10 +122,6 @@ public final class JFinal {
 	private void initRender() {
 		RenderFactory renderFactory = RenderFactory.me();
 		renderFactory.init(constants, servletContext);
-	}
-	
-	private void initLoggerFactory() {
-		JFinalFilter.initLogger();
 	}
 	
 	private void initActionMapping() {

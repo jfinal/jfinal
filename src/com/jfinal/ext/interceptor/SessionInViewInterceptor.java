@@ -17,6 +17,8 @@
 package com.jfinal.ext.interceptor;
 
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import com.jfinal.aop.Interceptor;
@@ -28,26 +30,34 @@ import com.jfinal.core.Controller;
  */
 public class SessionInViewInterceptor implements Interceptor {
 	
+	private boolean createSession = false;
+	
+	public SessionInViewInterceptor() {
+	}
+	
+	public SessionInViewInterceptor(boolean createSession) {
+		this.createSession = createSession;
+	}
+	
+	@SuppressWarnings({"rawtypes", "unchecked"})	
 	public void intercept(ActionInvocation ai) {
 		ai.invoke();
 		
 		Controller c = ai.getController();
-		HttpSession hs = c.getSession(false);
+		HttpSession hs = c.getSession(createSession);
 		if (hs != null) {
-			c.setAttr("session", new JFinalSession(hs));
+			Map session = new JFinalSession(hs);
+			for (Enumeration<String> names=hs.getAttributeNames(); names.hasMoreElements();) {
+				String name = names.nextElement();
+				session.put(name, hs.getAttribute(name));
+			}
+			c.setAttr("session", session);
 		}
 	}
 }
 
-@SuppressWarnings({"deprecation", "rawtypes"})
-class JFinalSession implements HttpSession {
-	
-	/**
-	 * Added by JFinal for FreeMarker and Beetl.
-	 */
-	public Object get(String key) {
-		return s.getAttribute(key);
-	}
+@SuppressWarnings({"deprecation", "serial", "rawtypes"})
+class JFinalSession extends HashMap implements HttpSession {
 	
 	private HttpSession s;
 	
@@ -55,8 +65,8 @@ class JFinalSession implements HttpSession {
 		this.s = session;
 	}
 	
-	public Object getAttribute(String arg0) {
-		return s.getAttribute(arg0);
+	public Object getAttribute(String key) {
+		return s.getAttribute(key);
 	}
 	
 	public Enumeration getAttributeNames() {
@@ -87,8 +97,8 @@ class JFinalSession implements HttpSession {
 		return s.getSessionContext();
 	}
 	
-	public Object getValue(String arg0) {
-		return s.getValue(arg0);
+	public Object getValue(String key) {
+		return s.getValue(key);
 	}
 	
 	public String[] getValueNames() {
@@ -103,40 +113,35 @@ class JFinalSession implements HttpSession {
 		return s.isNew();
 	}
 	
-	public void putValue(String arg0, Object arg1) {
-		s.putValue(arg0, arg1);
+	public void putValue(String key, Object value) {
+		s.putValue(key, value);
 	}
 	
-	public void removeAttribute(String arg0) {
-		s.removeAttribute(arg0);
+	public void removeAttribute(String key) {
+		s.removeAttribute(key);
 	}
 	
-	public void removeValue(String arg0) {
-		s.removeValue(arg0);
+	public void removeValue(String key) {
+		s.removeValue(key);
 	}
 	
-	public void setAttribute(String arg0, Object arg1) {
-		s.setAttribute(arg0, arg1);
+	public void setAttribute(String key, Object value) {
+		s.setAttribute(key, value);
 	}
 	
-	public void setMaxInactiveInterval(int arg0) {
-		s.setMaxInactiveInterval(arg0);
+	public void setMaxInactiveInterval(int maxInactiveInterval) {
+		s.setMaxInactiveInterval(maxInactiveInterval);
 	}
 }
 
-//@SuppressWarnings({"rawtypes", "unchecked"})	
-//public void intercept(ActionInvocation ai) {
-//	ai.invoke();
-//	
-//	Controller c = ai.getController();
-//	HttpSession hs = c.getSession(false);
-//	if (hs != null) {
-//		Map session = new HashMap();
-//		for (Enumeration<String> names=hs.getAttributeNames(); names.hasMoreElements();) {
-//			String name = names.nextElement();
-//			session.put(name, hs.getAttribute(name));
-//		}
-//		c.setAttr("session", session);
-//	}
-//}
-
+/*
+public void intercept(ActionInvocation ai) {
+	ai.invoke();
+	
+	Controller c = ai.getController();
+	HttpSession hs = c.getSession(createSession);
+	if (hs != null) {
+		c.setAttr("session", new JFinalSession(hs));
+	}
+}
+*/

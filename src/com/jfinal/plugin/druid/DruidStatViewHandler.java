@@ -14,6 +14,7 @@ import com.alibaba.druid.support.logging.Log;
 import com.alibaba.druid.support.logging.LogFactory;
 import com.alibaba.druid.util.IOUtils;
 import com.jfinal.handler.Handler;
+import com.jfinal.util.HandlerKit;
 
 /**
  * 替代 StatViewServlet
@@ -41,6 +42,12 @@ public class DruidStatViewHandler extends Handler {
 	public void handle(String target, HttpServletRequest request, HttpServletResponse response, boolean[] isHandled) {
 		if (target.startsWith(visitPath)) {
 			isHandled[0] = true;
+			
+			if (target.equals(visitPath) && !target.endsWith("/index.html")) {
+				HandlerKit.redirect(target += "/index.html", request, response, isHandled);
+				return ;
+			}
+			
 			try {
 				servlet.service(request, response);
 			} catch (Exception e) {

@@ -24,13 +24,13 @@ import com.jfinal.render.ViewType;
  */
 public interface Const {
 	
-	String JFINAL_VERSION = "1.1.3";
+	String JFINAL_VERSION = "1.1.4";
 	
 	ViewType DEFAULT_VIEW_TYPE = ViewType.FREE_MARKER;
 	
 	String DEFAULT_ENCODING = "utf-8";
 	
-	String DEFAULT_URL_PARA_SEPARATOR = "-";				// before 1.1.2 is "_";
+	String DEFAULT_URL_PARA_SEPARATOR = "-";
 	
 	String DEFAULT_FILE_CONTENT_TYPE = "application/octet-stream";
 	

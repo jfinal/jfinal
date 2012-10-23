@@ -284,7 +284,7 @@ final public class Constants {
 			throw new IllegalArgumentException("mainRenderFactory can not be null.");
 		
 		this.viewType = ViewType.OTHER;
-		RenderFactory.setmainRenderFactory(mainRenderFactory);
+		RenderFactory.setMainRenderFactory(mainRenderFactory);
 	}
 }
 
