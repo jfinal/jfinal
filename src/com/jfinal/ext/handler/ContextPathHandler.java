@@ -25,7 +25,7 @@ import com.jfinal.util.StringKit;
  * Provide a context path to view if you need.
  * <br>
  * Example:<br>
- * In JFinalFilter: handlers.add(new ContextPathHandler("BASE_PATH"));<br>
+ * In JFinalFilter: handlers.add(new ContextPathHandler("CONTEXT_PATH"));<br>
  * in freemarker: <img src="${BASE_PATH}/images/logo.png" />
  */
 public class ContextPathHandler extends Handler {

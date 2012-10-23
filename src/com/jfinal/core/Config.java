@@ -23,6 +23,7 @@ import com.jfinal.config.Routes;
 import com.jfinal.config.Plugins;
 import com.jfinal.config.Handlers;
 import com.jfinal.config.Interceptors;
+import com.jfinal.log.Logger;
 import com.jfinal.plugin.IPlugin;
 
 class Config {
@@ -32,6 +33,7 @@ class Config {
 	private static final Plugins plugins = new Plugins();
 	private static final Interceptors interceptors = new Interceptors();
 	private static final Handlers handlers = new Handlers();
+	private static Logger log;
 	
 	// prevent new Config();
 	private Config() {
@@ -41,7 +43,7 @@ class Config {
 	 * Config order: constant, route, plugin, interceptor, handler
 	 */
 	static void configJFinal(JFinalConfig jfinalConfig) {
-		jfinalConfig.configConstant(constants);
+		jfinalConfig.configConstant(constants);				initLoggerFactory();
 		jfinalConfig.configRoute(routes);
 		jfinalConfig.configPlugin(plugins);					startPlugins();	// very important!!!
 		jfinalConfig.configInterceptor(interceptors);
@@ -75,15 +77,20 @@ class Config {
 				try {
 					boolean success = plugin.start();
 					if (!success) {
-						System.err.println("Plugin start error: " + plugin.getClass().getName());
+						log.error("Plugin start error: " + plugin.getClass().getName());
 						throw new RuntimeException("Plugin start error: " + plugin.getClass().getName());
 					}
 				}
 				catch (Exception e) {
-					System.err.println("Plugin start error: " + plugin.getClass().getName());
+					log.error("Plugin start error: " + plugin.getClass().getName(), e);
 					throw new RuntimeException("Plugin start error: " + plugin.getClass().getName(), e);
 				}
 			}
 		}
+	}
+	
+	private static void initLoggerFactory() {
+		log = Logger.getLogger(Config.class);
+		JFinalFilter.initLogger();
 	}
 }

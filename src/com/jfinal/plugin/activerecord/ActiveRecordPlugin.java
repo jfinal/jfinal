@@ -31,6 +31,7 @@ import com.jfinal.plugin.activerecord.dialect.Dialect;
  */
 public class ActiveRecordPlugin implements IPlugin {
 	
+	private static boolean isStarted = false;
 	private static DataSource dataSource;
 	private static IDataSourceProvider dataSourceProvider;
 	private static final List<TableInfo> tableMappings = new ArrayList<TableInfo>();
@@ -53,6 +54,11 @@ public class ActiveRecordPlugin implements IPlugin {
 	
 	public ActiveRecordPlugin setShowSql(boolean showSql) {
 		DbKit.setShowSql(showSql);
+		return this;
+	}
+	
+	public ActiveRecordPlugin setMapFactory(IMapFactory mapFactory) {
+		DbKit.setMapFactory(mapFactory);
 		return this;
 	}
 	
@@ -85,20 +91,23 @@ public class ActiveRecordPlugin implements IPlugin {
 	}
 	
 	public boolean start() {
-		if (dataSourceProvider != null) {
-			dataSource = dataSourceProvider.getDataSource();
-		}
+		if (isStarted)
+			return true;
 		
-		if (dataSource == null){
+		if (dataSourceProvider != null)
+			dataSource = dataSourceProvider.getDataSource();
+		
+		if (dataSource == null)
 			throw new RuntimeException("ActiveRecord start error: ActiveRecordPlugin need DataSource or DataSourceProvider");
-		}
 		
 		DbKit.setDataSource(dataSource);
 		
+		isStarted = true;
 		return TableInfoBuilder.buildTableInfo(tableMappings);
 	}
 	
 	public boolean stop() {
+		isStarted = false;
 		return true;
 	}
 }

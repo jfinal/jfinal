@@ -52,11 +52,11 @@ public class I18N {
 	}
 	
 	public static I18N me() {
-		if (me == null) {
+		if (me == null)
 			synchronized (I18N.class) {
-				me = new I18N();
+				if (me == null)
+					me = new I18N();
 			}
-		}
 		return me;
 	}
 	

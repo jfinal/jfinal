@@ -20,6 +20,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import javax.sql.DataSource;
 import com.jfinal.plugin.activerecord.cache.EhCache;
 import com.jfinal.plugin.activerecord.cache.ICache;
@@ -42,6 +44,16 @@ public final class DbKit {
 	static boolean devMode = false;
 	static Dialect dialect = new MysqlDialect();
 	
+	static IMapFactory mapFactory = new IMapFactory(){
+		public Map<String, Object> getAttrsMap() {return new HashMap<String, Object>();}
+		public Map<String, Object> getColumnsMap() {return new HashMap<String, Object>();}
+	};
+	
+	static void setMapFactory(IMapFactory mapFactory) {
+		if (mapFactory != null)
+			DbKit.mapFactory = mapFactory;
+	}
+	
 	static void setDevMode(boolean devMode) {
 		DbKit.devMode = devMode;
 	}
@@ -50,9 +62,13 @@ public final class DbKit {
 		DbKit.showSql = showSql;
 	}
 	
-	public static void setDialect(Dialect dialect) {
+	static void setDialect(Dialect dialect) {
 		if (dialect != null)
 			DbKit.dialect = dialect;
+	}
+	
+	static void setCache(ICache cache) {
+		DbKit.cache = cache;
 	}
 	
 	public static Dialect getDialect() {
@@ -61,10 +77,6 @@ public final class DbKit {
 	
 	public static ICache getCache() {
 		return cache;
-	}
-	
-	public static void setCache(ICache cache) {
-		DbKit.cache = cache;
 	}
 	
 	// Prevent new DbKit()
@@ -180,7 +192,7 @@ public final class DbKit {
 		if (index > sql.toLowerCase().lastIndexOf(")")) {
 			String sql1 = sql.substring(0, index);
 			String sql2 = sql.substring(index);
-			sql2 = sql2.replaceAll("[oO][rR][dD][eE][rR] [bB][yY] [a-zA-Z0-9_.]+((\\s)+(([dD][eE][sS][cC])|([aA][sS][cC])))?(( )*,( )*[a-zA-Z0-9_.]+(( )+(([dD][eE][sS][cC])|([aA][sS][cC])))?)*", "");
+			sql2 = sql2.replaceAll("[oO][rR][dD][eE][rR] [bB][yY] [\u4e00-\u9fa5a-zA-Z0-9_.]+((\\s)+(([dD][eE][sS][cC])|([aA][sS][cC])))?(( )*,( )*[\u4e00-\u9fa5a-zA-Z0-9_.]+(( )+(([dD][eE][sS][cC])|([aA][sS][cC])))?)*", "");
 			return sql1 + sql2;
 		}
 		return sql;

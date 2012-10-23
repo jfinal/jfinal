@@ -47,7 +47,7 @@ public class RenderFactory {
 		return me;
 	}
 	
-	public static void setmainRenderFactory(IMainRenderFactory mainRenderFactory) {
+	public static void setMainRenderFactory(IMainRenderFactory mainRenderFactory) {
 		if (mainRenderFactory != null)
 			RenderFactory.mainRenderFactory = mainRenderFactory;
 	}

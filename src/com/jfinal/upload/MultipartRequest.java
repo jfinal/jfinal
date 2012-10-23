@@ -123,7 +123,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 	}
 	
 	private boolean isSafeFile(UploadFile uploadFile) {
-		if (uploadFile.getFilesystemName().toLowerCase().endsWith(".jsp")) {
+		if (uploadFile.getFileName().toLowerCase().endsWith(".jsp")) {
 			uploadFile.getFile().delete();
 			return false;
 		}

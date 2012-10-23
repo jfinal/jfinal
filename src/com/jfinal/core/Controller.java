@@ -110,14 +110,14 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * Returns the value of a request parameter as a String, or null if the parameter does not exist.
+	 * Returns the value of a request parameter as a String, or default value if the parameter does not exist.
 	 * @param name a String specifying the name of the parameter
 	 * @param defaultValue a String value be returned when the value of parameter is null
 	 * @return a String representing the single value of the parameter
 	 */
 	public String getPara(String name, String defaultValue) {
 		String result = request.getParameter(name);
-		return result != null ? result : defaultValue;
+		return result != null && !"".equals(result) ? result : defaultValue;
 	}
 	
 	/**

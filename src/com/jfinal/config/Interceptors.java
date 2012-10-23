@@ -27,9 +27,9 @@ final public class Interceptors {
 	
 	private final List<Interceptor> interceptorList = new ArrayList<Interceptor>();
 	
-	public Interceptors add(Interceptor defaultInterceptor) {
-		if (defaultInterceptor != null)
-			this.interceptorList.add(defaultInterceptor);
+	public Interceptors add(Interceptor globalInterceptor) {
+		if (globalInterceptor != null)
+			this.interceptorList.add(globalInterceptor);
 		return this;
 	}
 	

@@ -44,7 +44,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	/**
 	 * Attributes of this model
 	 */
-	private Map<String, Object> attrs = new HashMap<String, Object>();
+	private Map<String, Object> attrs = DbKit.mapFactory.getAttrsMap();	// new HashMap<String, Object>();
 	
 	/**
 	 * Flag of column has been modified. update need this flag
@@ -690,6 +690,13 @@ public abstract class Model<M extends Model> implements Serializable {
 	public Object[] getAttrValues() {
 		java.util.Collection<Object> attrValueCollection = attrs.values();
 		return attrValueCollection.toArray(new Object[attrValueCollection.size()]);
+	}
+	
+	/**
+	 * Return json string of this model.
+	 */
+	public String toJson() {
+		return com.jfinal.util.JsonBuilder.toJson(attrs, 4);
 	}
 }
 

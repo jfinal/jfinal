@@ -19,6 +19,7 @@ package com.jfinal.plugin.activerecord;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 /**
@@ -27,7 +28,7 @@ import java.util.Map.Entry;
 public class Record implements Serializable {
 	
 	private static final long serialVersionUID = -3254070837297655225L;
-	private Map<String, Object> columns = new HashMap<String, Object>();
+	private Map<String, Object> columns = DbKit.mapFactory.getColumnsMap();	// new HashMap<String, Object>();
 	
 	/**
 	 * Return columns map.
@@ -268,6 +269,29 @@ public class Record implements Serializable {
 	
 	public int hashCode() {
 		return columns == null ? 0 : columns.hashCode();
+	}
+	
+	/**
+	 * Return column names of this record.
+	 */
+	public String[] getcolumnNames() {
+		Set<String> attrNameSet = columns.keySet();
+		return attrNameSet.toArray(new String[attrNameSet.size()]);
+	}
+	
+	/**
+	 * Return column values of this record.
+	 */
+	public Object[] getcolumnValues() {
+		java.util.Collection<Object> attrValueCollection = columns.values();
+		return attrValueCollection.toArray(new Object[attrValueCollection.size()]);
+	}
+	
+	/**
+	 * Return json string of this record.
+	 */
+	public String toJson() {
+		return com.jfinal.util.JsonBuilder.toJson(columns, 4);
 	}
 }
 
