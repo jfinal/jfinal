@@ -2,7 +2,8 @@ package com.jfinal.plugin.activerecord;
 
 import java.util.Map;
 
+@SuppressWarnings("rawtypes")
 public interface IMapFactory {
-	Map<String, Object> getAttrsMap();
-	Map<String, Object> getColumnsMap();
+	Map getAttrsMap();
+	Map getColumnsMap();
 }
