@@ -161,8 +161,4 @@ public class MysqlDialect extends Dialect {
 		sql.append(sqlExceptSelect);
 		sql.append(" limit ").append(offset).append(", ").append(pageSize);	// limit can use one or two '?' to pass paras
 	}
-	
-	public boolean isSupportAutoIncrementKey() {
-		return true;
-	}
 }

@@ -28,8 +28,8 @@ import com.jfinal.core.Controller;
  */
 public class Restful implements Interceptor {
 	
-	@SuppressWarnings("serial")
-	private Set<String> set = new HashSet<String>() {{
+	private Set<String> set = new HashSet<String>() {
+		private static final long serialVersionUID = 2717581127375143508L;{
 		// add edit 与  JFinal 原有规则相同
 		add("show");
 		add("save");

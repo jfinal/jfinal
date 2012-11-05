@@ -71,7 +71,24 @@ final class ActionMapping {
 					Interceptor[] actionInters = interceptorBuilder.buildActionInterceptors(defaultInters, controllerInters, controllerClass, methodInters, method);
 					String controllerKey = entry.getKey();
 					
-					if (methodName.equals("index")) {
+					ActionKey ak = method.getAnnotation(ActionKey.class);
+					if (ak != null) {
+						String actionKey = ak.value().trim();
+						if ("".equals(actionKey))
+							throw new IllegalArgumentException(controllerClass.getName() + "." + methodName + "(): The argument of ActionKey can not be blank.");
+						
+						if (!actionKey.startsWith(SLASH))
+							actionKey = SLASH + actionKey;
+						
+						if (actionMapping.containsKey(actionKey)) {
+							warnning(actionKey, controllerClass, method);
+							continue;
+						}
+						
+						Action action = new Action(controllerKey, actionKey, controllerClass, method, methodName, actionInters, routes.getViewPath(controllerKey));
+						actionMapping.put(actionKey, action);
+					}
+					else if (methodName.equals("index")) {
 						String actionKey = controllerKey;
 						
 						Action action = new Action(controllerKey, actionKey, controllerClass, method, methodName, actionInters, routes.getViewPath(controllerKey));

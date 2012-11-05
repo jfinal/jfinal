@@ -159,8 +159,4 @@ public class Sqlite3Dialect extends Dialect {
 		sql.append(sqlExceptSelect);
 		sql.append(" limit ").append(offset).append(", ").append(pageSize);
 	}
-	
-	public boolean isSupportAutoIncrementKey() {
-		return true;
-	}
 }

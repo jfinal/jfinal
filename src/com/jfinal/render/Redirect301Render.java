@@ -21,9 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Redirect301Render.
  */
-@SuppressWarnings("serial")
-class Redirect301Render extends Render {
+public class Redirect301Render extends Render {
 	
+	private static final long serialVersionUID = -6822589387282014944L;
 	private String url;
 	private boolean withOutQueryString;
 	

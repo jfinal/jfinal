@@ -16,27 +16,27 @@
 
 package com.jfinal.render;
 
-import java.io.IOException;
-import java.io.Writer;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import javax.servlet.ServletContext;
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.Template;
+import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
 /**
  * FreeMarkerRender.
  */
-@SuppressWarnings("serial")
-class FreeMarkerRender extends Render {
+public class FreeMarkerRender extends Render {
 	
+	private static final long serialVersionUID = 3959102981898502071L;
 	private transient static final String encoding = getEncoding();
 	private transient static final String contentType = "text/html; charset=" + encoding;
-	
 	private transient static final Configuration config = new Configuration();
 	
 	public FreeMarkerRender(String view) {
@@ -48,6 +48,27 @@ class FreeMarkerRender extends Render {
 	 */
 	public static Configuration getConfiguration() {
 		return config;
+	}
+	
+	/**
+	 * Set freemarker's property.
+	 * The value of template_update_delay is 5 seconds.
+	 * Example: FreeMarkerRender.setProperty("template_update_delay", "1600");
+	 */
+	public static void setProperty(String propertyName, String propertyValue) {
+		try {
+			FreeMarkerRender.getConfiguration().setSetting(propertyName, propertyValue);
+		} catch (TemplateException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static void setProperties(Properties properties) {
+		try {
+			FreeMarkerRender.getConfiguration().setSettings(properties);
+		} catch (TemplateException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
     static void init(ServletContext servletContext, Locale locale, int template_update_delay) {
@@ -98,16 +119,17 @@ class FreeMarkerRender extends Render {
 			root.put(attrName, request.getAttribute(attrName));
 		}
 		
-		Writer writer = null;
+		PrintWriter writer = null;
         try {
-			writer = response.getWriter();
 			Template template = config.getTemplate(view);
+			writer = response.getWriter();
 			template.process(root, writer);		// Merge the data-model and the template
 		} catch (Exception e) {
 			throw new RenderException(e);
 		}
 		finally {
-			try {writer.close();} catch (IOException e) {e.printStackTrace();}
+			if (writer != null)
+				writer.close();
 		}
 	}
 }

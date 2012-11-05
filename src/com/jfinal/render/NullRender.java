@@ -16,22 +16,12 @@
 
 package com.jfinal.render;
 
-
 /**
- * NullRender
+ * NullRender.
  */
-@SuppressWarnings("serial")
-class NullRender extends Render {
+public class NullRender extends Render {
 	
-	private static final NullRender me = new NullRender();
-	
-	private NullRender() {
-		
-	}
-	
-	static final NullRender me() {
-		return me;
-	}
+	private static final long serialVersionUID = -389288806463724481L;
 	
 	/**
 	 * Render nothing

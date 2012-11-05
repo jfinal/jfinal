@@ -25,6 +25,8 @@ import com.jfinal.util.StringKit;
 /**
  * Skip the excluded url request from browser.
  * The skiped url will be handled by next Filter after JFinalFilter
+ * <p>
+ * Example: me.add(new UrlSkipHandler(".+\\.\\w{1,4}", false));
  */
 public class UrlSkipHandler extends Handler {
 	

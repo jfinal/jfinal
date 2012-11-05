@@ -30,9 +30,9 @@ import com.jfinal.core.Controller;
 import com.jfinal.render.Render;
 import com.jfinal.util.StringKit;
 
-@SuppressWarnings("serial")
 public class CaptchaRender extends Render {
 	
+	private static final long serialVersionUID = -916701543933591834L;
 	private static final int WIDTH = 85, HEIGHT = 20;
 	private static final String[] strArr = {"3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"};
 	
@@ -65,7 +65,8 @@ public class CaptchaRender extends Render {
 			throw new RuntimeException(e);
 		}
 		finally {
-			try {sos.close();} catch (IOException e) {e.printStackTrace();}
+			if (sos != null)
+				try {sos.close();} catch (IOException e) {e.printStackTrace();}
 		}
 	}
 

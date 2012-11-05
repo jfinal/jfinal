@@ -17,6 +17,7 @@
 package com.jfinal.plugin.activerecord.dialect;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,9 @@ public abstract class Dialect {
 	public abstract void forDbUpdate(String tableName, String primaryKey, Object id, Record record, StringBuilder sql, List<Object> paras);
 	public abstract void forPaginate(StringBuilder sql, int pageNumber, int pageSize, String select, String sqlExceptSelect);
 	
-	public abstract boolean isSupportAutoIncrementKey();
+	public boolean isOracle() {
+		return false;
+	}
 	
 	public boolean isTakeOverDbPaginate() {
 		return false;
@@ -58,6 +61,18 @@ public abstract class Dialect {
 	@SuppressWarnings("rawtypes")
 	public Page takeOverModelPaginate(Class<? extends Model> modelClass, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
 		throw new RuntimeException("You should implements this method in " + getClass().getName());
+	}
+	
+	public void fillStatement(PreparedStatement pst, List<Object> paras) throws SQLException {
+		for (int i=0, size=paras.size(); i<size; i++) {
+			pst.setObject(i + 1, paras.get(i));
+		}
+	}
+	
+	public void fillStatement(PreparedStatement pst, Object... paras) throws SQLException {
+		for (int i=0; i<paras.length; i++) {
+			pst.setObject(i + 1, paras[i]);
+		}
 	}
 }
 

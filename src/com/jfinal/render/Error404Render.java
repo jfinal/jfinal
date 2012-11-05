@@ -24,9 +24,9 @@ import com.jfinal.core.Const;
 /**
  * Error404Render.
  */
-@SuppressWarnings("serial")
-class Error404Render extends Render {
+public class Error404Render extends Render {
 	
+	private static final long serialVersionUID = 1764764489766904795L;
 	private static final String contentType = "text/html;charset=" + getEncoding();
 	private static final String defaultHtml = "<html><head><title>404 Not Found</title></head><body bgcolor='white'><center><h1>404 Not Found</h1></center><hr><center><a href='http://www.jfinal.com'>JFinal/" + Const.JFINAL_VERSION + "</a></center></body></html>";
 	private Render render;
@@ -61,7 +61,8 @@ class Error404Render extends Render {
 			throw new RenderException(e);
 		}
 		finally {
-			writer.close();
+			if (writer != null)
+				writer.close();
 		}
 	}
 }

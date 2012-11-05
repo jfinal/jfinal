@@ -16,6 +16,8 @@
 
 package com.jfinal.plugin.activerecord.dialect;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,19 +34,27 @@ public class OracleDialect extends Dialect {
 		return "select * from " + tableName + " where rownum = 0";
 	}
 	
+	// insert into table (id,name) values(seq.nextval, ？)
 	public void forModelSave(TableInfo tableInfo, Map<String, Object> attrs, StringBuilder sql, List<Object> paras) {
 		sql.append("insert into ").append(tableInfo.getTableName()).append("(");
 		StringBuilder temp = new StringBuilder(") values(");
+		String pKey = tableInfo.getPrimaryKey();
+		int count = 0;
 		for (Entry<String, Object> e: attrs.entrySet()) {
 			String colName = e.getKey();
 			if (tableInfo.hasColumnLabel(colName)) {
-				if (paras.size() > 0) {
+				if (count++ > 0) {
 					sql.append(", ");
 					temp.append(", ");
 				}
 				sql.append(colName);
-				temp.append("?");
-				paras.add(e.getValue());
+				Object value = e.getValue();
+				if(colName.equalsIgnoreCase(pKey) && value instanceof String && (((String)value).endsWith(".nextval"))) {
+				    temp.append(value);
+				}else{
+				    temp.append("?");
+				    paras.add(value);
+				}
 			}
 		}
 		sql.append(temp.toString()).append(")");
@@ -125,14 +135,21 @@ public class OracleDialect extends Dialect {
 		StringBuilder temp = new StringBuilder();
 		temp.append(") values(");
 		
+		int count = 0;
 		for (Entry<String, Object> e: record.getColumns().entrySet()) {
-			if (paras.size() > 0) {
+			if (count++ > 0) {
 				sql.append(", ");
 				temp.append(", ");
 			}
 			sql.append(e.getKey());
-			temp.append("?");
-			paras.add(e.getValue());
+			
+			Object value = e.getValue();
+			if(value instanceof String && (((String)value).endsWith(".nextval"))) {
+			    temp.append(value);
+			}else{
+				temp.append("?");
+				paras.add(value);
+			}
 		}
 		sql.append(temp.toString()).append(")");
 	}
@@ -162,7 +179,27 @@ public class OracleDialect extends Dialect {
 		sql.append(" where table_alias.rownum_ >= ").append(satrt);
 	}
 	
-	public boolean isSupportAutoIncrementKey() {
-		return false;
+	public boolean isOracle() {
+		return true;
+	}
+	
+	public void fillStatement(PreparedStatement pst, List<Object> paras) throws SQLException {
+		for (int i=0, size=paras.size(); i<size; i++) {
+			Object value = paras.get(i);
+			if (value instanceof java.sql.Date)
+				pst.setDate(i + 1, (java.sql.Date)value);
+			else
+				pst.setObject(i + 1, value);
+		}
+	}
+	
+	public void fillStatement(PreparedStatement pst, Object... paras) throws SQLException {
+		for (int i=0; i<paras.length; i++) {
+			Object value = paras[i];
+			if (value instanceof java.sql.Date)
+				pst.setDate(i + 1, (java.sql.Date)value);
+			else
+				pst.setObject(i + 1, value);
+		}
 	}
 }

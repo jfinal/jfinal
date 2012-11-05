@@ -79,7 +79,7 @@ public class JsonBuilder {
 			return "null";
 		
         boolean first = true;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 		Iterator iter = list.iterator();
         
         sb.append('[');

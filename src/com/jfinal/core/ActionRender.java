@@ -21,9 +21,9 @@ import com.jfinal.render.Render;
 /**
  * ActionRender
  */
-@SuppressWarnings("serial")
 final class ActionRender extends Render {
 	
+	private static final long serialVersionUID = 3712913909977013446L;
 	private String actionUrl;
 	
 	public ActionRender(String actionUrl) {

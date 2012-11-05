@@ -59,8 +59,10 @@ public class DruidStatViewHandler extends Handler {
 		}
 	}
 	
-	@SuppressWarnings("serial")
 	class JFinalStatViewServlet extends StatViewServlet {
+		
+		private static final long serialVersionUID = 2898674199964021798L;
+		
 		public boolean isPermittedRequest(HttpServletRequest request) {
 			return auth.isPermitted(request);
 		}

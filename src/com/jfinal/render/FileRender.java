@@ -29,9 +29,9 @@ import com.jfinal.util.PathUtil;
 /**
  * FileRender.
  */
-@SuppressWarnings("serial")
-class FileRender extends Render {
+public class FileRender extends Render {
 	
+	private static final long serialVersionUID = -627386273750207255L;
 	private File file;
 	private String fileName;
 	private static String fileDownloadPath;

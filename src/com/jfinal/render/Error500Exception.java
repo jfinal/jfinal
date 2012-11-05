@@ -19,9 +19,9 @@ package com.jfinal.render;
 /**
  * Error500Exception.
  */
-@SuppressWarnings("serial")
 public class Error500Exception extends RuntimeException {
 	
+	private static final long serialVersionUID = -7521710800649772411L;
 	private Render error500Render;
 	
 	public Error500Exception(Render error500Render) {

@@ -22,11 +22,10 @@ import java.io.PrintWriter;
 /**
  * TextRender.
  */
-@SuppressWarnings("serial")
-class TextRender extends Render {
+public class TextRender extends Render {
 	
+	private static final long serialVersionUID = -5264892635310241831L;
 	private static final String defaultContentType = "text/plain;charset=" + getEncoding();
-	
 	private String text;
 	
 	public TextRender(String text) {
@@ -61,7 +60,8 @@ class TextRender extends Render {
 			throw new RenderException(e);
 		}
 		finally {
-			writer.close();
+			if (writer != null)
+				writer.close();
 		}
 	}
 }

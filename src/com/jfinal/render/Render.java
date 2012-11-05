@@ -19,18 +19,19 @@ package com.jfinal.render;
 import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.jfinal.core.Const;
 
 /**
  * Render.
  */
 public abstract class Render implements Serializable {
 	
-	private static final long serialVersionUID = 1617632731853793227L;
+	private static final long serialVersionUID = -6161983268638909080L;
 	protected String view;
 	protected transient HttpServletRequest request;
 	protected transient HttpServletResponse response;
 	
-	private transient static String encoding;
+	private transient static String encoding = Const.DEFAULT_ENCODING;
 	private transient static boolean devMode;
 	
 	static final void init(String encoding, boolean devMode) {

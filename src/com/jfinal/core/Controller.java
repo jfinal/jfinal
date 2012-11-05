@@ -884,6 +884,24 @@ public abstract class Controller {
 	}
 	
 	/**
+	 * Render with json text.
+	 * <p>
+	 * Example: renderJson("{\"message\":\"Please input password!\"}");
+	 */
+	public void renderJson(String jsonText) {
+		render = renderFactory.getJsonRender(jsonText);
+	}
+	
+	/**
+	 * Render json with object.
+	 * <p>
+	 * Example: renderJson(new User().set("name", "JFinal").set("age", 18));
+	 */
+	public void renderJson(Object object) {
+		render = renderFactory.getJsonRender(object);
+	}
+	
+	/**
 	 * Render with text. The contentType is: "text/plain".
 	 */
 	public void renderText(String text) {

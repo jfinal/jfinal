@@ -22,11 +22,10 @@ import java.io.PrintWriter;
 /**
  * JavascriptRender.
  */
-@SuppressWarnings("serial")
-class JavascriptRender extends Render {
+public class JavascriptRender extends Render {
 	
+	private static final long serialVersionUID = 3378793486917573848L;
 	private static final String contentType = "text/javascript;charset=" + getEncoding();
-	
 	private String jsText;
 	
 	public JavascriptRender(String jsText) {
@@ -44,7 +43,8 @@ class JavascriptRender extends Render {
 			throw new RenderException(e);
 		}
 		finally {
-			writer.close();
+			if (writer != null)
+				writer.close();
 		}
 	}
 }

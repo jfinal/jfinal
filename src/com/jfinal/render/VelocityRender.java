@@ -16,8 +16,7 @@
 
 package com.jfinal.render;
 
-import java.io.IOException;
-import java.io.Writer;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Map.Entry;
 import java.util.Iterator;
@@ -33,9 +32,10 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 /**
  * VelocityRender.
  */
-@SuppressWarnings({"serial", "unchecked"})
-class VelocityRender extends Render {
+@SuppressWarnings({"unchecked"})
+public class VelocityRender extends Render {
 	
+	private static final long serialVersionUID = 2195369405439638708L;
 	private transient static final String encoding = getEncoding();
 	private transient static final String contentType = "text/html;charset=" + encoding;
 	private transient static final Properties properties = new Properties();
@@ -67,7 +67,7 @@ class VelocityRender extends Render {
 		properties.setProperty(Velocity.OUTPUT_ENCODING, encoding);
 	}
 	
-	static void setProperties(Properties properties) {
+	public static void setProperties(Properties properties) {
 		Set<Entry<Object, Object>> set = properties.entrySet();
 		for (Iterator<Entry<Object, Object>> it=set.iterator(); it.hasNext();) {
 			Entry<Object, Object> e = it.next();
@@ -81,7 +81,7 @@ class VelocityRender extends Render {
 			 notInit = false;
 		 }
 		
-		Writer writer = null;
+		PrintWriter writer = null;
         try {
             /*
              *  Make a context object and populate with the data.  This
@@ -127,12 +127,8 @@ class VelocityRender extends Render {
             throw new RenderException(e);
         }
         finally {
-        	// if (writer != null)
-        		try {
-					writer.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+        	if (writer != null)
+        		writer.close();
         }
 	}
 }
