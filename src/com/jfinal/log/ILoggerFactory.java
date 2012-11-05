@@ -19,10 +19,9 @@ package com.jfinal.log;
 /**
  * ILoggerFactory.
  */
-interface ILoggerFactory {
+public interface ILoggerFactory {
 	
 	Logger getLogger(Class<?> clazz);
 	
 	Logger getLogger(String name);
-	
 }

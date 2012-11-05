@@ -90,6 +90,7 @@ class Config {
 	}
 	
 	private static void initLoggerFactory() {
+		Logger.init();
 		log = Logger.getLogger(Config.class);
 		JFinalFilter.initLogger();
 	}

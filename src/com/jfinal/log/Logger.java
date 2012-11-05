@@ -26,7 +26,12 @@ package com.jfinal.log;
  */
 public abstract class Logger {
 	
-	private static final ILoggerFactory factory = createLoggerFactory();
+	private static ILoggerFactory factory;
+	
+	public static void setLoggerFactory(ILoggerFactory loggerFactory) {
+		if (loggerFactory != null)
+			Logger.factory = loggerFactory;
+	}
 	
 	public static Logger getLogger(Class<?> clazz) {
 		return factory.getLogger(clazz);
@@ -36,13 +41,15 @@ public abstract class Logger {
 		return factory.getLogger(name);
 	}
 	
-	private static ILoggerFactory createLoggerFactory() {
+	public static void init() {
+		if (factory != null)
+			return ;
 		try {
 			Class.forName("org.apache.log4j.Logger");
 			Class<?> log4jLoggerFactoryClass = Class.forName("com.jfinal.log.Log4jLoggerFactory");
-			return (ILoggerFactory)log4jLoggerFactoryClass.newInstance();	// return new Log4jLoggerFactory();
+			factory = (ILoggerFactory)log4jLoggerFactoryClass.newInstance();	// return new Log4jLoggerFactory();
 		} catch (Exception e) {
-			return new JdkLoggerFactory();
+			factory = new JdkLoggerFactory();
 		}
 	}
 	

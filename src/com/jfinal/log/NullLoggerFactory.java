@@ -19,7 +19,7 @@ package com.jfinal.log;
 /**
  * NullLoggerFactory.
  */
-class NullLoggerFactory implements ILoggerFactory {
+public class NullLoggerFactory implements ILoggerFactory {
 	
 	public com.jfinal.log.Logger getLogger(Class<?> clazz) {
 		return INSTANCE;

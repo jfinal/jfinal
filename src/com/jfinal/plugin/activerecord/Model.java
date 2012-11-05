@@ -34,7 +34,11 @@ import com.jfinal.plugin.activerecord.cache.ICache;
 import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 
 /**
- * Model
+ * Model.
+ * <p>
+ * A clever person solves a problem.
+ * A wise person avoids it.
+ * A stupid person makes it.
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class Model<M extends Model> implements Serializable {
@@ -44,7 +48,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	/**
 	 * Attributes of this model
 	 */
-	private Map<String, Object> attrs = DbKit.mapFactory.getAttrsMap();	// new HashMap<String, Object>();
+	private Map<String, Object> attrs = DbKit.containerFactory.getAttrsMap();	// new HashMap<String, Object>();
 	
 	/**
 	 * Flag of column has been modified. update need this flag
@@ -55,7 +59,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	
 	private Set<String> getModifyFlag() {
 		if (modifyFlag == null)
-			modifyFlag = new HashSet<String>();
+			modifyFlag = DbKit.containerFactory.getModifyFlagSet();	// new HashSet<String>();
 		return modifyFlag;
 	}
 	
@@ -277,16 +281,18 @@ public abstract class Model<M extends Model> implements Serializable {
 		int result = 0;
 		try {
 			conn = DbKit.getConnection();
-			boolean isSupportAutoIncrementKey = DbKit.dialect.isSupportAutoIncrementKey();
-			if (isSupportAutoIncrementKey)
-				pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+			if (DbKit.dialect.isOracle())
+				pst = conn.prepareStatement(sql.toString(), new String[]{tableInfo.getPrimaryKey()});
 			else
-				pst = conn.prepareStatement(sql.toString());
-			for (int i=0, size=paras.size(); i<size; i++) {
-				pst.setObject(i + 1, paras.get(i));
-			}
+				pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+			
+			DbKit.dialect.fillStatement(pst, paras);
+			// for (int i=0, size=paras.size(); i<size; i++) {
+				// pst.setObject(i + 1, paras.get(i));
+			// }
+			
 			result = pst.executeUpdate();
-			if (isSupportAutoIncrementKey)
+			// if (isSupportAutoIncrementKey)
 				getGeneratedKey(pst, tableInfo);	// getGeneratedKey(pst, tableInfo.getPrimaryKey());
 			getModifyFlag().clear();
 			return result >= 1;
@@ -302,7 +308,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	private void getGeneratedKey(PreparedStatement pst, TableInfo tableInfo) throws SQLException {
 		String pKey = tableInfo.getPrimaryKey();
-		if (get(pKey) == null) {
+		if (get(pKey) == null || DbKit.dialect.isOracle()) {
 			ResultSet rs = pst.getGeneratedKeys();
 			if (rs.next()) {
 				Class colType = tableInfo.getColType(pKey);
@@ -393,9 +399,10 @@ public abstract class Model<M extends Model> implements Serializable {
 			checkTableName(modelClass, sql);
 		
 		PreparedStatement pst = conn.prepareStatement(sql);
-		for (int i=0; i<paras.length; i++) {
-			pst.setObject(i + 1, paras[i]);
-		}
+		DbKit.dialect.fillStatement(pst, paras);
+		// for (int i=0; i<paras.length; i++) {
+			// pst.setObject(i + 1, paras[i]);
+		// }
 		
 		ResultSet rs = pst.executeQuery();
 		List<M> result = ModelBuilder.build(rs, modelClass);

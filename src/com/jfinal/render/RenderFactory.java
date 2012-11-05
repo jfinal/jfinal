@@ -141,6 +141,14 @@ public class RenderFactory {
 		return new JsonRender(attrs);
 	}
 	
+	public Render getJsonRender(String jsonText) {
+		return new JsonRender(jsonText);
+	}
+	
+	public Render getJsonRender(Object object) {
+		return new JsonRender(object);
+	}
+	
 	public Render getTextRender(String text) {
 		return new TextRender(text);
 	}
@@ -208,7 +216,7 @@ public class RenderFactory {
 	}
 	
 	public Render getNullRender() {
-		return NullRender.me();
+		return new NullRender();
 	}
 	
 	public Render getJavascriptRender(String jsText) {

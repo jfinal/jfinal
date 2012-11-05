@@ -168,10 +168,6 @@ public class AnsiSqlDialect extends Dialect {
 		paras.add(id);
 	}
 	
-	public boolean isSupportAutoIncrementKey() {
-		return true;
-	}
-	
 	/**
 	 * SELECT * FROM subject t1 WHERE (SELECT count(*) FROM subject t2 WHERE t2.id < t1.id AND t2.key = '123') > = 10 AND (SELECT count(*) FROM subject t2 WHERE t2.id < t1.id AND t2.key = '123') < 20 AND t1.key = '123'
 	 */

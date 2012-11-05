@@ -21,7 +21,7 @@ package com.jfinal.render;
  */
 public class RenderException extends RuntimeException {
 	
-	private static final long serialVersionUID = -4402731944301013633L;
+	private static final long serialVersionUID = -6448434551667513804L;
 	
 	public RenderException() {
 		super();

@@ -21,9 +21,9 @@ import java.io.IOException;
 /**
  * RedirectRender with status: 302 Found.
  */
-@SuppressWarnings("serial")
-class RedirectRender extends Render {
+public class RedirectRender extends Render {
 	
+	private static final long serialVersionUID = -3120354341585834890L;
 	private String url;
 	private boolean withOutQueryString;
 	

@@ -19,6 +19,8 @@ package com.jfinal.config;
 import java.io.File;
 import java.util.Locale;
 import com.jfinal.core.Const;
+import com.jfinal.log.ILoggerFactory;
+import com.jfinal.log.Logger;
 import com.jfinal.render.IMainRenderFactory;
 import com.jfinal.render.RenderFactory;
 import com.jfinal.render.ViewType;
@@ -285,6 +287,12 @@ final public class Constants {
 		
 		this.viewType = ViewType.OTHER;
 		RenderFactory.setMainRenderFactory(mainRenderFactory);
+	}
+	
+	public void setLoggerFactory(ILoggerFactory loggerFactory) {
+		if (loggerFactory == null)
+			throw new IllegalArgumentException("loggerFactory can not be null.");
+		Logger.setLoggerFactory(loggerFactory);
 	}
 }
 

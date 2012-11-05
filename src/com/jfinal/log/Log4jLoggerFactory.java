@@ -19,7 +19,7 @@ package com.jfinal.log;
 /**
  * Log4jLoggerFactory.
  */
-class Log4jLoggerFactory implements ILoggerFactory {
+public class Log4jLoggerFactory implements ILoggerFactory {
 	
 	public Logger getLogger(Class<?> clazz) {
 		return new Log4jLogger(clazz);

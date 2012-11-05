@@ -21,7 +21,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.sql.DataSource;
 import com.jfinal.plugin.activerecord.cache.EhCache;
 import com.jfinal.plugin.activerecord.cache.ICache;
@@ -44,14 +46,15 @@ public final class DbKit {
 	static boolean devMode = false;
 	static Dialect dialect = new MysqlDialect();
 	
-	static IMapFactory mapFactory = new IMapFactory(){
+	static IContainerFactory containerFactory = new IContainerFactory(){
 		public Map<String, Object> getAttrsMap() {return new HashMap<String, Object>();}
 		public Map<String, Object> getColumnsMap() {return new HashMap<String, Object>();}
+		public Set<String> getModifyFlagSet() {return new HashSet<String>();}
 	};
 	
-	static void setMapFactory(IMapFactory mapFactory) {
-		if (mapFactory != null)
-			DbKit.mapFactory = mapFactory;
+	static void setContainerFactory(IContainerFactory containerFactory) {
+		if (containerFactory != null)
+			DbKit.containerFactory = containerFactory;
 	}
 	
 	static void setDevMode(boolean devMode) {

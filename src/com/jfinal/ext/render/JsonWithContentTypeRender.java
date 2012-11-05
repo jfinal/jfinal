@@ -28,9 +28,9 @@ import com.jfinal.util.JsonBuilder;
 /**
  * JsonRenderWithContentType
  */
-@SuppressWarnings("serial")
 public class JsonWithContentTypeRender extends Render {
 	
+	private static final long serialVersionUID = 3672646716279300085L;
 	private String key;
 	private Object value;
 	private String[] attrs;
@@ -67,7 +67,8 @@ public class JsonWithContentTypeRender extends Render {
 			throw new RenderException(e);
 		}
 		finally {
-			writer.close();
+			if (writer != null)
+				writer.close();
 		}
 	}
 	

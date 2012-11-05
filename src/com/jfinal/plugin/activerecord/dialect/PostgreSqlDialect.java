@@ -153,10 +153,6 @@ public class PostgreSqlDialect extends Dialect {
 		paras.add(id);
 	}
 	
-	public boolean isSupportAutoIncrementKey() {
-		return true;
-	}
-	
 	public void forPaginate(StringBuilder sql, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
 		int offset = pageSize * (pageNumber - 1);
 		sql.append(select).append(" ");

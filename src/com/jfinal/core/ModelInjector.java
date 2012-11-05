@@ -105,8 +105,9 @@ final class ModelInjector {
 	}
 }
 
-@SuppressWarnings("serial")
 class ModelInjectException extends RuntimeException {
+	
+	private static final long serialVersionUID = 867623224283092808L;
 	
 	public ModelInjectException(Throwable cause) {
 		super(cause);

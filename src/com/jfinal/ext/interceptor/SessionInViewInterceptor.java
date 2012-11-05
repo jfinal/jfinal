@@ -56,81 +56,81 @@ public class SessionInViewInterceptor implements Interceptor {
 	}
 }
 
-@SuppressWarnings({"deprecation", "serial", "rawtypes"})
+@SuppressWarnings({"rawtypes", "deprecation"})
 class JFinalSession extends HashMap implements HttpSession {
-	
-	private HttpSession s;
+	private static final long serialVersionUID = -6148316613614087335L;
+	private HttpSession session;
 	
 	public JFinalSession(HttpSession session) {
-		this.s = session;
+		this.session = session;
 	}
 	
 	public Object getAttribute(String key) {
-		return s.getAttribute(key);
+		return session.getAttribute(key);
 	}
 	
 	public Enumeration getAttributeNames() {
-		return s.getAttributeNames();
+		return session.getAttributeNames();
 	}
 	
 	public long getCreationTime() {
-		return s.getCreationTime();
+		return session.getCreationTime();
 	}
 	
 	public String getId() {
-		return s.getId();
+		return session.getId();
 	}
 	
 	public long getLastAccessedTime() {
-		return s.getLastAccessedTime();
+		return session.getLastAccessedTime();
 	}
 	
 	public int getMaxInactiveInterval() {
-		return s.getMaxInactiveInterval();
+		return session.getMaxInactiveInterval();
 	}
 	
 	public ServletContext getServletContext() {
-		return s.getServletContext();
+		return session.getServletContext();
 	}
 	
 	public javax.servlet.http.HttpSessionContext getSessionContext() {
-		return s.getSessionContext();
+		return session.getSessionContext();
 	}
 	
 	public Object getValue(String key) {
-		return s.getValue(key);
+		return session.getValue(key);
 	}
 	
 	public String[] getValueNames() {
-		return s.getValueNames();
+		return session.getValueNames();
 	}
 	
 	public void invalidate() {
-		s.invalidate();
+		session.invalidate();
 	}
 	
 	public boolean isNew() {
-		return s.isNew();
+		return session.isNew();
 	}
 	
 	public void putValue(String key, Object value) {
-		s.putValue(key, value);
+		session.putValue(key, value);
 	}
 	
 	public void removeAttribute(String key) {
-		s.removeAttribute(key);
+		session.removeAttribute(key);
 	}
 	
 	public void removeValue(String key) {
-		s.removeValue(key);
+		session.removeValue(key);
 	}
 	
 	public void setAttribute(String key, Object value) {
-		s.setAttribute(key, value);
+		session.setAttribute(key, value);
 	}
 	
 	public void setMaxInactiveInterval(int maxInactiveInterval) {
-		s.setMaxInactiveInterval(maxInactiveInterval);
+		session.setMaxInactiveInterval(maxInactiveInterval);
 	}
 }
 

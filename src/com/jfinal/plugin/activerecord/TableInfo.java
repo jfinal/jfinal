@@ -27,7 +27,7 @@ public class TableInfo {
 	private String tableName;
 	private String primaryKey;
 	@SuppressWarnings("unchecked")
-	private Map<String, Class<?>> columnTypeMap = DbKit.mapFactory.getAttrsMap();	//	new HashMap<String, Class<?>>();
+	private Map<String, Class<?>> columnTypeMap = DbKit.containerFactory.getAttrsMap();	//	new HashMap<String, Class<?>>();
 	
 	public String getTableName() {
 		return tableName;

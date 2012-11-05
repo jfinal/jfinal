@@ -57,8 +57,8 @@ public class ActiveRecordPlugin implements IPlugin {
 		return this;
 	}
 	
-	public ActiveRecordPlugin setMapFactory(IMapFactory mapFactory) {
-		DbKit.setMapFactory(mapFactory);
+	public ActiveRecordPlugin setContainerFactory(IContainerFactory containerFactory) {
+		DbKit.setContainerFactory(containerFactory);
 		return this;
 	}
 	

@@ -30,12 +30,13 @@ import com.jfinal.plugin.activerecord.Record;
 /**
  * JspRender.
  */
-@SuppressWarnings({"serial", "rawtypes", "unchecked"})
-class JspRender extends Render {
+@SuppressWarnings({"rawtypes", "unchecked"})
+public class JspRender extends Render {
 	
+	private static final long serialVersionUID = 4979806661797436765L;
 	private transient static boolean isSupportActiveRecord = true;
 	
-	static void setSupportActiveRecord(boolean supportActiveRecord) {
+	public static void setSupportActiveRecord(boolean supportActiveRecord) {
 		JspRender.isSupportActiveRecord = supportActiveRecord;
 	}
 	

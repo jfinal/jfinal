@@ -22,11 +22,10 @@ import java.io.PrintWriter;
 /**
  * HtmlRender.
  */
-@SuppressWarnings("serial")
-class HtmlRender extends Render {
+public class HtmlRender extends Render {
 	
+	private static final long serialVersionUID = -1805855373995133760L;
 	private static final String contentType = "text/html;charset=" + getEncoding();
-	
 	private String text;
 	
 	public HtmlRender(String text) {
@@ -48,7 +47,8 @@ class HtmlRender extends Render {
 			throw new RenderException(e);
 		}
 		finally {
-			writer.close();
+			if (writer != null)
+				writer.close();
 		}
 	}
 }

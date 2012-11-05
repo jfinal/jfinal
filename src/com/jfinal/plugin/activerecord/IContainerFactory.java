@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package com.jfinal.render;
+package com.jfinal.plugin.activerecord;
 
-/**
- * Error404Exception.
- */
-public class Error404Exception extends RuntimeException {
-	
-	private static final long serialVersionUID = 7620194943724436754L;
-	private Render error404Render;
-	
-	public Error404Exception(Render error404Render) {
-		this.error404Render = error404Render;
-	}
-	
-	public Render getError404Render() {
-		return error404Render;
-	}
+import java.util.Map;
+import java.util.Set;
+
+@SuppressWarnings("rawtypes")
+public interface IContainerFactory {
+	Map getAttrsMap();
+	Map getColumnsMap();
+	Set getModifyFlagSet();
 }

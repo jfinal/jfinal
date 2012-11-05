@@ -19,8 +19,9 @@ package com.jfinal.plugin.activerecord;
 /**
  * ActiveRecordException
  */
-@SuppressWarnings("serial")
 public class ActiveRecordException extends RuntimeException {
+	
+	private static final long serialVersionUID = 342820722361408621L;
 	
 	public ActiveRecordException(String message) {
 		super(message);

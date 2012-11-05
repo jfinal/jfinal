@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.sql.DataSource;
 import com.jfinal.plugin.activerecord.cache.ICache;
 import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
@@ -37,9 +38,11 @@ public class Db {
 		List result = new ArrayList();
 		PreparedStatement pst = conn.prepareStatement(sql);
 		
-		for (int i=0; i<paras.length; i++) {
-			pst.setObject(i + 1, paras[i]);
-		}
+		DbKit.dialect.fillStatement(pst, paras);
+		// for (int i=0; i<paras.length; i++) {
+			// pst.setObject(i + 1, paras[i]);
+		// }
+		
 		ResultSet rs = pst.executeQuery();
 		
 		int colAmount = rs.getMetaData().getColumnCount();
@@ -260,9 +263,10 @@ public class Db {
 	 */
 	static int update(Connection conn, String sql, Object... paras) throws SQLException {
 		PreparedStatement pst = conn.prepareStatement(sql);
-		for (int i=0; i<paras.length; i++) {
-			pst.setObject(i + 1, paras[i]);
-		}
+		DbKit.dialect.fillStatement(pst, paras);
+		// for (int i=0; i<paras.length; i++) {
+			// pst.setObject(i + 1, paras[i]);
+		// }
 		int result = pst.executeUpdate();
 		DbKit.closeQuietly(pst);
 		
@@ -335,9 +339,10 @@ public class Db {
 	
 	static List<Record> find(Connection conn, String sql, Object... paras) throws SQLException {
 		PreparedStatement pst = conn.prepareStatement(sql);
-		for (int i=0; i<paras.length; i++) {
-			pst.setObject(i + 1, paras[i]);
-		}
+		DbKit.dialect.fillStatement(pst, paras);
+		// for (int i=0; i<paras.length; i++) {
+			// pst.setObject(i + 1, paras[i]);
+		// }
 		ResultSet rs = pst.executeQuery();
 		List<Record> result = RecordBuilder.build(rs);
 		DbKit.closeQuietly(rs, pst);
@@ -594,16 +599,17 @@ public class Db {
 		DbKit.dialect.forDbSave(sql, paras, tableName, record);
 		
 		PreparedStatement pst;
-		boolean isSupportAutoIncrementKey = DbKit.dialect.isSupportAutoIncrementKey();
-		if (isSupportAutoIncrementKey)
-			pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+		if (DbKit.dialect.isOracle())
+			pst = conn.prepareStatement(sql.toString(), new String[]{primaryKey});
 		else
-			pst = conn.prepareStatement(sql.toString());
-		for (int i=0, size=paras.size(); i<size; i++) {
-			pst.setObject(i + 1, paras.get(i));
-		}
+			pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+			
+		DbKit.dialect.fillStatement(pst, paras);
+		// for (int i=0, size=paras.size(); i<size; i++) {
+			// pst.setObject(i + 1, paras.get(i));
+		// }
 		int result = pst.executeUpdate();
-		if (isSupportAutoIncrementKey)
+		// if (isSupportAutoIncrementKey)
 			record.set(primaryKey, getGeneratedKey(pst));
 		DbKit.closeQuietly(pst);
 		
@@ -858,7 +864,7 @@ public class Db {
 		PreparedStatement pst = conn.prepareStatement(sql);
 		for (int i=0; i<paras.length; i++) {
 			for (int j=0; j<paras[i].length; j++) {
-				pst.setObject(j + 1, paras[i][j]);
+				pst.setObject(j + 1, paras[i][j]);	// TODO use Dialect.fillStatement(...)
 			}
 			pst.addBatch();
 			if (++counter >= batchSize) {
@@ -947,9 +953,9 @@ public class Db {
 		int[] result = new int[size];
 		PreparedStatement pst = conn.prepareStatement(sql);
 		for (int i=0; i<size; i++) {
-			java.util.Map map = isModel ? ((Model)list.get(i)).getAttrs() : ((Record)list.get(i)).getColumns();
+			Map map = isModel ? ((Model)list.get(i)).getAttrs() : ((Record)list.get(i)).getColumns();
 			for (int j=0; j<columnArray.length; j++) {
-				pst.setObject(j + 1, map.get(columnArray[j]));
+				pst.setObject(j + 1, map.get(columnArray[j]));		// TODO use Dialect.fillStatement(...)
 			}
 			pst.addBatch();
 			if (++counter >= batchSize) {

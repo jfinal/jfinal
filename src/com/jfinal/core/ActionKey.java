@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.jfinal.render;
+package com.jfinal.core;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Error404Exception.
+ * ActionKey is used to configure actionKey for method of controller.
  */
-public class Error404Exception extends RuntimeException {
-	
-	private static final long serialVersionUID = 7620194943724436754L;
-	private Render error404Render;
-	
-	public Error404Exception(Render error404Render) {
-		this.error404Render = error404Render;
-	}
-	
-	public Render getError404Render() {
-		return error404Render;
-	}
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface ActionKey {
+	String value();
 }
+

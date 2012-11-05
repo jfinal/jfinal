@@ -52,7 +52,7 @@ final class TypeConverter {
 		// 以上两种情况无需转换,直接返回, 注意, 本方法不接受null为 s 参数(经测试永远不可能传来null, 因为无输入传来的也是"")
 		
 		Object result = null;
-		// mysql type: int, integer, tinyint, smallint, mediumint
+		// mysql type: int, integer, tinyint(n) n > 1, smallint, mediumint
 		if (clazz == Integer.class || clazz == int.class) {
 			result = Integer.parseInt(s);
 		}
@@ -99,7 +99,7 @@ final class TypeConverter {
         else if (clazz == Float.class) {
         	result = Float.parseFloat(s);
 		}
-		// mysql type: bit
+		// mysql type: bit, tinyint(1)
         else if (clazz == Boolean.class) {
         	result = Boolean.parseBoolean(s);
 		}

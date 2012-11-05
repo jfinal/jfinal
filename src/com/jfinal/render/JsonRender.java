@@ -26,8 +26,9 @@ import com.jfinal.util.JsonBuilder;
 /**
  * JsonRender.
  */
-@SuppressWarnings("serial")
-class JsonRender extends Render {
+public class JsonRender extends Render {
+	
+	private static final long serialVersionUID = 6970249421567251974L;
 	
 	/**
 	 * http://zh.wikipedia.org/zh/MIME
@@ -40,25 +41,41 @@ class JsonRender extends Render {
 	 */
 	private static final String contentType = "application/json;charset=" + getEncoding();
 	
-	private String key;
-	private Object value;
+	private String jsonText;
 	private String[] attrs;
 	
 	public JsonRender() {
 		
 	}
 	
-	public JsonRender(String key, Object value) {
-		this.key = key;
-		this.value = value;
+	@SuppressWarnings("serial")
+	public JsonRender(final String key, final Object value) {
+		if (key == null)
+			throw new IllegalArgumentException("The parameter key can not be null.");
+		this.jsonText = JsonBuilder.mapToJson(new HashMap<String, Object>(){{put(key, value);}}, depth);
 	}
 	
 	public JsonRender(String[] attrs) {
+		if (attrs == null)
+			throw new IllegalArgumentException("The parameter attrs can not be null.");
 		this.attrs = attrs;
 	}
 	
+	public JsonRender(String jsonText) {
+		if (jsonText == null)
+			throw new IllegalArgumentException("The parameter jsonString can not be null.");
+		this.jsonText = jsonText;
+	}
+	
+	public JsonRender(Object object) {
+		if (object == null)
+			throw new IllegalArgumentException("The parameter object can not be null.");
+		this.jsonText = JsonBuilder.toJson(object, depth);
+	}
+	
 	public void render() {
-		String jsonText = buildJsonText();
+		if (jsonText == null)
+			buildJsonText();
 		
 		PrintWriter writer = null;
 		try {
@@ -74,19 +91,17 @@ class JsonRender extends Render {
 			throw new RenderException(e);
 		}
 		finally {
-			writer.close();
+			if (writer != null)
+				writer.close();
 		}
 	}
 	
 	private static final int depth = 8;
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	private String buildJsonText() {
+	private void buildJsonText() {
 		Map map = new HashMap();
-		if (key != null) {
-			map.put(key, value);
-		}
-		else if (attrs != null) {
+		if (attrs != null) {
 			for (String key : attrs)
 				map.put(key, request.getAttribute(key));
 		}
@@ -99,7 +114,7 @@ class JsonRender extends Render {
 			}
 		}
 		
-		return JsonBuilder.mapToJson(map, depth);
+		this.jsonText = JsonBuilder.mapToJson(map, depth);
 	}
 }
 

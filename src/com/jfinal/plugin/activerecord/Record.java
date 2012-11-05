@@ -29,7 +29,7 @@ public class Record implements Serializable {
 	
 	private static final long serialVersionUID = -3254070837297655225L;
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> columns = DbKit.mapFactory.getColumnsMap();	// new HashMap<String, Object>();
+	private Map<String, Object> columns = DbKit.containerFactory.getColumnsMap();	// new HashMap<String, Object>();
 	
 	/**
 	 * Return columns map.
