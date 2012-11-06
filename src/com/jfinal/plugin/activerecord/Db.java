@@ -23,8 +23,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.sql.DataSource;
 import com.jfinal.plugin.activerecord.cache.ICache;
+import com.jfinal.plugin.activerecord.dialect.Dialect;
+
 import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 
 /**
@@ -37,9 +40,11 @@ public class Db {
 		List result = new ArrayList();
 		PreparedStatement pst = conn.prepareStatement(sql);
 		
-		for (int i=0; i<paras.length; i++) {
-			pst.setObject(i + 1, paras[i]);
-		}
+		DbKit.dialect.fillStatement(pst, paras);
+		// for (int i=0; i<paras.length; i++) {
+			// pst.setObject(i + 1, paras[i]);
+		// }
+		
 		ResultSet rs = pst.executeQuery();
 		
 		int colAmount = rs.getMetaData().getColumnCount();
@@ -260,9 +265,10 @@ public class Db {
 	 */
 	static int update(Connection conn, String sql, Object... paras) throws SQLException {
 		PreparedStatement pst = conn.prepareStatement(sql);
-		for (int i=0; i<paras.length; i++) {
-			pst.setObject(i + 1, paras[i]);
-		}
+		DbKit.dialect.fillStatement(pst, paras);
+		// for (int i=0; i<paras.length; i++) {
+			// pst.setObject(i + 1, paras[i]);
+		// }
 		int result = pst.executeUpdate();
 		DbKit.closeQuietly(pst);
 		
@@ -335,9 +341,10 @@ public class Db {
 	
 	static List<Record> find(Connection conn, String sql, Object... paras) throws SQLException {
 		PreparedStatement pst = conn.prepareStatement(sql);
-		for (int i=0; i<paras.length; i++) {
-			pst.setObject(i + 1, paras[i]);
-		}
+		DbKit.dialect.fillStatement(pst, paras);
+		// for (int i=0; i<paras.length; i++) {
+			// pst.setObject(i + 1, paras[i]);
+		// }
 		ResultSet rs = pst.executeQuery();
 		List<Record> result = RecordBuilder.build(rs);
 		DbKit.closeQuietly(rs, pst);
@@ -412,6 +419,19 @@ public class Db {
 	public static Record findFirst(String sql) {
 		List<Record> result = find(sql, NULL_PARA_ARRAY);
 		return result.size() > 0 ? result.get(0) : null;
+	}
+	
+	public static Record findFirst(DataSource dataSource, String sql, Object... paras) {
+		Connection conn = null;
+		try {
+			conn = dataSource.getConnection();
+			List<Record> result = find(conn, sql, paras);
+			return result.size() > 0 ? result.get(0) : null;
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			DbKit.closeIgnoreThreadLocal(conn);
+		}
 	}
 	
 	/**
@@ -537,6 +557,36 @@ public class Db {
 		return new Page<Record>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
+	static Page<Record> paginate(Connection conn, Dialect dialect, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
+		if (pageNumber < 1 || pageSize < 1)
+			throw new ActiveRecordException("pageNumber and pageSize must be more than 0");
+
+		if (dialect.isTakeOverDbPaginate())
+			return dialect.takeOverDbPaginate(conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
+
+		long totalRow = 0;
+		int totalPage = 0;
+		List result = query(conn, "select count(*) " + DbKit.replaceFormatSqlOrderBy(sqlExceptSelect), paras);
+		int size = result.size();
+		if (size == 1)
+			totalRow = ((Number) result.get(0)).longValue();
+		else if (size > 1)
+			totalRow = result.size();
+		else
+			return new Page<Record>(new ArrayList<Record>(0), pageNumber, pageSize, 0, 0);
+
+		totalPage = (int) (totalRow / pageSize);
+		if (totalRow % pageSize != 0) {
+			totalPage++;
+		}
+
+		// --------
+		StringBuilder sql = new StringBuilder();
+		dialect.forPaginate(sql, pageNumber, pageSize, select, sqlExceptSelect);
+		List<Record> list = find(conn, sql.toString(), paras);
+		return new Page<Record>(list, pageNumber, pageSize, totalPage, (int) totalRow);
+	}
+	
 	/**
 	 * @see #paginate(DataSource, int, int, String, String, Object...)
 	 */
@@ -545,6 +595,18 @@ public class Db {
 		try {
 			conn = DbKit.getConnection();
 			return paginate(conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			DbKit.close(conn);
+		}
+	}
+	
+	public static Page<Record> paginate(Dialect dialect, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+		Connection conn = null;
+		try {
+			conn = DbKit.getConnection();
+			return paginate(conn, dialect, pageNumber, pageSize, select, sqlExceptSelect, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
@@ -574,11 +636,27 @@ public class Db {
 		}
 	}
 	
+	public static Page<Record> paginate(DataSource dataSource, Dialect dialect, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+		Connection conn = null;
+		try {
+			conn = dataSource.getConnection();
+			return paginate(conn, dialect, pageNumber, pageSize, select, sqlExceptSelect, paras);
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			DbKit.closeIgnoreThreadLocal(conn);
+		}
+	}
+	
 	/**
 	 * @see #paginate(DataSource, int, int, String, String, Object...)
 	 */
 	public static Page<Record> paginate(DataSource dataSource, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
 		return paginate(dataSource, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
+	}
+	
+	public static Page<Record> paginate(DataSource dataSource, Dialect dialect, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
+		return paginate(dataSource, dialect, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
 	}
 	
 	/**
@@ -594,16 +672,17 @@ public class Db {
 		DbKit.dialect.forDbSave(sql, paras, tableName, record);
 		
 		PreparedStatement pst;
-		boolean isSupportAutoIncrementKey = DbKit.dialect.isSupportAutoIncrementKey();
-		if (isSupportAutoIncrementKey)
-			pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+		if (DbKit.dialect.isOracle())
+			pst = conn.prepareStatement(sql.toString(), new String[]{primaryKey});
 		else
-			pst = conn.prepareStatement(sql.toString());
-		for (int i=0, size=paras.size(); i<size; i++) {
-			pst.setObject(i + 1, paras.get(i));
-		}
+			pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+			
+		DbKit.dialect.fillStatement(pst, paras);
+		// for (int i=0, size=paras.size(); i<size; i++) {
+			// pst.setObject(i + 1, paras.get(i));
+		// }
 		int result = pst.executeUpdate();
-		if (isSupportAutoIncrementKey)
+		// if (isSupportAutoIncrementKey)
 			record.set(primaryKey, getGeneratedKey(pst));
 		DbKit.closeQuietly(pst);
 		
@@ -858,7 +937,7 @@ public class Db {
 		PreparedStatement pst = conn.prepareStatement(sql);
 		for (int i=0; i<paras.length; i++) {
 			for (int j=0; j<paras[i].length; j++) {
-				pst.setObject(j + 1, paras[i][j]);
+				pst.setObject(j + 1, paras[i][j]);	// TODO use Dialect.fillStatement(...)
 			}
 			pst.addBatch();
 			if (++counter >= batchSize) {
@@ -947,9 +1026,9 @@ public class Db {
 		int[] result = new int[size];
 		PreparedStatement pst = conn.prepareStatement(sql);
 		for (int i=0; i<size; i++) {
-			java.util.Map map = isModel ? ((Model)list.get(i)).getAttrs() : ((Record)list.get(i)).getColumns();
+			Map map = isModel ? ((Model)list.get(i)).getAttrs() : ((Record)list.get(i)).getColumns();
 			for (int j=0; j<columnArray.length; j++) {
-				pst.setObject(j + 1, map.get(columnArray[j]));
+				pst.setObject(j + 1, map.get(columnArray[j]));		// TODO use Dialect.fillStatement(...)
 			}
 			pst.addBatch();
 			if (++counter >= batchSize) {
@@ -1095,6 +1174,73 @@ public class Db {
 			DbKit.closeIgnoreThreadLocal(conn);
 		}
     }
+    
+    private static int[] batch(Connection conn, List<String> sqlList, List<Object[]> paraList) throws SQLException {
+		if (sqlList == null || sqlList.size() == 0)
+			throw new IllegalArgumentException("The sqlList length must more than 0.");
+		if (paraList == null || paraList.size() == 0)
+			throw new IllegalArgumentException("The paras length must more than 0.");
+		if (sqlList.size() != paraList.size())
+			throw new IllegalArgumentException("The sqlList length must equal with paras length.");
+
+		int size = sqlList.size();
+		int[] result = new int[size];
+		PreparedStatement pst = null;
+		for (int i = 0; i < size; i++) {
+			pst = conn.prepareStatement(sqlList.get(i));
+			//DbKit.dialect.fillStatement(pst, paras);
+			Object[] paras = paraList.get(i);
+			for (int j = 0; j < paras.length; j++) {
+				pst.setObject(j + 1, paras[j]);
+			}
+			result[i] = pst.executeUpdate();
+		}
+		DbKit.closeQuietly(pst);
+		conn.commit();
+		return result;
+	}
+
+	public static int[] batch(List<String> sqlList, List<Object[]> paraList) {
+		Connection conn = null;
+		Boolean autoCommit = null;
+		try {
+			conn = DbKit.getConnection();
+			autoCommit = conn.getAutoCommit();
+			conn.setAutoCommit(false);
+			return batch(conn, sqlList, paraList);
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			if (autoCommit != null)
+				try {
+					conn.setAutoCommit(autoCommit);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			DbKit.closeIgnoreThreadLocal(conn);
+		}
+	}
+
+	public static int[] batch(DataSource dataSource, List<String> sqlList, List<Object[]> paraList) {
+		Connection conn = null;
+		Boolean autoCommit = null;
+		try {
+			conn = dataSource.getConnection();
+			autoCommit = conn.getAutoCommit();
+			conn.setAutoCommit(false);
+			return batch(conn, sqlList, paraList);
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			if (autoCommit != null)
+				try {
+					conn.setAutoCommit(autoCommit);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			DbKit.closeIgnoreThreadLocal(conn);
+		}
+	}
 }
 
 
