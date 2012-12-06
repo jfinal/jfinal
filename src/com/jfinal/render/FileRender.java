@@ -24,7 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import javax.servlet.ServletContext;
 import static com.jfinal.core.Const.DEFAULT_FILE_CONTENT_TYPE;
-import com.jfinal.util.PathUtil;
+import com.jfinal.kit.PathKit;
 
 /**
  * FileRender.
@@ -49,7 +49,7 @@ public class FileRender extends Render {
 	static void init(String fileDownloadPath, ServletContext servletContext) {
 		FileRender.fileDownloadPath = fileDownloadPath;
 		FileRender.servletContext = servletContext;
-		webRootPath = PathUtil.getWebRootPath();
+		webRootPath = PathKit.getWebRootPath();
 	}
 	
 	public void render() {

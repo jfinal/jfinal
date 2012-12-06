@@ -20,11 +20,11 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
+import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.TableInfo;
 import com.jfinal.plugin.activerecord.TableInfoMapping;
-import com.jfinal.util.StringKit;
 
 /**
  * ModelInjector

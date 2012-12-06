@@ -28,6 +28,10 @@ public abstract class Logger {
 	
 	private static ILoggerFactory factory;
 	
+	static {
+		init();
+	}
+	
 	public static void setLoggerFactory(ILoggerFactory loggerFactory) {
 		if (loggerFactory != null)
 			Logger.factory = loggerFactory;

@@ -703,7 +703,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Return json string of this model.
 	 */
 	public String toJson() {
-		return com.jfinal.util.JsonBuilder.toJson(attrs, 4);
+		return com.jfinal.kit.JsonKit.toJson(attrs, 4);
 	}
 }
 

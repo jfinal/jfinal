@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jfinal.util;
+package com.jfinal.kit;
 
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;

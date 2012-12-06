@@ -24,13 +24,13 @@ import java.util.Set;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class CaseInsensitiveContainerFactory implements IContainerFactory {
 	
-	private boolean toLowerCase = false;
+	private static boolean toLowerCase = false;
 	
 	public CaseInsensitiveContainerFactory() {
 	}
 	
 	public CaseInsensitiveContainerFactory(boolean toLowerCase) {
-		this.toLowerCase = toLowerCase;
+		CaseInsensitiveContainerFactory.toLowerCase = toLowerCase;
 	}
 	
 	public Map<String, Object> getAttrsMap() {
@@ -45,13 +45,20 @@ public class CaseInsensitiveContainerFactory implements IContainerFactory {
 		return new CaseInsensitiveSet();
 	}
 	
-	private Object convertCase(Object key) {
+	private static Object convertCase(Object key) {
 		if (key instanceof String)
 			return toLowerCase ? ((String)key).toLowerCase() : ((String)key).toUpperCase();
 		return key;
 	}
 	
-	class CaseInsensitiveSet extends HashSet {
+	/*
+	 * 1：非静态内部类拥有对外部类的所有成员的完全访问权限，包括实例字段和方法，
+	 *    为实现这一行为，非静态内部类存储着对外部类的实例的一个隐式引用
+	 * 2：序列化时要求所有的成员变量是Serializable 包括上面谈到的引式引用
+	 * 3：外部类CaseInsensitiveContainerFactory 需要 implements Serializable 才能被序列化
+	 * 4：可以使用静态内部类来实现内部类的序列化，而非让外部类实现 implements Serializable 
+	 */
+	public static class CaseInsensitiveSet extends HashSet {
 		
 		private static final long serialVersionUID = 102410961064096233L;
 		
@@ -68,7 +75,7 @@ public class CaseInsensitiveContainerFactory implements IContainerFactory {
 		}
 	}
 	
-	class CaseInsensitiveMap extends HashMap {
+	public static class CaseInsensitiveMap extends HashMap {
 		
 		private static final long serialVersionUID = 6843981594457576677L;
 		

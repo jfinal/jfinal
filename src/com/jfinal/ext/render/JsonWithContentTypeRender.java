@@ -21,9 +21,9 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import com.jfinal.kit.JsonKit;
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderException;
-import com.jfinal.util.JsonBuilder;
 
 /**
  * JsonRenderWithContentType
@@ -93,7 +93,7 @@ public class JsonWithContentTypeRender extends Render {
 			}
 		}
 		
-		return JsonBuilder.mapToJson(map, depth);
+		return JsonKit.mapToJson(map, depth);
 	}
 }
 

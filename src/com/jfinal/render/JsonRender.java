@@ -21,7 +21,7 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import com.jfinal.util.JsonBuilder;
+import com.jfinal.kit.JsonKit;
 
 /**
  * JsonRender.
@@ -52,7 +52,7 @@ public class JsonRender extends Render {
 	public JsonRender(final String key, final Object value) {
 		if (key == null)
 			throw new IllegalArgumentException("The parameter key can not be null.");
-		this.jsonText = JsonBuilder.mapToJson(new HashMap<String, Object>(){{put(key, value);}}, depth);
+		this.jsonText = JsonKit.mapToJson(new HashMap<String, Object>(){{put(key, value);}}, depth);
 	}
 	
 	public JsonRender(String[] attrs) {
@@ -70,7 +70,7 @@ public class JsonRender extends Render {
 	public JsonRender(Object object) {
 		if (object == null)
 			throw new IllegalArgumentException("The parameter object can not be null.");
-		this.jsonText = JsonBuilder.toJson(object, depth);
+		this.jsonText = JsonKit.toJson(object, depth);
 	}
 	
 	public void render() {
@@ -114,7 +114,7 @@ public class JsonRender extends Render {
 			}
 		}
 		
-		this.jsonText = JsonBuilder.mapToJson(map, depth);
+		this.jsonText = JsonKit.mapToJson(map, depth);
 	}
 }
 

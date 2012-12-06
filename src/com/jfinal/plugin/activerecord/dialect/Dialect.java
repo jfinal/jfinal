@@ -74,6 +74,10 @@ public abstract class Dialect {
 			pst.setObject(i + 1, paras[i]);
 		}
 	}
+	
+	public String getDefaultPrimaryKey() {
+		return "id";
+	}
 }
 
 

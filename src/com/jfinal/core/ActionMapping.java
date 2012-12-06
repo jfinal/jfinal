@@ -38,7 +38,7 @@ final class ActionMapping {
 	private Routes routes;
 	private Interceptors interceptors;
 	
-	private final Map<String, Action> actionMapping = new HashMap<String, Action>();
+	private final Map<String, Action> mapping = new HashMap<String, Action>();
 	
 	ActionMapping(Routes routes, Interceptors interceptors) {
 		this.routes = routes;
@@ -80,19 +80,19 @@ final class ActionMapping {
 						if (!actionKey.startsWith(SLASH))
 							actionKey = SLASH + actionKey;
 						
-						if (actionMapping.containsKey(actionKey)) {
+						if (mapping.containsKey(actionKey)) {
 							warnning(actionKey, controllerClass, method);
 							continue;
 						}
 						
 						Action action = new Action(controllerKey, actionKey, controllerClass, method, methodName, actionInters, routes.getViewPath(controllerKey));
-						actionMapping.put(actionKey, action);
+						mapping.put(actionKey, action);
 					}
 					else if (methodName.equals("index")) {
 						String actionKey = controllerKey;
 						
 						Action action = new Action(controllerKey, actionKey, controllerClass, method, methodName, actionInters, routes.getViewPath(controllerKey));
-						action = actionMapping.put(actionKey, action);
+						action = mapping.put(actionKey, action);
 						
 						if (action != null) {
 							warnning(action.getActionKey(), action.getControllerClass(), action.getMethod());
@@ -101,22 +101,22 @@ final class ActionMapping {
 					else {
 						String actionKey = controllerKey.equals(SLASH) ? SLASH + methodName : controllerKey + SLASH + methodName;
 						
-						if (actionMapping.containsKey(actionKey)) {
+						if (mapping.containsKey(actionKey)) {
 							warnning(actionKey, controllerClass, method);
 							continue;
 						}
 						
 						Action action = new Action(controllerKey, actionKey, controllerClass, method, methodName, actionInters, routes.getViewPath(controllerKey));
-						actionMapping.put(actionKey, action);
+						mapping.put(actionKey, action);
 					}
 				}
 			}
 		}
 		
 		// support url = controllerKey + urlParas with "/" of controllerKey
-		Action actoin = actionMapping.get("/");
+		Action actoin = mapping.get("/");
 		if (actoin != null)
-			actionMapping.put("", actoin);
+			mapping.put("", actoin);
 	}
 	
 	private static final void warnning(String actionKey, Class<? extends Controller> controllerClass, Method method) {
@@ -137,7 +137,7 @@ final class ActionMapping {
 	 * 4: http://abc.com/controllerKey/method/para     ---> 11
 	 */
 	Action getAction(String url, String[] urlPara) {
-		Action action = actionMapping.get(url);
+		Action action = mapping.get(url);
 		if (action != null) {
 			return action;
 		}
@@ -145,7 +145,7 @@ final class ActionMapping {
 		// --------
 		int i = url.lastIndexOf(SLASH);
 		if (i != -1) {
-			action = actionMapping.get(url.substring(0, i));
+			action = mapping.get(url.substring(0, i));
 			urlPara[0] = url.substring(i + 1);
 		}
 		
@@ -153,7 +153,7 @@ final class ActionMapping {
 	}
 	
 	List<String> getAllActionKeys() {
-		List<String> allActionKeys = new ArrayList<String>(actionMapping.keySet());
+		List<String> allActionKeys = new ArrayList<String>(mapping.keySet());
 		Collections.sort(allActionKeys);
 		return allActionKeys;
 	}

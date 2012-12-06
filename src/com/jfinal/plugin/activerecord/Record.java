@@ -292,7 +292,7 @@ public class Record implements Serializable {
 	 * Return json string of this record.
 	 */
 	public String toJson() {
-		return com.jfinal.util.JsonBuilder.toJson(columns, 4);
+		return com.jfinal.kit.JsonKit.toJson(columns, 4);
 	}
 }
 

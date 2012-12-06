@@ -22,9 +22,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import javax.sql.DataSource;
+import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.plugin.activerecord.IDataSourceProvider;
-import com.jfinal.util.StringKit;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 /**

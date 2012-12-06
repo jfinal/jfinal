@@ -17,7 +17,7 @@
 package com.jfinal.plugin.activerecord;
 
 import java.util.Map;
-import com.jfinal.util.StringKit;
+import com.jfinal.kit.StringKit;
 
 /**
  * TableInfo save the table info like column name and column type.
@@ -59,7 +59,7 @@ public class TableInfo {
 	private Class<? extends Model<?>> modelClass;
 	
 	public TableInfo(String tableName, Class<? extends Model<?>> modelClass) {
-		this(tableName, "id", modelClass);
+		this(tableName, DbKit.dialect.getDefaultPrimaryKey(), modelClass);
 	}
 	
 	public TableInfo(String tableName, String primaryKey, Class<? extends Model<?>> modelClass) {

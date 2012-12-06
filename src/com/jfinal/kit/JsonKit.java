@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jfinal.util;
+package com.jfinal.kit;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import com.jfinal.plugin.activerecord.Record;
  * object			java.util.Map
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class JsonBuilder {
+public class JsonKit {
 	
 	public static String mapToJson(Map map, int depth) {
 		if(map == null)
@@ -153,6 +153,10 @@ public class JsonBuilder {
 				}
 			}
 		}
+	}
+	
+	public static String toJson(Object value) {
+		return toJson(value, 8);
 	}
 	
 	public static String toJson(Object value, int depth) {

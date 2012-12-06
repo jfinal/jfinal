@@ -22,9 +22,9 @@ import java.util.List;
 import javax.sql.DataSource;
 import com.alibaba.druid.filter.Filter;
 import com.alibaba.druid.pool.DruidDataSource;
+import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.plugin.activerecord.IDataSourceProvider;
-import com.jfinal.util.StringKit;
 
 /**
  * DruidPlugin.

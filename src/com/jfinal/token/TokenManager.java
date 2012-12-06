@@ -23,7 +23,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import com.jfinal.core.Const;
 import com.jfinal.core.Controller;
-import com.jfinal.util.StringKit;
+import com.jfinal.kit.StringKit;
 
 /**
  * TokenManager.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jfinal.ext.util;
+package com.jfinal.ext.kit;
 
 import java.security.SecureRandom;
 import java.util.Random;

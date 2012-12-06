@@ -29,11 +29,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import static com.jfinal.core.Const.I18N_LOCALE;
 import com.jfinal.i18n.I18N;
+import com.jfinal.kit.StringKit;
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderFactory;
 import com.jfinal.upload.MultipartRequest;
 import com.jfinal.upload.UploadFile;
-import com.jfinal.util.StringKit;
 
 /**
  * Controller
