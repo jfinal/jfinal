@@ -78,11 +78,26 @@ public class CacheKit {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <T> T handle(String cacheName, Object key, IDataLoader dataLoader) {
+	public static <T> T get(String cacheName, Object key, IDataLoader dataLoader) {
 		Object data = get(cacheName, key);
 		if (data == null) {
 			data = dataLoader.load();
 			put(cacheName, key, data);
+		}
+		return (T)data;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T get(String cacheName, Object key, Class<? extends IDataLoader> dataLoaderClass) {
+		Object data = get(cacheName, key);
+		if (data == null) {
+			try {
+				IDataLoader dataLoader = dataLoaderClass.newInstance();
+				data = dataLoader.load();
+				put(cacheName, key, data);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 		return (T)data;
 	}

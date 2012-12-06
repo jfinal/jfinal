@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.jfinal.handler.Handler;
-import com.jfinal.util.StringKit;
+import com.jfinal.kit.StringKit;
 
 /**
  * Skip the excluded url request from browser.

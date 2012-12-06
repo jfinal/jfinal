@@ -19,14 +19,14 @@ package com.jfinal.config;
 import java.io.File;
 import java.util.Locale;
 import com.jfinal.core.Const;
+import com.jfinal.kit.PathKit;
+import com.jfinal.kit.StringKit;
 import com.jfinal.log.ILoggerFactory;
 import com.jfinal.log.Logger;
 import com.jfinal.render.IMainRenderFactory;
 import com.jfinal.render.RenderFactory;
 import com.jfinal.render.ViewType;
 import com.jfinal.token.ITokenCache;
-import com.jfinal.util.PathUtil;
-import com.jfinal.util.StringKit;
 
 /**
  * The constant for JFinal runtime.
@@ -193,7 +193,7 @@ final public class Constants {
 		
 		if (!fileRenderPath.startsWith("/") && !fileRenderPath.startsWith(File.separator))
 			fileRenderPath = File.separator + fileRenderPath;
-		this.fileRenderPath = PathUtil.getWebRootPath() + fileRenderPath;
+		this.fileRenderPath = PathKit.getWebRootPath() + fileRenderPath;
 	}
 	
 	/**

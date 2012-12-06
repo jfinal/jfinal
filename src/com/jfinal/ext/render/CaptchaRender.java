@@ -27,8 +27,8 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import com.jfinal.core.Controller;
+import com.jfinal.kit.StringKit;
 import com.jfinal.render.Render;
-import com.jfinal.util.StringKit;
 
 public class CaptchaRender extends Render {
 	
@@ -150,6 +150,7 @@ public class CaptchaRender extends Render {
 //		}
 //	}
 	
+	// TODO 需要改进
 	public static boolean validate(Controller controller, String inputRandomCode, String randomCodeKey) {
 		if (StringKit.isBlank(inputRandomCode))
 			return false;

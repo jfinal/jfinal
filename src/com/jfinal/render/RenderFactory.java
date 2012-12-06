@@ -20,7 +20,7 @@ import java.io.File;
 import java.util.Locale;
 import javax.servlet.ServletContext;
 import com.jfinal.config.Constants;
-import com.jfinal.util.PathUtil;
+import com.jfinal.kit.PathKit;
 import static com.jfinal.core.Const.DEFAULT_FILE_RENDER_BASE_PATH;
 
 /**
@@ -102,7 +102,7 @@ public class RenderFactory {
 	private String getFileRenderPath() {
 		String result = constants.getFileRenderPath();
 		if (result == null) {
-			result = PathUtil.getWebRootPath() + DEFAULT_FILE_RENDER_BASE_PATH;
+			result = PathKit.getWebRootPath() + DEFAULT_FILE_RENDER_BASE_PATH;
 		}
 		if (!result.endsWith(File.separator) && !result.endsWith("/")) {
 			result = result + File.separator;

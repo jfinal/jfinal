@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jfinal.util;
+package com.jfinal.kit;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +25,7 @@ import java.io.IOException;
  * 2： getAbslutlyPath() 获取绝对路径，但可能包含 ".." 或 "." 字符，例如  D:\otherPath\..\path\abc.txt
  * 3： getCanonicalPath() 获取绝对路径，但不包含 ".." 或 "." 字符，例如  D:\path\abc.txt
  */
-public class PathUtil {
+public class PathKit {
 	
 	private static String webRootPath;
 	
@@ -41,7 +41,7 @@ public class PathUtil {
 	}
 	
 	public static String getRootClassPath() {
-		String path = PathUtil.class.getClassLoader().getResource("").getPath();
+		String path = PathKit.class.getClassLoader().getResource("").getPath();
 		return new File(path).getAbsolutePath();
 	}
 	
@@ -63,12 +63,12 @@ public class PathUtil {
 	public static void setWebRootPath(String webRootPath) {
 		if (webRootPath.endsWith(File.separator))
 			webRootPath = webRootPath.substring(0, webRootPath.length() - 1);
-		PathUtil.webRootPath = webRootPath;
+		PathKit.webRootPath = webRootPath;
 	}
 	
 	private static String detectWebRootPath() {
 		try {
-			String path = PathUtil.class.getResource("/").getFile();
+			String path = PathKit.class.getResource("/").getFile();
 			return new File(path).getParentFile().getParentFile().getCanonicalPath();
 		} catch (IOException e) {
 			throw new RuntimeException(e);

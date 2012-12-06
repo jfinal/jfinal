@@ -30,7 +30,7 @@ import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.webapp.WebAppContext;
 import org.mortbay.management.MBeanContainer;
 import org.mortbay.util.Scanner;
-import com.jfinal.util.PathUtil;
+import com.jfinal.kit.PathKit;
 
 /**
  * JettyServer is used to config and start jetty web server.
@@ -125,7 +125,7 @@ class JettyServer implements IServer {
 		// configureScanner
 		if (enablescanner) {
 			final ArrayList<File> scanList = new ArrayList<File>();
-			scanList.add(new File(PathUtil.getRootClassPath()));
+			scanList.add(new File(PathKit.getRootClassPath()));
 			Scanner scanner = new Scanner();
 			scanner.setReportExistingFilesOnStartup(false);
 			scanner.setScanInterval(scanIntervalSeconds);

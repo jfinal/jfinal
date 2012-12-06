@@ -14,7 +14,7 @@ import com.alibaba.druid.support.logging.Log;
 import com.alibaba.druid.support.logging.LogFactory;
 import com.alibaba.druid.util.IOUtils;
 import com.jfinal.handler.Handler;
-import com.jfinal.util.HandlerKit;
+import com.jfinal.kit.HandlerKit;
 
 /**
  * 替代 StatViewServlet

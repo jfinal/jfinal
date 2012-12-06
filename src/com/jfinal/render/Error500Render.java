@@ -29,7 +29,6 @@ public class Error500Render extends Render {
 	private static final long serialVersionUID = 4864834986049401413L;
 	private static final String contentType = "text/html;charset=" + getEncoding();
 	private static final String defaultHtml = "<html><head><title>500 Internal Server Error</title></head><body bgcolor='white'><center><h1>500 Internal Server Error</h1></center><hr><center><a href='http://www.jfinal.com'>JFinal/" + Const.JFINAL_VERSION + "</a></center></body></html>";
-	private Render render;
 	
 	public Error500Render(String view) {
 		this.view = view;
@@ -44,9 +43,7 @@ public class Error500Render extends Render {
 		
 		// render with view
 		if (view != null) {
-			render = RenderFactory.me().getRender(view);
-			render.setContext(request, response);
-			render.render();
+			RenderFactory.me().getRender(view).setContext(request, response).render();
 			return;
 		}
 		

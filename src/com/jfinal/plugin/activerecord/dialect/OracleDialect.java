@@ -202,4 +202,8 @@ public class OracleDialect extends Dialect {
 				pst.setObject(i + 1, value);
 		}
 	}
+	
+	public String getDefaultPrimaryKey() {
+		return "ID";
+	}
 }

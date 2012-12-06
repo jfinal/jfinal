@@ -19,7 +19,7 @@ package com.jfinal.ext.handler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.jfinal.handler.Handler;
-import com.jfinal.util.StringKit;
+import com.jfinal.kit.StringKit;
 
 /**
  * Provide a context path to view if you need.

@@ -18,8 +18,8 @@ package com.jfinal.plugin.spring;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import com.jfinal.kit.PathKit;
 import com.jfinal.plugin.IPlugin;
-import com.jfinal.util.PathUtil;
 
 /**
  * SpringPlugin.
@@ -49,7 +49,7 @@ public class SpringPlugin implements IPlugin {
 		else if (configurations != null)
 			IocInterceptor.ctx = new FileSystemXmlApplicationContext(configurations);
 		else
-			IocInterceptor.ctx = new FileSystemXmlApplicationContext(PathUtil.getWebRootPath() + "/WEB-INF/applicationContext.xml");
+			IocInterceptor.ctx = new FileSystemXmlApplicationContext(PathKit.getWebRootPath() + "/WEB-INF/applicationContext.xml");
 		return true;
 	}
 	

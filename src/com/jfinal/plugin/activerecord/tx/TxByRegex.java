@@ -20,9 +20,9 @@ import java.sql.SQLException;
 import java.util.regex.Pattern;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
+import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
-import com.jfinal.util.StringKit;
 
 /**
  * TxByRegex.

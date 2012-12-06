@@ -17,7 +17,7 @@
 package com.jfinal.server;
 
 import java.io.File;
-import com.jfinal.util.PathUtil;
+import com.jfinal.kit.PathKit;
 
 /**
  * ServerFactory
@@ -65,22 +65,22 @@ public class ServerFactory {
 	}
 	
 	private static String detectWebAppDir() {
-		String rootClassPath = PathUtil.getRootClassPath();
+		String rootClassPath = PathKit.getRootClassPath();
 		String[] temp = null;
 		if (rootClassPath.indexOf("\\WEB-INF\\") != -1)
 			temp = rootClassPath.split("\\\\");
 		else
-			temp = rootClassPath.split("/");	// linux support, need test!!!
+			temp = rootClassPath.split("/");
 		return temp[temp.length - 3];
 	}
 	
 	@SuppressWarnings("unused")
 	@Deprecated
 	private static String detectWebAppDir_old() {
-		String rootClassPath = PathUtil.getRootClassPath();
+		String rootClassPath = PathKit.getRootClassPath();
 		String[] temp = null;
 		try {
-			temp = rootClassPath.split(File.separator);	// linux support, need test!!!
+			temp = rootClassPath.split(File.separator);
 		}
 		catch (Exception e) {
 			temp = rootClassPath.split("\\\\");

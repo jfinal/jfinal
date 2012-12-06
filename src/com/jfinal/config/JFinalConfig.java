@@ -22,8 +22,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import com.jfinal.util.PathUtil;
-import com.jfinal.util.StringKit;
+import com.jfinal.kit.PathKit;
+import com.jfinal.kit.StringKit;
 
 /**
  * JFinalConfig.
@@ -83,9 +83,9 @@ public abstract class JFinalConfig {
 		InputStream inputStream = null;
 		String fullFile;	// String fullFile = PathUtil.getWebRootPath() + file;
 		if (file.startsWith(File.separator))
-			fullFile = PathUtil.getWebRootPath() + File.separator + "WEB-INF" + file;
+			fullFile = PathKit.getWebRootPath() + File.separator + "WEB-INF" + file;
 		else
-			fullFile = PathUtil.getWebRootPath() + File.separator + "WEB-INF" + File.separator + file;
+			fullFile = PathKit.getWebRootPath() + File.separator + "WEB-INF" + File.separator + file;
 		
 		try {
 			inputStream = new FileInputStream(new File(fullFile));
