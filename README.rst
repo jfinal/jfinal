@@ -89,3 +89,5 @@ Blog()这行代码也不是必须)**
 
 
 Javadoc: http://www.ostools.net/apidocs/apidoc?api=jfinal 
+
+**JFinal 极速开发QQ群欢迎您的加入: 196337924**
