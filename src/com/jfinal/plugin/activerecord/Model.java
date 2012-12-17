@@ -228,6 +228,9 @@ public abstract class Model<M extends Model> implements Serializable {
 				totalPage++;
 			}
 			
+			if(pageNumber > totalPage)
+				pageNumber = totalPage;
+			
 			// --------
 			StringBuilder sql = new StringBuilder();
 			DbKit.dialect.forPaginate(sql, pageNumber, pageSize, select, sqlExceptSelect);
