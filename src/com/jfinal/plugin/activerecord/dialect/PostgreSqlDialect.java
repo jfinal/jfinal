@@ -29,11 +29,11 @@ import com.jfinal.plugin.activerecord.TableInfo;
 public class PostgreSqlDialect extends Dialect {
 	
 	public String forTableInfoBuilderDoBuildTableInfo(String tableName) {
-		return "select * from " + tableName + " where 1 = 2";
+		return "select * from \"" + tableName + "\" where 1 = 2";
 	}
 	
 	public void forModelSave(TableInfo tableInfo, Map<String, Object> attrs, StringBuilder sql, List<Object> paras) {
-		sql.append("insert into ").append(tableInfo.getTableName()).append("(");
+		sql.append("insert into \"").append(tableInfo.getTableName()).append("\"(");
 		StringBuilder temp = new StringBuilder(") values(");
 		for (Entry<String, Object> e: attrs.entrySet()) {
 			String colName = e.getKey();
@@ -42,7 +42,7 @@ public class PostgreSqlDialect extends Dialect {
 					sql.append(", ");
 					temp.append(", ");
 				}
-				sql.append(colName);
+				sql.append("\"").append(colName).append("\"");
 				temp.append("?");
 				paras.add(e.getValue());
 			}
@@ -53,24 +53,24 @@ public class PostgreSqlDialect extends Dialect {
 	public String forModelDeleteById(TableInfo tInfo) {
 		String pKey = tInfo.getPrimaryKey();
 		StringBuilder sql = new StringBuilder(45);
-		sql.append("delete from ");
+		sql.append("delete from \"");
 		sql.append(tInfo.getTableName());
-		sql.append(" where ").append(pKey).append(" = ?");
+		sql.append("\" where \"").append(pKey).append("\" = ?");
 		return sql.toString();
 	}
 	
 	public void forModelUpdate(TableInfo tableInfo, Map<String, Object> attrs, Set<String> modifyFlag, String pKey, Object id, StringBuilder sql, List<Object> paras) {
-		sql.append("update ").append(tableInfo.getTableName()).append(" set ");
+		sql.append("update \"").append(tableInfo.getTableName()).append("\" set ");
 		for (Entry<String, Object> e : attrs.entrySet()) {
 			String colName = e.getKey();
 			if (!pKey.equalsIgnoreCase(colName) && modifyFlag.contains(colName) && tableInfo.hasColumnLabel(colName)) {
 				if (paras.size() > 0)
 					sql.append(", ");
-				sql.append(colName).append(" = ? ");
+				sql.append("\"").append(colName).append("\" = ? ");
 				paras.add(e.getValue());
 			}
 		}
-		sql.append(" where ").append(pKey).append(" = ?");
+		sql.append(" where \"").append(pKey).append("\" = ?");
 		paras.add(id);
 	}
 	
@@ -84,12 +84,14 @@ public class PostgreSqlDialect extends Dialect {
 			for (int i=0; i<columnsArray.length; i++) {
 				if (i > 0)
 					sql.append(", ");
+				sql.append("\"");
 				sql.append(columnsArray[i].trim());
+				sql.append("\"");
 			}
 		}
-		sql.append(" from ");
+		sql.append(" from \"");
 		sql.append(tInfo.getTableName());
-		sql.append(" where ").append(tInfo.getPrimaryKey()).append(" = ?");
+		sql.append("\" where \"").append(tInfo.getPrimaryKey()).append("\" = ?");
 		return sql.toString();
 	}
 	
@@ -103,25 +105,25 @@ public class PostgreSqlDialect extends Dialect {
 			for (int i=0; i<columnsArray.length; i++) {
 				if (i > 0)
 					sql.append(", ");
-				sql.append(columnsArray[i].trim());
+				sql.append("\"").append(columnsArray[i].trim()).append("\"");
 			}
 		}
-		sql.append(" from ");
+		sql.append(" from \"");
 		sql.append(tableName.trim());
-		sql.append(" where ").append(primaryKey).append(" = ?");
+		sql.append("\" where \"").append(primaryKey).append("\" = ?");
 		return sql.toString();
 	}
 	
 	public String forDbDeleteById(String tableName, String primaryKey) {
-		StringBuilder sql = new StringBuilder("delete from ");
+		StringBuilder sql = new StringBuilder("delete from \"");
 		sql.append(tableName.trim());
-		sql.append(" where ").append(primaryKey).append(" = ?");
+		sql.append("\" where \"").append(primaryKey).append("\" = ?");
 		return sql.toString();
 	}
 	
 	public void forDbSave(StringBuilder sql, List<Object> paras, String tableName, Record record) {
-		sql.append("insert into ");
-		sql.append(tableName.trim()).append("(");
+		sql.append("insert into \"");
+		sql.append(tableName.trim()).append("\"(");
 		StringBuilder temp = new StringBuilder();
 		temp.append(") values(");
 		
@@ -130,7 +132,7 @@ public class PostgreSqlDialect extends Dialect {
 				sql.append(", ");
 				temp.append(", ");
 			}
-			sql.append(e.getKey());
+			sql.append("\"").append(e.getKey()).append("\"");
 			temp.append("?");
 			paras.add(e.getValue());
 		}
@@ -138,18 +140,18 @@ public class PostgreSqlDialect extends Dialect {
 	}
 	
 	public void forDbUpdate(String tableName, String primaryKey, Object id, Record record, StringBuilder sql, List<Object> paras) {
-		sql.append("update ").append(tableName.trim()).append(" set ");
+		sql.append("update \"").append(tableName.trim()).append("\" set ");
 		for (Entry<String, Object> e: record.getColumns().entrySet()) {
 			String colName = e.getKey();
 			if (!primaryKey.equalsIgnoreCase(colName)) {
 				if (paras.size() > 0) {
 					sql.append(", ");
 				}
-				sql.append(colName).append(" = ? ");
+				sql.append("\"").append(colName).append("\" = ? ");
 				paras.add(e.getValue());
 			}
 		}
-		sql.append(" where ").append(primaryKey).append(" = ?");
+		sql.append(" where \"").append(primaryKey).append("\" = ?");
 		paras.add(id);
 	}
 	
