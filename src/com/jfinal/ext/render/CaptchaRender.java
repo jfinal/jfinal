@@ -23,9 +23,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.Random;
+
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StringKit;
 import com.jfinal.render.Render;
@@ -33,22 +36,52 @@ import com.jfinal.render.Render;
 public class CaptchaRender extends Render {
 	
 	private static final long serialVersionUID = -916701543933591834L;
-	private static final int WIDTH = 85, HEIGHT = 20;
+	private int _width = 85, _height = 20, _count = 6;
 	private static final String[] strArr = {"3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"};
 	
-	private String randomCodeKey;
+	private static String _randomCodeKey = "JFINAL_CAPTCHA_KEY";
+	private static boolean caseInsensitive = true;
+	
+	public CaptchaRender() {
+	}
 	
 	public CaptchaRender(String randomCodeKey) {
 		if (StringKit.isBlank(randomCodeKey))
 			throw new IllegalArgumentException("randomCodeKey can not be blank");
-		this.randomCodeKey = randomCodeKey;
+		_randomCodeKey = randomCodeKey;
+	}
+	
+	public CaptchaRender(int width, int height, int count, boolean isCaseInsensitive) {		
+		if(width <=0 || height <=0 || count <=0)
+		{
+			throw new IllegalArgumentException("Image width or height or count must be > 0");
+		}
+		this._width = width;
+		this._height = height;
+		this._count = count;
+		caseInsensitive = isCaseInsensitive;
+	}
+	
+	public CaptchaRender(String randomKey,int width, int height, int count, boolean isCaseInsensitive) {
+		if (StringKit.isBlank(randomKey))
+			throw new IllegalArgumentException("randomKey can not be blank");
+		_randomCodeKey = randomKey;
+		
+		if(width <=0 || height <=0 || count <=0)
+		{
+			throw new IllegalArgumentException("Image width or height or count must be > 0");
+		}
+		this._width = width;
+		this._height = height;
+		this._count = count;
+		caseInsensitive = isCaseInsensitive;
 	}
 	
 	public void render() {
-		BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(_width, _height, BufferedImage.TYPE_INT_RGB);
 		String vCode = drawGraphic(image);
 		vCode = encrypt(vCode);
-		Cookie cookie = new Cookie(randomCodeKey, vCode);
+		Cookie cookie = new Cookie(_randomCodeKey, vCode);
 		cookie.setMaxAge(-1);
 		cookie.setPath("/");
 		response.addCookie(cookie);
@@ -77,15 +110,15 @@ public class CaptchaRender extends Render {
 		Random random = new Random();
 		// 设定背景色
 		g.setColor(getRandColor(200, 250));
-		g.fillRect(0, 0, WIDTH, HEIGHT);
+		g.fillRect(0, 0, _width, _height);
 		// 设定字体
 		g.setFont(new Font("Times New Roman", Font.PLAIN, 18));
 
 		// 随机产生155条干扰线，使图象中的认证码不易被其它程序探测到
 		g.setColor(getRandColor(160, 200));
 		for (int i = 0; i < 155; i++) {
-			int x = random.nextInt(WIDTH);
-			int y = random.nextInt(HEIGHT);
+			int x = random.nextInt(_width);
+			int y = random.nextInt(_height);
 			int xl = random.nextInt(12);
 			int yl = random.nextInt(12);
 			g.drawLine(x, y, x + xl, y + yl);
@@ -93,7 +126,7 @@ public class CaptchaRender extends Render {
 
 		// 取随机产生的认证码(6位数字)
 		String sRand = "";
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < _count; i++) {
 			String rand = String.valueOf(strArr[random.nextInt(strArr.length)]);
 			sRand += rand;
 			// 将认证码显示到图象中
@@ -162,6 +195,58 @@ public class CaptchaRender extends Render {
 			return false;
 		}
 	}
+
+	public static boolean validate(Controller controller, String inputRandomCode) {
+		if (StringKit.isBlank(inputRandomCode))
+			return false;
+		try {
+			if(caseInsensitive)
+				inputRandomCode = inputRandomCode.toUpperCase();
+			inputRandomCode = encrypt(inputRandomCode);
+			return inputRandomCode.equals(controller.getCookie(_randomCodeKey));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * 我在handler里调用时，由于没有经过controller，所以只能自己从HttpServletRequest中获取Cookie
+	 * @param request
+	 * @param inputRandomCode
+	 * @return
+	 */
+	public static boolean validate(HttpServletRequest request, String inputRandomCode) {
+		if (StringKit.isBlank(inputRandomCode))
+			return false;
+		try {
+			if(caseInsensitive)
+				inputRandomCode = inputRandomCode.toUpperCase();
+			inputRandomCode = encrypt(inputRandomCode);
+			return inputRandomCode.equals(getCookie(request,_randomCodeKey));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	private static String getCookie(HttpServletRequest request,String name) {
+		Cookie rCookie = null;
+		Cookie[] cookies = request.getCookies();
+		if (cookies != null)
+			for (Cookie cookie : cookies)
+			{
+				if (cookie.getName().equals(name))
+				{
+					rCookie = cookie;
+					break;
+				}
+			}
+		
+		if(rCookie != null)
+			return rCookie.getValue();
+		
+		return null;
+	}
+
 }
-
-
