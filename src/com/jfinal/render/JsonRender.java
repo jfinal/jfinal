@@ -26,7 +26,7 @@ import com.jfinal.kit.JsonKit;
 /**
  * JsonRender.
  * <p>
- * IE 不支持content type 为 application/json, 在 ajax 上传文件完成后返回 json时 ie 提示下载文件,<br>
+ * IE 不支持content type 为 application/json, 在 ajax 上传文件完成后返回 json时 IE 提示下载文件,<br>
  * 解决办法是使用： render(new JsonRender(params).forIE());
  */
 public class JsonRender extends Render {
@@ -40,7 +40,7 @@ public class JsonRender extends Render {
 	 * 
 	 * 通过使用firefox测试,struts2-json-plugin返回的是 application/json, 所以暂不改为 application/x-json
 	 * 1: 官方的 MIME type为application/json, 见 http://en.wikipedia.org/wiki/MIME_type
-	 * 2: ie 不支持 application/json, 在 ajax 上传文件完成后返回 json时 ie 提示下载文件
+	 * 2: IE 不支持 application/json, 在 ajax 上传文件完成后返回 json时 IE 提示下载文件
 	 */
 	private static final String contentType = "application/json;charset=" + getEncoding();
 	private static final String contentTypeForIE = "text/html;charset=" + getEncoding();
