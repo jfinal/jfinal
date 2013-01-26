@@ -125,7 +125,7 @@ public class Db {
 	 */
 	public static <T> T queryFirst(String sql, Object... paras) {
 		List<T> result = query(sql, paras);
-		return (T) (result.size() > 0 ? result.get(0) : null);
+		return (result.size() > 0 ? result.get(0) : null);
 	}
 	
 	/**
@@ -135,7 +135,7 @@ public class Db {
 	public static <T> T queryFirst(String sql) {
 		// return queryFirst(sql, NULL_PARA_ARRAY);
 		List<T> result = query(sql, NULL_PARA_ARRAY);
-		return (T) (result.size() > 0 ? result.get(0) : null);
+		return (result.size() > 0 ? result.get(0) : null);
 	}
 	
 	// 26 queryXxx method below -----------------------------------------------
@@ -668,7 +668,7 @@ public class Db {
 	static boolean update(Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
 		Object id = record.get(primaryKey);
 		if (id == null)
-			throw new ActiveRecordException("You can't update model whitout Primary Key.");
+			throw new ActiveRecordException("You can't update model without Primary Key.");
 		
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();

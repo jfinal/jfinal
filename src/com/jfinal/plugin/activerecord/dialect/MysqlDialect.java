@@ -84,9 +84,7 @@ public class MysqlDialect extends Dialect {
 			for (int i=0; i<columnsArray.length; i++) {
 				if (i > 0)
 					sql.append(", ");
-				sql.append("`");
-				sql.append(columnsArray[i].trim());
-				sql.append("`");
+				sql.append("`").append(columnsArray[i].trim()).append("`");
 			}
 		}
 		sql.append(" from `");

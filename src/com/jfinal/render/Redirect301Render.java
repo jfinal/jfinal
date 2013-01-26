@@ -25,23 +25,23 @@ public class Redirect301Render extends Render {
 	
 	private static final long serialVersionUID = -6822589387282014944L;
 	private String url;
-	private boolean withOutQueryString;
+	private boolean withQueryString;
 	
 	public Redirect301Render(String url) {
 		this.url = url;
-		this.withOutQueryString = false;
+		this.withQueryString = false;
 	}
 	
-	public Redirect301Render(String url, boolean withOutQueryString) {
+	public Redirect301Render(String url, boolean withQueryString) {
 		this.url = url;
-		this.withOutQueryString = withOutQueryString;
+		this.withQueryString = withQueryString;
 	}
 	
 	public void render() {
-		if (withOutQueryString == false) {
+		if (withQueryString) {
 			String queryString = request.getQueryString();
-			queryString = (queryString == null ? "" : "?" + queryString);
-			url = url + queryString;
+			if (queryString != null)
+				url = url + "?" + queryString;
 		}
 		
 		response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);

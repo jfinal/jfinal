@@ -25,23 +25,21 @@ public class RedirectRender extends Render {
 	
 	private static final long serialVersionUID = -3120354341585834890L;
 	private String url;
-	private boolean withOutQueryString;
+	private boolean withQueryString;
 	
 	public RedirectRender(String url) {
 		this.url = url;
-		this.withOutQueryString = false;
+		this.withQueryString = false;
 	}
 	
-	public RedirectRender(String url, boolean withOutQueryString) {
+	public RedirectRender(String url, boolean withQueryString) {
 		this.url = url;
-		this.withOutQueryString =  withOutQueryString;
+		this.withQueryString =  withQueryString;
 	}
 	
 	public void render() {
-		if (withOutQueryString == false) {
+		if (withQueryString) {
 			String queryString = request.getQueryString();
-			// queryString = (queryString == null ? "" : "?" + queryString);
-			// url = url + queryString;
 			if (queryString != null)
 				url = url + "?" + queryString;
 		}

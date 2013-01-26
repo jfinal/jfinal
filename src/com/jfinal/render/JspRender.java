@@ -59,45 +59,63 @@ public class JspRender extends Render {
 		}
 	}
 	
+	private static int DEPTH = 8;
+	
 	private void supportActiveRecord(HttpServletRequest request) {
 		for (Enumeration<String> attrs = request.getAttributeNames(); attrs.hasMoreElements();) {
 			String key = attrs.nextElement();
 			Object value = request.getAttribute(key);
-			if (value instanceof Model) {
-				request.setAttribute(key, handleModel((Model)value));
-			}
-			else if (value instanceof Record) {
-				request.setAttribute(key, handleRecord((Record)value));
-			}
-			else if (value instanceof List) {
-				request.setAttribute(key, handleList((List)value));
-			}
-			else if (value instanceof Page) {
-				request.setAttribute(key, handlePage((Page)value));
-			}
-			else if (value instanceof Model[]) {
-				request.setAttribute(key, handleModelArray((Model[])value));
-			}
-			else if (value instanceof Record[]) {
-				request.setAttribute(key, handleRecordArray((Record[])value)); 
-			}
+			request.setAttribute(key, handleObject(value, DEPTH));
 		}
 	}
 	
-	private List handleList(List list) {
-		if (list != null && list.size() > 0) {
-			Object o = list.get(0);
-			if (o instanceof Model)
-				return handleModelList((List<Model>)list);
-			else if (o instanceof Record)
-				return handleRecordList((List<Record>)list);
-		}
-		return list;
+	private Object handleObject(Object value, int depth) {
+		if(value == null || (depth--) <= 0)
+			return value;
+		
+		if (value instanceof List)
+			return handleList((List)value, depth);
+		else if (value instanceof Model)
+			return handleMap(CPI.getAttrs((Model)value), depth);
+		else if (value instanceof Record)
+			return handleMap(((Record)value).getColumns(), depth);
+		else if(value instanceof Map)
+			return handleMap((Map)value, depth);
+		else if (value instanceof Page)
+			return handlePage((Page)value, depth);
+		else if (value instanceof Object[])
+			return handleArray((Object[])value, depth);
+		else
+			return value;
 	}
 	
-	private Object handlePage(Page page) {
+	private Map handleMap(Map map, int depth) {
+		if (map == null || map.size() == 0)
+			return map;
+		
+		Map<Object, Object> result = map;
+		for (Map.Entry<Object, Object> e : result.entrySet()) {
+			Object key = e.getKey();
+			Object value = e.getValue();
+			value = handleObject(value, depth);
+			result.put(key, value);
+		}
+		return result;
+	}
+	
+	private List handleList(List list, int depth) {
+		if (list == null || list.size() == 0)
+			return list;
+		
+		List result = new ArrayList(list.size());
+		for (Object value : list)
+			result.add(handleObject(value, depth));
+		return result;
+	}
+	
+	private Object handlePage(Page page, int depth) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("list", handleList(page.getList()));
+		result.put("list", handleList(page.getList(), depth));
 		result.put("pageNumber", page.getPageNumber());
 		result.put("pageSize", page.getPageSize());
 		result.put("totalPage", page.getTotalPage());
@@ -105,40 +123,13 @@ public class JspRender extends Render {
 		return result;
 	}
 	
-	private Map<String, Object> handleModel(Model model) {
-		// handleGetterMethod(CPI.getAttrs(model), model.getClass().getMethods());
-		return CPI.getAttrs(model);
-	}
-	
-	private Map<String, Object> handleRecord(Record record) {
-		return record.getColumns();
-	}
-	
-	private List<Map<String, Object>> handleModelList(List<Model> list) {
-		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(list.size());
-		for (Model model : list)
-			result.add(CPI.getAttrs(model));
-		return result;
-	}
-	
-	private List<Map<String, Object>> handleRecordList(List<Record> list) {
-		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(list.size());
-		for (Record record : list)
-			result.add(record.getColumns());
-		return result;
-	}
-	
-	private List<Map<String, Object>> handleModelArray(Model[] array) {	// should be? : Map<String, Object>[]
-		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(array.length);
-		for (Model model : array)
-			result.add(CPI.getAttrs(model));
-		return result;
-	}
-	
-	private List<Map<String, Object>> handleRecordArray(Record[] array) {
-		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>(array.length);
-		for (Record record : array)
-			result.add(record.getColumns());
+	private List handleArray(Object[] array, int depth) {
+		if (array == null || array.length == 0)
+			return new ArrayList(0);
+		
+		List result = new ArrayList(array.length);
+		for (int i=0; i<array.length; i++)
+			result.add(handleObject(array[i], depth));
 		return result;
 	}
 }

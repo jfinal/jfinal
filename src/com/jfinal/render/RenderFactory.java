@@ -203,16 +203,16 @@ public class RenderFactory {
 		return new RedirectRender(url);
 	}
 	
-	public Render getRedirectRender(String url, boolean withOutQueryString) {
-		return new RedirectRender(url, withOutQueryString);
+	public Render getRedirectRender(String url, boolean withQueryString) {
+		return new RedirectRender(url, withQueryString);
 	}
 	
 	public Render getRedirect301Render(String url) {
 		return new Redirect301Render(url);
 	}
 	
-	public Render getRedirect301Render(String url, boolean withOutQueryString) {
-		return new Redirect301Render(url, withOutQueryString);
+	public Render getRedirect301Render(String url, boolean withQueryString) {
+		return new Redirect301Render(url, withQueryString);
 	}
 	
 	public Render getNullRender() {

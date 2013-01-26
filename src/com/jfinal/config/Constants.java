@@ -108,7 +108,7 @@ final public class Constants {
 	}
 	
 	/**
-	 * Set urlPara separator. The default value is "_"
+	 * Set urlPara separator. The default value is "-"
 	 * @param urlParaSeparator the urlPara separator
 	 */
 	public void setUrlParaSeparator(String urlParaSeparator) {

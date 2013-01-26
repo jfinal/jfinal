@@ -47,4 +47,16 @@ public abstract class CPI {
 	public static final Map<String, Object> getColumns(Record record) {
 		return record.getColumns();
 	} */
+	
+	public static List<Record> find(Connection conn, String sql, Object... paras) throws SQLException {
+		return Db.find(conn, sql, paras);
+	}
+	
+	public static Page<Record> paginate(Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
+		return Db.paginate(conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
+	}
+	
+	public static int update(Connection conn, String sql, Object... paras) throws SQLException {
+		return Db.update(conn, sql, paras);
+	}
 }

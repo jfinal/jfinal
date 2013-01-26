@@ -51,26 +51,26 @@ public class PostgreSqlDialect extends Dialect {
 	}
 	
 	public String forModelDeleteById(TableInfo tInfo) {
-		String pKey = tInfo.getPrimaryKey();
+		String primaryKey = tInfo.getPrimaryKey();
 		StringBuilder sql = new StringBuilder(45);
 		sql.append("delete from \"");
 		sql.append(tInfo.getTableName());
-		sql.append("\" where \"").append(pKey).append("\" = ?");
+		sql.append("\" where \"").append(primaryKey).append("\" = ?");
 		return sql.toString();
 	}
 	
-	public void forModelUpdate(TableInfo tableInfo, Map<String, Object> attrs, Set<String> modifyFlag, String pKey, Object id, StringBuilder sql, List<Object> paras) {
+	public void forModelUpdate(TableInfo tableInfo, Map<String, Object> attrs, Set<String> modifyFlag, String primaryKey, Object id, StringBuilder sql, List<Object> paras) {
 		sql.append("update \"").append(tableInfo.getTableName()).append("\" set ");
 		for (Entry<String, Object> e : attrs.entrySet()) {
 			String colName = e.getKey();
-			if (!pKey.equalsIgnoreCase(colName) && modifyFlag.contains(colName) && tableInfo.hasColumnLabel(colName)) {
+			if (!primaryKey.equalsIgnoreCase(colName) && modifyFlag.contains(colName) && tableInfo.hasColumnLabel(colName)) {
 				if (paras.size() > 0)
 					sql.append(", ");
 				sql.append("\"").append(colName).append("\" = ? ");
 				paras.add(e.getValue());
 			}
 		}
-		sql.append(" where \"").append(pKey).append("\" = ?");
+		sql.append(" where \"").append(primaryKey).append("\" = ?");
 		paras.add(id);
 	}
 	
@@ -84,9 +84,7 @@ public class PostgreSqlDialect extends Dialect {
 			for (int i=0; i<columnsArray.length; i++) {
 				if (i > 0)
 					sql.append(", ");
-				sql.append("\"");
-				sql.append(columnsArray[i].trim());
-				sql.append("\"");
+				sql.append("\"").append(columnsArray[i].trim()).append("\"");
 			}
 		}
 		sql.append(" from \"");

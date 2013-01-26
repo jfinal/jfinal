@@ -74,7 +74,6 @@ final class ActionReporter {
 		
 		// print all parameters
 		HttpServletRequest request = controller.getRequest();
-		@SuppressWarnings("unchecked")
 		Enumeration<String> e = request.getParameterNames();
 		if (e.hasMoreElements()) {
 			sb.append("Parameter   : ");

@@ -32,7 +32,6 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 /**
  * VelocityRender.
  */
-@SuppressWarnings({"unchecked"})
 public class VelocityRender extends Render {
 	
 	private static final long serialVersionUID = 2195369405439638708L;
