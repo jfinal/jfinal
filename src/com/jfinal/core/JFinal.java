@@ -28,6 +28,7 @@ import com.jfinal.kit.PathKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.render.RenderFactory;
+import com.jfinal.server.IServer;
 import com.jfinal.server.ServerFactory;
 import com.jfinal.token.ITokenCache;
 import com.jfinal.token.TokenManager;
@@ -42,6 +43,7 @@ public final class JFinal {
 	private ActionMapping actionMapping;
 	private Handler handler;
 	private ServletContext servletContext;
+	private static IServer server;
 	
 	Handler getHandler() {
 		return handler;
@@ -153,11 +155,17 @@ public final class JFinal {
 	}
 	
 	public static void start() {
-		ServerFactory.getServer().start();
+		server = ServerFactory.getServer();
+		server.start();
 	}
 	
 	public static void start(String webAppDir, int port, String context, int scanIntervalSeconds) {
-		ServerFactory.getServer(webAppDir, port, context, scanIntervalSeconds).start();
+		server = ServerFactory.getServer(webAppDir, port, context, scanIntervalSeconds);
+		server.start();
+	}
+	
+	public static void stop() {
+		server.stop();
 	}
 	
 	/**
@@ -166,14 +174,16 @@ public final class JFinal {
 	 */
 	public static void main(String[] args) {
 		if (args == null || args.length == 0) {
-			ServerFactory.getServer().start();
+			server = ServerFactory.getServer();
+			server.start();
 		}
 		else {
 			String webAppDir = args[0];
 			int port = Integer.parseInt(args[1]);
 			String context = args[2];
 			int scanIntervalSeconds = Integer.parseInt(args[3]);
-			ServerFactory.getServer(webAppDir, port, context, scanIntervalSeconds).start();
+			server = ServerFactory.getServer(webAppDir, port, context, scanIntervalSeconds);
+			server.start();
 		}
 	}
 	

@@ -30,7 +30,7 @@ import com.jfinal.core.Const;
  * 1: Config parameters in JFinalConfig
  * 2: Init I18N in JFinal 
  * 3: I18N support text with Locale
- * 4: ActionContext use I18N.getText(...) with Local setting in I18nInterceptor
+ * 4: Controller use I18N.getText(...) with Local setting in I18nInterceptor
  * 5: The resource file in WEB-INF/classes
  * 
  * important: Locale can create with language like new Locale("xxx");

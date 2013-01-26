@@ -49,7 +49,7 @@ public class OracleDialect extends Dialect {
 				}
 				sql.append(colName);
 				Object value = e.getValue();
-				if(colName.equalsIgnoreCase(pKey) && value instanceof String && (((String)value).endsWith(".nextval"))) {
+				if(value instanceof String && colName.equalsIgnoreCase(pKey) && ((String)value).endsWith(".nextval")) {
 				    temp.append(value);
 				}else{
 				    temp.append("?");

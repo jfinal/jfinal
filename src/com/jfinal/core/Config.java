@@ -77,13 +77,15 @@ class Config {
 				try {
 					boolean success = plugin.start();
 					if (!success) {
-						log.error("Plugin start error: " + plugin.getClass().getName());
-						throw new RuntimeException("Plugin start error: " + plugin.getClass().getName());
+						String message = "Plugin start error: " + plugin.getClass().getName();
+						log.error(message);
+						throw new RuntimeException(message);
 					}
 				}
 				catch (Exception e) {
-					log.error("Plugin start error: " + plugin.getClass().getName(), e);
-					throw new RuntimeException("Plugin start error: " + plugin.getClass().getName(), e);
+					String message = "Plugin start error: " + plugin.getClass().getName() + ". \n" + e.getMessage();
+					log.error(message, e);
+					throw new RuntimeException(message, e);
 				}
 			}
 		}

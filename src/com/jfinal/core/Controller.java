@@ -948,8 +948,8 @@ public abstract class Controller {
 	/**
 	 * Redirect to url
 	 */
-	public void redirect(String url, boolean withOutQueryString) {
-		render = renderFactory.getRedirectRender(url, withOutQueryString);
+	public void redirect(String url, boolean withQueryString) {
+		render = renderFactory.getRedirectRender(url, withQueryString);
 	}
 	
 	/**
@@ -970,8 +970,8 @@ public abstract class Controller {
 	/**
 	 * Render with url and 301 status
 	 */
-	public void redirect301(String url, boolean withOutQueryString) {
-		render = renderFactory.getRedirect301Render(url, withOutQueryString);
+	public void redirect301(String url, boolean withQueryString) {
+		render = renderFactory.getRedirect301Render(url, withQueryString);
 	}
 	
 	/**

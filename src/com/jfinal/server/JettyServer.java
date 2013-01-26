@@ -18,30 +18,21 @@ package com.jfinal.server;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import javax.management.MBeanServer;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.nio.SelectChannelConnector;
-import org.mortbay.jetty.webapp.WebAppContext;
-import org.mortbay.management.MBeanContainer;
-import org.mortbay.util.Scanner;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.SessionManager;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.session.HashSessionManager;
+import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.webapp.WebAppContext;
+import com.jfinal.core.Const;
 import com.jfinal.kit.PathKit;
+import com.jfinal.kit.StringKit;
 
 /**
  * JettyServer is used to config and start jetty web server.
- * Jetty version 6.1.26
- */
-/*
- * 1: project dir (no use)
- * 2: port
- * 3: context
- * 4: webapp dir
- * 5: scan interval senconds
+ * Jetty version 8.1.8
  */
 class JettyServer implements IServer {
 	
@@ -49,114 +40,103 @@ class JettyServer implements IServer {
 	private int port;
 	private String context;
 	private int scanIntervalSeconds;
-	private boolean isStarted = false;
+	private boolean running = false;
 	private Server server;
-	private WebAppContext web;
-	private boolean enablescanner = true;
+	private WebAppContext webApp;
 	
 	JettyServer(String webAppDir, int port, String context, int scanIntervalSeconds) {
+		if (webAppDir == null)
+			throw new IllegalStateException("Invalid webAppDir of web server: " + webAppDir);
+		if (port < 0 || port > 65536)
+			throw new IllegalArgumentException("Invalid port of web server: " + port);
+		if (StringKit.isBlank(context))
+			throw new IllegalStateException("Invalid context of web server: " + context);
+		
 		this.webAppDir = webAppDir;
 		this.port = port;
 		this.context = context;
 		this.scanIntervalSeconds = scanIntervalSeconds;
-		checkConfig();
-	}
-	
-	private void checkConfig() {
-		if (port < 0 || port > 65536)
-			throw new IllegalArgumentException("Invalid port of web server: " + port);
-		
-		if (scanIntervalSeconds < 1)
-			enablescanner = false;
-		
-		if (context == null)
-			throw new IllegalStateException("Invalid context of web server: " + context);
-		
-		if (webAppDir == null)
-			throw new IllegalStateException("Invalid context of web server: " + webAppDir);
 	}
 	
 	public void start() {
-		if (! isStarted) {
-			try {
-				doStart();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			isStarted = true;
-		}
-		else {
-			throw new RuntimeException("Server already started.");
+		if (!running) {
+			try {doStart();} catch (Exception e) {e.printStackTrace();}
+			running = true;
 		}
 	}
 	
-	private void doStart() throws Exception {
-		String context = this.context;
-		String webAppDir = this.webAppDir;
-		Integer port = this.port;
-		Integer scanIntervalSeconds = this.scanIntervalSeconds;
-		
-		server = new Server();
-		
-		if (port != null) {
-			if (!available(port)) {
-				throw new IllegalStateException("port: " + port + " already in use!");
-			}
-			SelectChannelConnector connector = new SelectChannelConnector();
-			connector.setPort(port);
-			
-			server.addConnector(connector);
+	public void stop() {
+		if (running) {
+			try {server.stop();} catch (Exception e) {e.printStackTrace();}
+			running = false;
 		}
+	}
+	
+	private void doStart() {
+		if (!available(port))
+			throw new IllegalStateException("port: " + port + " already in use!");
 		
-		web = new WebAppContext();
+		System.out.println("Starting JFinal " + Const.JFINAL_VERSION);
+		server = new Server();
+		SelectChannelConnector connector = new SelectChannelConnector();
+		connector.setPort(port);
+		server.addConnector(connector);
+		webApp = new WebAppContext();
+		webApp.setContextPath(context);
+		webApp.setResourceBase(webAppDir);	// webApp.setWar(webAppDir);
+		webApp.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
+		webApp.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");	// webApp.setInitParams(Collections.singletonMap("org.mortbay.jetty.servlet.Default.useFileMappedBuffer", "false"));
+		persistSession(webApp);
 		
-		// 警告: 设置成 true 无法支持热加载
-		// web.setParentLoaderPriority(false);
-		web.setContextPath(context);
-		web.setWar(webAppDir);
-		web.setInitParams(Collections.singletonMap("org.mortbay.jetty.servlet.Default.useFileMappedBuffer", "false"));
-		server.addHandler(web);
-		
-		MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
-		MBeanContainer mBeanContainer = new MBeanContainer(mBeanServer);
-		server.getContainer().addEventListener(mBeanContainer);
-		mBeanContainer.start();
+		server.setHandler(webApp);
 		
 		// configureScanner
-		if (enablescanner) {
-			final ArrayList<File> scanList = new ArrayList<File>();
-			scanList.add(new File(PathKit.getRootClassPath()));
-			Scanner scanner = new Scanner();
-			scanner.setReportExistingFilesOnStartup(false);
-			scanner.setScanInterval(scanIntervalSeconds);
-			scanner.setScanDirs(scanList);
-			scanner.addListener(new Scanner.BulkListener() {
-				
-				public void filesChanged(@SuppressWarnings("rawtypes") List changes) {
+		if (scanIntervalSeconds > 0) {
+			Scanner scanner = new Scanner(PathKit.getRootClassPath(), scanIntervalSeconds) {
+				public void onChange() {
 					try {
-						System.err.println("Loading changes ......");
-						web.stop();
-						web.start();
-						System.err.println("Loading complete.\n");
-						
+						System.err.println("\nLoading changes ......");
+						webApp.stop();
+						webApp.start();
+						System.err.println("Loading complete.");
 					} catch (Exception e) {
 						System.err.println("Error reconfiguring/restarting webapp after change in watched files");
 						e.printStackTrace();
 					}
 				}
-			});
-			System.err.println("Starting scanner at interval of " + scanIntervalSeconds + " seconds.");
+			};
+			System.out.println("Starting scanner at interval of " + scanIntervalSeconds + " seconds.");
 			scanner.start();
 		}
 		
 		try {
+			System.out.println("Starting web server on port: " + port);
 			server.start();
+			System.out.println("Starting Complete. Welcome To The JFinal World :)");
 			server.join();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(100);
 		}
 		return;
+	}
+	
+	private void persistSession(WebAppContext webApp) {
+		String storeDir = PathKit.getWebRootPath() + "/../../session_data" + context;
+		if ("\\".equals(File.separator))
+			storeDir = storeDir.replaceAll("/", "\\\\");
+		
+		SessionManager sm = webApp.getSessionHandler().getSessionManager();
+		if (sm instanceof HashSessionManager) {
+			((HashSessionManager)sm).setStoreDirectory(new File(storeDir));
+			return ;
+		}
+		
+		HashSessionManager hsm = new HashSessionManager();
+		hsm.setStoreDirectory(new File(storeDir));
+		SessionHandler sh = new SessionHandler();
+		sh.setSessionManager(hsm);
+		webApp.setSessionHandler(sh);
 	}
 	
 	private static boolean available(int port) {

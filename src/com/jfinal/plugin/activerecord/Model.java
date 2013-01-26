@@ -74,11 +74,9 @@ public abstract class Model<M extends Model> implements Serializable {
 		if (tableInfoMapping.getTableInfo(getClass()).hasColumnLabel(attr)) {
 			attrs.put(attr, value);
 			getModifyFlag().add(attr);	// Add modify flag, update() need this flag.
+			return (M)this;
 		}
-		else {
-			throw new ActiveRecordException("The attribute name is not exists: " + attr);
-		}
-		return (M)this;
+		throw new ActiveRecordException("The attribute name is not exists: " + attr);
 	}
 	
 	/**
@@ -93,7 +91,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Get attribute of any mysql type
 	 */
 	public <T> T get(String attr) {
-		return (T)attrs.get(attr);
+		return (T)(attrs.get(attr));
 	}
 	
 	/**
@@ -331,7 +329,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		String pKey = tInfo.getPrimaryKey();
 		Object id = attrs.get(pKey);
 		if (id == null)
-			throw new ActiveRecordException("You can't delete model whitout id.");
+			throw new ActiveRecordException("You can't delete model without id.");
 		return deleteById(tInfo, id);
 	}
 	
@@ -363,7 +361,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		String pKey = tableInfo.getPrimaryKey();
 		Object id = attrs.get(pKey);
 		if (id == null)
-			throw new ActiveRecordException("You can't update model whitout Primary Key.");
+			throw new ActiveRecordException("You can't update model without Primary Key.");
 		
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();

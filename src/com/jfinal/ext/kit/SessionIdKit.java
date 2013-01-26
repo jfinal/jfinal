@@ -19,20 +19,19 @@ package com.jfinal.ext.kit;
 import java.security.SecureRandom;
 import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
- * SessionIdGenerator.
+ * SessionIdKit.
  */
-public class SessionIdGenerator {
+public class SessionIdKit {
 	
     protected static Random random;
     private static boolean weakRandom;
     private static volatile Object lock = new Object();
     
-    private static final SessionIdGenerator me = new SessionIdGenerator();
+    private static final SessionIdKit me = new SessionIdKit();
     
-    private SessionIdGenerator() {
+    private SessionIdKit() {
     	try {
 			// This operation may block on some systems with low entropy. See
 			// this page
@@ -48,11 +47,11 @@ public class SessionIdGenerator {
 		}
     }
     
-    public static final SessionIdGenerator me() {
+    public static final SessionIdKit me() {
     	return me;
     }
     
-	public String generate(HttpServletRequest request, HttpServletResponse response) {
+	public String generate(HttpServletRequest request) {
         synchronized (lock) {
             String id = null;
             while (id == null || id.length() == 0) {	//)||idInUse(id))

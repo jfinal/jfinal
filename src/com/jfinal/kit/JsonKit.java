@@ -39,6 +39,8 @@ import com.jfinal.plugin.activerecord.Record;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JsonKit {
 	
+	private static final int DEFAULT_DEPTH = 8;
+	
 	public static String mapToJson(Map map, int depth) {
 		if(map == null)
 			return "null";
@@ -156,7 +158,7 @@ public class JsonKit {
 	}
 	
 	public static String toJson(Object value) {
-		return toJson(value, 8);
+		return toJson(value, DEFAULT_DEPTH);
 	}
 	
 	public static String toJson(Object value, int depth) {

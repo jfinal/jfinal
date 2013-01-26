@@ -39,10 +39,12 @@ public class Inject {
 	@Target({ElementType.FIELD})
 	public static @interface BY_NAME {}
 	
+	/*
 	@Inherited
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.FIELD})
 	public static @interface IGNORE {}
+	*/
 }
 
 

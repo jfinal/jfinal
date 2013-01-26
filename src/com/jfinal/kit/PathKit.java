@@ -61,6 +61,9 @@ public class PathKit {
 	}
 	
 	public static void setWebRootPath(String webRootPath) {
+		if (webRootPath == null)
+			return ;
+		
 		if (webRootPath.endsWith(File.separator))
 			webRootPath = webRootPath.substring(0, webRootPath.length() - 1);
 		PathKit.webRootPath = webRootPath;

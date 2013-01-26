@@ -26,6 +26,8 @@ public class TableInfo {
 	
 	private String tableName;
 	private String primaryKey;
+	private String secondaryKey = null;
+	
 	@SuppressWarnings("unchecked")
 	private Map<String, Class<?>> columnTypeMap = DbKit.containerFactory.getAttrsMap();	//	new HashMap<String, Class<?>>();
 	
@@ -71,8 +73,25 @@ public class TableInfo {
 			throw new IllegalArgumentException("Model class can not be null.");
 		
 		this.tableName = tableName.trim();
-		this.primaryKey = primaryKey.trim();
+		setPrimaryKey(primaryKey.trim());	// this.primaryKey = primaryKey.trim();
 		this.modelClass = modelClass;
+	}
+	
+	private void setPrimaryKey(String primaryKey) {
+		String[] keyArr = primaryKey.split(",");
+		if (keyArr.length > 1) {
+			if (StringKit.isBlank(keyArr[0]) || StringKit.isBlank(keyArr[1]))
+				throw new IllegalArgumentException("The composite primary key can not be blank.");
+			this.primaryKey = keyArr[0].trim();
+			this.secondaryKey = keyArr[1].trim();
+		}
+		else {
+			this.primaryKey = primaryKey;
+		}
+	}
+	
+	public String getSecondaryKey() {
+		return secondaryKey;
 	}
 	
 	public Class<? extends Model<?>> getModelClass() {

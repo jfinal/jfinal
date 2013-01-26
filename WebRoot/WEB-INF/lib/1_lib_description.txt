@@ -1,9 +1,11 @@
 JFinal 自身对第三方无依赖，但当需要第三方功能支持时则需要添加相应的 jar 文件
 
-1：只有 jfinal-xxx-bin.jar 文件是必需的。其它jar文件按需所用。
+1：只有 jfinal-bin-xx.jar 文件是必需的。其它jar文件按需所用。
 
-2：jetty-server-6.1.26.jar 用来支持无需额外安装 tomcat jetty 等 web server即可开始开发，
-同时它也是支持热部署的必要包。
+2：jetty-server-8.1.8.jar 用来支持无需额外安装 tomcat jetty 等 web server
+   即可开始开发，同时它也是支持热部署的必要包。jetty-server-8.1.8.jar 中
+   包含：jetty-8.1.8发行版"/lib"目录下所有jetty模块jar包、servlet-api-3.0.jar、
+   "/lib/jsp"下所有jar包。
 
 3：freemarker-2.3.16.jar 支持 FreeMarker 视图类型。
 
@@ -11,25 +13,25 @@ JFinal 自身对第三方无依赖，但当需要第三方功能支持时则需�
 
 5：cos-26Dec2008.jar 支持文件上传功能。
 
-6: jstl-1.2.jar 支持 jsp 标记，仅使用jsp视图时才需要，此文件包括了 jstl-1.2.jar starandard.jar。
+6：mysql-connector-java-5.1.20-bin.jar 支持 mysql 数据库。
 
-7：mysql-connector-java-5.1.20-bin.jar 支持 mysql 数据库。
+7：c3p0-0.9.1.2.jar 数据库连接池。
 
-8：c3p0-0.9.1.2.jar 数据库连接池。
+8：ehcache-core-2.5.2.jar、slf4j-api-1.6.1.jar、slf4j-log4j12-1.6.1.jar 支持 EhCache。
+   在使用EhCache时需要有ehcache.xml文件。
 
-9：ehcache-core-2.5.2.jar、slf4j-api-1.6.1.jar、slf4j-jdk14-1.6.1.jar 支持 EhCache。在使用EhCache时需要有ehcache.xml文件。
+9：以org.springframework 打头的所有 jar 包支持 SpringPlugin
 
-10：oracle-jdbc6dms.jar 支持 oracle 数据库
+10：sqlite-jdbc-3.7.2.jar 支持 Sqlite 数据库
 
-11：以org.springframework 打头的所有 jar 包支持 SpringPlugin
+11：druid-0.2.6.jar 支持 Druid 数据库连接池
 
-12：sqlite-jdbc-3.7.2.jar 支持 Sqlite 数据库
+12：ojdbc6.jar Oracle Database 11g Release 2 (11.2.0.3) JDBC Driver
 
-13：druid-0.2.6.jar 支持 Druid 数据库连接池
-
-14：log4j-1.2.16.jar 支持 log4j 日志，当此文件不存在时，自动切换至 JDK Logger，注意，log4j需要相应的配置文件
-log4j.properties， 否则当log4j-1.2.16.jar 存在而 log4j.properties 不存在时无日志输出。jdk logger 需要的logging.properties文件
-也在此目录下提供了
+13：log4j-1.2.16.jar 支持 log4j 日志，当此文件不存在时，自动切换至 JDK Logger，
+   注意，log4j需要相应的配置文件 log4j.properties，否则当log4j-1.2.16.jar 存在
+   而log4j.properties 不存在时无日志输出。jdk logger 需要的logging.properties文件
+   也在此目录下提供了
 
 
 

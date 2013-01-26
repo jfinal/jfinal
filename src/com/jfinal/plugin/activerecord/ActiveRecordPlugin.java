@@ -80,6 +80,18 @@ public class ActiveRecordPlugin implements IPlugin {
 		DbKit.setTransactionLevel(transactionLevel);
 	}
 	
+	/**
+	 * Set transaction level define in java.sql.Connection
+	 * @param transactionLevel only be 0, 1, 2, 4, 8
+	 */
+	public ActiveRecordPlugin setTransactionLevel(int transactionLevel) {
+		int t = transactionLevel;
+		if (t != 0 && t != 1  && t != 2  && t != 4  && t != 8)
+			throw new IllegalArgumentException("The transactionLevel only be 0, 1, 2, 4, 8");
+		DbKit.setTransactionLevel(transactionLevel);
+		return this;
+	}
+	
 	public ActiveRecordPlugin addMapping(String tableName, String primaryKey, Class<? extends Model<?>> modelClass) {
 		tableMappings.add(new TableInfo(tableName, primaryKey, modelClass));
 		return this;

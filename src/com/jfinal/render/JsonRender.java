@@ -25,6 +25,9 @@ import com.jfinal.kit.JsonKit;
 
 /**
  * JsonRender.
+ * <p>
+ * IE 不支持content type 为 application/json, 在 ajax 上传文件完成后返回 json时 ie 提示下载文件,<br>
+ * 解决办法是使用： render(new JsonRender(params).forIE());
  */
 public class JsonRender extends Render {
 	
@@ -40,6 +43,13 @@ public class JsonRender extends Render {
 	 * 2: ie 不支持 application/json, 在 ajax 上传文件完成后返回 json时 ie 提示下载文件
 	 */
 	private static final String contentType = "application/json;charset=" + getEncoding();
+	private static final String contentTypeForIE = "text/html;charset=" + getEncoding();
+	private boolean forIE = false;
+	
+	public JsonRender forIE() {
+		forIE = true;
+		return this;
+	}
 	
 	private String jsonText;
 	private String[] attrs;
@@ -83,7 +93,7 @@ public class JsonRender extends Render {
 			response.setHeader("Cache-Control", "no-cache");
 			response.setDateHeader("Expires", 0);
 			
-			response.setContentType(contentType);
+			response.setContentType(forIE ? contentTypeForIE : contentType);
 			writer = response.getWriter();
 	        writer.write(jsonText);
 	        writer.flush();
