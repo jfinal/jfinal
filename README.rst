@@ -18,7 +18,7 @@ JFinal有如下主要特点
 #. 功能齐全，拥有struts2的绝大部分功能
 #. 体积小仅218K，且无第三方依赖
 
-**JFinal 极速开发QQ群欢迎您的加入: 283446146**
+**JFinal 极速开发QQ群欢迎您的加入: 222478625**
 
 **以下是JFinal实现Blog管理的示例：**
 
@@ -91,4 +91,4 @@ Blog()这行代码也不是必须)**
 
 Javadoc: http://www.ostools.net/apidocs/apidoc?api=jfinal 
 
-**JFinal 极速开发QQ群欢迎您的加入: 196337924**
+**JFinal 极速开发QQ群欢迎您的加入: 222478625**
