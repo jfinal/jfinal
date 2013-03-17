@@ -24,7 +24,7 @@ import java.io.PrintWriter;
  */
 public class HtmlRender extends Render {
 	
-	private static final long serialVersionUID = -1805855373995133760L;
+	private static final long serialVersionUID = 8145891655998147406L;
 	private static final String contentType = "text/html;charset=" + getEncoding();
 	private String text;
 	

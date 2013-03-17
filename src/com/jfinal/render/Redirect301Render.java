@@ -23,9 +23,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class Redirect301Render extends Render {
 	
-	private static final long serialVersionUID = -6822589387282014944L;
+	private static final long serialVersionUID = -115860447207423482L;
 	private String url;
 	private boolean withQueryString;
+	private static final String contextPath = RedirectRender.getContxtPath();
 	
 	public Redirect301Render(String url) {
 		this.url = url;
@@ -38,6 +39,9 @@ public class Redirect301Render extends Render {
 	}
 	
 	public void render() {
+		if (contextPath != null && url.indexOf("://") == -1)
+			url = contextPath + url;
+		
 		if (withQueryString) {
 			String queryString = request.getQueryString();
 			if (queryString != null)

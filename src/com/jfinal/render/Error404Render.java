@@ -26,7 +26,7 @@ import com.jfinal.core.Const;
  */
 public class Error404Render extends Render {
 	
-	private static final long serialVersionUID = 1764764489766904795L;
+	private static final long serialVersionUID = 3925763221184467994L;
 	private static final String contentType = "text/html;charset=" + getEncoding();
 	private static final String defaultHtml = "<html><head><title>404 Not Found</title></head><body bgcolor='white'><center><h1>404 Not Found</h1></center><hr><center><a href='http://www.jfinal.com'>JFinal/" + Const.JFINAL_VERSION + "</a></center></body></html>";
 	

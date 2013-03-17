@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import javax.servlet.ServletContext;
 import static com.jfinal.core.Const.DEFAULT_FILE_CONTENT_TYPE;
 import com.jfinal.kit.PathKit;
@@ -31,7 +32,7 @@ import com.jfinal.kit.PathKit;
  */
 public class FileRender extends Render {
 	
-	private static final long serialVersionUID = -627386273750207255L;
+	private static final long serialVersionUID = 4293616220202691369L;
 	private File file;
 	private String fileName;
 	private static String fileDownloadPath;
@@ -69,7 +70,12 @@ public class FileRender extends Render {
 			return ;
         }
 		
-		response.addHeader("Content-disposition", "attachment; filename=" + file.getName());
+		try {
+			response.addHeader("Content-disposition", "attachment; filename=" + new String(file.getName().getBytes("GBK"), "ISO8859-1"));
+		} catch (UnsupportedEncodingException e) {
+			response.addHeader("Content-disposition", "attachment; filename=" + file.getName());
+		}
+		
         String contentType = servletContext.getMimeType(file.getName());
         if (contentType == null) {
         	contentType = DEFAULT_FILE_CONTENT_TYPE;		// "application/octet-stream";

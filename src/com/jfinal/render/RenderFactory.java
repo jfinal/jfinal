@@ -36,7 +36,6 @@ public class RenderFactory {
 		return servletContext;
 	}
 	
-	// singleton
 	private static final RenderFactory me = new RenderFactory();
 	
 	private RenderFactory() {

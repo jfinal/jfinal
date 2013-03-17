@@ -34,7 +34,7 @@ import freemarker.template.TemplateExceptionHandler;
  */
 public class FreeMarkerRender extends Render {
 	
-	private static final long serialVersionUID = 3959102981898502071L;
+	private static final long serialVersionUID = -7649769283048920381L;
 	private transient static final String encoding = getEncoding();
 	private transient static final String contentType = "text/html; charset=" + encoding;
 	private transient static final Configuration config = new Configuration();

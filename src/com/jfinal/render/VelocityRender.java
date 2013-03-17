@@ -34,7 +34,7 @@ import org.apache.velocity.exception.ResourceNotFoundException;
  */
 public class VelocityRender extends Render {
 	
-	private static final long serialVersionUID = 2195369405439638708L;
+	private static final long serialVersionUID = 1012573049421601960L;
 	private transient static final String encoding = getEncoding();
 	private transient static final String contentType = "text/html;charset=" + encoding;
 	private transient static final Properties properties = new Properties();
