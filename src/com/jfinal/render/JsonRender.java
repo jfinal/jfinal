@@ -31,7 +31,7 @@ import com.jfinal.kit.JsonKit;
  */
 public class JsonRender extends Render {
 	
-	private static final long serialVersionUID = 6970249421567251974L;
+	private static final long serialVersionUID = 3606364198859021837L;
 	
 	/**
 	 * http://zh.wikipedia.org/zh/MIME

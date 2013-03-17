@@ -24,7 +24,7 @@ import java.io.PrintWriter;
  */
 public class TextRender extends Render {
 	
-	private static final long serialVersionUID = -5264892635310241831L;
+	private static final long serialVersionUID = 4775148244778489992L;
 	private static final String defaultContentType = "text/plain;charset=" + getEncoding();
 	private String text;
 	

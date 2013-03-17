@@ -28,7 +28,6 @@ public class TableInfoMapping {
 	
 	private static TableInfoMapping me = new TableInfoMapping(); 
 	
-	// singleton
 	private TableInfoMapping() {
 	}
 	

@@ -73,14 +73,13 @@ public class CacheInterceptor implements Interceptor {
 		useCacheDataAndRender(cacheData, controller);
 	}
 	
+	// TODO 考虑与 EvictInterceptor 一样强制使用  @CacheName
 	private String buildCacheName(ActionInvocation ai, Controller controller) {
 		CacheName cacheName = ai.getMethod().getAnnotation(CacheName.class);
 		if (cacheName != null)
 			return cacheName.value();
 		cacheName = controller.getClass().getAnnotation(CacheName.class);
-		if (cacheName != null)
-			return cacheName.value();
-		return ai.getActionKey();
+		return (cacheName != null) ? cacheName.value() : ai.getActionKey();
 	}
 	
 	private String buildCacheKey(ActionInvocation ai, Controller controller) {

@@ -24,7 +24,7 @@ import java.io.PrintWriter;
  */
 public class JavascriptRender extends Render {
 	
-	private static final long serialVersionUID = 3378793486917573848L;
+	private static final long serialVersionUID = 8559524286644647476L;
 	private static final String contentType = "text/javascript;charset=" + getEncoding();
 	private String jsText;
 	

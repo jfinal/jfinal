@@ -21,7 +21,7 @@ package com.jfinal.render;
  */
 public class NullRender extends Render {
 	
-	private static final long serialVersionUID = -389288806463724481L;
+	private static final long serialVersionUID = 4383753964688920354L;
 	
 	/**
 	 * Render nothing

@@ -33,7 +33,7 @@ import com.jfinal.plugin.activerecord.Record;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JspRender extends Render {
 	
-	private static final long serialVersionUID = 4979806661797436765L;
+	private static final long serialVersionUID = -688478484751775667L;
 	private transient static boolean isSupportActiveRecord = true;
 	
 	public static void setSupportActiveRecord(boolean supportActiveRecord) {

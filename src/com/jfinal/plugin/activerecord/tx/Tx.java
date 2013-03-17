@@ -39,7 +39,7 @@ public class Tx implements Interceptor {
 		Connection conn = null;
 		Boolean autoCommit = null;
 		try {
-			conn = DbKit.getDataSource().getConnection();
+			conn = DbKit.getConnection();
 			autoCommit = conn.getAutoCommit();
 			DbKit.setThreadLocalConnection(conn);
 			conn.setTransactionIsolation(getTransactionLevel());	// conn.setTransactionIsolation(transactionLevel);

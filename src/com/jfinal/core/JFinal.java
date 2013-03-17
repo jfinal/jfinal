@@ -44,6 +44,7 @@ public final class JFinal {
 	private Handler handler;
 	private ServletContext servletContext;
 	private static IServer server;
+	private String contextPath = "";
 	
 	Handler getHandler() {
 		return handler;
@@ -51,7 +52,6 @@ public final class JFinal {
 	
 	private static final JFinal me = new JFinal();
 	
-	// singleton
 	private JFinal() {
 	}
 	
@@ -61,6 +61,7 @@ public final class JFinal {
 	
 	boolean init(JFinalConfig jfinalConfig, ServletContext servletContext) {
 		this.servletContext = servletContext;
+		this.contextPath = servletContext.getContextPath();
 		
 		initPathUtil();
 		
@@ -197,6 +198,10 @@ public final class JFinal {
 	
 	public Action getAction(String url, String[] urlPara) {
 		return actionMapping.getAction(url, urlPara);
+	}
+	
+	public String getContextPath() {
+		return contextPath;
 	}
 }
 

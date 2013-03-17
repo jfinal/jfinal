@@ -17,15 +17,22 @@
 package com.jfinal.render;
 
 import java.io.IOException;
+import com.jfinal.core.JFinal;
 
 /**
  * RedirectRender with status: 302 Found.
  */
 public class RedirectRender extends Render {
 	
-	private static final long serialVersionUID = -3120354341585834890L;
+	private static final long serialVersionUID = 1812102713097864255L;
 	private String url;
 	private boolean withQueryString;
+	private static final String contextPath = getContxtPath();
+	
+	static String getContxtPath() {
+		String cp = JFinal.me().getContextPath();
+		return ("".equals(cp) || "/".equals(cp)) ? null : cp;
+	}
 	
 	public RedirectRender(String url) {
 		this.url = url;
@@ -38,6 +45,9 @@ public class RedirectRender extends Render {
 	}
 	
 	public void render() {
+		if (contextPath != null && url.indexOf("://") == -1)
+			url = contextPath + url;
+		
 		if (withQueryString) {
 			String queryString = request.getQueryString();
 			if (queryString != null)
