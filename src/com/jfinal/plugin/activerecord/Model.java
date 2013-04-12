@@ -497,7 +497,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	
 	/**
 	 * Set attributes with Map.
-	 * @param model the Model
+	 * @param attrs Attributes of this model
 	 * @return this Model
 	 */
 	public M setAttrs(Map<String, Object> attrs) {
@@ -574,7 +574,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	
 	/**
 	 * Keep attribute of this model and remove other attributes.
-	 * @param attrs the attribute names of the model
+	 * @param attr the attribute names of the model
 	 * @return this model
 	 */
 	public M keep(String attr) {
