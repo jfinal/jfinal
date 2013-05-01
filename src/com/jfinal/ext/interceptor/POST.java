@@ -13,6 +13,6 @@ public class POST implements Interceptor {
 		if ("POST".equalsIgnoreCase(controller.getRequest().getMethod().toUpperCase()))
 			ai.invoke();
 		else
-			controller.renderError404();
+			controller.renderError(404);
 	}
 }

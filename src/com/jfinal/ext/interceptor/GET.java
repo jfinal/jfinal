@@ -13,6 +13,6 @@ public class GET implements Interceptor {
 		if ("GET".equalsIgnoreCase(controller.getRequest().getMethod()))
 			ai.invoke();
 		else
-			controller.renderError404();
+			controller.renderError(404);
 	}
 }

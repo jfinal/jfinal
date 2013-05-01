@@ -21,8 +21,8 @@ import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
 
 /**
- * 实现一个线程仅一个数据库连接, 以提高性能
- * 注意是否与事务冲突了
+ * One Connection Per Thread for one request.<br>
+ * warning: can not use this interceptor with transaction feature like Tx, Db.tx(...)
  */
 public class OneConnectionPerThread implements Interceptor {
 	

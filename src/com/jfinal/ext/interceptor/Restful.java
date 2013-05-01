@@ -53,7 +53,7 @@ public class Restful implements Interceptor {
 		Boolean isRestfulForward = controller.getAttr(isRestfulForwardKey);
 		String methodName = ai.getMethodName();
 		if (set.contains(methodName) && isRestfulForward== null) {
-			ai.getController().renderError404();
+			ai.getController().renderError(404);
 			return ;
 		}
 		

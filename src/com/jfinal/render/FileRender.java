@@ -66,7 +66,7 @@ public class FileRender extends Render {
             // return;
 			
 			// throw new RenderException("File not found!");
-			RenderFactory.me().getError404Render().setContext(request, response).render();
+			RenderFactory.me().getErrorRender(404).setContext(request, response).render();
 			return ;
         }
 		

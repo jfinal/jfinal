@@ -763,10 +763,21 @@ public class Db {
 	 * @return true if transaction executing succeed otherwise false
 	 */
 	public  static boolean tx(int transactionLevel, IAtom atom) {
-		if (DbKit.isExistsThreadLocalConnection())
-			throw new ActiveRecordException("Nested transaction can not be supported. You can't execute transaction inside another transaction.");
+		Connection conn = DbKit.getThreadLocalConnection();
+		if (conn != null) {	// Nested transaction support
+			try {
+				if (conn.getTransactionIsolation() < transactionLevel)
+					conn.setTransactionIsolation(transactionLevel);
+				boolean result = atom.run();
+				if (result)
+					return true;
+				throw new ActiveRecordException("Nested transaction is failure.");	// important:can not return false
+			}
+			catch (SQLException e) {
+				throw new ActiveRecordException(e);
+			}
+		}
 		
-		Connection conn = null;
 		Boolean autoCommit = null;
 		try {
 			conn = DbKit.getDataSource().getConnection();
@@ -783,7 +794,7 @@ public class Db {
 		} catch (Exception e) {
 			if (conn != null)
 				try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
-			throw new ActiveRecordException(e);
+			return false;	// throw new ActiveRecordException(e);
 		} finally {
 			try {
 				if (conn != null) {

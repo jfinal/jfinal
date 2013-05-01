@@ -17,6 +17,7 @@
 package com.jfinal.plugin.activerecord.tx;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
@@ -33,10 +34,18 @@ public class Tx implements Interceptor {
 	}
 	
 	public void intercept(ActionInvocation invocation) {
-		if (DbKit.isExistsThreadLocalConnection())
-			throw new ActiveRecordException("Nested transaction can not be supported. You can't execute transaction inside another transaction.");
+		Connection conn = DbKit.getThreadLocalConnection();
+		if (conn != null) {	// Nested transaction support
+			try {
+				if (conn.getTransactionIsolation() < getTransactionLevel())
+					conn.setTransactionIsolation(getTransactionLevel());
+				invocation.invoke();
+				return ;
+			} catch (SQLException e) {
+				throw new ActiveRecordException(e);
+			}
+		}
 		
-		Connection conn = null;
 		Boolean autoCommit = null;
 		try {
 			conn = DbKit.getConnection();
