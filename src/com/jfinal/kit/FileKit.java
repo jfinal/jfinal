@@ -14,21 +14,26 @@
  * limitations under the License.
  */
 
-package com.jfinal.render;
+package com.jfinal.kit;
+
+import java.io.File;
 
 /**
- * Error500Exception.
+ * FileKit.
  */
-public class Error500Exception extends RuntimeException {
-	
-	private static final long serialVersionUID = -7521710800649772411L;
-	private Render error500Render;
-	
-	public Error500Exception(Render error500Render) {
-		this.error500Render = error500Render;
-	}
-	
-	public Render getError500Render() {
-		return error500Render;
+public class FileKit {
+	public static void delete(File file) {
+		if (file != null && file.exists()) {
+			if (file.isFile()) {
+				file.delete();
+			}
+			else if (file.isDirectory()) {
+				File files[] = file.listFiles();
+				for (int i=0; i<files.length; i++) {
+					delete(files[i]);
+				}
+			}
+			file.delete();
+		}
 	}
 }

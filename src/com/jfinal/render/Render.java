@@ -26,7 +26,7 @@ import com.jfinal.core.Const;
  */
 public abstract class Render implements Serializable {
 	
-	private static final long serialVersionUID = -6161983268638909080L;
+	private static final long serialVersionUID = 4055676662365675029L;
 	protected String view;
 	protected transient HttpServletRequest request;
 	protected transient HttpServletResponse response;
@@ -59,6 +59,14 @@ public abstract class Render implements Serializable {
 		if (view != null && !view.startsWith("/"))
 			view = viewPath + view;
 		return this;
+	}
+	
+	public String getView() {
+		return view;
+	}
+	
+	public void setView(String view) {
+		this.view = view;
 	}
 	
 	/**

@@ -27,6 +27,7 @@ import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 import com.jfinal.core.Const;
+import com.jfinal.kit.FileKit;
 import com.jfinal.kit.PathKit;
 import com.jfinal.kit.StringKit;
 
@@ -76,6 +77,8 @@ class JettyServer implements IServer {
 		if (!available(port))
 			throw new IllegalStateException("port: " + port + " already in use!");
 		
+		deleteSessionData();
+		
 		System.out.println("Starting JFinal " + Const.JFINAL_VERSION);
 		server = new Server();
 		SelectChannelConnector connector = new SelectChannelConnector();
@@ -121,10 +124,23 @@ class JettyServer implements IServer {
 		return;
 	}
 	
-	private void persistSession(WebAppContext webApp) {
+	private void deleteSessionData() {
+		try {
+			FileKit.delete(new File(getStoreDir()));
+		}
+		catch (Exception e) {
+		}
+	}
+	
+	private String getStoreDir() {
 		String storeDir = PathKit.getWebRootPath() + "/../../session_data" + context;
 		if ("\\".equals(File.separator))
 			storeDir = storeDir.replaceAll("/", "\\\\");
+		return storeDir;
+	}
+	
+	private void persistSession(WebAppContext webApp) {
+		String storeDir = getStoreDir();
 		
 		SessionManager sm = webApp.getSessionHandler().getSessionManager();
 		if (sm instanceof HashSessionManager) {

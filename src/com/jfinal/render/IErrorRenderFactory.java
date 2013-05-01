@@ -17,18 +17,8 @@
 package com.jfinal.render;
 
 /**
- * Error404Exception.
+ * IErrorRenderFactory.
  */
-public class Error404Exception extends RuntimeException {
-	
-	private static final long serialVersionUID = 7620194943724436754L;
-	private Render error404Render;
-	
-	public Error404Exception(Render error404Render) {
-		this.error404Render = error404Render;
-	}
-	
-	public Render getError404Render() {
-		return error404Render;
-	}
+public interface IErrorRenderFactory {
+	public Render getRender(int errorCode, String view);
 }

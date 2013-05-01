@@ -29,6 +29,6 @@ public class NoUrlPara implements Interceptor {
 		if (controller.getPara() == null)
 			invocation.invoke();
 		else
-			controller.renderError404();
+			controller.renderError(404);
 	}
 }

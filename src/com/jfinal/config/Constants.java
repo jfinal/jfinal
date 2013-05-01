@@ -23,6 +23,7 @@ import com.jfinal.kit.PathKit;
 import com.jfinal.kit.StringKit;
 import com.jfinal.log.ILoggerFactory;
 import com.jfinal.log.Logger;
+import com.jfinal.render.IErrorRenderFactory;
 import com.jfinal.render.IMainRenderFactory;
 import com.jfinal.render.RenderFactory;
 import com.jfinal.render.ViewType;
@@ -33,8 +34,6 @@ import com.jfinal.token.ITokenCache;
  */
 final public class Constants {
 	
-	private String error404View;
-	private String error500View;
 	private String fileRenderPath;
 	private String uploadedFileSaveDirectory;
 	
@@ -153,20 +152,12 @@ final public class Constants {
 		this.velocityViewExtension = velocityViewExtension.startsWith(".") ? velocityViewExtension : "." + velocityViewExtension;
 	}
 	
-	public String getError404View() {
-		return error404View;
-	}
-	
 	/**
 	 * Set error 404 view.
 	 * @param error404View the error 404 view
 	 */
 	public void setError404View(String error404View) {
-		this.error404View = error404View;
-	}
-	
-	public String getError500View() {
-		return error500View;
+		errorViewMapping.put(404, error404View);
 	}
 	
 	/**
@@ -174,7 +165,31 @@ final public class Constants {
 	 * @param error500View the error 500 view
 	 */
 	public void setError500View(String error500View) {
-		this.error500View = error500View;
+		errorViewMapping.put(500, error500View);
+	}
+	
+	/**
+	 * Set error 401 view.
+	 * @param error401View the error 401 view
+	 */
+	public void setError401View(String error401View) {
+		errorViewMapping.put(401, error401View);
+	}
+	
+	/**
+	 * Set error 403 view.
+	 * @param error403View the error 403 view
+	 */
+	public void setError403View(String error403View) {
+		errorViewMapping.put(403, error403View);
+	}
+	
+	private java.util.Map<Integer, String> errorViewMapping = new java.util.HashMap<Integer, String>();
+	public void setErrorView(int errorCode, String errorView) {
+		errorViewMapping.put(errorCode, errorView);
+	}
+	public String getErrorView(int errorCode) {
+		return errorViewMapping.get(errorCode);
 	}
 	
 	public String getFileRenderPath() {
@@ -293,6 +308,12 @@ final public class Constants {
 		if (loggerFactory == null)
 			throw new IllegalArgumentException("loggerFactory can not be null.");
 		Logger.setLoggerFactory(loggerFactory);
+	}
+	
+	public void setErrorRenderFactory(IErrorRenderFactory errorRenderFactory) {
+		if (errorRenderFactory == null)
+			throw new IllegalArgumentException("errorRenderFactory can not be null.");
+		RenderFactory.setErrorRenderFactory(errorRenderFactory);
 	}
 }
 

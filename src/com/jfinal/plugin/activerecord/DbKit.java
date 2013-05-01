@@ -139,11 +139,11 @@ public final class DbKit {
 	}*/
 	
 	/**
-	 * Helps to prevent nested transaction.
+	 * Helps to implement nested transaction.
 	 * Tx.intercept(...) and Db.tx(...) need this method to detected if it in nested transaction.
 	 */
-	public static final boolean isExistsThreadLocalConnection() {
-		return threadLocal.get() != null;
+	public static final Connection getThreadLocalConnection() {
+		return threadLocal.get();
 	}
 	
 	/**
