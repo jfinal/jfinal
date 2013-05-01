@@ -45,6 +45,7 @@ public class JsonRender extends Render {
 	private static final String contentType = "application/json;charset=" + getEncoding();
 	private static final String contentTypeForIE = "text/html;charset=" + getEncoding();
 	private boolean forIE = false;
+	private static int convertDepth = 8;
 	
 	public JsonRender forIE() {
 		forIE = true;
@@ -62,7 +63,7 @@ public class JsonRender extends Render {
 	public JsonRender(final String key, final Object value) {
 		if (key == null)
 			throw new IllegalArgumentException("The parameter key can not be null.");
-		this.jsonText = JsonKit.mapToJson(new HashMap<String, Object>(){{put(key, value);}}, depth);
+		this.jsonText = JsonKit.mapToJson(new HashMap<String, Object>(){{put(key, value);}}, convertDepth);
 	}
 	
 	public JsonRender(String[] attrs) {
@@ -80,7 +81,13 @@ public class JsonRender extends Render {
 	public JsonRender(Object object) {
 		if (object == null)
 			throw new IllegalArgumentException("The parameter object can not be null.");
-		this.jsonText = JsonKit.toJson(object, depth);
+		this.jsonText = JsonKit.toJson(object, convertDepth);
+	}
+	
+	public static void setConvertDepth(int convertDepth) {
+		if (convertDepth < 2)
+			throw new IllegalArgumentException("convert depth can not less than 2.");
+		JsonRender.convertDepth = convertDepth;
 	}
 	
 	public void render() {
@@ -106,8 +113,6 @@ public class JsonRender extends Render {
 		}
 	}
 	
-	private static final int depth = 8;
-	
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private void buildJsonText() {
 		Map map = new HashMap();
@@ -124,7 +129,7 @@ public class JsonRender extends Render {
 			}
 		}
 		
-		this.jsonText = JsonKit.mapToJson(map, depth);
+		this.jsonText = JsonKit.mapToJson(map, convertDepth);
 	}
 }
 

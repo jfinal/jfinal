@@ -39,7 +39,13 @@ import com.jfinal.plugin.activerecord.Record;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JsonKit {
 	
-	private static final int DEFAULT_DEPTH = 8;
+	private static int convertDepth = 8;
+	
+	public static void setConvertDepth(int convertDepth) {
+		if (convertDepth < 2)
+			throw new IllegalArgumentException("convert depth can not less than 2.");
+		JsonKit.convertDepth = convertDepth;
+	}
 	
 	public static String mapToJson(Map map, int depth) {
 		if(map == null)
@@ -158,7 +164,7 @@ public class JsonKit {
 	}
 	
 	public static String toJson(Object value) {
-		return toJson(value, DEFAULT_DEPTH);
+		return toJson(value, convertDepth);
 	}
 	
 	public static String toJson(Object value, int depth) {
@@ -224,6 +230,10 @@ public class JsonKit {
 				list.add(arr[i]);
 			return listToJson(list, depth);
 		}
+		if (value instanceof Enum) {
+			return "\"" + ((Enum)value).name() + "\"";
+		}
+		
 		return beanToJson(value, depth);
 	}
 	

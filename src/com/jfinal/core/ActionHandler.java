@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.jfinal.config.Constants;
 import com.jfinal.handler.Handler;
 import com.jfinal.log.Logger;
-import com.jfinal.render.Error404Exception;
-import com.jfinal.render.Error500Exception;
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderException;
 import com.jfinal.render.RenderFactory;
@@ -62,7 +60,7 @@ final class ActionHandler extends Handler {
 				String qs = request.getQueryString();
 				log.warn("Action not found: " + (qs == null ? target : target + "?" + qs));
 			}
-			renderFactory.getError404Render().setContext(request, response).render();
+			renderFactory.getErrorRender(404).setContext(request, response).render();
 			return ;
 		}
 		
@@ -99,26 +97,43 @@ final class ActionHandler extends Handler {
 				log.error(qs == null ? target : target + "?" + qs, e);
 			}
 		}
-		catch (Error404Exception e) {
-			if (log.isWarnEnabled()) {
-				String qs = request.getQueryString();
-				log.warn("Resource not found: " + (qs == null ? target : target + "?" + qs));
+		catch (ActionException e) {
+			int errorCode = e.getErrorCode();
+			if (errorCode == 404) {
+				if (log.isWarnEnabled()) {
+					String qs = request.getQueryString();
+					log.warn("404 Not Found: " + (qs == null ? target : target + "?" + qs));
+				}
+				e.getErrorRender().setContext(request, response).render();
 			}
-			e.getError404Render().setContext(request, response).render();
-		}
-		catch (Error500Exception e) {
-			if (log.isErrorEnabled()) {
-				String qs = request.getQueryString();
-				log.error(qs == null ? target : target + "?" + qs, e);
+			else if (errorCode == 401) {
+				if (log.isWarnEnabled()) {
+					String qs = request.getQueryString();
+					log.warn("401 Unauthorized: " + (qs == null ? target : target + "?" + qs));
+				}
+				e.getErrorRender().setContext(request, response).render();
 			}
-			e.getError500Render().setContext(request, response).render();
+			else if (errorCode == 403) {
+				if (log.isWarnEnabled()) {
+					String qs = request.getQueryString();
+					log.warn("403 Forbidden: " + (qs == null ? target : target + "?" + qs));
+				}
+				e.getErrorRender().setContext(request, response).render();
+			}
+			else {
+				if (log.isErrorEnabled()) {
+					String qs = request.getQueryString();
+					log.error(qs == null ? target : target + "?" + qs, e);
+				}
+				e.getErrorRender().setContext(request, response).render();
+			}
 		}
 		catch (Exception e) {
 			if (log.isErrorEnabled()) {
 				String qs = request.getQueryString();
 				log.error(qs == null ? target : target + "?" + qs, e);
 			}
-			renderFactory.getError500Render().setContext(request, response).render();
+			renderFactory.getErrorRender(500).setContext(request, response).render();
 		}
 	}
 }

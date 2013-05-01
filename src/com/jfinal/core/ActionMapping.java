@@ -56,6 +56,7 @@ final class ActionMapping {
 	}
 	
 	void buildActionMapping() {
+		mapping.clear();
 		Set<String> excludedMethodName = buildExcludedMethodName();
 		InterceptorBuilder interceptorBuilder = new InterceptorBuilder();
 		Interceptor[] defaultInters = interceptors.getInterceptorArray();

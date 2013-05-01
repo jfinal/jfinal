@@ -106,16 +106,16 @@ public class CacheInterceptor implements Interceptor {
 		CacheKit.put(cacheName, cacheKey, cacheData);
 	}
 	
-	private void useCacheDataAndRender(Map<String, Object> data, Controller controller) {
+	private void useCacheDataAndRender(Map<String, Object> cacheData, Controller controller) {
 		HttpServletRequest request = controller.getRequest();
-		Set<Entry<String, Object>> set = data.entrySet();
+		Set<Entry<String, Object>> set = cacheData.entrySet();
 		for (Iterator<Entry<String, Object>> it=set.iterator(); it.hasNext();) {
 			Entry<String, Object> entry = it.next();
 			request.setAttribute(entry.getKey(), entry.getValue());
 		}
-		
-		controller.render((Render)request.getAttribute(renderKey));		// set render from cache
 		request.removeAttribute(renderKey);
+		
+		controller.render((Render)cacheData.get(renderKey));		// set render from cacheData
 	}
 }
 

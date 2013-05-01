@@ -203,12 +203,12 @@ public abstract class Controller {
 		return (Integer)request.getAttribute(name);
 	}
 	
-	private Integer getParaToInt_(String result, Integer defaultValue) {
-		if (result == null)
+	private Integer toInt(String value, Integer defaultValue) {
+		if (value == null)
 			return defaultValue;
-		if (result.startsWith("N") || result.startsWith("n"))
-			return -Integer.parseInt(result.substring(1));
-		return Integer.parseInt(result);
+		if (value.startsWith("N") || value.startsWith("n"))
+			return -Integer.parseInt(value.substring(1));
+		return Integer.parseInt(value);
 	}
 	
 	/**
@@ -217,7 +217,7 @@ public abstract class Controller {
 	 * @return a Integer representing the single value of the parameter
 	 */
 	public Integer getParaToInt(String name) {
-		return getParaToInt_(request.getParameter(name), null);
+		return toInt(request.getParameter(name), null);
 	}
 	
 	/**
@@ -226,15 +226,15 @@ public abstract class Controller {
 	 * @return a Integer representing the single value of the parameter
 	 */
 	public Integer getParaToInt(String name, Integer defaultValue) {
-		return getParaToInt_(request.getParameter(name), defaultValue);
+		return toInt(request.getParameter(name), defaultValue);
 	}
 	
-	private Long getParaToLong_(String result, Long defaultValue) {
-		if (result == null)
+	private Long toLong(String value, Long defaultValue) {
+		if (value == null)
 			return defaultValue;
-		if (result.startsWith("N") || result.startsWith("n"))
-			return -Long.parseLong(result.substring(1));
-		return Long.parseLong(result);
+		if (value.startsWith("N") || value.startsWith("n"))
+			return -Long.parseLong(value.substring(1));
+		return Long.parseLong(value);
 	}
 	
 	/**
@@ -243,7 +243,7 @@ public abstract class Controller {
 	 * @return a Integer representing the single value of the parameter
 	 */
 	public Long getParaToLong(String name) {
-		return getParaToLong_(request.getParameter(name), null);
+		return toLong(request.getParameter(name), null);
 	}
 	
 	/**
@@ -252,7 +252,7 @@ public abstract class Controller {
 	 * @return a Integer representing the single value of the parameter
 	 */
 	public Long getParaToLong(String name, Long defaultValue) {
-		return getParaToLong_(request.getParameter(name), defaultValue);
+		return toLong(request.getParameter(name), defaultValue);
 	}
 	
 	/**
@@ -522,42 +522,42 @@ public abstract class Controller {
 	 * Get para from url and conver to Integer. The first index is 0
 	 */
 	public Integer getParaToInt(int index) {
-		return getParaToInt_(getPara(index), null);
+		return toInt(getPara(index), null);
 	}
 	
 	/**
 	 * Get para from url and conver to Integer with default value if it is null.
 	 */
 	public Integer getParaToInt(int index, Integer defaultValue) {
-		return getParaToInt_(getPara(index), defaultValue);
+		return toInt(getPara(index), defaultValue);
 	}
 	
 	/**
 	 * Get para from url and conver to Long.
 	 */
 	public Long getParaToLong(int index) {
-		return getParaToLong_(getPara(index), null);
+		return toLong(getPara(index), null);
 	}
 	
 	/**
 	 * Get para from url and conver to Long with default value if it is null.
 	 */
 	public Long getParaToLong(int index, Long defaultValue) {
-		return getParaToLong_(getPara(index), defaultValue);
+		return toLong(getPara(index), defaultValue);
 	}
 	
 	/**
 	 * Get all para from url and convert to Integer
 	 */
 	public Integer getParaToInt() {
-		return getParaToInt_(getPara(), null);
+		return toInt(getPara(), null);
 	}
 	
 	/**
 	 * Get all para from url and convert to Long
 	 */
 	public Long getParaToLong() {
-		return getParaToLong_(getPara(), null);
+		return toLong(getPara(), null);
 	}
 	
 	/**
@@ -975,31 +975,24 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * Render with view and 404 status
+	 * Render with view and errorCode status
 	 */
-	public void renderError404(String view) {
-		throw new com.jfinal.render.Error404Exception(renderFactory.getError404Render(view));
+	public void renderError(int errorCode, String view) {
+		throw new ActionException(errorCode, renderFactory.getErrorRender(errorCode, view));
 	}
 	
 	/**
-	 * Render with view and 404 status configured in JFinalConfig
+	 * Render with render and errorCode status
 	 */
-	public void renderError404() {
-		throw new com.jfinal.render.Error404Exception(renderFactory.getError404Render());
+	public void renderError(int errorCode, Render render) {
+		throw new ActionException(errorCode, render);
 	}
 	
 	/**
-	 * Render with view and 500 status
+	 * Render with view and errorCode status configured in JFinalConfig
 	 */
-	public void renderError500(String view) {
-		throw new com.jfinal.render.Error500Exception(renderFactory.getError500Render(view));
-	}
-	
-	/**
-	 * Render with view and 500 status configured in JFinalConfig
-	 */
-	public void renderError500() {
-		throw new com.jfinal.render.Error500Exception(renderFactory.getError500Render());
+	public void renderError(int errorCode) {
+		throw new ActionException(errorCode, renderFactory.getErrorRender(errorCode));
 	}
 	
 	/**

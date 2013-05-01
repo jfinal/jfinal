@@ -30,6 +30,7 @@ public class RenderFactory {
 	
 	private Constants constants;
 	private static IMainRenderFactory mainRenderFactory;
+	private static IErrorRenderFactory errorRenderFactory;
 	private static ServletContext servletContext;
 	
 	static ServletContext getServletContext() {
@@ -49,6 +50,11 @@ public class RenderFactory {
 	public static void setMainRenderFactory(IMainRenderFactory mainRenderFactory) {
 		if (mainRenderFactory != null)
 			RenderFactory.mainRenderFactory = mainRenderFactory;
+	}
+	
+	public static void setErrorRenderFactory(IErrorRenderFactory errorRenderFactory) {
+		if (errorRenderFactory != null)
+			RenderFactory.errorRenderFactory = errorRenderFactory;
 	}
 	
 	public void init(Constants constants, ServletContext servletContext) {
@@ -72,6 +78,11 @@ public class RenderFactory {
 				mainRenderFactory = new VelocityRenderFactory();
 			else
 				throw new RuntimeException("View Type can not be null.");
+		}
+		
+		// create errorRenderFactory
+		if (errorRenderFactory == null) {
+			errorRenderFactory = new ErrorRenderFactory();
 		}
 	}
 	
@@ -172,22 +183,12 @@ public class RenderFactory {
 		}
 	}
 	
-	public Render getError404Render() {
-		String error404View = constants.getError404View();
-		return error404View != null ? new Error404Render(error404View) : new Error404Render();
+	public Render getErrorRender(int errorCode, String view) {
+		return errorRenderFactory.getRender(errorCode, view);
 	}
 	
-	public Render getError404Render(String view) {
-		return new Error404Render(view);
-	}
-	
-	public Render getError500Render() {
-		String error500View = constants.getError500View();
-		return error500View != null ? new Error500Render(error500View) : new Error500Render();
-	}
-	
-	public Render getError500Render(String view) {
-		return new Error500Render(view);
+	public Render getErrorRender(int errorCode) {
+		return errorRenderFactory.getRender(errorCode, constants.getErrorView(errorCode));
 	}
 	
 	public Render getFileRender(String fileName) {
@@ -251,6 +252,12 @@ public class RenderFactory {
 		}
 		public String getViewExtension() {
 			return ".html";
+		}
+	}
+	
+	private static final class ErrorRenderFactory implements IErrorRenderFactory {
+		public Render getRender(int errorCode, String view) {
+			return new ErrorRender(errorCode, view);
 		}
 	}
 }
