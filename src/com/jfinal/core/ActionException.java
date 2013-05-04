@@ -42,7 +42,7 @@ public class ActionException extends RuntimeException {
 			throw new IllegalArgumentException("The parameter errorView can not be blank.");
 		
 		this.errorCode = errorCode;
-		this.errorRender = RenderFactory.me().getRender(errorView);
+		this.errorRender = RenderFactory.me().getErrorRender(errorCode, errorView);
 	}
 	
 	public int getErrorCode() {
