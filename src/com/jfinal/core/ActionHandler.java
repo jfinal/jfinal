@@ -58,7 +58,7 @@ final class ActionHandler extends Handler {
 		if (action == null) {
 			if (log.isWarnEnabled()) {
 				String qs = request.getQueryString();
-				log.warn("Action not found: " + (qs == null ? target : target + "?" + qs));
+				log.warn("404 Action Not Found: " + (qs == null ? target : target + "?" + qs));
 			}
 			renderFactory.getErrorRender(404).setContext(request, response).render();
 			return ;
