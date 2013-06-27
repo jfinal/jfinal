@@ -27,9 +27,14 @@ final public class Plugins {
 	
 	private final List<IPlugin> pluginList = new ArrayList<IPlugin>();
 	
-	public Plugins add(IPlugin plugin) {
-		if (plugin != null)
-			this.pluginList.add(plugin);
+	public Plugins add(IPlugin... plugins) {
+		if(null == plugins || plugins.length == 0) {
+			return this;
+		}
+		for(IPlugin plugin : plugins) {
+			if (plugin != null)
+				this.pluginList.add(plugin);
+		}
 		return this;
 	}
 	
