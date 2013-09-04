@@ -1,0 +1,11 @@
+一、在本地安装部分 jar 包
+由于在 maven中心库中未找到jetty-server-8.1.8.jar 与 cos-26Dec2008.jar，
+需要先使用如下命令将这两个 jar 包安装在本地 maven 库中
+
+安装 jetty-server-8.1.8.jar
+mvn install:install-file -DgroupId=com.jfinal -DartifactId=jetty-server -Dversion=8.1.8 -Dpackaging=jar -Dfile=jetty-server-8.1.8.jar
+
+安装 cos-26Dec2008.jar
+mvn install:install-file -DgroupId=com.jfinal -DartifactId=cos -Dversion=26Dec2008 -Dpackaging=jar -Dfile=cos-26Dec2008.jar
+
+二、后续将会对 pom.xml 再做调整
