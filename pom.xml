@@ -31,11 +31,11 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:git:git://github.com/jfinal/jfinal.git</connection>
-		<developerConnection>scm:git:git://github.com/jfinal/jfinal.git</developerConnection>
-		<url>git://github.com/jfinal/jfinal.git</url>
+		<connection>scm:git:git@github.com:jfinal/jfinal.git</connection>
+		<developerConnection>scm:git:git@github.com:jfinal/jfinal.git</developerConnection>
+		<url>git@github.com:jfinal/jfinal.git</url>
 	</scm>
-
+	
 	<parent>
 		<groupId>org.sonatype.oss</groupId>
 		<artifactId>oss-parent</artifactId>
@@ -153,6 +153,21 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+				  <execution>
+					<id>sign-artifacts</id>
+					<phase>verify</phase>
+					<goals>
+					  <goal>sign</goal>
+					</goals>
+				  </execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 </project>
