@@ -204,7 +204,7 @@ public abstract class Controller {
 	}
 	
 	private Integer toInt(String value, Integer defaultValue) {
-		if (value == null)
+		if (value == null || "".equals(value.trim()))
 			return defaultValue;
 		if (value.startsWith("N") || value.startsWith("n"))
 			return -Integer.parseInt(value.substring(1));
@@ -230,7 +230,7 @@ public abstract class Controller {
 	}
 	
 	private Long toLong(String value, Long defaultValue) {
-		if (value == null)
+		if (value == null || "".equals(value.trim()))
 			return defaultValue;
 		if (value.startsWith("N") || value.startsWith("n"))
 			return -Long.parseLong(value.substring(1));

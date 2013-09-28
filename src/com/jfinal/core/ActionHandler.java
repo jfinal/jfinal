@@ -99,34 +99,23 @@ final class ActionHandler extends Handler {
 		}
 		catch (ActionException e) {
 			int errorCode = e.getErrorCode();
-			if (errorCode == 404) {
-				if (log.isWarnEnabled()) {
-					String qs = request.getQueryString();
-					log.warn("404 Not Found: " + (qs == null ? target : target + "?" + qs));
-				}
-				e.getErrorRender().setContext(request, response).render();
+			if (errorCode == 404 && log.isWarnEnabled()) {
+				String qs = request.getQueryString();
+				log.warn("404 Not Found: " + (qs == null ? target : target + "?" + qs));
 			}
-			else if (errorCode == 401) {
-				if (log.isWarnEnabled()) {
-					String qs = request.getQueryString();
-					log.warn("401 Unauthorized: " + (qs == null ? target : target + "?" + qs));
-				}
-				e.getErrorRender().setContext(request, response).render();
+			else if (errorCode == 401 && log.isWarnEnabled()) {
+				String qs = request.getQueryString();
+				log.warn("401 Unauthorized: " + (qs == null ? target : target + "?" + qs));
 			}
-			else if (errorCode == 403) {
-				if (log.isWarnEnabled()) {
-					String qs = request.getQueryString();
-					log.warn("403 Forbidden: " + (qs == null ? target : target + "?" + qs));
-				}
-				e.getErrorRender().setContext(request, response).render();
+			else if (errorCode == 403 && log.isWarnEnabled()) {
+				String qs = request.getQueryString();
+				log.warn("403 Forbidden: " + (qs == null ? target : target + "?" + qs));
 			}
-			else {
-				if (log.isErrorEnabled()) {
-					String qs = request.getQueryString();
-					log.error(qs == null ? target : target + "?" + qs, e);
-				}
-				e.getErrorRender().setContext(request, response).render();
+			else if (log.isErrorEnabled()) {
+				String qs = request.getQueryString();
+				log.error(qs == null ? target : target + "?" + qs, e);
 			}
+			e.getErrorRender().setContext(request, response).render();
 		}
 		catch (Exception e) {
 			if (log.isErrorEnabled()) {

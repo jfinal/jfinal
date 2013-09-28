@@ -16,6 +16,7 @@
 
 package com.jfinal.validate;
 
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
@@ -96,6 +97,20 @@ public abstract class Validator implements Interceptor {
 	 */
 	protected String getControllerKey() {
 		return invocation.getControllerKey();
+	}
+	
+	/**
+	 * Return the method of this action.
+	 */
+	protected Method getActionMethod() {
+		return invocation.getMethod();
+	}
+	
+	/**
+	 * Return view path of this controller.
+	 */
+	protected String getViewPath() {
+		return invocation.getViewPath();
 	}
 	
 	/**

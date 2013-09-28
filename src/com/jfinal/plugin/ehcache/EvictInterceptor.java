@@ -18,7 +18,6 @@ package com.jfinal.plugin.ehcache;
 
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
-import com.jfinal.core.Controller;
 
 /**
  * EvictInterceptor.
@@ -28,16 +27,15 @@ public class EvictInterceptor implements Interceptor {
 	final public void intercept(ActionInvocation ai) {
 		ai.invoke();
 		
-		String cacheName = buildCacheName(ai, ai.getController());
-		CacheKit.removeAll(cacheName);
+		CacheKit.removeAll(buildCacheName(ai));
 	}
 	
-	private String buildCacheName(ActionInvocation ai, Controller controller) {
+	private String buildCacheName(ActionInvocation ai) {
 		CacheName cacheName = ai.getMethod().getAnnotation(CacheName.class);
 		if (cacheName != null)
 			return cacheName.value();
 		
-		cacheName = controller.getClass().getAnnotation(CacheName.class);
+		cacheName = ai.getController().getClass().getAnnotation(CacheName.class);
 		if (cacheName == null)
 			throw new RuntimeException("EvictInterceptor need CacheName annotation in controller.");
 		return cacheName.value();
