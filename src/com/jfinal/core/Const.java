@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2012, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ public interface Const {
 	
 	int DEFAULT_FREEMARKER_TEMPLATE_UPDATE_DELAY = 3600;	// For not devMode only
 	
-	String DEFAULT_TOKEN_NAME = "JFinalDefaultTokenName";
+	String DEFAULT_TOKEN_NAME = "jfinal_token";
 	
 	int DEFAULT_SECONDS_OF_TOKEN_TIME_OUT = 900;			// 900 seconds ---> 15 minutes
 	

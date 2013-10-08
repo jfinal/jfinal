@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2012, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,7 @@ class JettyServer implements IServer {
 		persistSession(webApp);
 		
 		server.setHandler(webApp);
+		changeClassLoader(webApp);
 		
 		// configureScanner
 		if (scanIntervalSeconds > 0) {
@@ -100,6 +101,8 @@ class JettyServer implements IServer {
 					try {
 						System.err.println("\nLoading changes ......");
 						webApp.stop();
+						JFinalClassLoader loader = new JFinalClassLoader(webApp, getClassPath());
+						webApp.setClassLoader(loader);
 						webApp.start();
 						System.err.println("Loading complete.");
 					} catch (Exception e) {
@@ -122,6 +125,20 @@ class JettyServer implements IServer {
 			System.exit(100);
 		}
 		return;
+	}
+	
+	private void changeClassLoader(WebAppContext webApp) {
+		try {
+			String classPath = getClassPath();
+			JFinalClassLoader wacl = new JFinalClassLoader(webApp, classPath);
+			wacl.addClassPath(classPath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private String getClassPath() {
+		return System.getProperty("java.class.path");
 	}
 	
 	private void deleteSessionData() {

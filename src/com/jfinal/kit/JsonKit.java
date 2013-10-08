@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2012, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.jfinal.kit;
 
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,11 +41,25 @@ import com.jfinal.plugin.activerecord.Record;
 public class JsonKit {
 	
 	private static int convertDepth = 8;
+	private static String timestampPattern = "yyyy-MM-dd HH:mm:ss";
+	private static String datePattern = "yyyy-MM-dd";
 	
 	public static void setConvertDepth(int convertDepth) {
 		if (convertDepth < 2)
 			throw new IllegalArgumentException("convert depth can not less than 2.");
 		JsonKit.convertDepth = convertDepth;
+	}
+	
+	public static void setTimestampPattern(String timestampPattern) {
+		if (timestampPattern == null || "".equals(timestampPattern.trim()))
+			throw new IllegalArgumentException("timestampPattern can not be blank.");
+		JsonKit.timestampPattern = timestampPattern;
+	}
+	
+	public static void setDatePattern(String datePattern) {
+		if (datePattern == null || "".equals(datePattern.trim()))
+			throw new IllegalArgumentException("datePattern can not be blank.");
+		JsonKit.datePattern = datePattern;
 	}
 	
 	public static String mapToJson(Map map, int depth) {
@@ -194,6 +209,14 @@ public class JsonKit {
 		if(value instanceof Boolean)
 			return value.toString();
 		
+		if (value instanceof java.util.Date) {
+			if (value instanceof java.sql.Timestamp)
+				return "\"" + new SimpleDateFormat(timestampPattern).format(value) + "\"";
+			if (value instanceof java.sql.Time)
+				return "\"" + value.toString() + "\"";
+			return "\"" + new SimpleDateFormat(datePattern).format(value) + "\"";
+		}
+		
 		if(value instanceof Map) {
 			return mapToJson((Map)value, depth);
 		}
@@ -212,8 +235,9 @@ public class JsonKit {
 	}
 	
 	private static String otherToJson(Object value, int depth) {
-		if (value instanceof java.util.Date || value instanceof Character)
-			return null;
+		if (value instanceof Character) {
+			return "\"" + escape(value.toString()) + "\"";
+		}
 		
 		if (value instanceof Model) {
 			Map map = com.jfinal.plugin.activerecord.CPI.getAttrs((Model)value);
