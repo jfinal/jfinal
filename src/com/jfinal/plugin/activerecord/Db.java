@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2012, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -735,8 +735,8 @@ public class Db {
 	/**
 	 * @see #execute(DataSource, ICallback)
 	 */
-	public static void execute(ICallback callback) {
-		execute(DbKit.getDataSource(), callback);
+	public static Object execute(ICallback callback) {
+		return execute(DbKit.getDataSource(), callback);
 	}
 	
 	/**
@@ -744,11 +744,11 @@ public class Db {
 	 * @param dataSource the DataSource for this query
 	 * @param callback the ICallback interface
 	 */
-	public static void execute(DataSource dataSource, ICallback callback) {
+	public static Object execute(DataSource dataSource, ICallback callback) {
 		Connection conn = null;
 		try {
 			conn = dataSource.getConnection();
-			callback.run(conn);
+			return callback.run(conn);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
@@ -762,7 +762,7 @@ public class Db {
 	 * @param atom the atom operation
 	 * @return true if transaction executing succeed otherwise false
 	 */
-	public  static boolean tx(int transactionLevel, IAtom atom) {
+	public static boolean tx(int transactionLevel, IAtom atom) {
 		Connection conn = DbKit.getThreadLocalConnection();
 		if (conn != null) {	// Nested transaction support
 			try {
@@ -794,7 +794,7 @@ public class Db {
 		} catch (Exception e) {
 			if (conn != null)
 				try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
-			return false;	// throw new ActiveRecordException(e);
+			throw e instanceof RuntimeException ? (RuntimeException)e : new ActiveRecordException(e);
 		} finally {
 			try {
 				if (conn != null) {

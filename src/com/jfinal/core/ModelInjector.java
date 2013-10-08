@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2012, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ final class ModelInjector {
 		try {
 			model = modelClass.newInstance();
 		} catch (Exception e) {
-			throw new ModelInjectException(e);
+			throw new RuntimeException(e);
 		}
 		
 		if (model instanceof Model)
@@ -71,7 +71,7 @@ final class ModelInjector {
 					method.invoke(model, TypeConverter.convert(types[0], value));
 				} catch (Exception e) {
 					if (skipConvertError == false)
-					throw new ModelInjectException(e);
+					throw new RuntimeException(e);
 				}
 			}
 		}
@@ -98,23 +98,10 @@ final class ModelInjector {
 					model.set(paraName, value);
 				} catch (Exception ex) {
 					if (skipConvertError == false)
-						throw new ModelInjectException("Can not convert parameter: " + modelNameAndDot + paraName, ex);
+						throw new RuntimeException("Can not convert parameter: " + modelNameAndDot + paraName, ex);
 				}
 			}
 		}
-	}
-}
-
-class ModelInjectException extends RuntimeException {
-	
-	private static final long serialVersionUID = 867623224283092808L;
-	
-	public ModelInjectException(Throwable cause) {
-		super(cause);
-	}
-	
-	public ModelInjectException(String message, Throwable cause) {
-		super(message, cause);
 	}
 }
 

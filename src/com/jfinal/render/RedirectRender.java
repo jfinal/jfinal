@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2012, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,10 @@ public class RedirectRender extends Render {
 		if (withQueryString) {
 			String queryString = request.getQueryString();
 			if (queryString != null)
-				url = url + "?" + queryString;
+				if (url.indexOf("?") == -1)
+					url = url + "?" + queryString;
+				else
+					url = url + "&" + queryString;
 		}
 		
 		try {

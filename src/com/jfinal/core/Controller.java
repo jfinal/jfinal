@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2012, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.jfinal.core;
 
 import java.io.File;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -255,32 +256,89 @@ public abstract class Controller {
 		return toLong(request.getParameter(name), defaultValue);
 	}
 	
+	private Boolean toBoolean(String value, Boolean defaultValue) {
+		if (value == null || "".equals(value.trim()))
+			return defaultValue;
+		value = value.trim().toLowerCase();
+		if ("1".equals(value) || "true".equals(value))
+			return Boolean.TRUE;
+		else if ("0".equals(value) || "false".equals(value))
+			return Boolean.FALSE;
+		throw new RuntimeException("Can not parse the parameter \"" + value + "\" to boolean value.");
+	}
+	
 	/**
 	 * Returns the value of a request parameter and convert to Boolean.
 	 * @param name a String specifying the name of the parameter
-	 * @return false if the value of the parameter is "false" or "0", true if it is "true" or "1", null if parameter is not exists
+	 * @return true if the value of the parameter is "true" or "1", false if it is "false" or "0", null if parameter is not exists
 	 */
 	public Boolean getParaToBoolean(String name) {
-		String result = request.getParameter(name);
-		if (result != null) {
-			result = result.trim().toLowerCase();
-			if (result.equals("1") || result.equals("true"))
-				return Boolean.TRUE;
-			else if (result.equals("0") || result.equals("false"))
-				return Boolean.FALSE;
-			// return Boolean.FALSE;	// if use this, delete 2 lines code under
-		}
-		return null;
+		return toBoolean(request.getParameter(name), null);
 	}
 	
 	/**
 	 * Returns the value of a request parameter and convert to Boolean with a default value if it is null.
 	 * @param name a String specifying the name of the parameter
-	 * @return false if the value of the parameter is "false" or "0", true if it is "true" or "1", default value if it is null
+	 * @return true if the value of the parameter is "true" or "1", false if it is "false" or "0", default value if it is null
 	 */
 	public Boolean getParaToBoolean(String name, Boolean defaultValue) {
-		Boolean result = getParaToBoolean(name);
-		return result != null ? result : defaultValue;
+		return toBoolean(request.getParameter(name), defaultValue);
+	}
+	
+	/**
+	 * Get all para from url and convert to Boolean
+	 */
+	public Boolean getParaToBoolean() {
+		return toBoolean(getPara(), null);
+	}
+	
+	/**
+	 * Get para from url and conver to Boolean. The first index is 0
+	 */
+	public Boolean getParaToBoolean(int index) {
+		return toBoolean(getPara(index), null);
+	}
+	
+	/**
+	 * Get para from url and conver to Boolean with default value if it is null.
+	 */
+	public Boolean getParaToBoolean(int index, Boolean defaultValue) {
+		return toBoolean(getPara(index), defaultValue);
+	}
+	
+	private Date toDate(String value, Date defaultValue) {
+		if (value == null || "".equals(value.trim()))
+			return defaultValue;
+		try {
+			return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value);
+		} catch (ParseException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
+	 * Returns the value of a request parameter and convert to Date.
+	 * @param name a String specifying the name of the parameter
+	 * @return a Date representing the single value of the parameter
+	 */
+	public Date getParaToDate(String name) {
+		return toDate(request.getParameter(name), null);
+	}
+	
+	/**
+	 * Returns the value of a request parameter and convert to Date with a default value if it is null.
+	 * @param name a String specifying the name of the parameter
+	 * @return a Date representing the single value of the parameter
+	 */
+	public Date getParaToDate(String name, Date defaultValue) {
+		return toDate(request.getParameter(name), defaultValue);
+	}
+	
+	/**
+	 * Get all para from url and convert to Date
+	 */
+	public Date getParaToDate() {
+		return toDate(getPara(), null);
 	}
 	
 	/**
@@ -755,10 +813,18 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * Create a token with default token name ---> "token" and with default seconds of time out.
+	 * Create a token with default token name and with default seconds of time out.
 	 */
 	public void createToken() {
 		createToken(Const.DEFAULT_TOKEN_NAME, Const.DEFAULT_SECONDS_OF_TOKEN_TIME_OUT);
+	}
+	
+	/**
+	 * Create a token with default seconds of time out.
+	 * @param tokenName the token name used in view
+	 */
+	public void createToken(String tokenName) {
+		createToken(tokenName, Const.DEFAULT_SECONDS_OF_TOKEN_TIME_OUT);
 	}
 	
 	/**

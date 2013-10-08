@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2012, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,5 +28,5 @@ public interface ICallback {
 	 * Place codes here that need call back by active record plugin.
 	 * @param conn the JDBC Connection, you need't close this connection after used it, active record plugin will close it automatically
 	 */
-	void run(Connection conn) throws SQLException;
+	Object run(Connection conn) throws SQLException;
 }

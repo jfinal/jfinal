@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2012, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package com.jfinal.config;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import com.jfinal.core.Const;
 import com.jfinal.kit.PathKit;
 import com.jfinal.kit.StringKit;
@@ -184,10 +186,12 @@ final public class Constants {
 		errorViewMapping.put(403, error403View);
 	}
 	
-	private java.util.Map<Integer, String> errorViewMapping = new java.util.HashMap<Integer, String>();
+	private Map<Integer, String> errorViewMapping = new HashMap<Integer, String>();
+	
 	public void setErrorView(int errorCode, String errorView) {
 		errorViewMapping.put(errorCode, errorView);
 	}
+	
 	public String getErrorView(int errorCode) {
 		return errorViewMapping.get(errorCode);
 	}

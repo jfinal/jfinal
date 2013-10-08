@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2012, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,41 @@ public class C3p0Plugin implements IPlugin, IDataSourceProvider {
 		if (StringKit.isBlank(driverClass))
 			throw new IllegalArgumentException("driverClass can not be blank.");
 		this.driverClass = driverClass;
+		return this;
+	}
+	
+	public C3p0Plugin setMaxPoolSize(int maxPoolSize) {
+		if (maxPoolSize < 1)
+			throw new IllegalArgumentException("maxPoolSize must more than 0.");
+		this.maxPoolSize = maxPoolSize;
+		return this;
+	}
+	
+	public C3p0Plugin setMinPoolSize(int minPoolSize) {
+		if (minPoolSize < 1)
+			throw new IllegalArgumentException("minPoolSize must more than 0.");
+		this.minPoolSize = minPoolSize;
+		return this;
+	}
+	
+	public C3p0Plugin setInitialPoolSize(int initialPoolSize) {
+		if (initialPoolSize < 1)
+			throw new IllegalArgumentException("initialPoolSize must more than 0.");
+		this.initialPoolSize = initialPoolSize;
+		return this;
+	}
+	
+	public C3p0Plugin setMaxIdleTime(int maxIdleTime) {
+		if (maxIdleTime < 1)
+			throw new IllegalArgumentException("maxIdleTime must more than 0.");
+		this.maxIdleTime = maxIdleTime;
+		return this;
+	}
+	
+	public C3p0Plugin setAcquireIncrement(int acquireIncrement) {
+		if (acquireIncrement < 1)
+			throw new IllegalArgumentException("acquireIncrement must more than 0.");
+		this.acquireIncrement = acquireIncrement;
 		return this;
 	}
 	

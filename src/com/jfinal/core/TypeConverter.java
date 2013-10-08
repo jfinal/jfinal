@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2012, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,9 @@ final class TypeConverter {
 	 * 3: 需要考 model中的 string属性,在传过来 "" 时是该转成 null还是不该转换,
 	 *    我想, 因为用户没有输入那么肯定是 null, 而不该是 ""
 	 * 
-	 * 注意: 当clazz参数不为String.class, 且参数s为空串blank的情况,
+	 * 注意: 1:当clazz参数不为String.class, 且参数s为空串blank的情况,
 	 *       此情况下转换结果为 null, 而不应该抛出异常
+	 *      2:调用者需要对被转换数据做 null 判断，参见 ModelInjector 的两处调用
 	 */
 	public static final Object convert(Class<?> clazz, String s) throws ParseException {
 		// mysql type: varchar, char, enum, set, text, tinytext, mediumtext, longtext
@@ -62,7 +63,7 @@ final class TypeConverter {
 		}
 		// 经测试java.util.Data类型不会返回, java.sql.Date, java.sql.Time,java.sql.Timestamp 全部直接继承自 java.util.Data, 所以 getDate可以返回这三类数据
 		else if (clazz == java.util.Date.class) {
-        	if (s.length() >= timeStampLen) {
+        	if (s.length() >= timeStampLen) {	// if (x < timeStampLen) 改用 datePattern 转换，更智能
         		// Timestamp format must be yyyy-mm-dd hh:mm:ss[.fffffffff]
         		// result = new java.util.Date(java.sql.Timestamp.valueOf(s).getTime());	// error under jdk 64bit(maybe)
         		result = new SimpleDateFormat(timeStampPattern).parse(s);
@@ -74,7 +75,7 @@ final class TypeConverter {
         }
 		// mysql type: date, year
         else if (clazz == java.sql.Date.class) {
-        	if (s.length() >= timeStampLen) {
+        	if (s.length() >= timeStampLen) {	// if (x < timeStampLen) 改用 datePattern 转换，更智能
         		// result = new java.sql.Date(java.sql.Timestamp.valueOf(s).getTime());	// error under jdk 64bit(maybe)
         		result = new java.sql.Date(new SimpleDateFormat(timeStampPattern).parse(s).getTime());
         	}
@@ -101,11 +102,15 @@ final class TypeConverter {
 		}
 		// mysql type: bit, tinyint(1)
         else if (clazz == Boolean.class) {
-        	result = Boolean.parseBoolean(s);
+        	result = Boolean.parseBoolean(s) || "1".equals(s);
 		}
 		// mysql type: decimal, numeric
         else if (clazz == java.math.BigDecimal.class) {
         	result = new java.math.BigDecimal(s);
+		}
+		// mysql type: unsigned bigint
+		else if (clazz == java.math.BigInteger.class) {
+			result = new java.math.BigInteger(s);
 		}
 		// mysql type: binary, varbinary, tinyblob, blob, mediumblob, longblob. I have not finished the test.
         else if (clazz == byte[].class) {
