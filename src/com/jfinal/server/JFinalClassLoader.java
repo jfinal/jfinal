@@ -30,20 +30,20 @@ class JFinalClassLoader extends WebAppClassLoader {
 	
 	public JFinalClassLoader(WebAppContext context, String classPath) throws IOException {
 		super(context);
-	    if(classPath != null){
-		    String[] tokens = classPath.split(String.valueOf(File.pathSeparatorChar));
-		    for(String entry : tokens){
-		    	String path = entry;
-		    	if(path.startsWith("-y-") || path.startsWith("-n-")) {
-		    		path = path.substring(3);
-		    	}
-		    	
-		    	if(entry.startsWith("-n-") == false){
-		    		super.addClassPath(path);
-		    	}
-		    }
-	    }
-	    
+		if(classPath != null){
+			String[] tokens = classPath.split(String.valueOf(File.pathSeparatorChar));
+			for(String entry : tokens){
+				String path = entry;
+				if(path.startsWith("-y-") || path.startsWith("-n-")) {
+					path = path.substring(3);
+				}
+				
+				if(entry.startsWith("-n-") == false){
+					super.addClassPath(path);
+				}
+			}
+		}
+		
 		initialized = true;
 	}
 	
@@ -51,7 +51,8 @@ class JFinalClassLoader extends WebAppClassLoader {
 	public Class loadClass(String name) throws ClassNotFoundException {
 		try {
 			return loadClass(name, false);
-		} catch (NoClassDefFoundError e) {
+		}
+		catch (NoClassDefFoundError e) {
 			throw new ClassNotFoundException(name);
 		}
 	}
@@ -69,7 +70,6 @@ class JFinalClassLoader extends WebAppClassLoader {
 			return;
 		}
 		super.addJars(jars);
-		return;
 	}
 }
 
