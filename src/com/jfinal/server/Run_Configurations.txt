@@ -1,0 +1,11 @@
+Run Configurations... / Debug Configurations...
+
+1: Main
+    project(required) ---> your_project_name
+    Main class(required) ---> com.jfinal.core.JFinal
+
+2: Argument
+    Program arguments(optional) ---> WebRoot 80 / 5
+    VM arguments(optional) ---> -XX:PermSize=64M -XX:MaxPermSize=256M
+
+
