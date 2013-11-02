@@ -9,4 +9,3 @@ mvn install:install-file -DgroupId=com.jfinal -DartifactId=jetty-server -Dversio
 mvn install:install-file -DgroupId=com.jfinal -DartifactId=cos -Dversion=26Dec2008 -Dpackaging=jar -Dfile=cos-26Dec2008.jar
 
 二、后续将会对 pom.xml 再做调整
-a
