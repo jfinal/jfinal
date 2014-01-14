@@ -923,6 +923,39 @@ public abstract class Controller {
 	}
 	
 	/**
+	 * Defind safe path with J2EE project
+	 */
+	private final String safePath = "/WEB-INF/";
+	
+	/**
+	 * (Safe path)Render with view use default type Render configured in JFinalConfig
+	 */
+	public void renderSafe(String view) {
+		render = renderFactory.getRender(safePath + view);
+	}
+	
+	/**
+	 * (Safe path)Render with jsp view
+	 */
+	public void renderJspSafe(String view) {
+		render = renderFactory.getJspRender(safePath + view);
+	}
+	
+	/**
+	 * (Safe path)Render with freemarker view
+	 */
+	public void renderFreeMarkerSafe(String view) {
+		render = renderFactory.getFreeMarkerRender(safePath + view);
+	}
+	
+	/**
+	 * (Safe path)Render with velocity view
+	 */
+	public void renderVelocitySafe(String view) {
+		render = renderFactory.getVelocityRender(safePath + view);
+	}
+	
+	/**
 	 * Render with json
 	 * <p>
 	 * Example:<br>
