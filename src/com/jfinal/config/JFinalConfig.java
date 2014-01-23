@@ -21,6 +21,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Properties;
 import com.jfinal.kit.PathKit;
 import com.jfinal.kit.StringKit;
@@ -81,6 +83,7 @@ public abstract class JFinalConfig {
 			throw new IllegalArgumentException("Parameter of file can not contains \"..\"");
 		
 		InputStream inputStream = null;
+		InputStreamReader inputStreamReader = null;
 		String fullFile;	// String fullFile = PathUtil.getWebRootPath() + file;
 		if (file.startsWith(File.separator))
 			fullFile = PathKit.getWebRootPath() + File.separator + "WEB-INF" + file;
@@ -90,7 +93,8 @@ public abstract class JFinalConfig {
 		try {
 			inputStream = new FileInputStream(new File(fullFile));
 			Properties p = new Properties();
-			p.load(inputStream);
+			inputStreamReader = new InputStreamReader(inputStream, Charset.forName("UTF-8"));
+			p.load(inputStreamReader);
 			properties = p;
 		} catch (FileNotFoundException e) {
 			throw new IllegalArgumentException("Properties file not found: " + fullFile);
