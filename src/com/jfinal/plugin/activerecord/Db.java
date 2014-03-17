@@ -158,7 +158,7 @@ public class Db {
 	}
 	
 	public static <T> T queryColumn(String sql) {
-		return queryColumn(sql, NULL_PARA_ARRAY);
+		return (T)queryColumn(sql, NULL_PARA_ARRAY);
 	}
 	
 	public static String queryStr(String sql, Object... paras) {
