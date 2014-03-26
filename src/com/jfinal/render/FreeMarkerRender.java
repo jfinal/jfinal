@@ -107,6 +107,9 @@ public class FreeMarkerRender extends Render {
         // 去掉int型输出时的逗号, 例如: 123,456
         // config.setNumberFormat("#");		// config.setNumberFormat("0"); 也可以
         config.setNumberFormat("#0.#####");
+        config.setDateFormat("yyyy-MM-dd");
+        config.setTimeFormat("HH:mm:ss");
+        config.setDateTimeFormat("yyyy-MM-dd HH:mm:ss");
     }
     
 	@SuppressWarnings({"unchecked", "rawtypes"})

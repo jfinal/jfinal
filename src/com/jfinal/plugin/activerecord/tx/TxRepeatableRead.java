@@ -34,7 +34,11 @@ public class TxRepeatableRead extends Tx {
 	private int TRANSACTION_REPEATABLE_READ  = 4;
     
 	@Override
-	protected int getTransactionLevel() {
+	protected int getTransactionLevel(com.jfinal.plugin.activerecord.Config config) {
 		return TRANSACTION_REPEATABLE_READ;
 	}
 }
+
+
+
+

@@ -25,17 +25,17 @@ import java.util.Set;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
-import com.jfinal.plugin.activerecord.TableInfo;
+import com.jfinal.plugin.activerecord.Table;
 
 /**
  * Dialect.
  */
 public abstract class Dialect {
-	public abstract String forTableInfoBuilderDoBuildTableInfo(String tableName);
-	public abstract void forModelSave(TableInfo tableInfo, Map<String, Object> attrs, StringBuilder sql, List<Object> paras);
-	public abstract String forModelDeleteById(TableInfo tInfo);
-	public abstract void forModelUpdate(TableInfo tableInfo, Map<String, Object> attrs, Set<String> modifyFlag, String pKey, Object id, StringBuilder sql, List<Object> paras);
-	public abstract String forModelFindById(TableInfo tInfo, String columns);
+	public abstract String forTableBuilderDoBuild(String tableName);
+	public abstract void forModelSave(Table table, Map<String, Object> attrs, StringBuilder sql, List<Object> paras);
+	public abstract String forModelDeleteById(Table table);
+	public abstract void forModelUpdate(Table table, Map<String, Object> attrs, Set<String> modifyFlag, String pKey, Object id, StringBuilder sql, List<Object> paras);
+	public abstract String forModelFindById(Table table, String columns);
 	public abstract String forDbFindById(String tableName, String primaryKey, String columns);
 	public abstract String forDbDeleteById(String tableName, String primaryKey);
 	public abstract void forDbSave(StringBuilder sql, List<Object> paras, String tableName, Record record);
@@ -59,7 +59,7 @@ public abstract class Dialect {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Page takeOverModelPaginate(Class<? extends Model> modelClass, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+	public Page takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws Exception {
 		throw new RuntimeException("You should implements this method in " + getClass().getName());
 	}
 	
@@ -79,7 +79,6 @@ public abstract class Dialect {
 		return "id";
 	}
 }
-
 
 
 

@@ -60,11 +60,11 @@ public abstract class Routes {
 			throw new IllegalArgumentException("The controllerKey can not be blank");
 		if (controllerClass == null)
 			throw new IllegalArgumentException("The controllerClass can not be null");
-		if (map.containsKey(controllerKey))
-			throw new IllegalArgumentException("The controllerKey already exists");
-		
 		if (!controllerKey.startsWith("/"))
 			controllerKey = "/" + controllerKey;
+		if (map.containsKey(controllerKey))
+			throw new IllegalArgumentException("The controllerKey already exists: " + controllerKey);
+		
 		map.put(controllerKey, controllerClass);
 		
 		if (viewPath == null || "".equals(viewPath.trim()))	// view path is controllerKey by default

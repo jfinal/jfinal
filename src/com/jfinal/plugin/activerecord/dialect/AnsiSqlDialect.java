@@ -34,7 +34,7 @@ import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.ModelBuilder;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
-import com.jfinal.plugin.activerecord.TableInfo;
+import com.jfinal.plugin.activerecord.Table;
 
 /**
  * AnsiSqlDialect. Try to use ANSI SQL dialect with ActiveRecordPlugin.
@@ -43,16 +43,16 @@ import com.jfinal.plugin.activerecord.TableInfo;
  */
 public class AnsiSqlDialect extends Dialect {
 	
-	public String forTableInfoBuilderDoBuildTableInfo(String tableName) {
+	public String forTableBuilderDoBuild(String tableName) {
 		return "select * from " + tableName + " where 1 = 2";
 	}
 	
-	public void forModelSave(TableInfo tableInfo, Map<String, Object> attrs, StringBuilder sql, List<Object> paras) {
-		sql.append("insert into ").append(tableInfo.getTableName()).append("(");
+	public void forModelSave(Table table, Map<String, Object> attrs, StringBuilder sql, List<Object> paras) {
+		sql.append("insert into ").append(table.getName()).append("(");
 		StringBuilder temp = new StringBuilder(") values(");
 		for (Entry<String, Object> e: attrs.entrySet()) {
 			String colName = e.getKey();
-			if (tableInfo.hasColumnLabel(colName)) {
+			if (table.hasColumnLabel(colName)) {
 				if (paras.size() > 0) {
 					sql.append(", ");
 					temp.append(", ");
@@ -65,20 +65,20 @@ public class AnsiSqlDialect extends Dialect {
 		sql.append(temp.toString()).append(")");
 	}
 	
-	public String forModelDeleteById(TableInfo tInfo) {
-		String pKey = tInfo.getPrimaryKey();
+	public String forModelDeleteById(Table table) {
+		String pKey = table.getPrimaryKey();
 		StringBuilder sql = new StringBuilder(45);
 		sql.append("delete from ");
-		sql.append(tInfo.getTableName());
+		sql.append(table.getName());
 		sql.append(" where ").append(pKey).append(" = ?");
 		return sql.toString();
 	}
 	
-	public void forModelUpdate(TableInfo tableInfo, Map<String, Object> attrs, Set<String> modifyFlag, String pKey, Object id, StringBuilder sql, List<Object> paras) {
-		sql.append("update ").append(tableInfo.getTableName()).append(" set ");
+	public void forModelUpdate(Table table, Map<String, Object> attrs, Set<String> modifyFlag, String pKey, Object id, StringBuilder sql, List<Object> paras) {
+		sql.append("update ").append(table.getName()).append(" set ");
 		for (Entry<String, Object> e : attrs.entrySet()) {
 			String colName = e.getKey();
-			if (!pKey.equalsIgnoreCase(colName) && modifyFlag.contains(colName) && tableInfo.hasColumnLabel(colName)) {
+			if (!pKey.equalsIgnoreCase(colName) && modifyFlag.contains(colName) && table.hasColumnLabel(colName)) {
 				if (paras.size() > 0)
 					sql.append(", ");
 				sql.append(colName).append(" = ? ");
@@ -89,7 +89,7 @@ public class AnsiSqlDialect extends Dialect {
 		paras.add(id);
 	}
 	
-	public String forModelFindById(TableInfo tInfo, String columns) {
+	public String forModelFindById(Table table, String columns) {
 		StringBuilder sql = new StringBuilder("select ");
 		if (columns.trim().equals("*")) {
 			sql.append(columns);
@@ -103,8 +103,8 @@ public class AnsiSqlDialect extends Dialect {
 			}
 		}
 		sql.append(" from ");
-		sql.append(tInfo.getTableName());
-		sql.append(" where ").append(tInfo.getPrimaryKey()).append(" = ?");
+		sql.append(table.getName());
+		sql.append(" where ").append(table.getPrimaryKey()).append(" = ?");
 		return sql.toString();
 	}
 	
@@ -259,50 +259,42 @@ public class AnsiSqlDialect extends Dialect {
 	}
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Page<? extends Model> takeOverModelPaginate(Class<? extends Model> modelClass, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
-		Connection conn = null;
-		try {
-			conn = DbKit.getConnection();
-			long totalRow = 0;
-			int totalPage = 0;
-			List result = CPI.query(conn, "select count(*) " + DbKit.replaceFormatSqlOrderBy(sqlExceptSelect), paras);
-			int size = result.size();
-			if (size == 1)
-				totalRow = ((Number)result.get(0)).longValue();		// totalRow = (Long)result.get(0);
-			else if (size > 1)
-				totalRow = result.size();
-			else
-				return new Page(new ArrayList(0), pageNumber, pageSize, 0, 0);	// totalRow = 0;
-			
-			totalPage = (int) (totalRow / pageSize);
-			if (totalRow % pageSize != 0) {
-				totalPage++;
-			}
-			
-			// --------
-			StringBuilder sql = new StringBuilder();
-			sql.append(select).append(" ").append(sqlExceptSelect);
-			PreparedStatement pst = conn.prepareStatement(sql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-			for (int i=0; i<paras.length; i++) {
-				pst.setObject(i + 1, paras[i]);
-			}
-			ResultSet rs = pst.executeQuery();
-			
-			// move the cursor to the start
-			int offset = pageSize * (pageNumber - 1);
-			for (int i=0; i<offset; i++)
-				if (!rs.next())
-					break;
-			
-			List list = buildModel(rs, modelClass, pageSize);
-			if (rs != null) rs.close();
-			if (pst != null) pst.close();
-			return new Page(list, pageNumber, pageSize, totalPage, (int)totalRow);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			DbKit.close(conn);
+	public Page<? extends Model> takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws Exception {
+		long totalRow = 0;
+		int totalPage = 0;
+		List result = CPI.query(conn, "select count(*) " + DbKit.replaceFormatSqlOrderBy(sqlExceptSelect), paras);
+		int size = result.size();
+		if (size == 1)
+			totalRow = ((Number)result.get(0)).longValue();		// totalRow = (Long)result.get(0);
+		else if (size > 1)
+			totalRow = result.size();
+		else
+			return new Page(new ArrayList(0), pageNumber, pageSize, 0, 0);	// totalRow = 0;
+		
+		totalPage = (int) (totalRow / pageSize);
+		if (totalRow % pageSize != 0) {
+			totalPage++;
 		}
+		
+		// --------
+		StringBuilder sql = new StringBuilder();
+		sql.append(select).append(" ").append(sqlExceptSelect);
+		PreparedStatement pst = conn.prepareStatement(sql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+		for (int i=0; i<paras.length; i++) {
+			pst.setObject(i + 1, paras[i]);
+		}
+		ResultSet rs = pst.executeQuery();
+		
+		// move the cursor to the start
+		int offset = pageSize * (pageNumber - 1);
+		for (int i=0; i<offset; i++)
+			if (!rs.next())
+				break;
+		
+		List list = buildModel(rs, modelClass, pageSize);
+		if (rs != null) rs.close();
+		if (pst != null) pst.close();
+		return new Page(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})

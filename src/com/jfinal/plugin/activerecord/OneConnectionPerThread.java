@@ -29,16 +29,16 @@ public class OneConnectionPerThread implements Interceptor {
 	public void intercept(ActionInvocation invocation) {
 		Connection conn = null;
 		try {
-			conn = DbKit.getConnection();
-			DbKit.setThreadLocalConnection(conn);
+			conn = DbKit.config.getConnection();
+			DbKit.config.setThreadLocalConnection(conn);
 			invocation.invoke();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		finally {
-			DbKit.removeThreadLocalConnection();
-			DbKit.close(conn);
+			DbKit.config.removeThreadLocalConnection();
+			DbKit.config.close(conn);
 		}
 	}
 }

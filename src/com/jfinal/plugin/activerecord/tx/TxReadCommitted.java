@@ -30,7 +30,8 @@ public class TxReadCommitted extends Tx {
     private int TRANSACTION_READ_COMMITTED   = 2;
     
     @Override
-	protected int getTransactionLevel() {
+	protected int getTransactionLevel(com.jfinal.plugin.activerecord.Config config) {
 		return TRANSACTION_READ_COMMITTED;
 	}
 }
+

@@ -24,7 +24,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.sql.DataSource;
 import com.jfinal.plugin.activerecord.cache.ICache;
 import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 
@@ -34,17 +33,11 @@ import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Db {
 	
-	static <T> List<T> query(Connection conn, String sql, Object... paras) throws SQLException {
+	static <T> List<T> query(Config config, Connection conn, String sql, Object... paras) throws SQLException {
 		List result = new ArrayList();
 		PreparedStatement pst = conn.prepareStatement(sql);
-		
-		DbKit.dialect.fillStatement(pst, paras);
-		// for (int i=0; i<paras.length; i++) {
-			// pst.setObject(i + 1, paras[i]);
-		// }
-		
+		config.dialect.fillStatement(pst, paras);
 		ResultSet rs = pst.executeQuery();
-		
 		int colAmount = rs.getMetaData().getColumnCount();
 		if (colAmount > 1) {
 			while (rs.next()) {
@@ -61,55 +54,47 @@ public class Db {
 			}
 		}
 		DbKit.closeQuietly(rs, pst);
-		
 		return result;
 	}
 	
 	/**
-	 * @see #query(DataSource, String, Object...)
+	 * @see #query(String, String, Object...)
 	 */
 	public static <T> List<T> query(String sql, Object... paras) {
 		Connection conn = null;
 		try {
-			conn = DbKit.getConnection();
-			return query(conn, sql, paras);
+			conn = DbKit.config.getConnection();
+			return query(DbKit.config, conn, sql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.close(conn);
+			DbKit.config.close(conn);
 		}
 	}
 	
 	/**
 	 * Execute sql query. The result can not convert to Record.
-	 * @param dataSource the DataSource for this query
+	 * @param configName the config name
 	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
 	 * @param paras the parameters of sql
 	 * @return List&lt;Object[]&gt; if your sql has select more than one column,
 	 * 			and it return List&lt;Object&gt; if your sql has select only one column.
 	 */
-	public static <T> List<T> query(DataSource dataSource, String sql, Object... paras) {
+	public static <T> List<T> query(String configName, String sql, Object... paras) {
+		Config config = DbKit.getConfig(configName);
 		Connection conn = null;
 		try {
-			conn = dataSource.getConnection();
-			return query(conn, sql, paras);
+			conn = config.getConnection();
+			return query(config, conn, sql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.closeIgnoreThreadLocal(conn);
+			config.close(conn);
 		}
 	}
 	
 	/**
-	 * @see #query(DataSource, String, Object...)
-	 * @param sql an SQL statement
-	 */
-	public static <T> List<T> query(DataSource dataSource, String sql) {
-		return query(dataSource, sql, NULL_PARA_ARRAY);
-	}
-	
-	/**
-	 * @see #query(DataSource, String, Object...)
+	 * @see #query(String, Object...)
 	 * @param sql an SQL statement
 	 */
 	public static <T> List<T> query(String sql) {		// return  List<object[]> or List<object>
@@ -261,15 +246,11 @@ public class Db {
 	/**
 	 * Execute sql update
 	 */
-	static int update(Connection conn, String sql, Object... paras) throws SQLException {
+	static int update(Config config, Connection conn, String sql, Object... paras) throws SQLException {
 		PreparedStatement pst = conn.prepareStatement(sql);
-		DbKit.dialect.fillStatement(pst, paras);
-		// for (int i=0; i<paras.length; i++) {
-			// pst.setObject(i + 1, paras[i]);
-		// }
+		config.dialect.fillStatement(pst, paras);
 		int result = pst.executeUpdate();
 		DbKit.closeQuietly(pst);
-		
 		return result;
 	}
 	
@@ -284,41 +265,34 @@ public class Db {
 	public static int update(String sql, Object... paras) {
 		Connection conn = null;
 		try {
-			conn = DbKit.getConnection();
-			return update(conn, sql, paras);
+			conn = DbKit.config.getConnection();
+			return update(DbKit.config, conn, sql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.close(conn);
+			DbKit.config.close(conn);
 		}
 	}
 	
 	/**
 	 * @see #update(String, Object...)
-	 * @param dataSource the DataSource for this query
+	 * @param configName the config name
 	 */
-	public static int update(DataSource dataSource, String sql, Object... paras) {
+	public static int update(String configName, String sql, Object... paras) {
+		Config config = DbKit.getConfig(configName);
 		Connection conn = null;
 		try {
-			conn = dataSource.getConnection();
-			return update(conn, sql, paras);
+			conn = config.getConnection();
+			return update(config, conn, sql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.closeIgnoreThreadLocal(conn);
+			config.close(conn);
 		}
 	}
 	
 	/**
-	 * @see #update(DataSource, String, Object...)
-	 * @param sql an SQL statement
-	 */
-	public static int update(DataSource dataSource, String sql) {
-		return update(dataSource, sql, NULL_PARA_ARRAY);
-	}
-	
-	/**
-	 * @see #update(DataSource, String, Object...)
+	 * @see #update(String, Object...)
 	 * @param sql an SQL statement
 	 */
 	public static int update(String sql) {
@@ -337,35 +311,32 @@ public class Db {
 		return id;
 	}
 	
-	static List<Record> find(Connection conn, String sql, Object... paras) throws SQLException {
+	static List<Record> find(Config config, Connection conn, String sql, Object... paras) throws SQLException {
 		PreparedStatement pst = conn.prepareStatement(sql);
-		DbKit.dialect.fillStatement(pst, paras);
-		// for (int i=0; i<paras.length; i++) {
-			// pst.setObject(i + 1, paras[i]);
-		// }
+		config.dialect.fillStatement(pst, paras);
 		ResultSet rs = pst.executeQuery();
-		List<Record> result = RecordBuilder.build(rs);
+		List<Record> result = RecordBuilder.build(config.name, rs);
 		DbKit.closeQuietly(rs, pst);
 		return result;
 	}
 	
 	/**
-	 * @see #find(DataSource, String, Object...)
+	 * @see #find(String, String, Object...)
 	 */
 	public static List<Record> find(String sql, Object... paras) {
 		Connection conn = null;
 		try {
-			conn = DbKit.getConnection();
-			return find(conn, sql, paras);
+			conn = DbKit.config.getConnection();
+			return find(DbKit.config, conn, sql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.close(conn);
+			DbKit.config.close(conn);
 		}
 	}
 	
 	/**
-	 * @see #find(DataSource, String, Object...)
+	 * @see #find(String, String, Object...)
 	 * @param sql the sql statement
 	 */
 	public static List<Record> find(String sql) {
@@ -374,29 +345,22 @@ public class Db {
 	
 	/**
 	 * Find Record.
-	 * @param dataSource the DataSource for this query
+	 * @param configName the config name
 	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
 	 * @param paras the parameters of sql
 	 * @return the list of Record
 	 */
-	public static List<Record> find(DataSource dataSource, String sql, Object... paras) {
+	public static List<Record> find(String configName, String sql, Object... paras) {
+		Config config = DbKit.getConfig(configName);
 		Connection conn = null;
 		try {
-			conn = dataSource.getConnection();
-			return find(conn, sql, paras);
+			conn = config.getConnection();
+			return find(config, conn, sql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.closeIgnoreThreadLocal(conn);
+			config.close(conn);
 		}
-	}
-	
-	/**
-	 * @see #find(DataSource, String, Object...)
-	 * @param sql the sql statement
-	 */
-	public static List<Record> find(DataSource dataSource, String sql) {
-		return find(dataSource, sql, NULL_PARA_ARRAY);
 	}
 	
 	/**
@@ -426,7 +390,7 @@ public class Db {
 	 * @param idValue the id value of the record
 	 */
 	public static Record findById(String tableName, Object idValue) {
-		return findById(tableName, "id", idValue, "*");
+		return findById(tableName, DbKit.config.dialect.getDefaultPrimaryKey(), idValue, "*");
 	}
 	
 	/**
@@ -437,7 +401,7 @@ public class Db {
 	 * @param columns the specific columns separate with comma character ==> ","
 	 */
 	public static Record findById(String tableName, Number idValue, String columns) {
-		return findById(tableName, "id", idValue, columns);
+		return findById(tableName, DbKit.config.dialect.getDefaultPrimaryKey(), idValue, columns);
 	}
 	
 	/**
@@ -460,7 +424,7 @@ public class Db {
 	 * @param columns the specific columns separate with comma character ==> ","
 	 */
 	public static Record findById(String tableName, String primaryKey, Object idValue, String columns) {
-		String sql = DbKit.dialect.forDbFindById(tableName, primaryKey, columns);
+		String sql = DbKit.config.dialect.forDbFindById(tableName, primaryKey, columns);
 		List<Record> result = find(sql, idValue);
 		return result.size() > 0 ? result.get(0) : null;
 	}
@@ -473,7 +437,7 @@ public class Db {
 	 * @return true if delete succeed otherwise false
 	 */
 	public static boolean deleteById(String tableName, Object id) {
-		return deleteById(tableName, "id", id);
+		return deleteById(tableName, DbKit.config.dialect.getDefaultPrimaryKey(), id);
 	}
 	
 	/**
@@ -488,7 +452,7 @@ public class Db {
 		if (id == null)
 			throw new IllegalArgumentException("id can not be null");
 		
-		String sql = DbKit.dialect.forDbDeleteById(tableName, primaryKey);
+		String sql = DbKit.config.dialect.forDbDeleteById(tableName, primaryKey);
 		return update(sql, id) >= 1;
 	}
 	
@@ -509,19 +473,20 @@ public class Db {
 	 * @see #delete(String, String, Record)
 	 */
 	public static boolean delete(String tableName, Record record) {
-		return deleteById(tableName, "id", record.get("id"));
+		String defaultPrimaryKey = record.getConfig().dialect.getDefaultPrimaryKey();
+		return deleteById(tableName, defaultPrimaryKey, record.get(defaultPrimaryKey));
 	}
 	
-	static Page<Record> paginate(Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
+	static Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
 		if (pageNumber < 1 || pageSize < 1)
 			throw new ActiveRecordException("pageNumber and pageSize must be more than 0");
 		
-		if (DbKit.dialect.isTakeOverDbPaginate())
-			return DbKit.dialect.takeOverDbPaginate(conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
+		if (config.dialect.isTakeOverDbPaginate())
+			return config.dialect.takeOverDbPaginate(conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
 		
 		long totalRow = 0;
 		int totalPage = 0;
-		List result = query(conn, "select count(*) " + DbKit.replaceFormatSqlOrderBy(sqlExceptSelect), paras);
+		List result = query(config, conn, "select count(*) " + DbKit.replaceFormatSqlOrderBy(sqlExceptSelect), paras);
 		int size = result.size();
 		if (size == 1)
 			totalRow = ((Number)result.get(0)).longValue();
@@ -537,29 +502,29 @@ public class Db {
 		
 		// --------
 		StringBuilder sql = new StringBuilder();
-		DbKit.dialect.forPaginate(sql, pageNumber, pageSize, select, sqlExceptSelect);
-		List<Record> list = find(conn, sql.toString(), paras);
+		config.dialect.forPaginate(sql, pageNumber, pageSize, select, sqlExceptSelect);
+		List<Record> list = find(config, conn, sql.toString(), paras);
 		return new Page<Record>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
 	/**
-	 * @see #paginate(DataSource, int, int, String, String, Object...)
+	 * @see #paginate(String, int, int, String, String, Object...)
 	 */
 	public static Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
 		Connection conn = null;
 		try {
-			conn = DbKit.getConnection();
-			return paginate(conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
+			conn = DbKit.config.getConnection();
+			return paginate(DbKit.config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.close(conn);
+			DbKit.config.close(conn);
 		}
 	}
 	
 	/**
 	 * Paginate.
-	 * @param dataSource the DataSource for this query
+	 * @param configName the config name
 	 * @param pageNumber the page number
 	 * @param pageSize the page size
 	 * @param select the select part of the sql statement 
@@ -567,203 +532,156 @@ public class Db {
 	 * @param paras the parameters of sql
 	 * @return Page
 	 */
-	public static Page<Record> paginate(DataSource dataSource, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+	public static Page<Record> paginate(String configName, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+		Config config = DbKit.getConfig(configName);
 		Connection conn = null;
 		try {
-			conn = dataSource.getConnection();
-			return paginate(conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
+			conn = config.getConnection();
+			return paginate(config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.closeIgnoreThreadLocal(conn);
+			config.close(conn);
 		}
 	}
 	
 	/**
-	 * @see #paginate(DataSource, int, int, String, String, Object...)
+	 * @see #paginate(String, int, int, String, String, Object...)
 	 */
-	public static Page<Record> paginate(DataSource dataSource, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		return paginate(dataSource, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
+	public static Page<Record> paginate(String configName, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
+		return paginate(configName, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
 	}
 	
 	/**
-	 * @see #paginate(DataSource, int, int, String, String, Object...)
+	 * @see #paginate(String, int, int, String, String, Object...)
 	 */
 	public static Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
 		return paginate(pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
 	}
 	
-	static boolean save(Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
+	static boolean save(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
 		List<Object> paras = new ArrayList<Object>();
 		StringBuilder sql = new StringBuilder();
-		DbKit.dialect.forDbSave(sql, paras, tableName, record);
+		config.dialect.forDbSave(sql, paras, tableName, record);
 		
 		PreparedStatement pst;
-		if (DbKit.dialect.isOracle())
+		if (config.dialect.isOracle())
 			pst = conn.prepareStatement(sql.toString(), new String[]{primaryKey});
 		else
 			pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
 			
-		DbKit.dialect.fillStatement(pst, paras);
-		// for (int i=0, size=paras.size(); i<size; i++) {
-			// pst.setObject(i + 1, paras.get(i));
-		// }
+		config.dialect.fillStatement(pst, paras);
 		int result = pst.executeUpdate();
-		// if (isSupportAutoIncrementKey)
-			record.set(primaryKey, getGeneratedKey(pst));
+		record.set(primaryKey, getGeneratedKey(pst));
 		DbKit.closeQuietly(pst);
-		
 		return result >= 1;
 	}
 	
 	/**
-	 * @see #save(DataSource, String, String, Record)
-	 */
-	public static boolean save(String tableName, String primaryKey, Record record) {
-		Connection conn = null;
-		try {
-			conn = DbKit.getConnection();
-			return save(conn, tableName, primaryKey, record);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			DbKit.close(conn);
-		}
-	}
-	
-	/**
-	 * @see #save(DataSource, String, String, Record)
-	 */
-	public static boolean save(String tableName, Record record) {
-		return save(tableName, "id", record);
-	}
-	
-	/**
 	 * Save record.
-	 * @param dataSource the DataSource for this query
 	 * @param tableName the table name of the table
 	 * @param primaryKey the primary key of the table
 	 * @param record the record will be saved
 	 * @param true if save succeed otherwise false
 	 */
-	public static boolean save(DataSource dataSource, String tableName, String primaryKey, Record record) {
+	public static boolean save(String tableName, String primaryKey, Record record) {
+		Config config = record.getConfig();
 		Connection conn = null;
 		try {
-			conn = dataSource.getConnection();
-			return save(conn, tableName, primaryKey, record);
+			conn = config.getConnection();
+			return save(config, conn, tableName, primaryKey, record);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.closeIgnoreThreadLocal(conn);
+			config.close(conn);
 		}
 	}
 	
 	/**
-	 * @see #save(DataSource, String, String, Record)
+	 * @see #save(String, String, Record)
 	 */
-	public static boolean save(DataSource dataSource, String tableName, Record record) {
-		return save(dataSource, tableName, "id", record);
+	public static boolean save(String tableName, Record record) {
+		return save(tableName, record.getConfig().dialect.getDefaultPrimaryKey(), record);
 	}
 	
-	static boolean update(Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
+	static boolean update(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
 		Object id = record.get(primaryKey);
 		if (id == null)
 			throw new ActiveRecordException("You can't update model without Primary Key.");
 		
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();
-		DbKit.dialect.forDbUpdate(tableName, primaryKey, id, record, sql, paras);
+		config.dialect.forDbUpdate(tableName, primaryKey, id, record, sql, paras);
 		
 		if (paras.size() <= 1) {	// Needn't update
 			return false;
 		}
 		
-		return update(conn, sql.toString(), paras.toArray()) >= 1;
-	}
-	
-	/**
-	 * @see #update(DataSource, String, String, Record)
-	 */
-	public static boolean update(String tableName, String primaryKey, Record record) {
-		Connection conn = null;
-		try {
-			conn = DbKit.getConnection();
-			return update(conn, tableName, primaryKey, record);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			DbKit.close(conn);
-		}
-	}
-	
-	/**
-	 * Update Record. The primary key of the table is: "id".
-	 * @see #update(DataSource, String, String, Record)
-	 */
-	public static boolean update(String tableName, Record record) {
-		return update(tableName, "id", record);
+		return update(config, conn, sql.toString(), paras.toArray()) >= 1;
 	}
 	
 	/**
 	 * Update Record.
-	 * @param dataSource the DataSource for this query
 	 * @param tableName the table name of the Record save to
 	 * @param primaryKey the primary key of the table
 	 * @param record the Record object
 	 * @param true if update succeed otherwise false
 	 */
-	public static boolean update(DataSource dataSource, String tableName, String primaryKey, Record record) {
+	public static boolean update(String tableName, String primaryKey, Record record) {
+		Config config = record.getConfig();
 		Connection conn = null;
 		try {
-			conn = dataSource.getConnection();
-			return update(conn, tableName, primaryKey, record);
+			conn = config.getConnection();
+			return update(config, conn, tableName, primaryKey, record);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.closeIgnoreThreadLocal(conn);
+			config.close(conn);
 		}
 	}
 	
 	/**
 	 * Update Record. The primary key of the table is: "id".
-	 * @see #update(DataSource, String, String, Record)
+	 * @see #update(String, String, Record)
 	 */
-	public static boolean update(DataSource dataSource, String tableName, Record record) {
-		return update(dataSource, tableName, "id", record);
+	public static boolean update(String tableName, Record record) {
+		return update(tableName, record.getConfig().dialect.getDefaultPrimaryKey(), record);
 	}
 	
 	/**
-	 * @see #execute(DataSource, ICallback)
+	 * @see #execute(String, ICallback)
 	 */
 	public static Object execute(ICallback callback) {
-		return execute(DbKit.getDataSource(), callback);
+		return execute(DbKit.config.getName(), callback);
 	}
 	
 	/**
 	 * Execute callback. It is useful when all the API can not satisfy your requirement.
-	 * @param dataSource the DataSource for this query
+	 * @param configName the config name
 	 * @param callback the ICallback interface
 	 */
-	public static Object execute(DataSource dataSource, ICallback callback) {
+	public static Object execute(String configName, ICallback callback) {
+		Config config = DbKit.getConfig(configName);
 		Connection conn = null;
 		try {
-			conn = dataSource.getConnection();
+			conn = config.getConnection();
 			return callback.run(conn);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.closeIgnoreThreadLocal(conn);
+			config.close(conn);
 		}
 	}
 	
 	/**
 	 * Execute transaction.
+	 * @param config the Config object
 	 * @param transactionLevel the transaction level
 	 * @param atom the atom operation
 	 * @return true if transaction executing succeed otherwise false
 	 */
-	public static boolean tx(int transactionLevel, IAtom atom) {
-		Connection conn = DbKit.getThreadLocalConnection();
+	static boolean tx(Config config, int transactionLevel, IAtom atom) {
+		Connection conn = config.getThreadLocalConnection();
 		if (conn != null) {	// Nested transaction support
 			try {
 				if (conn.getTransactionIsolation() < transactionLevel)
@@ -771,7 +689,7 @@ public class Db {
 				boolean result = atom.run();
 				if (result)
 					return true;
-				throw new ActiveRecordException("Nested transaction is failure.");	// important:can not return false
+				throw new NestedTransactionHelpException("Notice the outer transaction that the nested transaction return false");	// important:can not return false
 			}
 			catch (SQLException e) {
 				throw new ActiveRecordException(e);
@@ -780,9 +698,9 @@ public class Db {
 		
 		Boolean autoCommit = null;
 		try {
-			conn = DbKit.getDataSource().getConnection();
+			conn = config.getConnection();
 			autoCommit = conn.getAutoCommit();
-			DbKit.setThreadLocalConnection(conn);
+			config.setThreadLocalConnection(conn);
 			conn.setTransactionIsolation(transactionLevel);
 			conn.setAutoCommit(false);
 			boolean result = atom.run();
@@ -791,9 +709,11 @@ public class Db {
 			else
 				conn.rollback();
 			return result;
+		} catch (NestedTransactionHelpException e) {
+			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
+			return false;
 		} catch (Exception e) {
-			if (conn != null)
-				try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
+			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
 			throw e instanceof RuntimeException ? (RuntimeException)e : new ActiveRecordException(e);
 		} finally {
 			try {
@@ -805,17 +725,30 @@ public class Db {
 			} catch (Exception e) {
 				e.printStackTrace();	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
 			} finally {
-				DbKit.removeThreadLocalConnection();	// prevent memory leak
+				config.removeThreadLocalConnection();	// prevent memory leak
 			}
 		}
 	}
 	
+	public static boolean tx(String configName, int transactionLevel, IAtom atom) {
+		return tx(DbKit.getConfig(configName), transactionLevel, atom);
+	}
+	
+	public static boolean tx(String configName, IAtom atom) {
+		Config config = DbKit.getConfig(configName);
+		return tx(config, config.getTransactionLevel(), atom);
+	}
+	
+	public static boolean tx(int transactionLevel, IAtom atom) {
+		return tx(DbKit.config, transactionLevel, atom);
+	}
+	
 	/**
 	 * Execute transaction with default transaction level.
-	 * @see #ex(int, IAtom)
+	 * @see #tx(int, IAtom)
 	 */
 	public static boolean tx(IAtom atom) {
-		return tx(DbKit.getTransactionLevel(), atom);
+		return tx(DbKit.config, DbKit.config.getTransactionLevel(), atom);
 	}
 	
 	/**
@@ -826,7 +759,7 @@ public class Db {
 	 * @return the list of Record
 	 */
 	public static List<Record> findByCache(String cacheName, Object key, String sql, Object... paras) {
-		ICache cache = DbKit.getCache();
+		ICache cache = DbKit.config.getCache();
 		List<Record> result = cache.get(cacheName, key);
 		if (result == null) {
 			result = find(sql, paras);
@@ -848,7 +781,7 @@ public class Db {
 	 * @return Page
 	 */
 	public static Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
-		ICache cache = DbKit.getCache();
+		ICache cache = DbKit.config.getCache();
 		Page<Record> result = cache.get(cacheName, key);
 		if (result == null) {
 			result = paginate(pageNumber, pageSize, select, sqlExceptSelect, paras);
@@ -864,7 +797,7 @@ public class Db {
 		return paginateByCache(cacheName, key, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
 	}
 	
-	private static int[] batch(Connection conn, String sql, Object[][] paras, int batchSize) throws SQLException {
+	private static int[] batch(Config config, Connection conn, String sql, Object[][] paras, int batchSize) throws SQLException {
 		if (paras == null || paras.length == 0)
 			throw new IllegalArgumentException("The paras array length must more than 0.");
 		if (batchSize < 1)
@@ -875,7 +808,11 @@ public class Db {
 		PreparedStatement pst = conn.prepareStatement(sql);
 		for (int i=0; i<paras.length; i++) {
 			for (int j=0; j<paras[i].length; j++) {
-				pst.setObject(j + 1, paras[i][j]);	// TODO use Dialect.fillStatement(...)
+				Object value = paras[i][j];
+				if (config.dialect.isOracle() && value instanceof java.sql.Date)
+					pst.setDate(j + 1, (java.sql.Date)value);
+				else
+					pst.setObject(j + 1, value);
 			}
 			pst.addBatch();
 			if (++counter >= batchSize) {
@@ -895,56 +832,44 @@ public class Db {
 	}
 	
 	/**
+	 * @see #batch(String, String, Object[][], int)
+     */
+    public static int[] batch(String sql, Object[][] paras, int batchSize) {
+		return batch(DbKit.config.getName(), sql, paras, batchSize);
+    }
+    
+	/**
      * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.
      * <p>
      * Example:
      * <pre>
      * String sql = "insert into user(name, cash) values(?, ?)";
-     * int[] result = Db.batch(sql, new Object[][]{{"James", 888}, {"zhanjin", 888}});
+     * int[] result = Db.batch("myConfig", sql, new Object[][]{{"James", 888}, {"zhanjin", 888}});
      * </pre>
+     * @param configName the config name
      * @param sql The SQL to execute.
      * @param paras An array of query replacement parameters.  Each row in this array is one set of batch replacement values.
      * @return The number of rows updated per statement
      */
-    public static int[] batch(String sql, Object[][] paras, int batchSize) {
+	public static int[] batch(String configName, String sql, Object[][] paras, int batchSize) {
+		Config config = DbKit.getConfig(configName);
 		Connection conn = null;
 		Boolean autoCommit = null;
 		try {
-			conn = DbKit.getConnection();
+			conn = config.getConnection();
 			autoCommit = conn.getAutoCommit();
 			conn.setAutoCommit(false);
-			return batch(conn, sql, paras, batchSize);
+			return batch(config, conn, sql, paras, batchSize);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
 			if (autoCommit != null)
 				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
-			DbKit.close(conn);
-		}
-    }
-    
-	/**
-	 * @see #batch(String, Object[][])
-	 * @param dataSource the DataSource for this query
-     */
-	public static int[] batch(DataSource dataSource, String sql, Object[][] paras, int batchSize) {
-		Connection conn = null;
-		Boolean autoCommit = null;
-		try {
-			conn = dataSource.getConnection();
-			autoCommit = conn.getAutoCommit();
-			conn.setAutoCommit(false);
-			return batch(conn, sql, paras, batchSize);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			if (autoCommit != null)
-				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
-			DbKit.closeIgnoreThreadLocal(conn);
+			config.close(conn);
 		}
 	}
 	
-	private static int[] batch(Connection conn, String sql, String columns, List list, int batchSize) throws SQLException {
+	private static int[] batch(Config config, Connection conn, String sql, String columns, List list, int batchSize) throws SQLException {
 		if (list == null || list.size() == 0)
 			return new int[0];
 		Object element = list.get(0);
@@ -966,7 +891,11 @@ public class Db {
 		for (int i=0; i<size; i++) {
 			Map map = isModel ? ((Model)list.get(i)).getAttrs() : ((Record)list.get(i)).getColumns();
 			for (int j=0; j<columnArray.length; j++) {
-				pst.setObject(j + 1, map.get(columnArray[j]));		// TODO use Dialect.fillStatement(...)
+				Object value = map.get(columnArray[j]);
+				if (config.dialect.isOracle() && value instanceof java.sql.Date)
+					pst.setDate(j + 1, (java.sql.Date)value);
+				else
+					pst.setObject(j + 1, value);
 			}
 			pst.addBatch();
 			if (++counter >= batchSize) {
@@ -986,58 +915,46 @@ public class Db {
 	}
 	
 	/**
+	 * @see #batch(String, String, String, List, int)
+     */
+	public static int[] batch(String sql, String columns, List modelOrRecordList, int batchSize) {
+		return batch(DbKit.config.getName(), sql, columns, modelOrRecordList, batchSize);
+	}
+	
+	/**
      * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.
      * <p>
      * Example:
      * <pre>
      * String sql = "insert into user(name, cash) values(?, ?)";
-     * int[] result = Db.batch(sql, "name, cash", modelList, 500);
+     * int[] result = Db.batch("myConfig", sql, "name, cash", modelList, 500);
      * </pre>
+     * @param configName the config name
 	 * @param sql The SQL to execute.
 	 * @param columns the columns need be processed by sql.
 	 * @param modelOrRecordList model or record object list.
 	 * @param batchSize batch size.
 	 * @return The number of rows updated per statement
 	 */
-	public static int[] batch(String sql, String columns, List modelOrRecordList, int batchSize) {
+	public static int[] batch(String configName, String sql, String columns, List modelOrRecordList, int batchSize) {
+		Config config = DbKit.getConfig(configName);
 		Connection conn = null;
 		Boolean autoCommit = null;
 		try {
-			conn = DbKit.getConnection();
+			conn = config.getConnection();
 			autoCommit = conn.getAutoCommit();
 			conn.setAutoCommit(false);
-			return batch(conn, sql, columns, modelOrRecordList, batchSize);
+			return batch(config, conn, sql, columns, modelOrRecordList, batchSize);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
 			if (autoCommit != null)
 				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
-			DbKit.close(conn);
+			config.close(conn);
 		}
 	}
 	
-	/**
-	 * @see #batch(String, String, List, int)
-	 * @param dataSource the DataSource for this query
-     */
-	public static int[] batch(DataSource dataSource, String sql, String columns, List modelOrRecordList, int batchSize) {
-		Connection conn = null;
-		Boolean autoCommit = null;
-		try {
-			conn = dataSource.getConnection();
-			autoCommit = conn.getAutoCommit();
-			conn.setAutoCommit(false);
-			return batch(conn, sql, columns, modelOrRecordList, batchSize);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			if (autoCommit != null)
-				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
-			DbKit.closeIgnoreThreadLocal(conn);
-		}
-	}
-	
-	private static int[] batch(Connection conn, List<String> sqlList, int batchSize) throws SQLException {
+	private static int[] batch(Config config, Connection conn, List<String> sqlList, int batchSize) throws SQLException {
 		if (sqlList == null || sqlList.size() == 0)
 			throw new IllegalArgumentException("The sqlList length must more than 0.");
 		if (batchSize < 1)
@@ -1066,52 +983,43 @@ public class Db {
 	}
 	
 	/**
+	 * @see #batch(String, List, int)
+     */
+    public static int[] batch(List<String> sqlList, int batchSize) {
+		return batch(DbKit.config.getName(), sqlList, batchSize);
+    }
+    
+    /**
      * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.
      * Example:
      * <pre>
-     * int[] result = Db.batch(sqlList, 500);
+     * int[] result = Db.batch("myConfig", sqlList, 500);
      * </pre>
+     * @param configName the config name
 	 * @param sqlList The SQL list to execute.
 	 * @param batchSize batch size.
 	 * @return The number of rows updated per statement
 	 */
-    public static int[] batch(List<String> sqlList, int batchSize) {
+    public static int[] batch(String configName, List<String> sqlList, int batchSize) {
+		Config config = DbKit.getConfig(configName);
 		Connection conn = null;
 		Boolean autoCommit = null;
 		try {
-			conn = DbKit.getConnection();
+			conn = config.getConnection();
 			autoCommit = conn.getAutoCommit();
 			conn.setAutoCommit(false);
-			return batch(conn, sqlList, batchSize);
+			return batch(config, conn, sqlList, batchSize);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
 			if (autoCommit != null)
 				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
-			DbKit.close(conn);
-		}
-    }
-    
-	/**
-	 * @see #batch(List, int)
-	 * @param dataSource the DataSource for this query
-     */
-    public static int[] batch(DataSource dataSource, List<String> sqlList, int batchSize) {
-		Connection conn = null;
-		Boolean autoCommit = null;
-		try {
-			conn = dataSource.getConnection();
-			autoCommit = conn.getAutoCommit();
-			conn.setAutoCommit(false);
-			return batch(conn, sqlList, batchSize);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			if (autoCommit != null)
-				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
-			DbKit.closeIgnoreThreadLocal(conn);
+			config.close(conn);
 		}
     }
 }
+
+
+
 
 

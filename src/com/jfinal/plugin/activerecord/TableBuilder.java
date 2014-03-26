@@ -25,38 +25,40 @@ import java.sql.Types;
 import java.util.List;
 
 /**
- * TableInfoBuilder build the mapping of model class and table info.
+ * TableBuilder build the mapping of model between class and table.
  */
-class TableInfoBuilder {
+class TableBuilder {
 	
-	static boolean buildTableInfo(List<TableInfo> tableMappings) {
-		boolean succeed = true;
+	static boolean build(List<Table> tableList, Config config) {
+		Table temp = null;
 		Connection conn = null;
 		try {
-			conn = DbKit.getDataSource().getConnection();
-		} catch (SQLException e) {
+			conn = config.dataSource.getConnection();
+			TableMapping tableMapping = TableMapping.me();
+			for (Table table : tableList) {
+				temp = table;
+				doBuild(table, conn, config);
+				tableMapping.putTable(table);
+				DbKit.addModelToConfigMapping(table.getModelClass(), config);
+			}
+			return true;
+		} catch (Exception e) {
+			if (temp != null)
+				System.err.println("Can not create Table object, maybe the table " + temp.getName() + " is not exists.");
 			throw new ActiveRecordException(e);
 		}
-		
-		TableInfoMapping tim = TableInfoMapping.me();
-		for (TableInfo mapping : tableMappings) {
-			try {
-				TableInfo tableInfo = doBuildTableInfo(mapping, conn);
-				tim.putTableInfo(mapping.getModelClass(), tableInfo);
-			} catch (Exception e) {
-				succeed = false;
-				System.err.println("Can not build TableInfo, maybe the table " + mapping.getTableName() + " is not exists.");
-				throw new ActiveRecordException(e);
-			}
+		finally {
+			config.close(conn);
 		}
-		DbKit.close(conn);
-		return succeed;
 	}
 	
-	private static TableInfo doBuildTableInfo(TableInfo tableInfo, Connection conn) throws SQLException {
-		TableInfo result = tableInfo;
+	@SuppressWarnings("unchecked")
+	private static void doBuild(Table table, Connection conn, Config config) throws SQLException {
+		table.setColumnTypeMap(config.containerFactory.getAttrsMap());
+		if (table.getPrimaryKey() == null)
+			table.setPrimaryKey(config.dialect.getDefaultPrimaryKey());
 		
-		String sql = DbKit.getDialect().forTableInfoBuilderDoBuildTableInfo(tableInfo.getTableName());
+		String sql = config.dialect.forTableBuilderDoBuild(table.getName());
 		Statement stm = conn.createStatement();
 		ResultSet rs = stm.executeQuery(sql);
 		ResultSetMetaData rsmd = rs.getMetaData();
@@ -66,15 +68,15 @@ class TableInfoBuilder {
 			String colClassName = rsmd.getColumnClassName(i);
 			if ("java.lang.String".equals(colClassName)) {
 				// varchar, char, enum, set, text, tinytext, mediumtext, longtext
-				result.addInfo(colName, java.lang.String.class);
+				table.setColumnType(colName, java.lang.String.class);
 			}
 			else if ("java.lang.Integer".equals(colClassName)) {
 				// int, integer, tinyint, smallint, mediumint
-				result.addInfo(colName, java.lang.Integer.class);
+				table.setColumnType(colName, java.lang.Integer.class);
 			}
 			else if ("java.lang.Long".equals(colClassName)) {
 				// bigint
-				result.addInfo(colName, java.lang.Long.class);
+				table.setColumnType(colName, java.lang.Long.class);
 			}
 			// else if ("java.util.Date".equals(colClassName)) {		// java.util.Data can not be returned
 				// java.sql.Date, java.sql.Time, java.sql.Timestamp all extends java.util.Data so getDate can return the three types data
@@ -82,56 +84,54 @@ class TableInfoBuilder {
 			// }
 			else if ("java.sql.Date".equals(colClassName)) {
 				// date, year
-				result.addInfo(colName, java.sql.Date.class);
+				table.setColumnType(colName, java.sql.Date.class);
 			}
 			else if ("java.lang.Double".equals(colClassName)) {
 				// real, double
-				result.addInfo(colName, java.lang.Double.class);
+				table.setColumnType(colName, java.lang.Double.class);
 			}
 			else if ("java.lang.Float".equals(colClassName)) {
 				// float
-				result.addInfo(colName, java.lang.Float.class);
+				table.setColumnType(colName, java.lang.Float.class);
 			}
 			else if ("java.lang.Boolean".equals(colClassName)) {
 				// bit
-				result.addInfo(colName, java.lang.Boolean.class);
+				table.setColumnType(colName, java.lang.Boolean.class);
 			}
 			else if ("java.sql.Time".equals(colClassName)) {
 				// time
-				result.addInfo(colName, java.sql.Time.class);
+				table.setColumnType(colName, java.sql.Time.class);
 			}
 			else if ("java.sql.Timestamp".equals(colClassName)) {
 				// timestamp, datetime
-				result.addInfo(colName, java.sql.Timestamp.class);
+				table.setColumnType(colName, java.sql.Timestamp.class);
 			}
 			else if ("java.math.BigDecimal".equals(colClassName)) {
 				// decimal, numeric
-				result.addInfo(colName, java.math.BigDecimal.class);
+				table.setColumnType(colName, java.math.BigDecimal.class);
 			}
 			else if ("[B".equals(colClassName)) {
 				// binary, varbinary, tinyblob, blob, mediumblob, longblob
 				// qjd project: print_info.content varbinary(61800);
-				result.addInfo(colName, byte[].class);
+				table.setColumnType(colName, byte[].class);
 			}
 			else {
 				int type = rsmd.getColumnType(i);
 				if (type == Types.BLOB) {
-					result.addInfo(colName, byte[].class);
+					table.setColumnType(colName, byte[].class);
 				}
 				else if (type == Types.CLOB || type == Types.NCLOB) {
-					result.addInfo(colName, String.class);
+					table.setColumnType(colName, String.class);
 				}
 				else {
-					result.addInfo(colName, String.class);
+					table.setColumnType(colName, String.class);
 				}
 				// core.TypeConverter
-				// throw new RuntimeException("You've got new type to mapping. Please add code in " + TableInfoBuilder.class.getName() + ". The ColumnClassName can't be mapped: " + colClassName);
+				// throw new RuntimeException("You've got new type to mapping. Please add code in " + TableBuilder.class.getName() + ". The ColumnClassName can't be mapped: " + colClassName);
 			}
 		}
 		
 		rs.close();
 		stm.close();
-		return result;
 	}
 }
-

@@ -21,23 +21,23 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import com.jfinal.plugin.activerecord.Record;
-import com.jfinal.plugin.activerecord.TableInfo;
+import com.jfinal.plugin.activerecord.Table;
 
 /**
  * SqliteDialect.
  */
 public class Sqlite3Dialect extends Dialect {
 	
-	public String forTableInfoBuilderDoBuildTableInfo(String tableName) {
+	public String forTableBuilderDoBuild(String tableName) {
 		return "select * from " + tableName + " where 1 = 2";
 	}
 	
-	public void forModelSave(TableInfo tableInfo, Map<String, Object> attrs, StringBuilder sql, List<Object> paras) {
-		sql.append("insert into ").append(tableInfo.getTableName()).append("(");
+	public void forModelSave(Table table, Map<String, Object> attrs, StringBuilder sql, List<Object> paras) {
+		sql.append("insert into ").append(table.getName()).append("(");
 		StringBuilder temp = new StringBuilder(") values(");
 		for (Entry<String, Object> e: attrs.entrySet()) {
 			String colName = e.getKey();
-			if (tableInfo.hasColumnLabel(colName)) {
+			if (table.hasColumnLabel(colName)) {
 				if (paras.size() > 0) {
 					sql.append(", ");
 					temp.append(", ");
@@ -50,20 +50,20 @@ public class Sqlite3Dialect extends Dialect {
 		sql.append(temp.toString()).append(")");
 	}
 	
-	public String forModelDeleteById(TableInfo tInfo) {
-		String pKey = tInfo.getPrimaryKey();
+	public String forModelDeleteById(Table table) {
+		String pKey = table.getPrimaryKey();
 		StringBuilder sql = new StringBuilder(45);
 		sql.append("delete from ");
-		sql.append(tInfo.getTableName());
+		sql.append(table.getName());
 		sql.append(" where ").append(pKey).append(" = ?");
 		return sql.toString();
 	}
 	
-	public void forModelUpdate(TableInfo tableInfo, Map<String, Object> attrs, Set<String> modifyFlag, String pKey, Object id, StringBuilder sql, List<Object> paras) {
-		sql.append("update ").append(tableInfo.getTableName()).append(" set ");
+	public void forModelUpdate(Table table, Map<String, Object> attrs, Set<String> modifyFlag, String pKey, Object id, StringBuilder sql, List<Object> paras) {
+		sql.append("update ").append(table.getName()).append(" set ");
 		for (Entry<String, Object> e : attrs.entrySet()) {
 			String colName = e.getKey();
-			if (!pKey.equalsIgnoreCase(colName) && modifyFlag.contains(colName) && tableInfo.hasColumnLabel(colName)) {
+			if (!pKey.equalsIgnoreCase(colName) && modifyFlag.contains(colName) && table.hasColumnLabel(colName)) {
 				if (paras.size() > 0)
 					sql.append(", ");
 				sql.append(colName).append(" = ? ");
@@ -74,7 +74,7 @@ public class Sqlite3Dialect extends Dialect {
 		paras.add(id);
 	}
 	
-	public String forModelFindById(TableInfo tInfo, String columns) {
+	public String forModelFindById(Table table, String columns) {
 		StringBuilder sql = new StringBuilder("select ");
 		if (columns.trim().equals("*")) {
 			sql.append(columns);
@@ -88,8 +88,8 @@ public class Sqlite3Dialect extends Dialect {
 			}
 		}
 		sql.append(" from ");
-		sql.append(tInfo.getTableName());
-		sql.append(" where ").append(tInfo.getPrimaryKey()).append(" = ?");
+		sql.append(table.getName());
+		sql.append(" where ").append(table.getPrimaryKey()).append(" = ?");
 		return sql.toString();
 	}
 	

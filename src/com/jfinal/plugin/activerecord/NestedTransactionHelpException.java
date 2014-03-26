@@ -14,31 +14,21 @@
  * limitations under the License.
  */
 
-package com.jfinal.plugin.activerecord.cache;
-
-import com.jfinal.plugin.ehcache.CacheKit;
+package com.jfinal.plugin.activerecord;
 
 /**
- * EhCache.
+ * NestedTransactionHelpException
+ * <br>
+ * Notice the outer transaction that the nested transaction return false
  */
-public class EhCache implements ICache {
+public class NestedTransactionHelpException extends RuntimeException {
 	
-	@SuppressWarnings("unchecked")
-	public <T>T get(String cacheName, Object key) {
-		return (T)CacheKit.get(cacheName, key);
-	}
+	private static final long serialVersionUID = 7933557736005738819L;
 	
-	public void put(String cacheName, Object key, Object value) {
-		CacheKit.put(cacheName, key, value);
-	}
-	
-	public void remove(String cacheName, Object key) {
-		CacheKit.remove(cacheName, key);
-	}
-	
-	public void removeAll(String cacheName) {
-		CacheKit.removeAll(cacheName);
+	public NestedTransactionHelpException(String message) {
+		super(message);
 	}
 }
+
 
 

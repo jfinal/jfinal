@@ -183,7 +183,7 @@ public class JsonKit {
 	}
 	
 	public static String toJson(Object value, int depth) {
-		if(value == null || (depth--) <= 0)
+		if(value == null || (depth--) < 0)
 			return "null";
 		
 		if(value instanceof String)

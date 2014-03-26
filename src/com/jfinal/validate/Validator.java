@@ -284,12 +284,12 @@ public abstract class Validator implements Interceptor {
 	 * Validate regular expression.
 	 */
 	protected void validateRegex(String field, String regExpression, boolean isCaseSensitive, String errorKey, String errorMessage) {
-		Pattern pattern = isCaseSensitive ? Pattern.compile(regExpression) : Pattern.compile(regExpression, Pattern.CASE_INSENSITIVE);
         String value = controller.getPara(field);
         if (value == null) {
         	addError(errorKey, errorMessage);
         	return ;
         }
+        Pattern pattern = isCaseSensitive ? Pattern.compile(regExpression) : Pattern.compile(regExpression, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(value);
         if (!matcher.matches())
         	addError(errorKey, errorMessage);

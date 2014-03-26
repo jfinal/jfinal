@@ -35,7 +35,10 @@ public class TxSerializable extends Tx {
     private int TRANSACTION_SERIALIZABLE     = 8;
     
     @Override
-	protected int getTransactionLevel() {
+	protected int getTransactionLevel(com.jfinal.plugin.activerecord.Config config) {
 		return TRANSACTION_SERIALIZABLE;
 	}
 }
+
+
+

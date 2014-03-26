@@ -16,168 +16,77 @@
 
 package com.jfinal.plugin.activerecord;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import javax.sql.DataSource;
-import com.jfinal.plugin.activerecord.cache.EhCache;
-import com.jfinal.plugin.activerecord.cache.ICache;
-import com.jfinal.plugin.activerecord.dialect.Dialect;
-import com.jfinal.plugin.activerecord.dialect.MysqlDialect;
 
 /**
  * DbKit
  */
+@SuppressWarnings("rawtypes")
 public final class DbKit {
 	
-	private static DataSource dataSource;
-	private static final ThreadLocal<Connection> threadLocal = new ThreadLocal<Connection>();
+	/**
+	 * The main Config object for system
+	 */
+	static Config config = null;
+	
+	/**
+	 * For Model.getAttrsMap()/getModifyFlag() and Record.getColumnsMap()
+	 * while the ActiveRecordPlugin not start or the Exception throws of HashSessionManager.restorSession(..) by Jetty
+	 */
+	static Config brokenConfig = new Config();
+	
+	private static Map<Class<? extends Model>, Config> modelToConfig = new HashMap<Class<? extends Model>, Config>();
+	private static Map<String, Config> configNameToConfig = new HashMap<String, Config>();
+	
 	static final Object[] NULL_PARA_ARRAY = new Object[0];
-	private static int transactionLevel = Connection.TRANSACTION_READ_COMMITTED;
+	public static final String MAIN_CONFIG_NAME = "main";
 	
-	private static ICache cache = new EhCache();
-	private static boolean showSql = false;
-	
-	static boolean devMode = false;
-	static Dialect dialect = new MysqlDialect();
-	
-	static IContainerFactory containerFactory = new IContainerFactory(){
-		public Map<String, Object> getAttrsMap() {return new HashMap<String, Object>();}
-		public Map<String, Object> getColumnsMap() {return new HashMap<String, Object>();}
-		public Set<String> getModifyFlagSet() {return new HashSet<String>();}
-	};
-	
-	static void setContainerFactory(IContainerFactory containerFactory) {
-		if (containerFactory != null)
-			DbKit.containerFactory = containerFactory;
-	}
-	
-	static void setDevMode(boolean devMode) {
-		DbKit.devMode = devMode;
-	}
-	
-	static void setShowSql(boolean showSql) {
-		DbKit.showSql = showSql;
-	}
-	
-	static void setDialect(Dialect dialect) {
-		if (dialect != null)
-			DbKit.dialect = dialect;
-	}
-	
-	static void setCache(ICache cache) {
-		DbKit.cache = cache;
-	}
-	
-	public static Dialect getDialect() {
-		return dialect;
-	}
-	
-	public static ICache getCache() {
-		return cache;
-	}
-	
-	// Prevent new DbKit()
-	private DbKit() {
-	}
+	private DbKit() {}
 	
 	/**
-	 * Inject DataSource
+	 * Add Config object
+	 * @param config the Config contains DataSource, Dialect and so on
 	 */
-	public static final void setDataSource(DataSource dataSource) {
-		DbKit.dataSource = dataSource;
-	}
-	
-	static final void setTransactionLevel(int transactionLevel) {
-		DbKit.transactionLevel = transactionLevel;
-	}
-	
-	public static final int getTransactionLevel() {
-		return transactionLevel;
-	}
-	
-	/**
-	 * Get DataSrouce
-	 */
-	public static final DataSource getDataSource() {
-		return dataSource;
-	}
-	
-	/**
-	 * Support transaction with Transaction interceptor
-	 */
-	public static final void setThreadLocalConnection(Connection connection) {
-		threadLocal.set(connection);
-	}
-	
-	public static final void removeThreadLocalConnection() {
-		threadLocal.remove();		// threadLocal.set(null);
-	}
-	
-	/**
-	 * Get Connection. Support transaction if Connection in ThreadLocal
-	 */
-	public static final Connection getConnection() throws SQLException {
-		Connection conn = threadLocal.get();
-		if (conn != null)
-			return conn;
-		return showSql ? new SqlReporter(dataSource.getConnection()).getConnection() : dataSource.getConnection();
-	}
-	
-	/* backup before refactory
-	public static final Connection getConnection() throws SQLException {
-		Connection conn = threadLocal.get();
-		if (showSql)
-			return conn != null ? conn : new SqlReporter(dataSource.getConnection()).getConnection();
-		else
-			return conn != null ? conn : dataSource.getConnection();
-	}*/
-	
-	/**
-	 * Helps to implement nested transaction.
-	 * Tx.intercept(...) and Db.tx(...) need this method to detected if it in nested transaction.
-	 */
-	public static final Connection getThreadLocalConnection() {
-		return threadLocal.get();
-	}
-	
-	/**
-	 * Close ResultSet、Statement、Connection
-	 * ThreadLocal support declare transaction.
-	 */
-	public static final void close(ResultSet rs, Statement st, Connection conn) {
-		if (rs != null) {try {rs.close();} catch (SQLException e) {}}
-		if (st != null) {try {st.close();} catch (SQLException e) {}}
+	public static void addConfig(Config config) {
+		if (config == null)
+			throw new IllegalArgumentException("Config can not be null");
+		if (configNameToConfig.containsKey(config.getName()))
+			throw new IllegalArgumentException("Config already exists: " + config.getName());
 		
-		if (threadLocal.get() == null) {	// in transaction if conn in threadlocal
-			if (conn != null) {try {conn.close();}
-			catch (SQLException e) {throw new ActiveRecordException(e);}}
-		}
-	}
-	
-	public static final void close(Statement st, Connection conn) {
-		if (st != null) {try {st.close();} catch (SQLException e) {}}
+		configNameToConfig.put(config.getName(), config);
 		
-		if (threadLocal.get() == null) {	// in transaction if conn in threadlocal
-			if (conn != null) {try {conn.close();}
-			catch (SQLException e) {throw new ActiveRecordException(e);}}
-		}
+		/** 
+		 * Replace the main config if current config name is MAIN_CONFIG_NAME
+		 */
+		if (MAIN_CONFIG_NAME.equals(config.getName()))
+			DbKit.config = config;
+		
+		/**
+		 * The configName may not be MAIN_CONFIG_NAME,
+		 * the main config have to set the first comming Config if it is null
+		 */
+		if (DbKit.config == null)
+			DbKit.config = config;
 	}
 	
-	public static final void close(Connection conn) {
-		if (threadLocal.get() == null)		// in transaction if conn in threadlocal
-			if (conn != null)
-				try {conn.close();} catch (SQLException e) {throw new ActiveRecordException(e);}
+	static void addModelToConfigMapping(Class<? extends Model> modelClass, Config config) {
+		modelToConfig.put(modelClass, config);
 	}
 	
-	static final void closeIgnoreThreadLocal(Connection conn) {
-		if (conn != null)
-			try {conn.close();} catch (SQLException e) {throw new ActiveRecordException(e);}
+	public static Config getConfig() {
+		return config;
+	}
+	
+	public static Config getConfig(String configName) {
+		return configNameToConfig.get(configName);
+	}
+	
+	public static Config getConfig(Class<? extends Model> modelClass) {
+		return modelToConfig.get(modelClass);
 	}
 	
 	static final void closeQuietly(ResultSet rs, Statement st) {
@@ -201,4 +110,8 @@ public final class DbKit {
 		return sql;
 	}
 }
+
+
+
+
 

@@ -26,7 +26,6 @@ import com.jfinal.handler.HandlerFactory;
 import com.jfinal.i18n.I18N;
 import com.jfinal.kit.PathKit;
 import com.jfinal.plugin.IPlugin;
-import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
 import com.jfinal.render.RenderFactory;
 import com.jfinal.server.IServer;
 import com.jfinal.server.ServerFactory;
@@ -71,7 +70,6 @@ public final class JFinal {
 		initActionMapping();
 		initHandler();
 		initRender();
-		initActiveRecord();
 		initOreillyCos();
 		initI18n();
 		initTokenManager();
@@ -111,10 +109,6 @@ public final class JFinal {
 			}
 			OreillyCos.init(uploadedFileSaveDirectory, ct.getMaxPostSize(), ct.getEncoding());
 		}
-	}
-	
-	private void initActiveRecord() {
-		ActiveRecordPlugin.setDevMode(constants.getDevMode());
 	}
 	
 	private void initPathUtil() {

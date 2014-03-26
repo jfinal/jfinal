@@ -16,6 +16,7 @@
 
 package com.jfinal.plugin.activerecord;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -73,6 +74,14 @@ public class CaseInsensitiveContainerFactory implements IContainerFactory {
 		public boolean contains(Object e) {
 			return super.contains(convertCase(e));
 		}
+		
+		public boolean addAll(Collection c) {
+			boolean modified = false;
+			for (Object o : c)
+				if (super.add(convertCase(o)))
+					modified = true;
+			return modified;
+		}
 	}
 	
 	public static class CaseInsensitiveMap extends HashMap {
@@ -93,7 +102,7 @@ public class CaseInsensitiveContainerFactory implements IContainerFactory {
 		
 		public void putAll(Map m) {
 			for (Map.Entry e : (Set<Map.Entry>)(m.entrySet()))
-	            put(e.getKey(), e.getValue());
+				super.put(convertCase(e.getKey()), e.getValue());
 		}
 		
 		public Object remove(Object key) {

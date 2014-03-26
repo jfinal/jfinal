@@ -41,7 +41,7 @@ class ActionInvocationWrapper extends ActionInvocation {
 	public final void invoke() {
 		if (index < inters.length)
 			inters[index++].intercept(this);
-		else
+		else if (index++ == inters.length)
 			actionInvocation.invoke();
 	}
 	

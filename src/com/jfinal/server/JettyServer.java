@@ -127,6 +127,7 @@ class JettyServer implements IServer {
 		return;
 	}
 	
+	@SuppressWarnings("resource")
 	private void changeClassLoader(WebAppContext webApp) {
 		try {
 			String classPath = getClassPath();

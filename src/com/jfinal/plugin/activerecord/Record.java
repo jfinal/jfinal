@@ -21,15 +21,64 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import com.jfinal.kit.StringKit;
 
 /**
  * Record
  */
 public class Record implements Serializable {
 	
-	private static final long serialVersionUID = -3254070837297655225L;
+	private static final long serialVersionUID = 1483360494051039284L;
+	
+	private String configName;
+	
+	private Map<String, Object> columns = getColumnsMap();	// getConfig().containerFactory.getColumnsMap();	// new HashMap<String, Object>();
+	
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> columns = DbKit.containerFactory.getColumnsMap();	// new HashMap<String, Object>();
+	private Map<String, Object> getColumnsMap() {
+		Config config = getConfig();
+		if (config == null)
+			return DbKit.brokenConfig.containerFactory.getColumnsMap();
+		return config.containerFactory.getColumnsMap();
+	}
+	
+	public Config getConfig() {
+		return configName == null ? DbKit.config : DbKit.getConfig(configName);
+	}
+	
+	public Record setConfig(String configName) {
+		if (StringKit.isBlank(configName))
+			throw new IllegalArgumentException("Config name can not be blank");
+		Config config = DbKit.getConfig(configName);
+		if (config == null)
+			throw new IllegalArgumentException("Config not found: " + configName);
+		
+		this.configName = configName;
+		processColumnsMap();
+		return this;
+	}
+	
+	// Set config name does not check validity by RecordBuilder
+	void setConfigName(String configName) {
+		this.configName = configName;
+	}
+	
+	public Record resetConfig() {
+		configName = null;
+		processColumnsMap();
+		return this;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void processColumnsMap() {
+		if (columns.size() == 0) {
+			columns = getConfig().containerFactory.getColumnsMap();
+		} else {
+			Map<String, Object> columnsOld = columns;
+			columns = getConfig().containerFactory.getColumnsMap();
+			columns.putAll(columnsOld);
+		}
+	}
 	
 	/**
 	 * Return columns map.

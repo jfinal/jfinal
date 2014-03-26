@@ -14,31 +14,24 @@
  * limitations under the License.
  */
 
-package com.jfinal.plugin.activerecord.cache;
+package com.jfinal.plugin.activerecord.tx;
 
-import com.jfinal.plugin.ehcache.CacheKit;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * EhCache.
+ * TxConfig is used to configure configName for Tx interceptor
  */
-public class EhCache implements ICache {
-	
-	@SuppressWarnings("unchecked")
-	public <T>T get(String cacheName, Object key) {
-		return (T)CacheKit.get(cacheName, key);
-	}
-	
-	public void put(String cacheName, Object key, Object value) {
-		CacheKit.put(cacheName, key, value);
-	}
-	
-	public void remove(String cacheName, Object key) {
-		CacheKit.remove(cacheName, key);
-	}
-	
-	public void removeAll(String cacheName) {
-		CacheKit.removeAll(cacheName);
-	}
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface TxConfig {
+	String value();		// configName of Config
 }
+
+
 
 
