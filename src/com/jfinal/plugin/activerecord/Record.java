@@ -28,7 +28,7 @@ import com.jfinal.kit.StringKit;
  */
 public class Record implements Serializable {
 	
-	private static final long serialVersionUID = 1483360494051039284L;
+	private static final long serialVersionUID = -5996634056801367118L;
 	
 	private String configName;
 	
@@ -325,7 +325,7 @@ public class Record implements Serializable {
 	}
 	
 	public int hashCode() {
-		return columns == null ? 0 : columns.hashCode();
+		return (columns == null ? 0 : columns.hashCode()) ^ (configName == null ? 0 : configName.hashCode());
 	}
 	
 	/**
