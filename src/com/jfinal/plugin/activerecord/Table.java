@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,26 +20,69 @@ import java.util.Map;
 import com.jfinal.kit.StringKit;
 
 /**
- * TableInfo save the table info like column name and column type.
+ * Table save the table meta info like column name and column type.
  */
-public class TableInfo {
+public class Table {
 	
-	private String tableName;
+	private String name;
 	private String primaryKey;
 	private String secondaryKey = null;
+	private Map<String, Class<?>> columnTypeMap;	// config.containerFactory.getAttrsMap();
 	
-	@SuppressWarnings("unchecked")
-	private Map<String, Class<?>> columnTypeMap = DbKit.containerFactory.getAttrsMap();	//	new HashMap<String, Class<?>>();
+	private Class<? extends Model<?>> modelClass;
 	
-	public String getTableName() {
-		return tableName;
+	public Table(String name, Class<? extends Model<?>> modelClass) {
+		if (StringKit.isBlank(name))
+			throw new IllegalArgumentException("Table name can not be blank.");
+		if (modelClass == null)
+			throw new IllegalArgumentException("Model class can not be null.");
+		
+		this.name = name.trim();
+		this.modelClass = modelClass;
 	}
 	
-	public void addInfo(String columnLabel, Class<?> columnType) {
+	public Table(String name, String primaryKey, Class<? extends Model<?>> modelClass) {
+		if (StringKit.isBlank(name))
+			throw new IllegalArgumentException("Table name can not be blank.");
+		if (StringKit.isBlank(primaryKey))
+			throw new IllegalArgumentException("Primary key can not be blank.");
+		if (modelClass == null)
+			throw new IllegalArgumentException("Model class can not be null.");
+		
+		this.name = name.trim();
+		setPrimaryKey(primaryKey.trim());	// this.primaryKey = primaryKey.trim();
+		this.modelClass = modelClass;
+	}
+	
+	void setPrimaryKey(String primaryKey) {
+		String[] keyArr = primaryKey.split(",");
+		if (keyArr.length > 1) {
+			if (StringKit.isBlank(keyArr[0]) || StringKit.isBlank(keyArr[1]))
+				throw new IllegalArgumentException("The composite primary key can not be blank.");
+			this.primaryKey = keyArr[0].trim();
+			this.secondaryKey = keyArr[1].trim();
+		}
+		else {
+			this.primaryKey = primaryKey;
+		}
+	}
+	
+	void setColumnTypeMap(Map<String, Class<?>> columnTypeMap) {
+		if (columnTypeMap == null)
+			throw new IllegalArgumentException("columnTypeMap can not be null");
+		
+		this.columnTypeMap = columnTypeMap;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setColumnType(String columnLabel, Class<?> columnType) {
 		columnTypeMap.put(columnLabel, columnType);
 	}
 	
-	public Class<?> getColType(String columnLabel) {
+	public Class<?> getColumnType(String columnLabel) {
 		return columnTypeMap.get(columnLabel);
 	}
 	
@@ -58,38 +101,6 @@ public class TableInfo {
 		return primaryKey;
 	}
 	
-	private Class<? extends Model<?>> modelClass;
-	
-	public TableInfo(String tableName, Class<? extends Model<?>> modelClass) {
-		this(tableName, DbKit.dialect.getDefaultPrimaryKey(), modelClass);
-	}
-	
-	public TableInfo(String tableName, String primaryKey, Class<? extends Model<?>> modelClass) {
-		if (StringKit.isBlank(tableName))
-			throw new IllegalArgumentException("Table name can not be blank.");
-		if (StringKit.isBlank(primaryKey))
-			throw new IllegalArgumentException("Primary key can not be blank.");
-		if (modelClass == null)
-			throw new IllegalArgumentException("Model class can not be null.");
-		
-		this.tableName = tableName.trim();
-		setPrimaryKey(primaryKey.trim());	// this.primaryKey = primaryKey.trim();
-		this.modelClass = modelClass;
-	}
-	
-	private void setPrimaryKey(String primaryKey) {
-		String[] keyArr = primaryKey.split(",");
-		if (keyArr.length > 1) {
-			if (StringKit.isBlank(keyArr[0]) || StringKit.isBlank(keyArr[1]))
-				throw new IllegalArgumentException("The composite primary key can not be blank.");
-			this.primaryKey = keyArr[0].trim();
-			this.secondaryKey = keyArr[1].trim();
-		}
-		else {
-			this.primaryKey = primaryKey;
-		}
-	}
-	
 	public String getSecondaryKey() {
 		return secondaryKey;
 	}
@@ -98,6 +109,9 @@ public class TableInfo {
 		return modelClass;
 	}
 }
+
+
+
 
 
 

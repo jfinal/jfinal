@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,6 +75,13 @@ class Config {
 		if (pluginList != null) {
 			for (IPlugin plugin : pluginList) {
 				try {
+					// process ActiveRecordPlugin devMode
+					if (plugin instanceof com.jfinal.plugin.activerecord.ActiveRecordPlugin) {
+						com.jfinal.plugin.activerecord.ActiveRecordPlugin arp = (com.jfinal.plugin.activerecord.ActiveRecordPlugin)plugin;
+						if (arp.getDevMode() == null)
+							arp.setDevMode(constants.getDevMode());
+					}
+					
 					boolean success = plugin.start();
 					if (!success) {
 						String message = "Plugin start error: " + plugin.getClass().getName();

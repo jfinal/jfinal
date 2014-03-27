@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,24 +43,49 @@ import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class Model<M extends Model> implements Serializable {
 	
-	private static final long serialVersionUID = -4890964905769110400L;
+	private static final long serialVersionUID = 3116455399652810187L;
 	
 	/**
 	 * Attributes of this model
 	 */
-	private Map<String, Object> attrs = DbKit.containerFactory.getAttrsMap();	// new HashMap<String, Object>();
+	private Map<String, Object> attrs = getAttrsMap();	// getConfig().containerFactory.getAttrsMap();	// new HashMap<String, Object>();
+	
+	private Map<String, Object> getAttrsMap() {
+		Config config = getConfig();
+		if (config == null)
+			return DbKit.brokenConfig.containerFactory.getAttrsMap();
+		return config.containerFactory.getAttrsMap();
+	}
 	
 	/**
 	 * Flag of column has been modified. update need this flag
 	 */
 	private Set<String> modifyFlag;
 	
-	private static final TableInfoMapping tableInfoMapping = TableInfoMapping.me();
-	
+	/*
 	private Set<String> getModifyFlag() {
 		if (modifyFlag == null)
-			modifyFlag = DbKit.containerFactory.getModifyFlagSet();	// new HashSet<String>();
+			modifyFlag = getConfig().containerFactory.getModifyFlagSet();	// new HashSet<String>();
 		return modifyFlag;
+	}*/
+	
+	private Set<String> getModifyFlag() {
+		if (modifyFlag == null) {
+			Config config = getConfig();
+			if (config == null)
+				modifyFlag = DbKit.brokenConfig.containerFactory.getModifyFlagSet();
+			else
+				modifyFlag = config.containerFactory.getModifyFlagSet();
+		}
+		return modifyFlag;
+	}
+	
+	private Config getConfig() {
+		return DbKit.getConfig(getClass());
+	}
+	
+	private Table getTable() {
+		return TableMapping.me().getTable(getClass());
 	}
 	
 	/**
@@ -71,7 +96,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @throws ActiveRecordException if the attribute is not exists of the model
 	 */
 	public M set(String attr, Object value) {
-		if (tableInfoMapping.getTableInfo(getClass()).hasColumnLabel(attr)) {
+		if (getTable().hasColumnLabel(attr)) {
 			attrs.put(attr, value);
 			getModifyFlag().add(attr);	// Add modify flag, update() need this flag.
 			return (M)this;
@@ -117,7 +142,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	/**
-	 * Get attribute of mysql type: bigint
+	 * Get attribute of mysql type: bigint, unsign int
 	 */
 	public Long getLong(String attr) {
 		return (Long)attrs.get(attr);
@@ -208,41 +233,46 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return Page
 	 */
 	public Page<M> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
-		if (pageNumber < 1 || pageSize < 1)
-			throw new ActiveRecordException("pageNumber and pageSize must be more than 0");
-		
-		if (DbKit.dialect.isTakeOverModelPaginate())
-			return DbKit.dialect.takeOverModelPaginate(getClass(), pageNumber, pageSize, select, sqlExceptSelect, paras);
-		
+		Config config = getConfig();
 		Connection conn = null;
 		try {
-			conn = DbKit.getConnection();
-			long totalRow = 0;
-			int totalPage = 0;
-			List result = Db.query(conn, "select count(*) " + DbKit.replaceFormatSqlOrderBy(sqlExceptSelect), paras);
-			int size = result.size();
-			if (size == 1)
-				totalRow = ((Number)result.get(0)).longValue();		// totalRow = (Long)result.get(0);
-			else if (size > 1)
-				totalRow = result.size();
-			else
-				return new Page<M>(new ArrayList<M>(0), pageNumber, pageSize, 0, 0);	// totalRow = 0;
-			
-			totalPage = (int) (totalRow / pageSize);
-			if (totalRow % pageSize != 0) {
-				totalPage++;
-			}
-			
-			// --------
-			StringBuilder sql = new StringBuilder();
-			DbKit.dialect.forPaginate(sql, pageNumber, pageSize, select, sqlExceptSelect);
-			List<M> list = find(conn, sql.toString(), paras);
-			return new Page<M>(list, pageNumber, pageSize, totalPage, (int)totalRow);
+			conn = config.getConnection();
+			return paginate(config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.close(conn);
+			config.close(conn);
 		}
+	}
+	
+	private Page<M> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws Exception {
+		if (pageNumber < 1 || pageSize < 1)
+			throw new ActiveRecordException("pageNumber and pageSize must be more than 0");
+		
+		if (config.dialect.isTakeOverModelPaginate())
+			return config.dialect.takeOverModelPaginate(conn, getClass(), pageNumber, pageSize, select, sqlExceptSelect, paras);
+		
+		long totalRow = 0;
+		int totalPage = 0;
+		List result = Db.query(config, conn, "select count(*) " + DbKit.replaceFormatSqlOrderBy(sqlExceptSelect), paras);
+		int size = result.size();
+		if (size == 1)
+			totalRow = ((Number)result.get(0)).longValue();		// totalRow = (Long)result.get(0);
+		else if (size > 1)
+			totalRow = result.size();
+		else
+			return new Page<M>(new ArrayList<M>(0), pageNumber, pageSize, 0, 0);	// totalRow = 0;
+		
+		totalPage = (int) (totalRow / pageSize);
+		if (totalRow % pageSize != 0) {
+			totalPage++;
+		}
+		
+		// --------
+		StringBuilder sql = new StringBuilder();
+		config.dialect.forPaginate(sql, pageNumber, pageSize, select, sqlExceptSelect);
+		List<M> list = find(conn, sql.toString(), paras);
+		return new Page<M>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
 	/**
@@ -273,11 +303,12 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Save model.
 	 */
 	public boolean save() {
-		TableInfo tableInfo = tableInfoMapping.getTableInfo(getClass());
+		Config config = getConfig();
+		Table table = getTable();
 		
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();
-		DbKit.dialect.forModelSave(tableInfo, attrs, sql, paras);
+		config.dialect.forModelSave(table, attrs, sql, paras);
 		// if (paras.size() == 0)	return false;	// The sql "insert into tableName() values()" works fine, so delete this line
 		
 		// --------
@@ -285,38 +316,33 @@ public abstract class Model<M extends Model> implements Serializable {
 		PreparedStatement pst = null;
 		int result = 0;
 		try {
-			conn = DbKit.getConnection();
-			if (DbKit.dialect.isOracle())
-				pst = conn.prepareStatement(sql.toString(), new String[]{tableInfo.getPrimaryKey()});
+			conn = config.getConnection();
+			if (config.dialect.isOracle())
+				pst = conn.prepareStatement(sql.toString(), new String[]{table.getPrimaryKey()});
 			else
 				pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
 			
-			DbKit.dialect.fillStatement(pst, paras);
-			// for (int i=0, size=paras.size(); i<size; i++) {
-				// pst.setObject(i + 1, paras.get(i));
-			// }
-			
+			config.dialect.fillStatement(pst, paras);
 			result = pst.executeUpdate();
-			// if (isSupportAutoIncrementKey)
-				getGeneratedKey(pst, tableInfo);	// getGeneratedKey(pst, tableInfo.getPrimaryKey());
+			getGeneratedKey(pst, table);
 			getModifyFlag().clear();
 			return result >= 1;
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.close(pst, conn);
+			config.close(pst, conn);
 		}
 	}
 	
 	/**
 	 * Get id after save method.
 	 */
-	private void getGeneratedKey(PreparedStatement pst, TableInfo tableInfo) throws SQLException {
-		String pKey = tableInfo.getPrimaryKey();
-		if (get(pKey) == null || DbKit.dialect.isOracle()) {
+	private void getGeneratedKey(PreparedStatement pst, Table table) throws SQLException {
+		String pKey = table.getPrimaryKey();
+		if (get(pKey) == null || getConfig().dialect.isOracle()) {
 			ResultSet rs = pst.getGeneratedKeys();
 			if (rs.next()) {
-				Class colType = tableInfo.getColType(pKey);
+				Class colType = table.getColumnType(pKey);
 				if (colType == Integer.class || colType == int.class)
 					set(pKey, rs.getInt(1));
 				else if (colType == Long.class || colType == long.class)
@@ -332,12 +358,12 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Delete model.
 	 */
 	public boolean delete() {
-		TableInfo tInfo = tableInfoMapping.getTableInfo(getClass());
-		String pKey = tInfo.getPrimaryKey();
+		Table table = getTable();
+		String pKey = table.getPrimaryKey();
 		Object id = attrs.get(pKey);
 		if (id == null)
 			throw new ActiveRecordException("You can't delete model without id.");
-		return deleteById(tInfo, id);
+		return deleteById(table, id);
 	}
 	
 	/**
@@ -348,12 +374,11 @@ public abstract class Model<M extends Model> implements Serializable {
 	public boolean deleteById(Object id) {
 		if (id == null)
 			throw new IllegalArgumentException("id can not be null");
-		TableInfo tInfo = tableInfoMapping.getTableInfo(getClass());
-		return deleteById(tInfo, id);
+		return deleteById(getTable(), id);
 	}
 	
-	private boolean deleteById(TableInfo tInfo, Object id) {
-		String sql = DbKit.dialect.forModelDeleteById(tInfo);
+	private boolean deleteById(Table table, Object id) {
+		String sql = getConfig().dialect.forModelDeleteById(table);
 		return Db.update(sql, id) >= 1;
 	}
 	
@@ -364,15 +389,16 @@ public abstract class Model<M extends Model> implements Serializable {
 		if (getModifyFlag().isEmpty())
 			return false;
 		
-		TableInfo tableInfo = tableInfoMapping.getTableInfo(getClass());
-		String pKey = tableInfo.getPrimaryKey();
+		Table table = getTable();
+		String pKey = table.getPrimaryKey();
 		Object id = attrs.get(pKey);
 		if (id == null)
 			throw new ActiveRecordException("You can't update model without Primary Key.");
 		
+		Config config = getConfig();
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();
-		DbKit.dialect.forModelUpdate(tableInfo, attrs, getModifyFlag(), pKey, id, sql, paras);
+		config.dialect.forModelUpdate(table, attrs, getModifyFlag(), pKey, id, sql, paras);
 		
 		if (paras.size() <= 1) {	// Needn't update
 			return false;
@@ -381,8 +407,8 @@ public abstract class Model<M extends Model> implements Serializable {
 		// --------
 		Connection conn = null;
 		try {
-			conn = DbKit.getConnection();
-			int result = Db.update(conn, sql.toString(), paras.toArray());
+			conn = config.getConnection();
+			int result = Db.update(config, conn, sql.toString(), paras.toArray());
 			if (result >= 1) {
 				getModifyFlag().clear();
 				return true;
@@ -391,7 +417,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.close(conn);
+			config.close(conn);
 		}
 	}
 	
@@ -399,20 +425,16 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Find model.
 	 */
 	private List<M> find(Connection conn, String sql, Object... paras) throws Exception {
+		Config config = getConfig();
 		Class<? extends Model> modelClass = getClass();
-		if (DbKit.devMode)
+		if (config.devMode)
 			checkTableName(modelClass, sql);
 		
 		PreparedStatement pst = conn.prepareStatement(sql);
-		DbKit.dialect.fillStatement(pst, paras);
-		// for (int i=0; i<paras.length; i++) {
-			// pst.setObject(i + 1, paras[i]);
-		// }
-		
+		config.dialect.fillStatement(pst, paras);
 		ResultSet rs = pst.executeQuery();
 		List<M> result = ModelBuilder.build(rs, modelClass);
 		DbKit.closeQuietly(rs, pst);
-		
 		return result;
 	}
 	
@@ -423,14 +445,15 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return the list of Model
 	 */
 	public List<M> find(String sql, Object... paras) {
+		Config config = getConfig();
 		Connection conn = null;
 		try {
-			conn = DbKit.getConnection();
+			conn = config.getConnection();
 			return find(conn, sql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
-			DbKit.close(conn);
+			config.close(conn);
 		}
 	}
 	
@@ -438,9 +461,9 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Check the table name. The table name must in sql.
 	 */
 	private void checkTableName(Class<? extends Model> modelClass, String sql) {
-		TableInfo tableInfo = tableInfoMapping.getTableInfo(modelClass);
-		if (! sql.toLowerCase().contains(tableInfo.getTableName().toLowerCase()))
-			throw new ActiveRecordException("The table name: " + tableInfo.getTableName() + " not in your sql.");
+		Table table = TableMapping.me().getTable(modelClass);
+		if (! sql.toLowerCase().contains(table.getName().toLowerCase()))
+			throw new ActiveRecordException("The table name: " + table.getName() + " not in your sql.");
 	}
 	
 	/**
@@ -485,8 +508,8 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @param columns the specific columns separate with comma character ==> ","
 	 */
 	public M findById(Object id, String columns) {
-		TableInfo tInfo = tableInfoMapping.getTableInfo(getClass());
-		String sql = DbKit.dialect.forModelFindById(tInfo, columns);
+		Table table = getTable();
+		String sql = getConfig().dialect.forModelFindById(table, columns);
 		List<M> result = find(sql, id);
 		return result.size() > 0 ? result.get(0) : null;
 	}
@@ -506,9 +529,8 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return this Model
 	 */
 	public M setAttrs(Map<String, Object> attrs) {
-		for (Entry<String, Object> e : attrs.entrySet()) {
+		for (Entry<String, Object> e : attrs.entrySet())
 			set(e.getKey(), e.getValue());
-		}
 		return (M)this;
 	}
 	
@@ -648,7 +670,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return the list of Model
 	 */
 	public List<M> findByCache(String cacheName, Object key, String sql, Object... paras) {
-		ICache cache = DbKit.getCache();
+		ICache cache = getConfig().getCache();
 		List<M> result = cache.get(cacheName, key);
 		if (result == null) {
 			result = find(sql, paras);
@@ -672,7 +694,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return Page
 	 */
 	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
-		ICache cache = DbKit.getCache();
+		ICache cache = getConfig().getCache();
 		Page<M> result = cache.get(cacheName, key);
 		if (result == null) {
 			result = paginate(pageNumber, pageSize, select, sqlExceptSelect, paras);
@@ -711,4 +733,5 @@ public abstract class Model<M extends Model> implements Serializable {
 		return com.jfinal.kit.JsonKit.toJson(attrs, 4);
 	}
 }
+
 

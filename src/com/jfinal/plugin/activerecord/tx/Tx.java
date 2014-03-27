@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import java.sql.SQLException;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
+import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.DbKit;
+import com.jfinal.plugin.activerecord.NestedTransactionHelpException;
 
 /**
  * ActiveRecord declare transaction.
@@ -29,17 +31,35 @@ import com.jfinal.plugin.activerecord.DbKit;
  */
 public class Tx implements Interceptor {
 	
-	protected int getTransactionLevel() {
-		return DbKit.getTransactionLevel();
+	static Config getConfigWithTxConfig(ActionInvocation ai) {
+		TxConfig txConfig = ai.getMethod().getAnnotation(TxConfig.class);
+		if (txConfig == null)
+			txConfig = ai.getController().getClass().getAnnotation(TxConfig.class);
+		
+		if (txConfig != null) {
+			Config config = DbKit.getConfig(txConfig.value());
+			if (config == null)
+				throw new RuntimeException("Config not found with TxConfig");
+			return config;
+		}
+		return null;
 	}
 	
-	public void intercept(ActionInvocation invocation) {
-		Connection conn = DbKit.getThreadLocalConnection();
+	protected int getTransactionLevel(Config config) {
+		return config.getTransactionLevel();
+	}
+	
+	public void intercept(ActionInvocation ai) {
+		Config config = getConfigWithTxConfig(ai);
+		if (config == null)
+			config = DbKit.getConfig();
+		
+		Connection conn = config.getThreadLocalConnection();
 		if (conn != null) {	// Nested transaction support
 			try {
-				if (conn.getTransactionIsolation() < getTransactionLevel())
-					conn.setTransactionIsolation(getTransactionLevel());
-				invocation.invoke();
+				if (conn.getTransactionIsolation() < getTransactionLevel(config))
+					conn.setTransactionIsolation(getTransactionLevel(config));
+				ai.invoke();
 				return ;
 			} catch (SQLException e) {
 				throw new ActiveRecordException(e);
@@ -48,16 +68,17 @@ public class Tx implements Interceptor {
 		
 		Boolean autoCommit = null;
 		try {
-			conn = DbKit.getConnection();
+			conn = config.getConnection();
 			autoCommit = conn.getAutoCommit();
-			DbKit.setThreadLocalConnection(conn);
-			conn.setTransactionIsolation(getTransactionLevel());	// conn.setTransactionIsolation(transactionLevel);
+			config.setThreadLocalConnection(conn);
+			conn.setTransactionIsolation(getTransactionLevel(config));	// conn.setTransactionIsolation(transactionLevel);
 			conn.setAutoCommit(false);
-			invocation.invoke();
+			ai.invoke();
 			conn.commit();
+		} catch (NestedTransactionHelpException e) {
+			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
 		} catch (Exception e) {
-			if (conn != null)
-				try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
+			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
 			throw new ActiveRecordException(e);
 		}
 		finally {
@@ -71,7 +92,7 @@ public class Tx implements Interceptor {
 				e.printStackTrace();	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
 			}
 			finally {
-				DbKit.removeThreadLocalConnection();	// prevent memory leak
+				config.removeThreadLocalConnection();	// prevent memory leak
 			}
 		}
 	}

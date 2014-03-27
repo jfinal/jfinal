@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -183,7 +183,7 @@ public class JsonKit {
 	}
 	
 	public static String toJson(Object value, int depth) {
-		if(value == null || (depth--) <= 0)
+		if(value == null || (depth--) < 0)
 			return "null";
 		
 		if(value instanceof String)

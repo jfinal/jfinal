@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class RecordBuilder {
 	
-	public static final List<Record> build(ResultSet rs) throws SQLException {
+	public static final List<Record> build(String configName, ResultSet rs) throws SQLException {
 		List<Record> result = new ArrayList<Record>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
@@ -38,6 +38,7 @@ public class RecordBuilder {
 		buildLabelNamesAndTypes(rsmd, labelNames, types);
 		while (rs.next()) {
 			Record record = new Record();
+			record.setConfigName(configName);
 			Map<String, Object> columns = record.getColumns();
 			for (int i=1; i<=columnCount; i++) {
 				Object value;

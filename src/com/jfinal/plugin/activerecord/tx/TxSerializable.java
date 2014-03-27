@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,10 @@ public class TxSerializable extends Tx {
     private int TRANSACTION_SERIALIZABLE     = 8;
     
     @Override
-	protected int getTransactionLevel() {
+	protected int getTransactionLevel(com.jfinal.plugin.activerecord.Config config) {
 		return TRANSACTION_SERIALIZABLE;
 	}
 }
+
+
+

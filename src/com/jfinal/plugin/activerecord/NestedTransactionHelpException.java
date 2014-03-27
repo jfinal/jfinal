@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.jfinal.ext.interceptor;
-
-import com.jfinal.aop.Interceptor;
-import com.jfinal.core.ActionInvocation;
-import com.jfinal.core.Controller;
+package com.jfinal.plugin.activerecord;
 
 /**
- * Accept GET method only.
+ * NestedTransactionHelpException
+ * <br>
+ * Notice the outer transaction that the nested transaction return false
  */
-public class GET implements Interceptor {
-	public void intercept(ActionInvocation ai) {
-		Controller controller = ai.getController();
-		if ("GET".equalsIgnoreCase(controller.getRequest().getMethod()))
-			ai.invoke();
-		else
-			controller.renderError(404);
+public class NestedTransactionHelpException extends RuntimeException {
+	
+	private static final long serialVersionUID = 7933557736005738819L;
+	
+	public NestedTransactionHelpException(String message) {
+		super(message);
 	}
 }
+
+
+

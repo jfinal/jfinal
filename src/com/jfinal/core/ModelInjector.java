@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2013, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.jfinal.kit.StringKit;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Model;
-import com.jfinal.plugin.activerecord.TableInfo;
-import com.jfinal.plugin.activerecord.TableInfoMapping;
+import com.jfinal.plugin.activerecord.Table;
+import com.jfinal.plugin.activerecord.TableMapping;
 
 /**
  * ModelInjector
@@ -79,7 +79,7 @@ final class ModelInjector {
 	
 	@SuppressWarnings("rawtypes")
 	private static final void injectActiveRecordModel(Model<?> model, String modelName, HttpServletRequest request, boolean skipConvertError) {
-		TableInfo tableInfo = TableInfoMapping.me().getTableInfo(model.getClass());
+		Table table = TableMapping.me().getTable(model.getClass());
 		
 		String modelNameAndDot = modelName + ".";
 		
@@ -88,7 +88,7 @@ final class ModelInjector {
 			String paraKey = e.getKey();
 			if (paraKey.startsWith(modelNameAndDot)) {
 				String paraName = paraKey.substring(modelNameAndDot.length());
-				Class colType = tableInfo.getColType(paraName);
+				Class colType = table.getColumnType(paraName);
 				if (colType == null)
 					throw new ActiveRecordException("The model attribute " + paraKey + " is not exists.");
 				String[] paraValue = e.getValue();

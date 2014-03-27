@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-package com.jfinal.ext.interceptor;
+package com.jfinal.plugin.activerecord.tx;
 
-import com.jfinal.aop.Interceptor;
-import com.jfinal.core.ActionInvocation;
-import com.jfinal.core.Controller;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Accept GET method only.
+ * TxConfig is used to configure configName for Tx interceptor
  */
-public class GET implements Interceptor {
-	public void intercept(ActionInvocation ai) {
-		Controller controller = ai.getController();
-		if ("GET".equalsIgnoreCase(controller.getRequest().getMethod()))
-			ai.invoke();
-		else
-			controller.renderError(404);
-	}
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface TxConfig {
+	String value();		// configName of Config
 }
+
+
+
+
