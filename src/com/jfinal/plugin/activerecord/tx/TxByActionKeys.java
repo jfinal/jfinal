@@ -47,7 +47,7 @@ public class TxByActionKeys implements Interceptor {
 			config = DbKit.getConfig();
 		
 		if (actionKeySet.contains(ai.getActionKey())) {
-			Db.tx(config.getName(), new IAtom(){
+			Db.pro.tx(config.getName(), new IAtom(){
 				public boolean run() throws SQLException {
 					ai.invoke();
 					return true;

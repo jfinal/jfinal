@@ -50,7 +50,7 @@ public class TxByRegex implements Interceptor {
 			config = DbKit.getConfig();
 		
 		if (pattern.matcher(ai.getActionKey()).matches()) {
-			Db.tx(config.getName(), new IAtom(){
+			Db.pro.tx(config.getName(), new IAtom(){
 				public boolean run() throws SQLException {
 					ai.invoke();
 					return true;

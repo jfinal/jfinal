@@ -73,27 +73,6 @@ public class Db {
 	}
 	
 	/**
-	 * Execute sql query. The result can not convert to Record.
-	 * @param configName the config name
-	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
-	 * @param paras the parameters of sql
-	 * @return List&lt;Object[]&gt; if your sql has select more than one column,
-	 * 			and it return List&lt;Object&gt; if your sql has select only one column.
-	 */
-	public static <T> List<T> query(String configName, String sql, Object... paras) {
-		Config config = DbKit.getConfig(configName);
-		Connection conn = null;
-		try {
-			conn = config.getConnection();
-			return query(config, conn, sql, paras);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			config.close(conn);
-		}
-	}
-	
-	/**
 	 * @see #query(String, Object...)
 	 * @param sql an SQL statement
 	 */
@@ -276,23 +255,6 @@ public class Db {
 	
 	/**
 	 * @see #update(String, Object...)
-	 * @param configName the config name
-	 */
-	public static int update(String configName, String sql, Object... paras) {
-		Config config = DbKit.getConfig(configName);
-		Connection conn = null;
-		try {
-			conn = config.getConnection();
-			return update(config, conn, sql, paras);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			config.close(conn);
-		}
-	}
-	
-	/**
-	 * @see #update(String, Object...)
 	 * @param sql an SQL statement
 	 */
 	public static int update(String sql) {
@@ -341,26 +303,6 @@ public class Db {
 	 */
 	public static List<Record> find(String sql) {
 		return find(sql, NULL_PARA_ARRAY);
-	}
-	
-	/**
-	 * Find Record.
-	 * @param configName the config name
-	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
-	 * @param paras the parameters of sql
-	 * @return the list of Record
-	 */
-	public static List<Record> find(String configName, String sql, Object... paras) {
-		Config config = DbKit.getConfig(configName);
-		Connection conn = null;
-		try {
-			conn = config.getConnection();
-			return find(config, conn, sql, paras);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			config.close(conn);
-		}
 	}
 	
 	/**
@@ -523,36 +465,6 @@ public class Db {
 	}
 	
 	/**
-	 * Paginate.
-	 * @param configName the config name
-	 * @param pageNumber the page number
-	 * @param pageSize the page size
-	 * @param select the select part of the sql statement 
-	 * @param sqlExceptSelect the sql statement excluded select part
-	 * @param paras the parameters of sql
-	 * @return Page
-	 */
-	public static Page<Record> paginate(String configName, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
-		Config config = DbKit.getConfig(configName);
-		Connection conn = null;
-		try {
-			conn = config.getConnection();
-			return paginate(config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			config.close(conn);
-		}
-	}
-	
-	/**
-	 * @see #paginate(String, int, int, String, String, Object...)
-	 */
-	public static Page<Record> paginate(String configName, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		return paginate(configName, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
-	}
-	
-	/**
 	 * @see #paginate(String, int, int, String, String, Object...)
 	 */
 	public static Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
@@ -652,16 +564,15 @@ public class Db {
 	 * @see #execute(String, ICallback)
 	 */
 	public static Object execute(ICallback callback) {
-		return execute(DbKit.config.getName(), callback);
+		return execute(DbKit.config, callback);
 	}
 	
 	/**
 	 * Execute callback. It is useful when all the API can not satisfy your requirement.
-	 * @param configName the config name
+	 * @param config the Config object
 	 * @param callback the ICallback interface
 	 */
-	public static Object execute(String configName, ICallback callback) {
-		Config config = DbKit.getConfig(configName);
+	static Object execute(Config config, ICallback callback) {
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
@@ -728,15 +639,6 @@ public class Db {
 				config.removeThreadLocalConnection();	// prevent memory leak
 			}
 		}
-	}
-	
-	public static boolean tx(String configName, int transactionLevel, IAtom atom) {
-		return tx(DbKit.getConfig(configName), transactionLevel, atom);
-	}
-	
-	public static boolean tx(String configName, IAtom atom) {
-		Config config = DbKit.getConfig(configName);
-		return tx(config, config.getTransactionLevel(), atom);
 	}
 	
 	public static boolean tx(int transactionLevel, IAtom atom) {
@@ -835,39 +737,8 @@ public class Db {
 	 * @see #batch(String, String, Object[][], int)
      */
     public static int[] batch(String sql, Object[][] paras, int batchSize) {
-		return batch(DbKit.config.getName(), sql, paras, batchSize);
+		return pro.batch(DbKit.config.getName(), sql, paras, batchSize);
     }
-    
-	/**
-     * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.
-     * <p>
-     * Example:
-     * <pre>
-     * String sql = "insert into user(name, cash) values(?, ?)";
-     * int[] result = Db.batch("myConfig", sql, new Object[][]{{"James", 888}, {"zhanjin", 888}});
-     * </pre>
-     * @param configName the config name
-     * @param sql The SQL to execute.
-     * @param paras An array of query replacement parameters.  Each row in this array is one set of batch replacement values.
-     * @return The number of rows updated per statement
-     */
-	public static int[] batch(String configName, String sql, Object[][] paras, int batchSize) {
-		Config config = DbKit.getConfig(configName);
-		Connection conn = null;
-		Boolean autoCommit = null;
-		try {
-			conn = config.getConnection();
-			autoCommit = conn.getAutoCommit();
-			conn.setAutoCommit(false);
-			return batch(config, conn, sql, paras, batchSize);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			if (autoCommit != null)
-				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
-			config.close(conn);
-		}
-	}
 	
 	private static int[] batch(Config config, Connection conn, String sql, String columns, List list, int batchSize) throws SQLException {
 		if (list == null || list.size() == 0)
@@ -918,40 +789,7 @@ public class Db {
 	 * @see #batch(String, String, String, List, int)
      */
 	public static int[] batch(String sql, String columns, List modelOrRecordList, int batchSize) {
-		return batch(DbKit.config.getName(), sql, columns, modelOrRecordList, batchSize);
-	}
-	
-	/**
-     * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.
-     * <p>
-     * Example:
-     * <pre>
-     * String sql = "insert into user(name, cash) values(?, ?)";
-     * int[] result = Db.batch("myConfig", sql, "name, cash", modelList, 500);
-     * </pre>
-     * @param configName the config name
-	 * @param sql The SQL to execute.
-	 * @param columns the columns need be processed by sql.
-	 * @param modelOrRecordList model or record object list.
-	 * @param batchSize batch size.
-	 * @return The number of rows updated per statement
-	 */
-	public static int[] batch(String configName, String sql, String columns, List modelOrRecordList, int batchSize) {
-		Config config = DbKit.getConfig(configName);
-		Connection conn = null;
-		Boolean autoCommit = null;
-		try {
-			conn = config.getConnection();
-			autoCommit = conn.getAutoCommit();
-			conn.setAutoCommit(false);
-			return batch(config, conn, sql, columns, modelOrRecordList, batchSize);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			if (autoCommit != null)
-				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
-			config.close(conn);
-		}
+		return pro.batch(DbKit.config.getName(), sql, columns, modelOrRecordList, batchSize);
 	}
 	
 	private static int[] batch(Config config, Connection conn, List<String> sqlList, int batchSize) throws SQLException {
@@ -986,40 +824,234 @@ public class Db {
 	 * @see #batch(String, List, int)
      */
     public static int[] batch(List<String> sqlList, int batchSize) {
-		return batch(DbKit.config.getName(), sqlList, batchSize);
+		return pro.batch(DbKit.config.getName(), sqlList, batchSize);
     }
     
-    /**
-     * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.
-     * Example:
-     * <pre>
-     * int[] result = Db.batch("myConfig", sqlList, 500);
-     * </pre>
-     * @param configName the config name
-	 * @param sqlList The SQL list to execute.
-	 * @param batchSize batch size.
-	 * @return The number of rows updated per statement
-	 */
-    public static int[] batch(String configName, List<String> sqlList, int batchSize) {
-		Config config = DbKit.getConfig(configName);
-		Connection conn = null;
-		Boolean autoCommit = null;
-		try {
-			conn = config.getConnection();
-			autoCommit = conn.getAutoCommit();
-			conn.setAutoCommit(false);
-			return batch(config, conn, sqlList, batchSize);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			if (autoCommit != null)
-				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
-			config.close(conn);
-		}
+    public static final class pro {
+    	/**
+    	 * Execute sql query. The result can not convert to Record.
+    	 * @param configName the config name
+    	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
+    	 * @param paras the parameters of sql
+    	 * @return List&lt;Object[]&gt; if your sql has select more than one column,
+    	 * 			and it return List&lt;Object&gt; if your sql has select only one column.
+    	 */
+    	public static <T> List<T> query(String configName, String sql, Object... paras) {
+    		Config config = DbKit.getConfig(configName);
+    		Connection conn = null;
+    		try {
+    			conn = config.getConnection();
+    			return Db.query(config, conn, sql, paras);
+    		} catch (Exception e) {
+    			throw new ActiveRecordException(e);
+    		} finally {
+    			config.close(conn);
+    		}
+    	}
+    	
+    	/**
+    	 * @see #query(String, String, Object...)
+    	 * @param sql an SQL statement
+    	 */
+    	public static <T> List<T> query(String configName, String sql) {
+    		return query(configName, sql, NULL_PARA_ARRAY);
+    	}
+    	
+    	/**
+    	 * @see #update(String, Object...)
+    	 * @param configName the config name
+    	 */
+    	public static int update(String configName, String sql, Object... paras) {
+    		Config config = DbKit.getConfig(configName);
+    		Connection conn = null;
+    		try {
+    			conn = config.getConnection();
+    			return Db.update(config, conn, sql, paras);
+    		} catch (Exception e) {
+    			throw new ActiveRecordException(e);
+    		} finally {
+    			config.close(conn);
+    		}
+    	}
+    	
+    	/**
+    	 * @see #update(String, String, Object...)
+    	 * @param sql an SQL statement
+    	 */
+    	public static int update(String configName, String sql) {
+    		return update(configName, sql, NULL_PARA_ARRAY);
+    	}
+    	
+    	/**
+    	 * Find Record.
+    	 * @param configName the config name
+    	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
+    	 * @param paras the parameters of sql
+    	 * @return the list of Record
+    	 */
+    	public static List<Record> find(String configName, String sql, Object... paras) {
+    		Config config = DbKit.getConfig(configName);
+    		Connection conn = null;
+    		try {
+    			conn = config.getConnection();
+    			return Db.find(config, conn, sql, paras);
+    		} catch (Exception e) {
+    			throw new ActiveRecordException(e);
+    		} finally {
+    			config.close(conn);
+    		}
+    	}
+    	
+    	/**
+    	 * @see #find(String, String, Object...)
+    	 * @param sql the sql statement
+    	 */
+    	public static List<Record> find(String configName, String sql) {
+    		return find(configName, sql, NULL_PARA_ARRAY);
+    	}
+    	
+    	/**
+    	 * Paginate.
+    	 * @param configName the config name
+    	 * @param pageNumber the page number
+    	 * @param pageSize the page size
+    	 * @param select the select part of the sql statement 
+    	 * @param sqlExceptSelect the sql statement excluded select part
+    	 * @param paras the parameters of sql
+    	 * @return Page
+    	 */
+    	public static Page<Record> paginate(String configName, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+    		Config config = DbKit.getConfig(configName);
+    		Connection conn = null;
+    		try {
+    			conn = config.getConnection();
+    			return Db.paginate(config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
+    		} catch (Exception e) {
+    			throw new ActiveRecordException(e);
+    		} finally {
+    			config.close(conn);
+    		}
+    	}
+    	
+    	/**
+    	 * @see #paginate(String, int, int, String, String, Object...)
+    	 */
+    	public static Page<Record> paginate(String configName, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
+    		return paginate(configName, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
+    	}
+    	
+    	/**
+    	 * Execute callback. It is useful when all the API can not satisfy your requirement.
+    	 * @param configName the config name
+    	 * @param callback the ICallback interface
+    	 */
+    	public static Object execute(String configName, ICallback callback) {
+    		return Db.execute(DbKit.getConfig(configName), callback);
+    	}
+    	
+    	public static boolean tx(String configName, int transactionLevel, IAtom atom) {
+    		return Db.tx(DbKit.getConfig(configName), transactionLevel, atom);
+    	}
+    	
+    	public static boolean tx(String configName, IAtom atom) {
+    		Config config = DbKit.getConfig(configName);
+    		return Db.tx(config, config.getTransactionLevel(), atom);
+    	}
+    	
+    	/**
+         * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.
+         * <p>
+         * Example:
+         * <pre>
+         * String sql = "insert into user(name, cash) values(?, ?)";
+         * int[] result = Db.batch("myConfig", sql, new Object[][]{{"James", 888}, {"zhanjin", 888}});
+         * </pre>
+         * @param configName the config name
+         * @param sql The SQL to execute.
+         * @param paras An array of query replacement parameters.  Each row in this array is one set of batch replacement values.
+         * @return The number of rows updated per statement
+         */
+    	public static int[] batch(String configName, String sql, Object[][] paras, int batchSize) {
+    		Config config = DbKit.getConfig(configName);
+    		Connection conn = null;
+    		Boolean autoCommit = null;
+    		try {
+    			conn = config.getConnection();
+    			autoCommit = conn.getAutoCommit();
+    			conn.setAutoCommit(false);
+    			return Db.batch(config, conn, sql, paras, batchSize);
+    		} catch (Exception e) {
+    			throw new ActiveRecordException(e);
+    		} finally {
+    			if (autoCommit != null)
+    				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
+    			config.close(conn);
+    		}
+    	}
+    	
+    	/**
+         * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.
+         * <p>
+         * Example:
+         * <pre>
+         * String sql = "insert into user(name, cash) values(?, ?)";
+         * int[] result = Db.batch("myConfig", sql, "name, cash", modelList, 500);
+         * </pre>
+         * @param configName the config name
+    	 * @param sql The SQL to execute.
+    	 * @param columns the columns need be processed by sql.
+    	 * @param modelOrRecordList model or record object list.
+    	 * @param batchSize batch size.
+    	 * @return The number of rows updated per statement
+    	 */
+    	public static int[] batch(String configName, String sql, String columns, List modelOrRecordList, int batchSize) {
+    		Config config = DbKit.getConfig(configName);
+    		Connection conn = null;
+    		Boolean autoCommit = null;
+    		try {
+    			conn = config.getConnection();
+    			autoCommit = conn.getAutoCommit();
+    			conn.setAutoCommit(false);
+    			return Db.batch(config, conn, sql, columns, modelOrRecordList, batchSize);
+    		} catch (Exception e) {
+    			throw new ActiveRecordException(e);
+    		} finally {
+    			if (autoCommit != null)
+    				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
+    			config.close(conn);
+    		}
+    	}
+    	
+    	/**
+         * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.
+         * Example:
+         * <pre>
+         * int[] result = Db.batch("myConfig", sqlList, 500);
+         * </pre>
+         * @param configName the config name
+    	 * @param sqlList The SQL list to execute.
+    	 * @param batchSize batch size.
+    	 * @return The number of rows updated per statement
+    	 */
+        public static int[] batch(String configName, List<String> sqlList, int batchSize) {
+    		Config config = DbKit.getConfig(configName);
+    		Connection conn = null;
+    		Boolean autoCommit = null;
+    		try {
+    			conn = config.getConnection();
+    			autoCommit = conn.getAutoCommit();
+    			conn.setAutoCommit(false);
+    			return Db.batch(config, conn, sqlList, batchSize);
+    		} catch (Exception e) {
+    			throw new ActiveRecordException(e);
+    		} finally {
+    			if (autoCommit != null)
+    				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
+    			config.close(conn);
+    		}
+        }
     }
 }
-
-
 
 
 
