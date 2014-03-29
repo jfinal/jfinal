@@ -47,7 +47,7 @@ public class TxByActionMethods implements Interceptor {
 			config = DbKit.getConfig();
 		
 		if (actionMethodSet.contains(ai.getMethodName())) {
-			Db.tx(config.getName(), new IAtom(){
+			Db.pro.tx(config.getName(), new IAtom(){
 				public boolean run() throws SQLException {
 					ai.invoke();
 					return true;
