@@ -14,3 +14,5 @@ build
 out
 
 *.jar
+/webapp/WEB-INF/classes
+/webapp/WEB-INF/target

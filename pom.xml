@@ -143,6 +143,9 @@
 				</excludes>
 			</testResource>
 		</testResources>
+		<!-- directory>${project.basedir}/target</directory -->
+	    <directory>${project.basedir}/webapp/WEB-INF/target</directory><!-- vi -->
+		
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

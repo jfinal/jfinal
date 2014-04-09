@@ -40,7 +40,7 @@ import com.jfinal.core.Controller;
  * POST		/user			--->	save	
  * GET		/user/edit/id	--->	edit
  * PUT		/user/id		--->	update
- * DELECT	/user/id		--->	delete
+ * DELETE	/user/id		--->	delete
  */
 public class Restful implements Interceptor {
 	
