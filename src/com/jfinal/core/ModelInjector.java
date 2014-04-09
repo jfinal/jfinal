@@ -31,9 +31,10 @@ import com.jfinal.plugin.activerecord.TableMapping;
  */
 final class ModelInjector {
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T inject(Class<?> modelClass, HttpServletRequest request, boolean skipConvertError) {
 		String modelName = modelClass.getSimpleName();
-		return inject(modelClass, StringKit.firstCharToLowerCase(modelName), request, skipConvertError);
+		return (T)inject(modelClass, StringKit.firstCharToLowerCase(modelName), request, skipConvertError);
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })

@@ -23,8 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -359,8 +357,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	public boolean delete() {
 		Table table = getTable();
-		String pKey = table.getPrimaryKey();
-		Object id = attrs.get(pKey);
+		Object id = attrs.get(table.getPrimaryKey());
 		if (id == null)
 			throw new ActiveRecordException("You can't delete model without id.");
 		return deleteById(table, id);
@@ -378,8 +375,17 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	private boolean deleteById(Table table, Object id) {
-		String sql = getConfig().dialect.forModelDeleteById(table);
-		return Db.update(sql, id) >= 1;
+		Config config = getConfig();
+		Connection conn = null;
+		try {
+			conn = config.getConnection();
+			String sql = config.dialect.forModelDeleteById(table);
+			return Db.update(config, conn, sql, id) >= 1;
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			config.close(conn);
+		}
 	}
 	
 	/**
@@ -581,8 +587,9 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	public M keep(String... attrs) {
 		if (attrs != null && attrs.length > 0) {
-			Map<String, Object> newAttrs = new HashMap<String, Object>(attrs.length);
-			Set<String> newModifyFlag = new HashSet<String>();
+			Config config = getConfig();
+			Map<String, Object> newAttrs = config.containerFactory.getAttrsMap();	// new HashMap<String, Object>(attrs.length);
+			Set<String> newModifyFlag = config.containerFactory.getModifyFlagSet();	// new HashSet<String>();
 			for (String a : attrs) {
 				if (this.attrs.containsKey(a))	// prevent put null value to the newColumns
 					newAttrs.put(a, this.attrs.get(a));
