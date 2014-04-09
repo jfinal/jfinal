@@ -17,7 +17,6 @@
 package com.jfinal.plugin.activerecord;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -142,9 +141,10 @@ public class Record implements Serializable {
 	 * Keep columns of this record and remove other columns.
 	 * @param columns the column names of the record
 	 */
+	@SuppressWarnings("unchecked")
 	public Record keep(String... columns) {
 		if (columns != null && columns.length > 0) {
-			Map<String, Object> newColumns = new HashMap<String, Object>(columns.length);
+			Map<String, Object> newColumns = getConfig().containerFactory.getColumnsMap();	// new HashMap<String, Object>(columns.length);
 			for (String c : columns)
 				if (this.columns.containsKey(c))	// prevent put null value to the newColumns
 					newColumns.put(c, this.columns.get(c));

@@ -4,7 +4,7 @@
 	<artifactId>jfinal</artifactId>
 	<packaging>jar</packaging>
 	<name>JFinal</name>
-	<version>1.6-SNAPSHOT</version>
+	<version>1.8-SNAPSHOT</version>
 	<url>http://jfinal.googlecode.com</url>
 	<description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
 	
@@ -143,6 +143,9 @@
 				</excludes>
 			</testResource>
 		</testResources>
+		<!-- directory>${project.basedir}/target</directory -->
+	    <directory>${project.basedir}/webapp/WEB-INF/target</directory><!-- vi -->
+		
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -157,6 +160,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.1</version>
 				<executions>
 				  <execution>
 					<id>sign-artifacts</id>
@@ -166,6 +170,9 @@
 					</goals>
 				  </execution>
 				</executions>
+				<configuration>
+					<skip>false</skip>
+				</configuration>
 			</plugin>
 
 		</plugins>
