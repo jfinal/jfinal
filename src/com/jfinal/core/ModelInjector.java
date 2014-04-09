@@ -78,7 +78,7 @@ final class ModelInjector {
 		}
 	}
 	
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static final void injectActiveRecordModel(Model<?> model, String modelName, HttpServletRequest request, boolean skipConvertError) {
 		Table table = TableMapping.me().getTable(model.getClass());
 		
