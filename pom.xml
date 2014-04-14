@@ -5,7 +5,7 @@
 	<packaging>jar</packaging>
 	<name>JFinal</name>
 	<version>1.8-SNAPSHOT</version>
-	<url>http://jfinal.googlecode.com</url>
+	<url>http://www.jfinal.com</url>
 	<description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
 	
 	<properties>
