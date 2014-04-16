@@ -74,7 +74,6 @@ public class VelocityRender extends Render {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void render() {
 		 if (notInit) {
 			 Velocity.init(properties);	// Velocity.init("velocity.properties");	// setup

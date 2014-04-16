@@ -69,6 +69,7 @@ class JFinalSession extends HashMap implements HttpSession {
 		return session.getAttribute(key);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Enumeration getAttributeNames() {
 		return session.getAttributeNames();
 	}
