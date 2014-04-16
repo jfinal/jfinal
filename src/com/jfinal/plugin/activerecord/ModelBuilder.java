@@ -35,7 +35,7 @@ import java.util.Map;
 public class ModelBuilder {
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public static final <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, InstantiationException, IllegalAccessException {
+	public static final <T extends Model> List<T> build(ResultSet rs, Class<T> modelClass) throws SQLException, InstantiationException, IllegalAccessException {
 		List<T> result = new ArrayList<T>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
