@@ -48,7 +48,6 @@ final class ActionReporter {
 		doReport(controller, action);
 	}
 	
-	@SuppressWarnings("unchecked")
 	private static final void doReport(Controller controller, Action action) {
 		StringBuilder sb = new StringBuilder("\nJFinal action report -------- ").append(sdf.format(new Date())).append(" ------------------------------\n");
 		Class<? extends Controller> cc = action.getControllerClass();

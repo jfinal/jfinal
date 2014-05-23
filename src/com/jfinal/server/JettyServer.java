@@ -29,7 +29,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import com.jfinal.core.Const;
 import com.jfinal.kit.FileKit;
 import com.jfinal.kit.PathKit;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 
 /**
  * JettyServer is used to config and start jetty web server.
@@ -50,7 +50,7 @@ class JettyServer implements IServer {
 			throw new IllegalStateException("Invalid webAppDir of web server: " + webAppDir);
 		if (port < 0 || port > 65536)
 			throw new IllegalArgumentException("Invalid port of web server: " + port);
-		if (StringKit.isBlank(context))
+		if (StrKit.isBlank(context))
 			throw new IllegalStateException("Invalid context of web server: " + context);
 		
 		this.webAppDir = webAppDir;

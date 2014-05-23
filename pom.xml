@@ -5,7 +5,7 @@
 	<packaging>jar</packaging>
 	<name>JFinal</name>
 	<version>1.8-SNAPSHOT</version>
-	<url>http://jfinal.googlecode.com</url>
+	<url>http://www.jfinal.com</url>
 	<description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
 	
 	<properties>
@@ -51,7 +51,12 @@
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.jfinal</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>8.1.8</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -68,7 +73,7 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
-			<version>0.2.25</version>
+			<version>1.0.5</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -105,12 +110,6 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>3.2.4.RELEASE</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.jfinal</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>8.1.8</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

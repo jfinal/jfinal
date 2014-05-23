@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import com.jfinal.kit.PathKit;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 
 /**
  * JFinalConfig.
@@ -75,7 +75,7 @@ public abstract class JFinalConfig {
 	 * @param file the file in WEB-INF directory
 	 */
 	public Properties loadPropertyFile(String file) {
-		if (StringKit.isBlank(file))
+		if (StrKit.isBlank(file))
 			throw new IllegalArgumentException("Parameter of file can not be blank");
 		if (file.contains(".."))
 			throw new IllegalArgumentException("Parameter of file can not contains \"..\"");

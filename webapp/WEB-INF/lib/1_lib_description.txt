@@ -9,7 +9,7 @@ JFinal 自身对第三方无依赖，但当需要第三方功能支持时则需�
   javax.el-2.2.0.v201108011116.jar、javax.servlet.jsp-2.2.0.v201112011158.jar
   org.apache.jasper.glassfish-2.2.2.v201112011158.jar
 
-3：freemarker-2.3.16.jar 支持 FreeMarker 视图类型。
+3：freemarker-2.3.20.jar 支持 FreeMarker 视图类型。
 
 4：javax.servlet.jsp.jstl-1.2.0.v201105211821.jar 与 
    org.apache.taglibs.standard.glassfish-1.2.0.v201112081803.jar
@@ -30,7 +30,7 @@ JFinal 自身对第三方无依赖，但当需要第三方功能支持时则需�
 
 11：sqlite-jdbc-3.7.2.jar 支持 Sqlite 数据库
 
-12：druid-0.2.6.jar 支持 Druid 数据库连接池
+12：druid-1.0.5.jar 支持 Druid 数据库连接池
 
 13：ojdbc6.jar Oracle Database 11g Release 2 (11.2.0.3) JDBC Driver
 
@@ -40,5 +40,5 @@ JFinal 自身对第三方无依赖，但当需要第三方功能支持时则需�
    也在此目录下提供了
 
 
-
+注意：在使用tomcat开发或部署项目时，需要删除jetty-server-xxx.jar 文件，以免造成冲突
 

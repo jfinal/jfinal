@@ -17,25 +17,17 @@
 package com.jfinal.plugin.druid;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import com.alibaba.druid.stat.DruidStatService;
 import com.alibaba.druid.support.http.StatViewServlet;
-import com.alibaba.druid.support.http.util.IPRange;
-import com.alibaba.druid.support.logging.Log;
-import com.alibaba.druid.support.logging.LogFactory;
-import com.alibaba.druid.util.IOUtils;
 import com.jfinal.handler.Handler;
 import com.jfinal.kit.HandlerKit;
+import com.jfinal.kit.StrKit;
 
 /**
  * 替代 StatViewServlet
  */
-@SuppressWarnings("unused")
 public class DruidStatViewHandler extends Handler {
 	
 	private IDruidStatViewAuth auth;
@@ -43,14 +35,23 @@ public class DruidStatViewHandler extends Handler {
 	private StatViewServlet servlet = new JFinalStatViewServlet();
 	
 	public DruidStatViewHandler(String visitPath) {
-		this.visitPath = visitPath;
-		this.auth = new IDruidStatViewAuth(){
-			public boolean isPermitted(HttpServletRequest request) {
-				return true;
-			}};
+		this(visitPath,
+			new IDruidStatViewAuth(){
+				public boolean isPermitted(HttpServletRequest request) {
+					return true;
+				}
+			});
 	}
 	
 	public DruidStatViewHandler(String visitPath , IDruidStatViewAuth druidStatViewAuth) {
+		if (StrKit.isBlank(visitPath))
+			throw new IllegalArgumentException("visitPath can not be blank");
+		if (druidStatViewAuth == null)
+			throw new IllegalArgumentException("druidStatViewAuth can not be null");
+		
+		visitPath = visitPath.trim();
+		if (! visitPath.startsWith("/"))
+			visitPath = "/" + visitPath;
 		this.visitPath = visitPath;
 		this.auth = druidStatViewAuth;
 	}
@@ -84,7 +85,6 @@ public class DruidStatViewHandler extends Handler {
 		}
 		
 		public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	        HttpSession session = request.getSession();
 	        String contextPath = request.getContextPath();
 	        // String servletPath = request.getServletPath();
 	        String requestURI = request.getRequestURI();
@@ -118,13 +118,20 @@ public class DruidStatViewHandler extends Handler {
 	            return;
 	        }
 
-	        if (isRequireAuth()
-	            && session.getAttribute(SESSION_USER_KEY) == null
-	            && !("/login.html".equals(path) || path.startsWith("/css") || path.startsWith("/js") || path.startsWith("/img"))) {
+	        if (isRequireAuth() //
+	            && !ContainsUser(request)//
+	            && !("/login.html".equals(path) //
+	                 || path.startsWith("/css")//
+	                 || path.startsWith("/js") //
+	            || path.startsWith("/img"))) {
 	            if (contextPath == null || contextPath.equals("") || contextPath.equals("/")) {
-	                response.sendRedirect("/login.html");
+	                response.sendRedirect("/druid/login.html");
 	            } else {
-	                response.sendRedirect("login.html");
+	                if ("".equals(path)) {
+	                    response.sendRedirect("druid/login.html");
+	                } else {
+	                    response.sendRedirect("login.html");
+	                }
 	            }
 	            return;
 	        }
@@ -148,66 +155,14 @@ public class DruidStatViewHandler extends Handler {
 	            if (request.getQueryString() != null && request.getQueryString().length() > 0) {
 	                fullUrl += "?" + request.getQueryString();
 	            }
-	            response.getWriter().print(statService.service(fullUrl));
+	            response.getWriter().print(process(fullUrl));
 	            return;
 	        }
 
 	        // find file in resources path
 	        returnResourceFile(path, uri, response);
 	    }
-		
-		private void returnResourceFile(String fileName, String uri,
-				HttpServletResponse response) throws ServletException,
-				IOException {
-			if (fileName.endsWith(".jpg")) {
-				byte[] bytes = IOUtils.readByteArrayFromResource(RESOURCE_PATH
-						+ fileName);
-				if (bytes != null) {
-					response.getOutputStream().write(bytes);
-				}
-
-				return;
-			}
-
-			String text = IOUtils.readFromResource(RESOURCE_PATH + fileName);
-			if (text == null) {
-				response.sendRedirect(uri + "/index.html");
-				return;
-			}
-			if (fileName.endsWith(".css")) {
-				response.setContentType("text/css;charset=utf-8");
-			} else if (fileName.endsWith(".js")) {
-				response.setContentType("text/javascript;charset=utf-8");
-			}
-			response.getWriter().write(text);
-		}
 	}
-	
-    private final static Log    LOG                         = LogFactory.getLog(StatViewServlet.class);
-
-    private static final long   serialVersionUID            = 1L;
-
-    public static final String  PARAM_NAME_RESET_ENABLE     = "resetEnable";
-    public static final String  PARAM_NAME_ALLOW            = "allow";
-    public static final String  PARAM_NAME_DENY             = "deny";
-
-    public static final String  PARAM_NAME_USERNAME         = "loginUsername";
-    public static final String  PARAM_NAME_PASSWORD         = "loginPassword";
-
-    public static final String  SESSION_USER_KEY            = "druid-user";
-
-    private final static String RESOURCE_PATH               = "support/http/resources";
-    private final static String TEMPLATE_PAGE_RESOURCE_PATH = RESOURCE_PATH + "/template.html";
-
-    private DruidStatService    statService                 = DruidStatService.getInstance();
-
-    public String               templatePage;
-
-    private List<IPRange>       allowList                   = new ArrayList<IPRange>();
-    private List<IPRange>       denyList                    = new ArrayList<IPRange>();
-
-    private String              username                    = null;
-    private String              password                    = null;
 }
 
 

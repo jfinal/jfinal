@@ -16,7 +16,7 @@
 
 package com.jfinal.core;
 
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderFactory;
 
@@ -38,7 +38,7 @@ public class ActionException extends RuntimeException {
 	}
 	
 	public ActionException(int errorCode, String errorView) {
-		if (StringKit.isBlank(errorView))
+		if (StrKit.isBlank(errorView))
 			throw new IllegalArgumentException("The parameter errorView can not be blank.");
 		
 		this.errorCode = errorCode;

@@ -29,7 +29,8 @@ import java.util.Map;
  */
 public class RecordBuilder {
 	
-	public static final List<Record> build(String configName, ResultSet rs) throws SQLException {
+	@SuppressWarnings("unchecked")
+	public static final List<Record> build(Config config, ResultSet rs) throws SQLException {
 		List<Record> result = new ArrayList<Record>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
@@ -38,7 +39,7 @@ public class RecordBuilder {
 		buildLabelNamesAndTypes(rsmd, labelNames, types);
 		while (rs.next()) {
 			Record record = new Record();
-			record.setConfigName(configName);
+			record.setColumnsMap(config.containerFactory.getColumnsMap());
 			Map<String, Object> columns = record.getColumns();
 			for (int i=1; i<=columnCount; i++) {
 				Object value;

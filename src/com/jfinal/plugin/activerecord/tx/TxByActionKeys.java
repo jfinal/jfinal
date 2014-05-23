@@ -22,8 +22,8 @@ import java.util.Set;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
 import com.jfinal.plugin.activerecord.Config;
-import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.DbKit;
+import com.jfinal.plugin.activerecord.DbPro;
 import com.jfinal.plugin.activerecord.IAtom;
 
 /**
@@ -47,7 +47,7 @@ public class TxByActionKeys implements Interceptor {
 			config = DbKit.getConfig();
 		
 		if (actionKeySet.contains(ai.getActionKey())) {
-			Db.pro.tx(config.getName(), new IAtom(){
+			DbPro.use(config.getName()).tx(new IAtom(){
 				public boolean run() throws SQLException {
 					ai.invoke();
 					return true;

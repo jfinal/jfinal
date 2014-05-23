@@ -41,7 +41,7 @@ import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class Model<M extends Model> implements Serializable {
 	
-	private static final long serialVersionUID = 3116455399652810187L;
+	private static final long serialVersionUID = -990334519496260591L;
 	
 	/**
 	 * Attributes of this model
@@ -153,16 +153,11 @@ public abstract class Model<M extends Model> implements Serializable {
 		return (java.math.BigInteger)attrs.get(attr);
 	}
 	
-	// java.util.Data never returned
-	// public java.util.Date getDate(String attr) {
-		// return attrs.get(attr);
-	//}
-	
 	/**
 	 * Get attribute of mysql type: date, year
 	 */
-	public java.sql.Date getDate(String attr) {
-		return (java.sql.Date)attrs.get(attr);
+	public java.util.Date getDate(String attr) {
+		return (java.util.Date)attrs.get(attr);
 	}
 	
 	/**

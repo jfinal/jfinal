@@ -94,7 +94,6 @@ public class CacheInterceptor implements Interceptor {
 		return sb.toString();
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void cacheAction(String cacheName, String cacheKey, Controller controller) {
 		HttpServletRequest request = controller.getRequest();
 		Map<String, Object> cacheData = new HashMap<String, Object>();

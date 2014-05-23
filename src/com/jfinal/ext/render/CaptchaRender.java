@@ -27,7 +27,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import com.jfinal.core.Controller;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 import com.jfinal.render.Render;
 
 public class CaptchaRender extends Render {
@@ -39,7 +39,7 @@ public class CaptchaRender extends Render {
 	private String randomCodeKey;
 	
 	public CaptchaRender(String randomCodeKey) {
-		if (StringKit.isBlank(randomCodeKey))
+		if (StrKit.isBlank(randomCodeKey))
 			throw new IllegalArgumentException("randomCodeKey can not be blank");
 		this.randomCodeKey = randomCodeKey;
 	}
@@ -152,7 +152,7 @@ public class CaptchaRender extends Render {
 	
 	// TODO 需要改进
 	public static boolean validate(Controller controller, String inputRandomCode, String randomCodeKey) {
-		if (StringKit.isBlank(inputRandomCode))
+		if (StrKit.isBlank(inputRandomCode))
 			return false;
 		try {
 			inputRandomCode = encrypt(inputRandomCode);

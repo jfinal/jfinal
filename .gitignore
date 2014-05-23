@@ -2,10 +2,10 @@
 *.class
 *.tmp
 *.log
-/bin
+/bin/
 build.sh
 integration-repo
-build
+/build/
 
 # IDEA metadata and output dirs
 *.iml
@@ -14,5 +14,5 @@ build
 out
 
 *.jar
-/webapp/WEB-INF/classes
-/webapp/WEB-INF/target
+/webapp/WEB-INF/classes/
+/webapp/WEB-INF/target/
