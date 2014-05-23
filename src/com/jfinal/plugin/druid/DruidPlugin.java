@@ -22,7 +22,7 @@ import java.util.List;
 import javax.sql.DataSource;
 import com.alibaba.druid.filter.Filter;
 import com.alibaba.druid.pool.DruidDataSource;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.plugin.activerecord.IDataSourceProvider;
 
@@ -150,7 +150,7 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		//只要maxPoolPreparedStatementPerConnectionSize>0,poolPreparedStatements就会被自动设定为true，参照druid的源码
 		ds.setMaxPoolPreparedStatementPerConnectionSize(maxPoolPreparedStatementPerConnectionSize);
 		
-		if (StringKit.notBlank(filters))
+		if (StrKit.notBlank(filters))
 			try {ds.setFilters(filters);} catch (SQLException e) {throw new RuntimeException(e);}
 		
 		addFilterList(ds);

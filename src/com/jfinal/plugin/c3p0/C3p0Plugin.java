@@ -22,7 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import javax.sql.DataSource;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.plugin.activerecord.IDataSourceProvider;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
@@ -45,7 +45,7 @@ public class C3p0Plugin implements IPlugin, IDataSourceProvider {
 	private ComboPooledDataSource dataSource;
 	
 	public C3p0Plugin setDriverClass(String driverClass) {
-		if (StringKit.isBlank(driverClass))
+		if (StrKit.isBlank(driverClass))
 			throw new IllegalArgumentException("driverClass can not be blank.");
 		this.driverClass = driverClass;
 		return this;

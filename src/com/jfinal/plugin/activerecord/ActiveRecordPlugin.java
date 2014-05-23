@@ -20,7 +20,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.plugin.activerecord.cache.ICache;
 import com.jfinal.plugin.activerecord.dialect.Dialect;
@@ -67,7 +67,7 @@ public class ActiveRecordPlugin implements IPlugin {
 	}
 	
 	public ActiveRecordPlugin(String configName, DataSource dataSource, int transactionLevel) {
-		if (StringKit.isBlank(configName))
+		if (StrKit.isBlank(configName))
 			throw new IllegalArgumentException("configName can not be blank");
 		if (dataSource == null)
 			throw new IllegalArgumentException("dataSource can not be null");
@@ -89,7 +89,7 @@ public class ActiveRecordPlugin implements IPlugin {
 	}
 	
 	public ActiveRecordPlugin(String configName, IDataSourceProvider dataSourceProvider, int transactionLevel) {
-		if (StringKit.isBlank(configName))
+		if (StrKit.isBlank(configName))
 			throw new IllegalArgumentException("configName can not be blank");
 		if (dataSourceProvider == null)
 			throw new IllegalArgumentException("dataSourceProvider can not be null");
@@ -169,7 +169,10 @@ public class ActiveRecordPlugin implements IPlugin {
 		DbKit.addConfig(config);
 		
 		boolean succeed = TableBuilder.build(tableList, config);
-		if (succeed) isStarted = true;
+		if (succeed) {
+			Db.init();
+			isStarted = true;
+		}
 		return succeed;
 	}
 	

@@ -17,7 +17,7 @@
 package com.jfinal.ext.kit;
 
 import java.util.Date;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 
 /**
  * DateKit.
@@ -28,13 +28,13 @@ public class DateKit {
 	public static String timeFormat = "yyyy-MM-dd HH:mm:ss";
 	
 	public static void setDateFromat(String dateFormat) {
-		if (StringKit.isBlank(dateFormat))
+		if (StrKit.isBlank(dateFormat))
 			throw new IllegalArgumentException("dateFormat can not be blank.");
 		DateKit.dateFormat = dateFormat;
 	}
 	
 	public static void setTimeFromat(String timeFormat) {
-		if (StringKit.isBlank(timeFormat))
+		if (StrKit.isBlank(timeFormat))
 			throw new IllegalArgumentException("timeFormat can not be blank.");
 		DateKit.timeFormat = timeFormat;
 	}

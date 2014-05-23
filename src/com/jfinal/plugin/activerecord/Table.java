@@ -17,7 +17,7 @@
 package com.jfinal.plugin.activerecord;
 
 import java.util.Map;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 
 /**
  * Table save the table meta info like column name and column type.
@@ -32,7 +32,7 @@ public class Table {
 	private Class<? extends Model<?>> modelClass;
 	
 	public Table(String name, Class<? extends Model<?>> modelClass) {
-		if (StringKit.isBlank(name))
+		if (StrKit.isBlank(name))
 			throw new IllegalArgumentException("Table name can not be blank.");
 		if (modelClass == null)
 			throw new IllegalArgumentException("Model class can not be null.");
@@ -42,9 +42,9 @@ public class Table {
 	}
 	
 	public Table(String name, String primaryKey, Class<? extends Model<?>> modelClass) {
-		if (StringKit.isBlank(name))
+		if (StrKit.isBlank(name))
 			throw new IllegalArgumentException("Table name can not be blank.");
-		if (StringKit.isBlank(primaryKey))
+		if (StrKit.isBlank(primaryKey))
 			throw new IllegalArgumentException("Primary key can not be blank.");
 		if (modelClass == null)
 			throw new IllegalArgumentException("Model class can not be null.");
@@ -57,7 +57,7 @@ public class Table {
 	void setPrimaryKey(String primaryKey) {
 		String[] keyArr = primaryKey.split(",");
 		if (keyArr.length > 1) {
-			if (StringKit.isBlank(keyArr[0]) || StringKit.isBlank(keyArr[1]))
+			if (StrKit.isBlank(keyArr[0]) || StrKit.isBlank(keyArr[1]))
 				throw new IllegalArgumentException("The composite primary key can not be blank.");
 			this.primaryKey = keyArr[0].trim();
 			this.secondaryKey = keyArr[1].trim();

@@ -19,7 +19,7 @@ package com.jfinal.ext.handler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.jfinal.handler.Handler;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 
 /**
  * Provide a context path to view if you need.
@@ -37,7 +37,7 @@ public class ContextPathHandler extends Handler {
 	}
 	
 	public ContextPathHandler(String contextPathName) {
-		if (StringKit.isBlank(contextPathName))
+		if (StrKit.isBlank(contextPathName))
 			throw new IllegalArgumentException("contextPathName can not be blank.");
 		this.contextPathName = contextPathName;
 	}

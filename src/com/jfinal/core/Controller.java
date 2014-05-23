@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import static com.jfinal.core.Const.I18N_LOCALE;
 import com.jfinal.i18n.I18N;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderFactory;
 import com.jfinal.upload.MultipartRequest;
@@ -635,17 +635,14 @@ public abstract class Controller {
 	// TODO public <T> List<T> getModels(Class<T> modelClass, String modelName) {}
 	
 	// --------
-	private MultipartRequest multipartRequest;
 	
 	/**
 	 * Get upload file from multipart request.
 	 */
 	public List<UploadFile> getFiles(String saveDirectory, Integer maxPostSize, String encoding) {
-		if (multipartRequest == null) {
-			multipartRequest = new MultipartRequest(request, saveDirectory, maxPostSize, encoding);
-			request = multipartRequest;
-		}
-		return multipartRequest.getFiles();
+		if (request instanceof MultipartRequest == false)
+			request = new MultipartRequest(request, saveDirectory, maxPostSize, encoding);
+		return ((MultipartRequest)request).getFiles();
 	}
 	
 	public UploadFile getFile(String parameterName, String saveDirectory, Integer maxPostSize, String encoding) {
@@ -654,11 +651,9 @@ public abstract class Controller {
 	}
 	
 	public List<UploadFile> getFiles(String saveDirectory, int maxPostSize) {
-		if (multipartRequest == null) {
-			multipartRequest = new MultipartRequest(request, saveDirectory, maxPostSize);
-			request = multipartRequest;
-		}
-		return multipartRequest.getFiles();
+		if (request instanceof MultipartRequest == false)
+			request = new MultipartRequest(request, saveDirectory, maxPostSize);
+		return ((MultipartRequest)request).getFiles();
 	}
 	
 	public UploadFile getFile(String parameterName, String saveDirectory, int maxPostSize) {
@@ -667,11 +662,9 @@ public abstract class Controller {
 	}
 	
 	public List<UploadFile> getFiles(String saveDirectory) {
-		if (multipartRequest == null) {
-			multipartRequest = new MultipartRequest(request, saveDirectory);
-			request = multipartRequest;
-		}
-		return multipartRequest.getFiles();
+		if (request instanceof MultipartRequest == false)
+			request = new MultipartRequest(request, saveDirectory);
+		return ((MultipartRequest)request).getFiles();
 	}
 	
 	public UploadFile getFile(String parameterName, String saveDirectory) {
@@ -680,11 +673,9 @@ public abstract class Controller {
 	}
 	
 	public List<UploadFile> getFiles() {
-		if (multipartRequest == null) {
-			multipartRequest = new MultipartRequest(request);
-			request = multipartRequest;
-		}
-		return multipartRequest.getFiles();
+		if (request instanceof MultipartRequest == false)
+			request = new MultipartRequest(request);
+		return ((MultipartRequest)request).getFiles();
 	}
 	
 	public UploadFile getFile() {
@@ -798,7 +789,7 @@ public abstract class Controller {
 	}
 	
 	public Controller keepModel(Class modelClass) {
-		String modelName = StringKit.firstCharToLowerCase(modelClass.getSimpleName());
+		String modelName = StrKit.firstCharToLowerCase(modelClass.getSimpleName());
 		keepModel(modelClass, modelName);
 		return this;
 	}

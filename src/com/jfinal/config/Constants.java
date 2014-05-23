@@ -22,7 +22,7 @@ import java.util.Locale;
 import java.util.Map;
 import com.jfinal.core.Const;
 import com.jfinal.kit.PathKit;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 import com.jfinal.log.ILoggerFactory;
 import com.jfinal.log.Logger;
 import com.jfinal.render.IErrorRenderFactory;
@@ -113,7 +113,7 @@ final public class Constants {
 	 * @param urlParaSeparator the urlPara separator
 	 */
 	public void setUrlParaSeparator(String urlParaSeparator) {
-		if (StringKit.isBlank(urlParaSeparator) || urlParaSeparator.contains("/"))
+		if (StrKit.isBlank(urlParaSeparator) || urlParaSeparator.contains("/"))
 			throw new IllegalArgumentException("urlParaSepartor can not be blank and can not contains \"/\"");
 		this.urlParaSeparator = urlParaSeparator;
 	}
@@ -207,7 +207,7 @@ final public class Constants {
 	 * The default value is "/download" if you do not config this parameter.
 	 */
 	public void setFileRenderPath(String fileRenderPath) {
-		if (StringKit.isBlank(fileRenderPath))
+		if (StrKit.isBlank(fileRenderPath))
 			throw new IllegalArgumentException("The argument fileRenderPath can not be blank");
 		
 		if (!fileRenderPath.startsWith("/") && !fileRenderPath.startsWith(File.separator))
@@ -221,7 +221,7 @@ final public class Constants {
 	 * web root path conveniently.
 	 */
 	public void setUploadedFileSaveDirectory(String uploadedFileSaveDirectory) {
-		if (StringKit.isBlank(uploadedFileSaveDirectory))
+		if (StrKit.isBlank(uploadedFileSaveDirectory))
 			throw new IllegalArgumentException("uploadedFileSaveDirectory can not be blank");
 		
 		if (uploadedFileSaveDirectory.endsWith("/") || uploadedFileSaveDirectory.endsWith("\\"))
