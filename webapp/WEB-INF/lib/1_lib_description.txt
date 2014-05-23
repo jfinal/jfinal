@@ -30,7 +30,7 @@ JFinal 自身对第三方无依赖，但当需要第三方功能支持时则需�
 
 11：sqlite-jdbc-3.7.2.jar 支持 Sqlite 数据库
 
-12：druid-0.2.6.jar 支持 Druid 数据库连接池
+12：druid-1.0.5.jar 支持 Druid 数据库连接池
 
 13：ojdbc6.jar Oracle Database 11g Release 2 (11.2.0.3) JDBC Driver
 
