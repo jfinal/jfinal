@@ -77,7 +77,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Add message when validate failure.
 	 */
-	protected void addError(String errorKey, String errorMessage) {
+	protected void addError(String errorKey, Object errorMessage) {
 		invalid = true;
 		controller.setAttr(errorKey, errorMessage);
 		if (shortCircuit) {
@@ -116,7 +116,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate Required.
 	 */
-	protected void validateRequired(String field, String errorKey, String errorMessage) {
+	protected void validateRequired(String field, String errorKey, Object errorMessage) {
 		String value = controller.getPara(field);
 		if (value == null || "".equals(value))	// 经测试,无输入时值为"",跳格键值为"\t",输入空格则为空格" "
 			addError(errorKey, errorMessage);
@@ -125,7 +125,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate required string.
 	 */
-	protected void validateRequiredString(String field, String errorKey, String errorMessage) {
+	protected void validateRequiredString(String field, String errorKey, Object errorMessage) {
 		String value = controller.getPara(field);
 		if (value == null || "".equals(value.trim()))
 			addError(errorKey, errorMessage);
@@ -134,7 +134,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate integer.
 	 */
-	protected void validateInteger(String field, int min, int max, String errorKey, String errorMessage) {
+	protected void validateInteger(String field, int min, int max, String errorKey, Object errorMessage) {
 		try {
 			String value = controller.getPara(field);
 			int temp = Integer.parseInt(value);
@@ -149,7 +149,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate long.
 	 */
-	protected void validateLong(String field, long min, long max, String errorKey, String errorMessage) {
+	protected void validateLong(String field, long min, long max, String errorKey, Object errorMessage) {
 		try {
 			String value = controller.getPara(field);
 			long temp = Long.parseLong(value);
@@ -164,7 +164,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate long.
 	 */
-	protected void validateLong(String field, String errorKey, String errorMessage) {
+	protected void validateLong(String field, String errorKey, Object errorMessage) {
 		try {
 			String value = controller.getPara(field);
 			Long.parseLong(value);
@@ -177,7 +177,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate double.
 	 */
-	protected void validateDouble(String field, double min, double max, String errorKey, String errorMessage) {
+	protected void validateDouble(String field, double min, double max, String errorKey, Object errorMessage) {
 		try {
 			String value = controller.getPara(field);
 			double temp = Double.parseDouble(value);
@@ -192,7 +192,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate double.
 	 */
-	protected void validateDouble(String field, String errorKey, String errorMessage) {
+	protected void validateDouble(String field, String errorKey, Object errorMessage) {
 		try {
 			String value = controller.getPara(field);
 			Double.parseDouble(value);
@@ -205,7 +205,7 @@ public abstract class Validator implements Interceptor {
 	/** 
 	 * Validate date.
 	 */
-	protected void validateDate(String field, Date min, Date max, String errorKey, String errorMessage) {
+	protected void validateDate(String field, Date min, Date max, String errorKey, Object errorMessage) {
 		try {
 			String value = controller.getPara(field);
 			Date temp = new SimpleDateFormat(datePattern).parse(value);	// Date temp = Date.valueOf(value); 为了兼容 64位 JDK
@@ -223,7 +223,7 @@ public abstract class Validator implements Interceptor {
 	/** 
 	 * Validate date. Date formate: yyyy-MM-dd
 	 */
-	protected void validateDate(String field, String min, String max, String errorKey, String errorMessage) {
+	protected void validateDate(String field, String min, String max, String errorKey, Object errorMessage) {
 		// validateDate(field, Date.valueOf(min), Date.valueOf(max), errorKey, errorMessage);  为了兼容 64位 JDK
 		try {
 			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
@@ -236,7 +236,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate equal field. Usually validate password and password again
 	 */
-	protected void validateEqualField(String field_1, String field_2, String errorKey, String errorMessage) {
+	protected void validateEqualField(String field_1, String field_2, String errorKey, Object errorMessage) {
 		String value_1 = controller.getPara(field_1);
 		String value_2 = controller.getPara(field_2);
 		if (value_1 == null || value_2 == null || (! value_1.equals(value_2)))
@@ -246,7 +246,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate equal string.
 	 */
-	protected void validateEqualString(String s1, String s2, String errorKey, String errorMessage) {
+	protected void validateEqualString(String s1, String s2, String errorKey, Object errorMessage) {
 		if (s1 == null || s2 == null || (! s1.equals(s2)))
 			addError(errorKey, errorMessage);
 	}
@@ -254,7 +254,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate equal integer.
 	 */
-	protected void validateEqualInteger(Integer i1, Integer i2, String errorKey, String errorMessage) {
+	protected void validateEqualInteger(Integer i1, Integer i2, String errorKey, Object errorMessage) {
 		if (i1 == null || i2 == null || (i1.intValue() != i2.intValue()))
 			addError(errorKey, errorMessage);
 	}
@@ -262,14 +262,14 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate email.
 	 */
-	protected void validateEmail(String field, String errorKey, String errorMessage) {
+	protected void validateEmail(String field, String errorKey, Object errorMessage) {
 		validateRegex(field, emailAddressPattern, false, errorKey, errorMessage);
 	}
 	
 	/**
 	 * Validate URL.
 	 */
-	protected void validateUrl(String field, String errorKey, String errorMessage) {
+	protected void validateUrl(String field, String errorKey, Object errorMessage) {
 		try {
 			String value = controller.getPara(field);
 			if (value.startsWith("https://"))
@@ -283,7 +283,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate regular expression.
 	 */
-	protected void validateRegex(String field, String regExpression, boolean isCaseSensitive, String errorKey, String errorMessage) {
+	protected void validateRegex(String field, String regExpression, boolean isCaseSensitive, String errorKey, Object errorMessage) {
         String value = controller.getPara(field);
         if (value == null) {
         	addError(errorKey, errorMessage);
@@ -298,11 +298,11 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate regular expression and case sensitive.
 	 */
-	protected void validateRegex(String field, String regExpression, String errorKey, String errorMessage) {
+	protected void validateRegex(String field, String regExpression, String errorKey, Object errorMessage) {
 		validateRegex(field, regExpression, true, errorKey, errorMessage);
 	}
 	
-	protected void validateString(String field, boolean notBlank, int minLen, int maxLen, String errorKey, String errorMessage) {
+	protected void validateString(String field, boolean notBlank, int minLen, int maxLen, String errorKey, Object errorMessage) {
 		String value = controller.getPara(field);
 		if (value == null || value.length() < minLen || value.length() > maxLen) 
 			addError(errorKey, errorMessage);
@@ -313,14 +313,14 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate string.
 	 */
-	protected void validateString(String field, int minLen, int maxLen, String errorKey, String errorMessage) {
+	protected void validateString(String field, int minLen, int maxLen, String errorKey, Object errorMessage) {
 		validateString(field, true, minLen, maxLen, errorKey, errorMessage);
 	}
 	
 	/**
 	 * Validate token created by Controller.createToken(String).
 	 */
-	protected void validateToken(String tokenName, String errorKey, String errorMessage) {
+	protected void validateToken(String tokenName, String errorKey, Object errorMessage) {
 		if (controller.validateToken(tokenName) == false)
 			addError(errorKey, errorMessage);
 	}
@@ -328,7 +328,7 @@ public abstract class Validator implements Interceptor {
 	/**
 	 * Validate token created by Controller.createToken().
 	 */
-	protected void validateToken(String errorKey, String errorMessage) {
+	protected void validateToken(String errorKey, Object errorMessage) {
 		if (controller.validateToken() == false)
 			addError(errorKey, errorMessage);
 	}
