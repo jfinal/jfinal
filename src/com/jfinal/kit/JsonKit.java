@@ -274,7 +274,7 @@ public class JsonKit {
 					if (types.length == 0) {
 						try {
 							Object value = m.invoke(model);
-							map.put(StringKit.firstCharToLowerCase(attrName), value);
+							map.put(StrKit.firstCharToLowerCase(attrName), value);
 						} catch (Exception e) {
 							throw new RuntimeException(e.getMessage(), e);
 						}
@@ -289,7 +289,7 @@ public class JsonKit {
                   if (types.length == 0) {
                       try {
                           Object value = m.invoke(model);
-                          map.put(StringKit.firstCharToLowerCase(attrName), value);
+                          map.put(StrKit.firstCharToLowerCase(attrName), value);
                       } catch (Exception e) {
                           throw new RuntimeException(e.getMessage(), e);
                       }

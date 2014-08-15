@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.sql.DataSource;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.cache.EhCache;
 import com.jfinal.plugin.activerecord.cache.ICache;
 import com.jfinal.plugin.activerecord.dialect.Dialect;
@@ -63,7 +63,7 @@ public class Config {
 	 * @param dataSource the dataSource, can not be null
 	 */
 	public Config(String name, DataSource dataSource) {
-		if (StringKit.isBlank(name))
+		if (StrKit.isBlank(name))
 			throw new IllegalArgumentException("Config name can not be blank");
 		if (dataSource == null)
 			throw new IllegalArgumentException("DataSource can not be null");
@@ -78,7 +78,7 @@ public class Config {
 	 * @param dialect the dialect, can not be null
 	 */
 	public Config(String name, DataSource dataSource, Dialect dialect) {
-		if (StringKit.isBlank(name))
+		if (StrKit.isBlank(name))
 			throw new IllegalArgumentException("Config name can not be blank");
 		if (dataSource == null)
 			throw new IllegalArgumentException("DataSource can not be null");
@@ -108,7 +108,7 @@ public class Config {
 				  Integer transactionLevel,
 				  IContainerFactory containerFactory,
 				  ICache cache) {
-		if (StringKit.isBlank(name))
+		if (StrKit.isBlank(name))
 			throw new IllegalArgumentException("Config name can not be blank");
 		if (dataSource == null)
 			throw new IllegalArgumentException("DataSource can not be null");

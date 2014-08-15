@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.jfinal.handler.Handler;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 
 /**
  * Skip the excluded url request from browser.
@@ -33,7 +33,7 @@ public class UrlSkipHandler extends Handler {
 	private Pattern skipedUrlPattern;
 	
 	public UrlSkipHandler(String skipedUrlRegx, boolean isCaseSensitive) {
-		if (StringKit.isBlank(skipedUrlRegx))
+		if (StrKit.isBlank(skipedUrlRegx))
 			throw new IllegalArgumentException("The para excludedUrlRegx can not be blank.");
 		skipedUrlPattern = isCaseSensitive ? Pattern.compile(skipedUrlRegx) : Pattern.compile(skipedUrlRegx, Pattern.CASE_INSENSITIVE);
 	}

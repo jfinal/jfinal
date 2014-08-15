@@ -20,10 +20,10 @@ import java.sql.SQLException;
 import java.util.regex.Pattern;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Config;
-import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.DbKit;
+import com.jfinal.plugin.activerecord.DbPro;
 import com.jfinal.plugin.activerecord.IAtom;
 
 /**
@@ -38,7 +38,7 @@ public class TxByRegex implements Interceptor {
 	}
 	
 	public TxByRegex(String regex, boolean caseSensitive) {
-		if (StringKit.isBlank(regex))
+		if (StrKit.isBlank(regex))
 			throw new IllegalArgumentException("regex can not be blank.");
 		
 		pattern = caseSensitive ? Pattern.compile(regex) : Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
@@ -50,7 +50,7 @@ public class TxByRegex implements Interceptor {
 			config = DbKit.getConfig();
 		
 		if (pattern.matcher(ai.getActionKey()).matches()) {
-			Db.pro.tx(config.getName(), new IAtom(){
+			DbPro.use(config.getName()).tx(new IAtom(){
 				public boolean run() throws SQLException {
 					ai.invoke();
 					return true;

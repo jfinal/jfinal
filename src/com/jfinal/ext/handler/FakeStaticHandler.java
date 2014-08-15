@@ -19,7 +19,7 @@ package com.jfinal.ext.handler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.jfinal.handler.Handler;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 
 /**
  * FakeStaticHandler.
@@ -33,7 +33,7 @@ public class FakeStaticHandler extends Handler {
 	}
 	
 	public FakeStaticHandler(String viewPostfix) {
-		if (StringKit.isBlank(viewPostfix))
+		if (StrKit.isBlank(viewPostfix))
 			throw new IllegalArgumentException("viewPostfix can not be blank.");
 		this.viewPostfix = viewPostfix;
 	}

@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 
 /**
  * Scanner.
@@ -39,7 +39,7 @@ public abstract class Scanner {
 	private final Map<String,TimeSize> curScan = new HashMap<String,TimeSize> ();
 	
 	public Scanner(String rootDir, int interval) {
-		if (StringKit.isBlank(rootDir))
+		if (StrKit.isBlank(rootDir))
 			throw new IllegalArgumentException("The parameter rootDir can not be blank.");
 		this.rootDir = new File(rootDir);
 		if (!this.rootDir.isDirectory())

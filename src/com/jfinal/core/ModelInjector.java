@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Table;
@@ -34,7 +34,7 @@ final class ModelInjector {
 	@SuppressWarnings("unchecked")
 	public static <T> T inject(Class<?> modelClass, HttpServletRequest request, boolean skipConvertError) {
 		String modelName = modelClass.getSimpleName();
-		return (T)inject(modelClass, StringKit.firstCharToLowerCase(modelName), request, skipConvertError);
+		return (T)inject(modelClass, StrKit.firstCharToLowerCase(modelName), request, skipConvertError);
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -66,7 +66,7 @@ final class ModelInjector {
 				continue;
 			
 			String attrName = methodName.substring(3);
-			String value = request.getParameter(modelName + "." + StringKit.firstCharToLowerCase(attrName));
+			String value = request.getParameter(modelName + "." + StrKit.firstCharToLowerCase(attrName));
 			if (value != null) {
 				try {
 					method.invoke(model, TypeConverter.convert(types[0], value));

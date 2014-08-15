@@ -23,7 +23,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import com.jfinal.core.Const;
 import com.jfinal.core.Controller;
-import com.jfinal.kit.StringKit;
+import com.jfinal.kit.StrKit;
 
 /**
  * TokenManager.
@@ -105,7 +105,7 @@ public class TokenManager {
 		if (tokenCache == null) {
 			String serverTokenId = controller.getSessionAttr(tokenName);
 			controller.removeSessionAttr(tokenName);		// important!
-			return StringKit.notBlank(clientTokenId) && clientTokenId.equals(serverTokenId);
+			return StrKit.notBlank(clientTokenId) && clientTokenId.equals(serverTokenId);
 		}
 		else {
 			Token token = new Token(clientTokenId);
