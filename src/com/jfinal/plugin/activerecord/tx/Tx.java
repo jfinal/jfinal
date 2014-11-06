@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,9 +77,9 @@ public class Tx implements Interceptor {
 			conn.commit();
 		} catch (NestedTransactionHelpException e) {
 			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
-		} catch (Exception e) {
+		} catch (Throwable t) {
 			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
-			throw new ActiveRecordException(e);
+			throw new ActiveRecordException(t);
 		}
 		finally {
 			try {
@@ -88,8 +88,8 @@ public class Tx implements Interceptor {
 						conn.setAutoCommit(autoCommit);
 					conn.close();
 				}
-			} catch (Exception e) {
-				e.printStackTrace();	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
+			} catch (Throwable t) {
+				t.printStackTrace();	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
 			}
 			finally {
 				config.removeThreadLocalConnection();	// prevent memory leak

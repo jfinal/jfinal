@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import com.jfinal.render.Render;
  */
 final class ActionRender extends Render {
 	
-	private static final long serialVersionUID = 3712913909977013446L;
 	private String actionUrl;
 	
 	public ActionRender(String actionUrl) {

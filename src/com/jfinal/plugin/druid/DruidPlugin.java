@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	private String url;
 	private String username;
 	private String password;
-	private String driverClass = "com.mysql.jdbc.Driver";
+	private String driverClass = null;	// 由 "com.mysql.jdbc.Driver" 改为 null 让 druid 自动探测 driverClass 值
 	
 	// 初始连接池大小、最小空闲连接数、最大活跃连接数
 	private int initialSize = 10;
@@ -129,7 +129,8 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		ds.setUrl(url);
 		ds.setUsername(username);
 		ds.setPassword(password);
-		ds.setDriverClassName(driverClass);
+		if (driverClass != null)
+			ds.setDriverClassName(driverClass);
 		ds.setInitialSize(initialSize);
 		ds.setMinIdle(minIdle);
 		ds.setMaxActive(maxActive);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.jfinal.plugin.activerecord;
 
+import java.util.Collections;
 import java.util.Map;
 import com.jfinal.kit.StrKit;
 
@@ -56,6 +57,9 @@ public class Table {
 	
 	void setPrimaryKey(String primaryKey) {
 		String[] keyArr = primaryKey.split(",");
+		if (keyArr.length > 2)
+			throw new IllegalArgumentException("Supports only two primary key for Composite primary key.");
+		
 		if (keyArr.length > 1) {
 			if (StrKit.isBlank(keyArr[0]) || StrKit.isBlank(keyArr[1]))
 				throw new IllegalArgumentException("The composite primary key can not be blank.");
@@ -78,7 +82,7 @@ public class Table {
 		return name;
 	}
 	
-	public void setColumnType(String columnLabel, Class<?> columnType) {
+	void setColumnType(String columnLabel, Class<?> columnType) {
 		columnTypeMap.put(columnLabel, columnType);
 	}
 	
@@ -107,6 +111,10 @@ public class Table {
 	
 	public Class<? extends Model<?>> getModelClass() {
 		return modelClass;
+	}
+	
+	public Map<String, Class<?>> getColumnTypeMap() {
+		return Collections.unmodifiableMap(columnTypeMap);
 	}
 }
 

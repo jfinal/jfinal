@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import javax.servlet.http.HttpSession;
 import static com.jfinal.core.Const.I18N_LOCALE;
 import com.jfinal.i18n.I18N;
 import com.jfinal.kit.StrKit;
+import com.jfinal.render.ContentType;
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderFactory;
 import com.jfinal.upload.MultipartRequest;
@@ -968,9 +969,18 @@ public abstract class Controller {
 	/**
 	 * Render with text and content type.
 	 * <p>
-	 * Example: renderText("<user id='5888'>James</user>", "application/xml");
+	 * Example: renderText("&lt;user id='5888'&gt;James&lt;/user&gt;", "application/xml");
 	 */
 	public void renderText(String text, String contentType) {
+		render = renderFactory.getTextRender(text, contentType);
+	}
+	
+	/**
+	 * Render with text and ContentType.
+	 * <p>
+	 * Example: renderText("&lt;html&gt;Hello James&lt;/html&gt;", ContentType.HTML);
+	 */
+	public void renderText(String text, ContentType contentType) {
 		render = renderFactory.getTextRender(text, contentType);
 	}
 	
@@ -1072,16 +1082,13 @@ public abstract class Controller {
 	public void renderHtml(String htmlText) {
 		render = renderFactory.getHtmlRender(htmlText);
 	}
+	
+	/**
+	 * Render with xml view using freemarker.
+	 */
+	public void renderXml(String view) {
+		render = renderFactory.getXmlRender(view);
+	}
 }
-
-
-
-
-
-
-
-
-
-
 
 
