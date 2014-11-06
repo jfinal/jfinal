@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,12 @@ public class HandlerKit {
 		
 		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		RenderFactory.me().getRender(view).setContext(request, response).render();
+	}
+	
+	public static void renderError404(HttpServletRequest request, HttpServletResponse response, boolean[] isHandled) {
+		isHandled[0] = true;
+		
+		RenderFactory.me().getErrorRender(404).setContext(request, response).render();
 	}
 	
 	public static void redirect301(String url, HttpServletRequest request, HttpServletResponse response, boolean[] isHandled) {

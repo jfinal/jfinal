@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,18 +24,23 @@ import java.io.PrintWriter;
  */
 public class TextRender extends Render {
 	
-	private static final long serialVersionUID = 4775148244778489992L;
-	private static final String defaultContentType = "text/plain;charset=" + getEncoding();
+	private static final String DEFAULT_CONTENT_TYPE = "text/plain; charset=" + getEncoding();
+	
 	private String text;
+	private String contentType;
 	
 	public TextRender(String text) {
 		this.text = text;
 	}
 	
-	private String contentType;
 	public TextRender(String text, String contentType) {
 		this.text = text;
 		this.contentType = contentType;
+	}
+	
+	public TextRender(String text, ContentType contentType) {
+		this.text = text;
+		this.contentType = contentType.value();
 	}
 	
 	public void render() {
@@ -46,7 +51,7 @@ public class TextRender extends Render {
 	        response.setDateHeader("Expires", 0);
 	        
 	        if (contentType == null) {
-	        	response.setContentType(defaultContentType);
+	        	response.setContentType(DEFAULT_CONTENT_TYPE);
 	        }
 	        else {
 	        	response.setContentType(contentType);
@@ -65,7 +70,5 @@ public class TextRender extends Render {
 		}
 	}
 }
-
-
 
 

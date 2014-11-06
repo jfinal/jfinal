@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,15 @@ import com.jfinal.render.ViewType;
  */
 public interface Const {
 	
-	String JFINAL_VERSION = "1.8";
+	String JFINAL_VERSION = "1.9";
 	
 	ViewType DEFAULT_VIEW_TYPE = ViewType.FREE_MARKER;
 	
-	String DEFAULT_ENCODING = "utf-8";
+	String DEFAULT_ENCODING = "UTF-8";
+	
+	boolean DEFAULT_DEV_MODE = false;
 	
 	String DEFAULT_URL_PARA_SEPARATOR = "-";
-	
-	String DEFAULT_FILE_CONTENT_TYPE = "application/octet-stream";
 	
 	String DEFAULT_JSP_EXTENSION = ".jsp";
 	

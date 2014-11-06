@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,10 +34,9 @@ import freemarker.template.TemplateExceptionHandler;
  */
 public class FreeMarkerRender extends Render {
 	
-	private static final long serialVersionUID = -7649769283048920381L;
-	private transient static final String encoding = getEncoding();
-	private transient static final String contentType = "text/html; charset=" + encoding;
-	private transient static final Configuration config = new Configuration();
+	private static final String encoding = getEncoding();
+	private static final String contentType = "text/html; charset=" + encoding;
+	private static final Configuration config = new Configuration();
 	
 	public FreeMarkerRender(String view) {
 		this.view = view;
@@ -115,9 +114,9 @@ public class FreeMarkerRender extends Render {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public void render() {
 		response.setContentType(contentType);
-        Enumeration<String> attrs = request.getAttributeNames();
+        
 		Map root = new HashMap();
-		while (attrs.hasMoreElements()) {
+		for (Enumeration<String> attrs=request.getAttributeNames(); attrs.hasMoreElements();) {
 			String attrName = attrs.nextElement();
 			root.put(attrName, request.getAttribute(attrName));
 		}
@@ -136,7 +135,4 @@ public class FreeMarkerRender extends Render {
 		}
 	}
 }
-
-
-
 

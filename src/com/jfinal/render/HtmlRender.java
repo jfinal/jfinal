@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import java.io.PrintWriter;
  */
 public class HtmlRender extends Render {
 	
-	private static final long serialVersionUID = 8145891655998147406L;
-	private static final String contentType = "text/html;charset=" + getEncoding();
+	private static final String contentType = "text/html; charset=" + getEncoding();
 	private String text;
 	
 	public HtmlRender(String text) {

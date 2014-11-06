@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import com.jfinal.render.Render;
 
 public class CaptchaRender extends Render {
 	
-	private static final long serialVersionUID = -916701543933591834L;
 	private static final int WIDTH = 85, HEIGHT = 20;
 	private static final String[] strArr = {"3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"};
 	
@@ -91,9 +90,9 @@ public class CaptchaRender extends Render {
 			g.drawLine(x, y, x + xl, y + yl);
 		}
 
-		// 取随机产生的认证码(6位数字)
+		// 取随机产生的认证码(4位数字)
 		String sRand = "";
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 4; i++) {
 			String rand = String.valueOf(strArr[random.nextInt(strArr.length)]);
 			sRand += rand;
 			// 将认证码显示到图象中

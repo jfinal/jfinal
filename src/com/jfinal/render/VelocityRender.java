@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,12 +34,11 @@ import org.apache.velocity.exception.ResourceNotFoundException;
  */
 public class VelocityRender extends Render {
 	
-	private static final long serialVersionUID = 1012573049421601960L;
-	private transient static final String encoding = getEncoding();
-	private transient static final String contentType = "text/html;charset=" + encoding;
-	private transient static final Properties properties = new Properties();
+	private static final String encoding = getEncoding();
+	private static final String contentType = "text/html; charset=" + encoding;
+	private static final Properties properties = new Properties();
 	
-	private transient static boolean notInit = true;
+	private static boolean notInit = true;
 	
 	public VelocityRender(String view) {
 		this.view = view;
@@ -131,6 +130,8 @@ public class VelocityRender extends Render {
         }
 	}
 }
+
+
 
 
 

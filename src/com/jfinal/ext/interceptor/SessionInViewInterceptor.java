@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,9 @@ public class SessionInViewInterceptor implements Interceptor {
 		ai.invoke();
 		
 		Controller c = ai.getController();
+		if (c.getRender() instanceof com.jfinal.render.JsonRender)
+			return ;
+		
 		HttpSession hs = c.getSession(createSession);
 		if (hs != null) {
 			Map session = new JFinalSession(hs);

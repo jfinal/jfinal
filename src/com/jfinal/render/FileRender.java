@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,15 +24,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.ServletContext;
-import static com.jfinal.core.Const.DEFAULT_FILE_CONTENT_TYPE;
+import javax.servlet.http.HttpServletResponse;
 import com.jfinal.kit.PathKit;
+import com.jfinal.kit.StrKit;
 
 /**
  * FileRender.
  */
 public class FileRender extends Render {
 	
-	private static final long serialVersionUID = 4293616220202691369L;
+	private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
+	
 	private File file;
 	private String fileName;
 	private static String fileDownloadPath;
@@ -60,60 +62,149 @@ public class FileRender extends Render {
 			else
 				file = new File(fileDownloadPath + fileName);
 		}
-		
-		if (file == null || !file.isFile() || file.length() > Integer.MAX_VALUE) {
-            // response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            // return;
-			
-			// throw new RenderException("File not found!");
+		if (file == null || !file.isFile()) {
 			RenderFactory.me().getErrorRender(404).setContext(request, response).render();
 			return ;
         }
 		
-		try {
-			response.addHeader("Content-disposition", "attachment; filename=" + new String(file.getName().getBytes("GBK"), "ISO8859-1"));
-		} catch (UnsupportedEncodingException e) {
-			response.addHeader("Content-disposition", "attachment; filename=" + file.getName());
-		}
-		
+		// ---------
+		response.setHeader("Accept-Ranges", "bytes");
+		response.setHeader("Content-disposition", "attachment; filename=" + encodeFileName(file.getName()));
         String contentType = servletContext.getMimeType(file.getName());
-        if (contentType == null) {
-        	contentType = DEFAULT_FILE_CONTENT_TYPE;		// "application/octet-stream";
-        }
+        response.setContentType(contentType != null ? contentType : DEFAULT_CONTENT_TYPE);
         
-        response.setContentType(contentType);
-        response.setContentLength((int)file.length());
-        InputStream inputStream = null;
+        // ---------
+        if (StrKit.isBlank(request.getHeader("Range")))
+        	normalRender();
+        else
+        	rangeRender();
+	}
+	
+	private String encodeFileName(String fileName) {
+		try {
+			return new String(fileName.getBytes("GBK"), "ISO8859-1");
+		} catch (UnsupportedEncodingException e) {
+			return fileName;
+		}
+	}
+	
+	private void normalRender() {
+		response.setHeader("Content-Length", String.valueOf(file.length()));
+		InputStream inputStream = null;
         OutputStream outputStream = null;
         try {
             inputStream = new BufferedInputStream(new FileInputStream(file));
             outputStream = response.getOutputStream();
             byte[] buffer = new byte[1024];
-            for (int n = -1; (n = inputStream.read(buffer)) != -1;) {
-                outputStream.write(buffer, 0, n);
+            for (int len = -1; (len = inputStream.read(buffer)) != -1;) {
+                outputStream.write(buffer, 0, len);
             }
             outputStream.flush();
+        }
+        catch (IOException e) {
+        	if (getDevMode())	throw new RenderException(e);
         }
         catch (Exception e) {
         	throw new RenderException(e);
         }
         finally {
-            if (inputStream != null) {
-                try {
-					inputStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-            }
-            if (outputStream != null) {
-            	try {
-					outputStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-            }
+            if (inputStream != null)
+                try {inputStream.close();} catch (IOException e) {}
+            if (outputStream != null)
+            	try {outputStream.close();} catch (IOException e) {}
         }
 	}
+	
+	private void rangeRender() {
+		Long[] range = {null, null};
+		processRange(range);
+		
+		String contentLength = String.valueOf(range[1].longValue() - range[0].longValue() + 1);
+		response.setHeader("Content-Length", contentLength);
+		response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);	// status = 206
+		
+		// Content-Range: bytes 0-499/10000
+		StringBuilder contentRange = new StringBuilder("bytes ").append(String.valueOf(range[0])).append("-").append(String.valueOf(range[1])).append("/").append(String.valueOf(file.length()));
+		response.setHeader("Content-Range", contentRange.toString());
+		
+		InputStream inputStream = null;
+		OutputStream outputStream = null;
+        try {
+        	long start = range[0];
+        	long end = range[1];
+            inputStream = new BufferedInputStream(new FileInputStream(file));
+            if (inputStream.skip(start) != start)
+                	throw new RuntimeException("File skip error");
+            outputStream = response.getOutputStream();
+            byte[] buffer = new byte[1024];
+            long position = start;
+            for (int len; position <= end && (len = inputStream.read(buffer)) != -1;) {
+            	if (position + len <= end) {
+            		outputStream.write(buffer, 0, len);
+            		position += len;
+            	}
+            	else {
+            		for (int i=0; i<len && position <= end; i++) {
+            			outputStream.write(buffer[i]);
+                    	position++;
+            		}
+            	}
+            }
+            outputStream.flush();
+        }
+        catch (IOException e) {
+        	if (getDevMode())	throw new RenderException(e);
+        }
+        catch (Exception e) {
+        	throw new RenderException(e);
+        }
+        finally {
+            if (inputStream != null)
+                try {inputStream.close();} catch (IOException e) {}
+            if (outputStream != null)
+            	try {outputStream.close();} catch (IOException e) {}
+        }
+	}
+	
+	/**
+	 * Examples of byte-ranges-specifier values (assuming an entity-body of length 10000):
+	 * The first 500 bytes (byte offsets 0-499, inclusive): bytes=0-499
+	 * The second 500 bytes (byte offsets 500-999, inclusive): bytes=500-999
+	 * The final 500 bytes (byte offsets 9500-9999, inclusive): bytes=-500
+	 * 															Or bytes=9500-
+	 */
+	private void processRange(Long[] range) {
+		String rangeStr = request.getHeader("Range");
+		int index = rangeStr.indexOf(',');
+		if (index != -1)
+			rangeStr = rangeStr.substring(0, index);
+		rangeStr = rangeStr.replace("bytes=", "");
+		
+		String[] arr = rangeStr.split("-", 2);
+		if (arr.length < 2)
+			throw new RuntimeException("Range error");
+		
+		long fileLength = file.length();
+		for (int i=0; i<range.length; i++) {
+			if (StrKit.notBlank(arr[i])) {
+				range[i] = Long.parseLong(arr[i].trim());
+				if (range[i] >= fileLength)
+					range[i] = fileLength - 1;
+			}
+		}
+		
+		// condition like: 9500-
+		if (range[0] != null && range[1] == null) {
+			range[1] = fileLength - 1;
+		}
+		// condition like: -500
+		else if (range[0] == null && range[1] != null) {
+			range[0] = fileLength - range[1];
+			range[1] = fileLength - 1;
+		}
+		
+		// check final range
+		if (range[0] == null || range[1] == null || range[0].longValue() > range[1].longValue())
+			throw new RuntimeException("Range error");
+	}
 }
-
-

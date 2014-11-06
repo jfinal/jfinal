@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.jfinal.render;
 
-import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.jfinal.core.Const;
@@ -24,15 +23,14 @@ import com.jfinal.core.Const;
 /**
  * Render.
  */
-public abstract class Render implements Serializable {
+public abstract class Render {
 	
-	private static final long serialVersionUID = 4055676662365675029L;
 	protected String view;
-	protected transient HttpServletRequest request;
-	protected transient HttpServletResponse response;
+	protected HttpServletRequest request;
+	protected HttpServletResponse response;
 	
-	private transient static String encoding = Const.DEFAULT_ENCODING;
-	private transient static boolean devMode;
+	private static String encoding = Const.DEFAULT_ENCODING;
+	private static boolean devMode = Const.DEFAULT_DEV_MODE;
 	
 	static final void init(String encoding, boolean devMode) {
 		Render.encoding = encoding;
