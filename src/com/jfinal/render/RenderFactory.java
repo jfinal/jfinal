@@ -108,9 +108,10 @@ public class RenderFactory {
 	
 	private void initJspRender(ServletContext servletContext) {
 		try {
+			Class.forName("javax.el.ELResolver");
 			com.jfinal.plugin.activerecord.ModelRecordElResolver.init(servletContext);
 		}
-		catch (Exception e) {
+		catch (ClassNotFoundException e) {
 			// System.out.println("Jsp or JSTL can not be supported!");
 		}
 	}
