@@ -30,6 +30,8 @@ import javax.servlet.jsp.JspFactory;
 @SuppressWarnings("rawtypes")
 public class ModelRecordElResolver extends ELResolver {
 	
+	static JspApplicationContext jspApplicationContext = null;
+	
 	/**
 	 * Compatible for JspRender.setSupportActiveRecord(true);
 	 * Delete it in the future
@@ -40,9 +42,12 @@ public class ModelRecordElResolver extends ELResolver {
 		ModelRecordElResolver.isWorking = isWorking;
 	}
 	
-	public static void init(ServletContext servletContext) {
-	    JspApplicationContext jspApplicationContext = JspFactory.getDefaultFactory().getJspApplicationContext(servletContext);
-	    jspApplicationContext.addELResolver(new ModelRecordElResolver());
+	public synchronized static void init(ServletContext servletContext) {
+	    JspApplicationContext jac = JspFactory.getDefaultFactory().getJspApplicationContext(servletContext);
+	    if (jspApplicationContext != jac) {
+	    	jspApplicationContext = jac;
+	    	jspApplicationContext.addELResolver(new ModelRecordElResolver());
+	    }
 	}
 	
 	public static void init() {
@@ -119,6 +124,5 @@ public class ModelRecordElResolver extends ELResolver {
 		return null;
 	}
 }
-
 
 

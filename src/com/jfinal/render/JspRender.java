@@ -36,6 +36,15 @@ public class JspRender extends Render {
 	
 	private static boolean isSupportActiveRecord = false;
 	
+	static {
+		try {
+			com.jfinal.plugin.activerecord.ModelRecordElResolver.init();
+		}
+		catch (Exception e) {
+			// System.out.println("Jsp or JSTL can not be supported!");
+		}
+	}
+	
 	@Deprecated
 	public static void setSupportActiveRecord(boolean supportActiveRecord) {
 		JspRender.isSupportActiveRecord = supportActiveRecord;
