@@ -187,11 +187,11 @@ public class FileRender extends Render {
 			}
 		}
 		
-		// condition like: 9500-
+		// Range format like: 9500-
 		if (range[0] != null && range[1] == null) {
 			range[1] = fileLength - 1;
 		}
-		// condition like: -500
+		// Range format like: -500
 		else if (range[0] == null && range[1] != null) {
 			range[0] = fileLength - range[1];
 			range[1] = fileLength - 1;
