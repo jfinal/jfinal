@@ -36,7 +36,6 @@ public class FileRender extends Render {
 	private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
 	
 	private File file;
-	private String fileName;
 	private static String fileDownloadPath;
 	private static ServletContext servletContext;
 	private static String webRootPath;
@@ -46,7 +45,8 @@ public class FileRender extends Render {
 	}
 	
 	public FileRender(String fileName) {
-		this.fileName = fileName;
+		fileName = fileName.startsWith("/") ? webRootPath + fileName : fileDownloadPath + fileName;
+		this.file = new File(fileName);
 	}
 	
 	static void init(String fileDownloadPath, ServletContext servletContext) {
@@ -56,12 +56,6 @@ public class FileRender extends Render {
 	}
 	
 	public void render() {
-		if (fileName != null) {
-			if (fileName.startsWith("/"))
-				file = new File(webRootPath + fileName);
-			else
-				file = new File(fileDownloadPath + fileName);
-		}
 		if (file == null || !file.isFile()) {
 			RenderFactory.me().getErrorRender(404).setContext(request, response).render();
 			return ;
