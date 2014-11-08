@@ -90,7 +90,7 @@ public class Prop {
 		if (file == null)
 			throw new IllegalArgumentException("File can not be null.");
 		if (file.isFile() == false)
-			throw new IllegalArgumentException("File not found : " + file.getName());
+			throw new IllegalArgumentException("Not a file : " + file.getName());
 		
 		InputStream inputStream = null;
 		try {
