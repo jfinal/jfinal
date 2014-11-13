@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,19 +91,17 @@ public final class JFinalFilter implements Filter {
 		if (configClass == null)
 			throw new RuntimeException("Please set configClass parameter of JFinalFilter in web.xml");
 		
+		Object temp = null;
 		try {
-			Object temp = Class.forName(configClass).newInstance();
-			if (temp instanceof JFinalConfig)
-				jfinalConfig = (JFinalConfig)temp;
-			else
-				throw new RuntimeException("Can not create instance of class: " + configClass + ". Please check the config in web.xml");
-		} catch (InstantiationException e) {
+			temp = Class.forName(configClass).newInstance();
+		} catch (Exception e) {
 			throw new RuntimeException("Can not create instance of class: " + configClass, e);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException("Can not create instance of class: " + configClass, e);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("Class not found: " + configClass + ". Please config it in web.xml", e);
 		}
+		
+		if (temp instanceof JFinalConfig)
+			jfinalConfig = (JFinalConfig)temp;
+		else
+			throw new RuntimeException("Can not create instance of class: " + configClass + ". Please check the config in web.xml");
 	}
 	
 	static void initLogger() {

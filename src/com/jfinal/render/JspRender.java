@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import com.jfinal.plugin.activerecord.CPI;
 import com.jfinal.plugin.activerecord.Model;
+import com.jfinal.plugin.activerecord.ModelRecordElResolver;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 
@@ -33,11 +34,21 @@ import com.jfinal.plugin.activerecord.Record;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JspRender extends Render {
 	
-	private static final long serialVersionUID = -688478484751775667L;
-	private transient static boolean isSupportActiveRecord = true;
+	private static boolean isSupportActiveRecord = false;
 	
+	static {
+		try {
+			com.jfinal.plugin.activerecord.ModelRecordElResolver.init();
+		}
+		catch (Exception e) {
+			// System.out.println("Jsp or JSTL can not be supported!");
+		}
+	}
+	
+	@Deprecated
 	public static void setSupportActiveRecord(boolean supportActiveRecord) {
 		JspRender.isSupportActiveRecord = supportActiveRecord;
+		ModelRecordElResolver.setWorking(JspRender.isSupportActiveRecord ? false : true);
 	}
 	
 	public JspRender(String view) {

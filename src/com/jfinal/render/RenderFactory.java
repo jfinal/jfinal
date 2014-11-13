@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,6 +65,7 @@ public class RenderFactory {
 		Render.init(constants.getEncoding(), constants.getDevMode());
 		initFreeMarkerRender(servletContext);
 		initVelocityRender(servletContext);
+		initJspRender(servletContext);
 		initFileRender(servletContext);
 		
 		// create mainRenderFactory
@@ -102,6 +103,20 @@ public class RenderFactory {
 		}
 		catch (ClassNotFoundException e) {
 			// System.out.println("Velocity can not be supported!");
+		}
+	}
+	
+	private void initJspRender(ServletContext servletContext) {
+		try {
+			Class.forName("javax.el.ELResolver");
+			Class.forName("javax.servlet.jsp.JspFactory");
+			com.jfinal.plugin.activerecord.ModelRecordElResolver.init(servletContext);
+		}
+		catch (ClassNotFoundException e) {
+			// System.out.println("Jsp or JSTL can not be supported!");
+		}
+		catch (Exception e) {
+			
 		}
 	}
 	
@@ -167,6 +182,10 @@ public class RenderFactory {
 		return new TextRender(text, contentType);
 	}
 	
+	public Render getTextRender(String text, ContentType contentType) {
+		return new TextRender(text, contentType);
+	}
+	
 	public Render getDefaultRender(String view) {
 		ViewType viewType = constants.getViewType();
 		if (viewType == ViewType.FREE_MARKER) {
@@ -225,6 +244,10 @@ public class RenderFactory {
 	
 	public Render getHtmlRender(String htmlText) {
 		return new HtmlRender(htmlText);
+	}
+	
+	public Render getXmlRender(String view) {
+		return new XmlRender(view);
 	}
 	
 	// --------

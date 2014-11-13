@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ final class ActionHandler extends Handler {
 	 * 3: render(...)
 	 */
 	public final void handle(String target, HttpServletRequest request, HttpServletResponse response, boolean[] isHandled) {
-		if (target.indexOf(".") != -1) {
+		if (target.indexOf('.') != -1) {
 			return ;
 		}
 		
@@ -117,10 +117,10 @@ final class ActionHandler extends Handler {
 			}
 			e.getErrorRender().setContext(request, response).render();
 		}
-		catch (Exception e) {
+		catch (Throwable t) {
 			if (log.isErrorEnabled()) {
 				String qs = request.getQueryString();
-				log.error(qs == null ? target : target + "?" + qs, e);
+				log.error(qs == null ? target : target + "?" + qs, t);
 			}
 			renderFactory.getErrorRender(500).setContext(request, response).render();
 		}

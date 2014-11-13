@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import com.jfinal.kit.JsonKit;
 
 /**
@@ -31,7 +33,39 @@ import com.jfinal.kit.JsonKit;
  */
 public class JsonRender extends Render {
 	
-	private static final long serialVersionUID = 3606364198859021837L;
+	/**
+	 * It creates the extra attribute below while tomcat take SSL open.
+	 * http://git.oschina.net/jfinal/jfinal/issues/10
+	 */
+	private static final Set<String> excludedAttrs = new HashSet<String>() {
+		private static final long serialVersionUID = 9186138395157680676L;
+		{
+			add("javax.servlet.request.ssl_session");
+			add("javax.servlet.request.ssl_session_id");
+			add("javax.servlet.request.ssl_session_mgr");
+			add("javax.servlet.request.key_size");
+			add("javax.servlet.request.cipher_suite");
+		}
+	};
+	
+	/**
+	 * 仅对无参 renderJson() 起作用
+	 */
+	public static void addExcludedAttrs(String... attrs) {
+		if (attrs != null)
+			for (String attr : attrs)
+				excludedAttrs.add(attr);
+	}
+	
+	public static void removeExcludedAttrs(String... attrs) {
+		if (attrs != null)
+			for (String attr : attrs)
+				excludedAttrs.remove(attr);
+	}
+	
+	public static void clearExcludedAttrs() {
+		excludedAttrs.clear();
+	}
 	
 	/**
 	 * http://zh.wikipedia.org/zh/MIME
@@ -42,8 +76,8 @@ public class JsonRender extends Render {
 	 * 1: 官方的 MIME type为application/json, 见 http://en.wikipedia.org/wiki/MIME_type
 	 * 2: IE 不支持 application/json, 在 ajax 上传文件完成后返回 json时 IE 提示下载文件
 	 */
-	private static final String contentType = "application/json;charset=" + getEncoding();
-	private static final String contentTypeForIE = "text/html;charset=" + getEncoding();
+	private static final String contentType = "application/json; charset=" + getEncoding();
+	private static final String contentTypeForIE = "text/html; charset=" + getEncoding();
 	private boolean forIE = false;
 	private static int convertDepth = 8;
 	
@@ -63,7 +97,7 @@ public class JsonRender extends Render {
 	public JsonRender(final String key, final Object value) {
 		if (key == null)
 			throw new IllegalArgumentException("The parameter key can not be null.");
-		this.jsonText = JsonKit.mapToJson(new HashMap<String, Object>(){{put(key, value);}}, convertDepth);
+		this.jsonText = JsonKit.toJson(new HashMap<String, Object>(){{put(key, value);}}, convertDepth);
 	}
 	
 	public JsonRender(String[] attrs) {
@@ -121,17 +155,20 @@ public class JsonRender extends Render {
 				map.put(key, request.getAttribute(key));
 		}
 		else {
-			Enumeration<String> attrs = request.getAttributeNames();
-			while (attrs.hasMoreElements()) {
+			for (Enumeration<String> attrs=request.getAttributeNames(); attrs.hasMoreElements();) {
 				String key = attrs.nextElement();
+				if (excludedAttrs.contains(key))
+					continue;
+				
 				Object value = request.getAttribute(key);
 				map.put(key, value);
 			}
 		}
 		
-		this.jsonText = JsonKit.mapToJson(map, convertDepth);
+		this.jsonText = JsonKit.toJson(map, convertDepth);
 	}
 }
+
 
 
 

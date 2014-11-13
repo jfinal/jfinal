@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2014, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,10 @@
 package com.jfinal.config;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
-import com.jfinal.kit.PathKit;
-import com.jfinal.kit.StrKit;
+import com.jfinal.core.Const;
+import com.jfinal.kit.Prop;
+import com.jfinal.kit.PropKit;
 
 /**
  * JFinalConfig.
@@ -67,97 +64,96 @@ public abstract class JFinalConfig {
 	 */
 	public void beforeJFinalStop(){};
 	
-	private Properties properties;
+	protected Prop prop = null;
+	
+	/**
+	 * Load property file.
+	 * @see #loadPropertyFile(String, String)
+	 */
+	public Properties loadPropertyFile(String fileName) {
+		return loadPropertyFile(fileName, Const.DEFAULT_ENCODING);
+	}
+	
+	/**
+	 * Load property file.
+	 * Example:<br>
+	 * loadPropertyFile("db_username_pass.txt", "UTF-8");
+	 * 
+	 * @param fileName the file in CLASSPATH or the sub directory of the CLASSPATH
+	 * @param encoding the encoding
+	 */
+	public Properties loadPropertyFile(String fileName, String encoding) {
+		prop = PropKit.use(fileName, encoding);
+		return prop.getProperties();
+	}
+	
+	/**
+	 * Load property file.
+	 * @see #loadPropertyFile(File, String)
+	 */
+	public Properties loadPropertyFile(File file) {
+		return loadPropertyFile(file, Const.DEFAULT_ENCODING);
+	}
 	
 	/**
 	 * Load property file
-	 * Example: loadPropertyFile("db_username_pass.txt");
-	 * @param file the file in WEB-INF directory
+	 * Example:<br>
+	 * loadPropertyFile(new File("/var/config/my_config.txt"), "UTF-8");
+	 * 
+	 * @param file the properties File object
+	 * @param encoding the encoding
 	 */
-	public Properties loadPropertyFile(String file) {
-		if (StrKit.isBlank(file))
-			throw new IllegalArgumentException("Parameter of file can not be blank");
-		if (file.contains(".."))
-			throw new IllegalArgumentException("Parameter of file can not contains \"..\"");
-		
-		InputStream inputStream = null;
-		String fullFile;	// String fullFile = PathUtil.getWebRootPath() + file;
-		if (file.startsWith(File.separator))
-			fullFile = PathKit.getWebRootPath() + File.separator + "WEB-INF" + file;
-		else
-			fullFile = PathKit.getWebRootPath() + File.separator + "WEB-INF" + File.separator + file;
-		
-		try {
-			inputStream = new FileInputStream(new File(fullFile));
-			Properties p = new Properties();
-			p.load(inputStream);
-			properties = p;
-		} catch (FileNotFoundException e) {
-			throw new IllegalArgumentException("Properties file not found: " + fullFile);
-		} catch (IOException e) {
-			throw new IllegalArgumentException("Properties file can not be loading: " + fullFile);
-		}
-		finally {
-			try {if (inputStream != null) inputStream.close();} catch (IOException e) {e.printStackTrace();}
-		}
-		if (properties == null)
-			throw new RuntimeException("Properties file loading failed: " + fullFile);
-		return properties;
+	public Properties loadPropertyFile(File file, String encoding) {
+		prop = PropKit.use(file, encoding);
+		return prop.getProperties();
+	}
+	
+	public void unloadPropertyFile(String fileName) {
+		Prop uselessProp = PropKit.useless(fileName);
+		if (this.prop == uselessProp)
+			this.prop = null;
+	}
+	
+	public void unloadAllPropertyFiles() {
+		PropKit.clear();
+		prop = null;
+	}
+	
+	private Prop getProp() {
+		if (prop == null)
+			throw new IllegalStateException("Load propties file by invoking loadPropertyFile(String fileName) method first.");
+		return prop;
 	}
 	
 	public String getProperty(String key) {
-		checkPropertyLoading();
-		return properties.getProperty(key);
+		return getProp().get(key);
 	}
 	
 	public String getProperty(String key, String defaultValue) {
-		checkPropertyLoading();
-		return properties.getProperty(key, defaultValue);
+		return getProp().get(key, defaultValue);
 	}
 	
 	public Integer getPropertyToInt(String key) {
-		checkPropertyLoading();
-		Integer resultInt = null;
-		String resultStr = properties.getProperty(key);
-		if (resultStr != null)
-			resultInt =  Integer.parseInt(resultStr);
-		return resultInt;
+		return getProp().getInt(key);
 	}
 	
 	public Integer getPropertyToInt(String key, Integer defaultValue) {
-		Integer result = getPropertyToInt(key);
-		return result != null ? result : defaultValue;
+		return getProp().getInt(key, defaultValue);
+	}
+	
+	public Long getPropertyToLong(String key) {
+		return getProp().getLong(key);
+	}
+	
+	public Long getPropertyToLong(String key, Long defaultValue) {
+		return getProp().getLong(key, defaultValue);
 	}
 	
 	public Boolean getPropertyToBoolean(String key) {
-		checkPropertyLoading();
-		String resultStr = properties.getProperty(key);
-		Boolean resultBool = null;
-		if (resultStr != null) {
-			if (resultStr.trim().equalsIgnoreCase("true"))
-				resultBool = true;
-			else if (resultStr.trim().equalsIgnoreCase("false"))
-				resultBool = false;
-		}
-		return resultBool;
+		return getProp().getBoolean(key);
 	}
 	
-	public Boolean getPropertyToBoolean(String key, boolean defaultValue) {
-		Boolean result = getPropertyToBoolean(key);
-		return result != null ? result : defaultValue;
-	}
-	
-	private void checkPropertyLoading() {
-		if (properties == null)
-			throw new RuntimeException("You must load properties file by invoking loadPropertyFile(String) method in configConstant(Constants) method before.");
+	public Boolean getPropertyToBoolean(String key, Boolean defaultValue) {
+		return getProp().getBoolean(key, defaultValue);
 	}
 }
-
-
-
-
-
-
-
-
-
