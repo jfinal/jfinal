@@ -129,7 +129,7 @@ public class RenderFactory {
 		if (result == null) {
 			result = PathKit.getWebRootPath() + DEFAULT_FILE_RENDER_BASE_PATH;
 		}
-		if (!result.endsWith(File.separator) && !result.endsWith("/")) {
+		if (!result.endsWith(File.separator)) {
 			result = result + File.separator;
 		}
 		return result;
