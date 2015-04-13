@@ -27,7 +27,11 @@ import com.jfinal.aop.Interceptor;
  */
 final class ActionReporter {
 	
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private final static ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<SimpleDateFormat>() {
+		protected SimpleDateFormat initialValue() {
+			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		}
+	};
 	
 	/**
 	 * Report action before action invoking when the common request coming
@@ -49,7 +53,7 @@ final class ActionReporter {
 	}
 	
 	private static final void doReport(Controller controller, Action action) {
-		StringBuilder sb = new StringBuilder("\nJFinal action report -------- ").append(sdf.format(new Date())).append(" ------------------------------\n");
+		StringBuilder sb = new StringBuilder("\nJFinal action report -------- ").append(sdf.get().format(new Date())).append(" ------------------------------\n");
 		Class<? extends Controller> cc = action.getControllerClass();
 		sb.append("Controller  : ").append(cc.getName()).append(".(").append(cc.getSimpleName()).append(".java:1)");
 		sb.append("\nMethod      : ").append(action.getMethodName()).append("\n");
