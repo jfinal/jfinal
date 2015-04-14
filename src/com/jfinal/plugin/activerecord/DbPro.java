@@ -647,6 +647,9 @@ public class DbPro {
 			else
 				conn.rollback();
 			return result;
+		} catch (NestedTransactionHelpException e) {
+			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
+			return false;
 		} catch (Throwable t) {
 			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
 			throw t instanceof RuntimeException ? (RuntimeException)t : new ActiveRecordException(t);
