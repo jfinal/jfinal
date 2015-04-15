@@ -16,14 +16,13 @@
 
 package com.jfinal.plugin.activerecord.tx;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
-import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.DbKit;
-import com.jfinal.plugin.activerecord.NestedTransactionHelpException;
+import com.jfinal.plugin.activerecord.DbPro;
+import com.jfinal.plugin.activerecord.IAtom;
 
 /**
  * ActiveRecord declare transaction.
