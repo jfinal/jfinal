@@ -54,12 +54,12 @@ public class CaptchaRender extends Render {
 		cookie.setPath("/");
 		response.addCookie(cookie);
 		response.setHeader("Pragma","no-cache");
-        response.setHeader("Cache-Control","no-cache");
-        response.setDateHeader("Expires", 0);
-        response.setContentType("image/jpeg");
-        
-        ServletOutputStream sos = null;
-        try {
+	        response.setHeader("Cache-Control","no-cache");
+	        response.setDateHeader("Expires", 0);
+	        response.setContentType("image/jpeg");
+	        
+	        ServletOutputStream sos = null;
+        	try {
 			sos = response.getOutputStream();
 			ImageIO.write(image, "jpeg",sos);
 		} catch (Exception e) {
