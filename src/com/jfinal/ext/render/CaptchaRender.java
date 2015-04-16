@@ -21,12 +21,14 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.util.Random;
+
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
+
 import com.jfinal.core.Controller;
+import com.jfinal.kit.EncryptionKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.Render;
 
@@ -46,7 +48,7 @@ public class CaptchaRender extends Render {
 	public void render() {
 		BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		String vCode = drawGraphic(image);
-		vCode = encrypt(vCode);
+		vCode = EncryptionKit.md5Encrypt(vCode);
 		Cookie cookie = new Cookie(randomCodeKey, vCode);
 		cookie.setMaxAge(-1);
 		cookie.setPath("/");
@@ -122,21 +124,6 @@ public class CaptchaRender extends Render {
 		return new Color(r, g, b);
 	}
 	
-	private static final String encrypt(String srcStr) {
-		try {
-			String result = "";
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			byte[] bytes = md.digest(srcStr.getBytes("utf-8"));
-			for(byte b:bytes){
-				String hex = Integer.toHexString(b&0xFF).toUpperCase();
-				result += ((hex.length() ==1 ) ? "0" : "") + hex;
-			}
-			return result;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
 //	public static boolean validate(String inputRandomCode, String rightRandomCode){
 //		if (StringKit.isBlank(inputRandomCode))
 //			return false;
@@ -154,7 +141,7 @@ public class CaptchaRender extends Render {
 		if (StrKit.isBlank(inputRandomCode))
 			return false;
 		try {
-			inputRandomCode = encrypt(inputRandomCode);
+			inputRandomCode = EncryptionKit.md5Encrypt(inputRandomCode);
 			return inputRandomCode.equals(controller.getCookie(randomCodeKey));
 		} catch (Exception e) {
 			e.printStackTrace();
