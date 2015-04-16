@@ -29,7 +29,13 @@ public abstract class Logger {
 	private static ILoggerFactory factory;
 	
 	static {
-		init();
+		try {
+			Class.forName("org.apache.log4j.Logger");
+			Class<?> log4jLoggerFactoryClass = Class.forName("com.jfinal.log.Log4jLoggerFactory");
+			factory = (ILoggerFactory)log4jLoggerFactoryClass.newInstance();	// return new Log4jLoggerFactory();
+		} catch (Exception e) {
+			factory = new JdkLoggerFactory();
+		}
 	}
 	
 	public static void setLoggerFactory(ILoggerFactory loggerFactory) {
@@ -43,18 +49,6 @@ public abstract class Logger {
 	
 	public static Logger getLogger(String name) {
 		return factory.getLogger(name);
-	}
-	
-	public static void init() {
-		if (factory != null)
-			return ;
-		try {
-			Class.forName("org.apache.log4j.Logger");
-			Class<?> log4jLoggerFactoryClass = Class.forName("com.jfinal.log.Log4jLoggerFactory");
-			factory = (ILoggerFactory)log4jLoggerFactoryClass.newInstance();	// return new Log4jLoggerFactory();
-		} catch (Exception e) {
-			factory = new JdkLoggerFactory();
-		}
 	}
 	
 	public abstract void debug(String message);
