@@ -41,8 +41,7 @@ public class UrlSkipHandler extends Handler {
 	public void handle(String target, HttpServletRequest request, HttpServletResponse response, boolean[] isHandled) {
 		if (skipedUrlPattern.matcher(target).matches())
 			return ;
-		else
-			nextHandler.handle(target, request, response, isHandled);
+		nextHandler.handle(target, request, response, isHandled);
 	}
 }
 
