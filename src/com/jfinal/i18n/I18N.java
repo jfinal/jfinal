@@ -17,11 +17,12 @@
 package com.jfinal.i18n;
 
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+
 import com.jfinal.core.Const;
 
 /**
@@ -44,7 +45,8 @@ public class I18N {
 	private static Locale defaultLocale = Locale.getDefault();
 	private static int i18nMaxAgeOfCookie = Const.DEFAULT_I18N_MAX_AGE_OF_COOKIE;
 	private static final NullResourceBundle NULL_RESOURCE_BUNDLE = new NullResourceBundle();
-	private static final ConcurrentMap<String, ResourceBundle> bundlesMap = new ConcurrentHashMap<String, ResourceBundle>();
+	private static final Map<String, ResourceBundle> bundlesMap = new HashMap<String, ResourceBundle>();
+    	private static Object LOCK = new Object();
 	
 	private static volatile I18N me;
 	
@@ -80,12 +82,16 @@ public class I18N {
 		String resourceBundleKey = getresourceBundleKey(locale);
 		ResourceBundle resourceBundle = bundlesMap.get(resourceBundleKey);
 		if (resourceBundle == null) {
-			try {
-				resourceBundle = ResourceBundle.getBundle(baseName, locale);
-				bundlesMap.put(resourceBundleKey, resourceBundle);
-			}
-			catch (MissingResourceException e) {
-				resourceBundle = NULL_RESOURCE_BUNDLE;
+			synchronized(LOCK){
+				resourceBundle = bundlesMap.get(resourceBundleKey);
+				if(resourceBundle == null){
+					try {
+						resourceBundle = ResourceBundle.getBundle(baseName, locale);
+						bundlesMap.put(resourceBundleKey, resourceBundle);
+					} catch (MissingResourceException e) {
+						resourceBundle = NULL_RESOURCE_BUNDLE;
+					}
+				}
 			}
 		}
 		return resourceBundle;

@@ -16,14 +16,14 @@
 
 package com.jfinal.plugin.activerecord.tx;
 
-import java.sql.Connection;
 import java.sql.SQLException;
+
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
-import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.DbKit;
-import com.jfinal.plugin.activerecord.NestedTransactionHelpException;
+import com.jfinal.plugin.activerecord.DbPro;
+import com.jfinal.plugin.activerecord.IAtom;
 
 /**
  * ActiveRecord declare transaction.
@@ -53,48 +53,12 @@ public class Tx implements Interceptor {
 		Config config = getConfigWithTxConfig(ai);
 		if (config == null)
 			config = DbKit.getConfig();
-		
-		Connection conn = config.getThreadLocalConnection();
-		if (conn != null) {	// Nested transaction support
-			try {
-				if (conn.getTransactionIsolation() < getTransactionLevel(config))
-					conn.setTransactionIsolation(getTransactionLevel(config));
+		DbPro.use(config.getName()).tx(getTransactionLevel(config), new IAtom(){
+			public boolean run() throws SQLException {
 				ai.invoke();
-				return ;
-			} catch (SQLException e) {
-				throw new ActiveRecordException(e);
+				return true;
 			}
-		}
-		
-		Boolean autoCommit = null;
-		try {
-			conn = config.getConnection();
-			autoCommit = conn.getAutoCommit();
-			config.setThreadLocalConnection(conn);
-			conn.setTransactionIsolation(getTransactionLevel(config));	// conn.setTransactionIsolation(transactionLevel);
-			conn.setAutoCommit(false);
-			ai.invoke();
-			conn.commit();
-		} catch (NestedTransactionHelpException e) {
-			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
-		} catch (Throwable t) {
-			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
-			throw new ActiveRecordException(t);
-		}
-		finally {
-			try {
-				if (conn != null) {
-					if (autoCommit != null)
-						conn.setAutoCommit(autoCommit);
-					conn.close();
-				}
-			} catch (Throwable t) {
-				t.printStackTrace();	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
-			}
-			finally {
-				config.removeThreadLocalConnection();	// prevent memory leak
-			}
-		}
+		});
 	}
 }
 

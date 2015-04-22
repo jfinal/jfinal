@@ -36,7 +36,7 @@ import com.jfinal.core.Controller;
 public class CacheInterceptor implements Interceptor {
 	
 	private static final String renderKey = "$renderKey$";
-	private static volatile ConcurrentHashMap<String, ReentrantLock> lockMap = new ConcurrentHashMap<String, ReentrantLock>();
+	private static ConcurrentHashMap<String, ReentrantLock> lockMap = new ConcurrentHashMap<String, ReentrantLock>();
 	
 	private ReentrantLock getLock(String key) {
 		ReentrantLock lock = lockMap.get(key);

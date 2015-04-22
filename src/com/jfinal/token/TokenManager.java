@@ -87,7 +87,7 @@ public class TokenManager {
 			if (safeCounter-- == 0)
 				throw new RuntimeException("Can not create tokenId.");
 			tokenId = String.valueOf(random.nextLong());
-			token = new Token(tokenId, System.currentTimeMillis() + (secondsOfTimeOut * 1000));
+			token = new Token(tokenId, System.nanoTime() + (secondsOfTimeOut * 1000));
 		} while(tokenId == null || tokenCache.contains(token));
 		
 		controller.setAttr(tokenName, tokenId);
@@ -121,7 +121,7 @@ public class TokenManager {
 			return;
 		
 		List<Token> timeOutTokens = new ArrayList<Token>();
-		long currentTime = System.currentTimeMillis();
+		long currentTime = System.nanoTime();
 		// find and save all time out tokens
 		for (Token token : tokenInCache)
 			if (token.getExpirationTime() <=  currentTime)
