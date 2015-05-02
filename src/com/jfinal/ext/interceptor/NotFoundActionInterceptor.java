@@ -3,8 +3,6 @@
  */
 package com.jfinal.ext.interceptor;
 
-import java.lang.reflect.Method;
-
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
 import com.jfinal.core.Controller;
@@ -37,20 +35,27 @@ public class NotFoundActionInterceptor implements Interceptor {
 				param = params[0];
 			}
 
-			boolean contained = false;
-			Method[] methods = controller.getClass().getMethods();
-			for (Method method : methods) {
-				if (param.equals(method.getName())) {
-					contained = true;
-					break;
-				}
-			}
-			if (contained){
+			try {
+				controller.getClass().getMethod(param, null, null);
 				ai.invoke();
-			}
-			else{
+			} catch (NoSuchMethodException e) {
 				controller.renderError(404);
-			}
+			} 
+//			
+//			boolean contained = false;
+//			Method[] methods = controller.getClass().getMethods();
+//			for (Method method : methods) {
+//				if (param.equals(method.getName())) {
+//					contained = true;
+//					break;
+//				}
+//			}
+//			if (contained){
+//				ai.invoke();
+//			}
+//			else{
+//				controller.renderError(404);
+//			}
 		}
 	}
 }
