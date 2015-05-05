@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.jfinal.kit;
+package com.jfinal.ext.kit;
 
 /**
  * @author 朱丛启  2015年4月29日 下午3:14:21
@@ -61,28 +61,22 @@ public class PageViewKit {
 	}
 	
 	/**
-	 * throw IllegalArgumentException 对应的页面
-	 * @return
-	 */
-	public static String getIllegalArgumentExceptionPageView(){
-		return getPageView(WEBINF_DIR,ERROR_PAGE_PATH,"invalidarg", HTML);
-	}
-	
-	/**
-	 * throw IllegalStateException 对应的页面
-	 * @return
-	 */
-	public static String getIllegalStateExceptionPageView(){
-		return getPageView(WEBINF_DIR,ERROR_PAGE_PATH,"invalidstate", HTML);
-	}
-	
-	/**
 	 * 获取web-inf下面的页面
 	 * @param pageName 页面名称
 	 * @return
 	 */
 	public static String getJSPPageViewFromWebInf(String pageName){
 		return getPageView(WEBINF_DIR, PAGE_VIEW_PATH, pageName, JSP);
+	}
+	
+	/**
+	 * 获取web-inf下面的pageviews目录中pathRefRootViews子目录下面的页面
+	 * @param pathRefRootViews 目录: 加入到/WEB-INF/pageviews/pathRefRootViews下
+	 * @param pageName 页面名称
+	 * @return
+	 */
+	public static String getJSPPageViewFromWebInf(String pathRefRootViews,String pageName){
+		return getPageView(WEBINF_DIR, PAGE_VIEW_PATH+pathRefRootViews, pageName, JSP);
 	}
 	
 	/**
@@ -95,12 +89,32 @@ public class PageViewKit {
 	}
 	
 	/**
+	 * 获取根目录下面的pageviews目录中pathRefRootViews子目录下面的页面
+	 * @param pathRefRootViews 目录: 加入到/pageviews/pathRefRootViews下
+	 * @param pageName 页面名称
+	 * @return
+	 */
+	public static String getJSPPageViewFromRoot(String pathRefRootViews,String pageName){
+		return getPageView(ROOT_DIR, PAGE_VIEW_PATH+pathRefRootViews, pageName, JSP);
+	}
+	
+	/**
 	 * 获取web-inf下面的静态页面
 	 * @param pageName 页面名称
 	 * @return
 	 */
 	public static String getHTMLPageViewFromWebInf(String pageName){
 		return getPageView(WEBINF_DIR, PAGE_VIEW_PATH, pageName, HTML);
+	}
+	
+	/**
+	 * 获取web-inf下面的pageviews目录中pathRefRootViews子目录下面的静态页面
+	 * @param pathRefRootViews 目录: 加入到/WEB-INF/pageviews/pathRefRootViews下
+	 * @param pageName 页面名称
+	 * @return
+	 */
+	public static String getHTMLPageViewFromWebInf(String pathRefRootViews, String pageName){
+		return getPageView(WEBINF_DIR, PAGE_VIEW_PATH+pathRefRootViews, pageName, HTML);
 	}
 	
 	/**
@@ -111,6 +125,17 @@ public class PageViewKit {
 	public static String getHTMLPageViewFromRoot(String pageName){
 		return getHTMLPageView(ROOT_DIR,PAGE_VIEW_PATH, pageName);
 	}
+	
+	/**
+	 * 获取根目录下的pageviews目录中pathRefRootViews子目录下面的静态页面
+	 * @param pathRefRootViews 目录: 加入到/pageviews/pathRefRootViews下
+	 * @param pageName 页面名称
+	 * @return
+	 */
+	public static String getHTMLPageViewFromRoot(String pathRefRootViews, String pageName){
+		return getHTMLPageView(ROOT_DIR,PAGE_VIEW_PATH+pathRefRootViews, pageName);
+	}
+
 
 	/**
 	 * 获取静态页面
@@ -143,6 +168,15 @@ public class PageViewKit {
 	 * @return
 	 */
 	public static String getPageView(String dir, String viewPath, String pageName, String fileExtension){
+		if (!dir.endsWith("/")) {
+			dir += "/";
+		}
+		if (!viewPath.startsWith("/")) {
+			viewPath += "/";
+		}
+		if (!viewPath.endsWith("/")) {
+			viewPath += "/";
+		}
 		return dir+viewPath+pageName+fileExtension;
 	}
 	
