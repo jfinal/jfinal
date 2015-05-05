@@ -17,6 +17,7 @@
 package com.jfinal.core;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Enumeration;
@@ -243,6 +244,30 @@ public abstract class Controller {
 		if (value.startsWith("N") || value.startsWith("n"))
 			return -Long.parseLong(value.substring(1));
 		return Long.parseLong(value);
+	}
+	
+	/**
+	 * Returns the value of a request parameter and convert to BigInteger.
+	 * @param name a String specifying the name of the parameter
+	 * @return a BigInteger representing the single value of the parameter
+	 */
+	public BigInteger getParaToBigInteger(String name){
+		return this.toBigInteger(getPara(name), null);
+	}
+	
+	/**
+	 * Returns the value of a request parameter and convert to BigInteger with a default value if it is null.
+	 * @param name a String specifying the name of the parameter
+	 * @return a BigInteger representing the single value of the parameter
+	 */
+	public BigInteger getParaToBigInteger(String name,BigInteger defaultValue){
+		return this.toBigInteger(getPara(name), defaultValue);
+	}
+	
+	private BigInteger toBigInteger(String value, BigInteger defaultValue) {
+		if (value == null || "".equals(value.trim()))
+			return defaultValue;
+		return (new BigInteger(value));
 	}
 	
 	/**
