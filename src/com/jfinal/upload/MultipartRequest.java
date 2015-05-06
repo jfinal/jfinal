@@ -51,22 +51,22 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 		MultipartRequest.isMultipartSupported = true;	// 在OreillyCos.java中保障了, 只要被初始化就一定为 true
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, String encoding, FileRenamePolicyWrapper fileRenamePolicy) {
+	public MultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, String encoding, FileRenamePolicy fileRenamePolicy) {
 		super(request);
 		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding,fileRenamePolicy);
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, FileRenamePolicyWrapper fileRenamePolicy) {
+	public MultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, FileRenamePolicy fileRenamePolicy) {
 		super(request);
 		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding, fileRenamePolicy);
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String saveDirectory, FileRenamePolicyWrapper fileRenamePolicy) {
+	public MultipartRequest(HttpServletRequest request, String saveDirectory, FileRenamePolicy fileRenamePolicy) {
 		super(request);
 		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding, fileRenamePolicy);
 	}
 	
-	public MultipartRequest(HttpServletRequest request, FileRenamePolicyWrapper fileRenamePolicy) {
+	public MultipartRequest(HttpServletRequest request, FileRenamePolicy fileRenamePolicy) {
 		super(request);
 		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding, fileRenamePolicy);
 	}
@@ -108,9 +108,11 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 			if (null == fileRenamePolicy) {
 				fileRenamePolicy = new DefaultFileRenamePolicy();
 			}
+			
 			multipartRequest = new  com.oreilly.servlet.MultipartRequest(request, saveDirectory, maxPostSize, encoding, fileRenamePolicy);
 			
 			String saveDirectoryPath = saveDirectory;
+			// 使用了FileRenamePolicyWrapper，获取新的saveDirectory
 			if (fileRenamePolicy instanceof FileRenamePolicyWrapper){
 				saveDirectoryPath = ((FileRenamePolicyWrapper)fileRenamePolicy).getSaveDirectory();
 			}
