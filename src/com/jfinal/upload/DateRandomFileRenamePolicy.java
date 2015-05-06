@@ -8,7 +8,6 @@ import java.io.File;
 import com.jfinal.ext.kit.DateTimeKit;
 import com.jfinal.ext.kit.RandomKit;
 
-
 /**
  * @author 朱丛启 
  * May 5, 201511:14:13 PM
@@ -28,6 +27,7 @@ public class DateRandomFileRenamePolicy extends FileRenamePolicyWrapper {
 		if (!file.exists()) {
 			file.mkdirs();
 		}
+		this.setSaveDirectory(path);
 		return (new File(path,rename+ext));
 	}
 

@@ -16,6 +16,8 @@ public class RandomFileRenamePolicy extends FileRenamePolicyWrapper {
 
 	@Override
 	public File nameProcess(File f, String name, String ext) {
-		return (new File(f.getParent(),RandomKit.randomMD5Str()+ext));
+		String path = f.getParent();
+		this.setSaveDirectory(path);
+		return (new File(path,RandomKit.randomMD5Str()+ext));
 	}
 }

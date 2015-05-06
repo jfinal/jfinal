@@ -13,6 +13,8 @@ import com.oreilly.servlet.multipart.FileRenamePolicy;
  *
  */
 public abstract class FileRenamePolicyWrapper implements FileRenamePolicy {
+	
+	private String saveDirectory;
 
 	@Override
 	public File rename(File f) {
@@ -39,11 +41,19 @@ public abstract class FileRenamePolicyWrapper implements FileRenamePolicy {
 	 */
 	public abstract File nameProcess(File f, String name, String ext);
 
-	 protected boolean createNewFile(File f) {
+	protected boolean createNewFile(File f) {
 		try {
 			return f.createNewFile();
 		} catch (IOException ignored) {
 		}
 		return false;
+	}
+
+	public String getSaveDirectory() {
+		return saveDirectory;
+	}
+
+	public void setSaveDirectory(String saveDirectory) {
+		this.saveDirectory = saveDirectory;
 	}
 }
