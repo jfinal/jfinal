@@ -16,7 +16,11 @@
 
 package com.jfinal.core;
 
+import static com.jfinal.core.Const.I18N_LOCALE;
+
 import java.io.File;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.Date;
@@ -30,8 +34,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import static com.jfinal.core.Const.I18N_LOCALE;
 
 import com.jfinal.i18n.I18N;
 import com.jfinal.kit.StrKit;
@@ -69,6 +71,31 @@ public abstract class Controller {
 		this.urlPara = urlPara;
 	}
 	
+	public Controller() {
+		Field[] fields = this.getClass().getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			Field field = fields[i];
+			Class clazz = field.getType();
+			if (Service.class.isAssignableFrom(clazz) && clazz != Service.class) {
+				try {
+					 ((Field)accessible(field)).set(this, Service.getInstance(clazz, this));
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException();
+				}
+			}
+		}
+	}
+	
+	private static <T extends AccessibleObject> T accessible(T accessible) {
+		if (accessible == null) {
+			return null;
+		}
+		if (!accessible.isAccessible()) {
+			accessible.setAccessible(true);
+		}
+		return accessible;
+	}
+
 	public void setUrlPara(String urlPara) {
 		this.urlPara = urlPara;
 		this.urlParaArray = null;

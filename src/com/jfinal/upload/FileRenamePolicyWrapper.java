@@ -36,7 +36,7 @@ public abstract class FileRenamePolicyWrapper implements FileRenamePolicy {
 	 * 文件名字处理
 	 * @param f 文件
 	 * @param name 原名称
-	 * @param fileExt 文件扩展名
+	 * @param ext 文件扩展名
 	 * @return
 	 */
 	public abstract File nameProcess(File f, String name, String ext);
