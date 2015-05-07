@@ -19,15 +19,16 @@ package com.jfinal.core;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import com.jfinal.aop.Interceptor;
 import com.jfinal.config.Interceptors;
 import com.jfinal.config.Routes;
+import com.jfinal.plugin.activerecord.CaseInsensitiveContainerFactory.CaseInsensitiveMap;
 
 /**
  * ActionMapping
@@ -38,7 +39,9 @@ final class ActionMapping {
 	private Routes routes;
 	private Interceptors interceptors;
 	
-	private final Map<String, Action> mapping = new HashMap<String, Action>();
+	@SuppressWarnings("unchecked")
+	// 不区分大小写actionkey
+	private final Map<String, Action> mapping = new CaseInsensitiveMap();
 	
 	ActionMapping(Routes routes, Interceptors interceptors) {
 		this.routes = routes;
