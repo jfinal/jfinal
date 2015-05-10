@@ -19,12 +19,15 @@ package com.jfinal.core;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
+
 import com.jfinal.aop.Interceptor;
 
 /**
  * ActionReporter
  */
+@SuppressWarnings("unchecked")
 final class ActionReporter {
 	
 	private final static ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<SimpleDateFormat>() {

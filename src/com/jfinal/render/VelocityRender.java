@@ -22,7 +22,9 @@ import java.util.Map.Entry;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
+
 import javax.servlet.ServletContext;
+
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -73,6 +75,7 @@ public class VelocityRender extends Render {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void render() {
 		 if (notInit) {
 			 Velocity.init(properties);	// Velocity.init("velocity.properties");	// setup
@@ -89,7 +92,7 @@ public class VelocityRender extends Render {
             VelocityContext context = new VelocityContext();
             
     		// Map root = new HashMap();
-    		for (Enumeration<String> attrs=request.getAttributeNames(); attrs.hasMoreElements();) {
+    		for (Enumeration<String> attrs = request.getAttributeNames(); attrs.hasMoreElements();) {
     			String attrName = attrs.nextElement();
     			context.put(attrName, request.getAttribute(attrName));
     		}

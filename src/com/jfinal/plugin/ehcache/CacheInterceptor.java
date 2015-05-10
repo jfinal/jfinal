@@ -25,7 +25,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
 import javax.servlet.http.HttpServletRequest;
+
 import com.jfinal.aop.Interceptor;
 import com.jfinal.core.ActionInvocation;
 import com.jfinal.core.Controller;
@@ -93,10 +95,11 @@ public class CacheInterceptor implements Interceptor {
 		return sb.toString();
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void cacheAction(String cacheName, String cacheKey, Controller controller) {
 		HttpServletRequest request = controller.getRequest();
 		Map<String, Object> cacheData = new HashMap<String, Object>();
-		for (Enumeration<String> names=request.getAttributeNames(); names.hasMoreElements();) {
+		for (Enumeration<String> names = request.getAttributeNames(); names.hasMoreElements();) {
 			String name = names.nextElement();
 			cacheData.put(name, request.getAttribute(name));
 		}
