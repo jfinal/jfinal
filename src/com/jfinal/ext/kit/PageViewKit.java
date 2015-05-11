@@ -171,9 +171,6 @@ public class PageViewKit {
 		if (!dir.endsWith("/")) {
 			dir = dir + "/";
 		}
-		if (!viewPath.startsWith("/")) {
-			viewPath = "/" + viewPath;
-		}
 		if (!viewPath.endsWith("/")) {
 			viewPath = viewPath + "/";
 		}
