@@ -17,12 +17,14 @@
 package com.jfinal.core;
 
 import java.util.List;
+
 import com.jfinal.config.Constants;
 import com.jfinal.config.JFinalConfig;
 import com.jfinal.config.Routes;
 import com.jfinal.config.Plugins;
 import com.jfinal.config.Handlers;
 import com.jfinal.config.Interceptors;
+import com.jfinal.ext.interceptor.NotFoundActionInterceptor;
 import com.jfinal.log.Logger;
 import com.jfinal.plugin.IPlugin;
 
@@ -63,6 +65,8 @@ class Config {
 	}
 	
 	public static final Interceptors getInterceptors() {
+		//添加 NotfoundActionInterceptor
+		interceptors.add(new NotFoundActionInterceptor());
 		return interceptors;
 	}
 	

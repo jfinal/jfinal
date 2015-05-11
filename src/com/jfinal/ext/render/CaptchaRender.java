@@ -32,7 +32,7 @@ import com.jfinal.render.Render;
 
 public class CaptchaRender extends Render {
 	
-	private static final int WIDTH = 85, HEIGHT = 20;
+	private static int WIDTH = 85, HEIGHT = 20;
 	private static final String[] strArr = {"3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"};
 	
 	private String randomCodeKey;
@@ -40,6 +40,14 @@ public class CaptchaRender extends Render {
 	public CaptchaRender(String randomCodeKey) {
 		if (StrKit.isBlank(randomCodeKey))
 			throw new IllegalArgumentException("randomCodeKey can not be blank");
+		this.randomCodeKey = randomCodeKey;
+	}
+	
+	public CaptchaRender(String randomCodeKey, int width, int height) {
+		if (StrKit.isBlank(randomCodeKey))
+			throw new IllegalArgumentException("randomCodeKey can not be blank");
+		CaptchaRender.WIDTH = width;
+		CaptchaRender.HEIGHT = height;
 		this.randomCodeKey = randomCodeKey;
 	}
 	
