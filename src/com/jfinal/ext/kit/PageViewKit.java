@@ -169,13 +169,13 @@ public class PageViewKit {
 	 */
 	public static String getPageView(String dir, String viewPath, String pageName, String fileExtension){
 		if (!dir.endsWith("/")) {
-			dir += "/";
+			dir = dir + "/";
 		}
 		if (!viewPath.startsWith("/")) {
-			viewPath += "/";
+			viewPath = "/" + viewPath;
 		}
 		if (!viewPath.endsWith("/")) {
-			viewPath += "/";
+			viewPath = viewPath + "/";
 		}
 		return dir+viewPath+pageName+fileExtension;
 	}
