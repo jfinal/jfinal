@@ -106,7 +106,7 @@ public class CaptchaRender extends Render {
 			// 将认证码显示到图象中
 			g.setColor(new Color(20 + random.nextInt(110), 20 + random.nextInt(110), 20 + random.nextInt(110)));
 			// 调用函数出来的颜色相同，可能是因为种子太接近，所以只能直接生成
-			g.drawString(rand, 13 * i + 6, 16);
+			g.drawString(rand, 13 * i + 6, HEIGHT*2/3);
 		}
 
 		// 图象生效
