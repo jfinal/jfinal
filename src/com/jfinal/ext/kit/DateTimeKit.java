@@ -395,4 +395,22 @@ public class DateTimeKit {
 		cal.add(Calendar.DATE, -dayOfWeek() + 7);
 		return cal.getTimeInMillis();
 	}
+	
+	/**
+	 * 获取day天之后的UnixTime
+	 * @param day
+	 * @return
+	 */
+	public static Long getUnixTimeAfterDay(int day) {
+      	return day*24*60*60L + System.currentTimeMillis()/1000;
+	}
+	
+	/**
+	 * 获取day天之前的UnixTime
+	 * @param day
+	 * @return
+	 */
+	public static Long getUnixTimeBeforeDay(int day) {
+      	return System.currentTimeMillis()/1000 - day*24*60*60L;
+	}
 }
