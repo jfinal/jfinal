@@ -103,6 +103,8 @@ public class DDLKit {
 		private String columnType = null;
 		// 列大小
 		private int columnSize = 10;
+		// 默认值
+		private StringBuilder defaultValue = new StringBuilder();
 		// 列注释
 		private String comment = null;
 		// 是否primarykey
@@ -110,8 +112,19 @@ public class DDLKit {
 		// 是否uniquekey
 		private boolean uniqueKey = false;
 		
+		/**
+		 * 初始化Column
+		 * @param columnName 列名
+		 * @param columnType 列类型
+		 * @param comment 列注释
+		 * @param columnSize 列大小
+		 * @param defaultValue 默认值
+		 * @param primaryKey 是否为primary key
+		 * @param uniqueKey 是否为unique key
+		 */
 		public Column(String columnName, String columnType, String comment,
-				int columnSize, boolean primaryKey, boolean uniqueKey){
+				int columnSize, String defaultValue, 
+				boolean primaryKey, boolean uniqueKey){
 			if (!columnName.startsWith("`")) {
 				columnName = "`" + columnName;
 			}
@@ -120,6 +133,15 @@ public class DDLKit {
 			}
 			this.columnName = columnName;
 			this.columnType = columnType;
+			
+			
+			
+			if (null == defaultValue) {
+				this.defaultValue.append("DEFAULT NULL");
+			}else{
+				String value = "".equals(defaultValue)?"''":"'"+defaultValue+"'";
+				this.defaultValue.append("NOT NULL DEFAULT ").append(value);
+			}
 			
 			if (!comment.startsWith("`")) {
 				comment = "'" + comment;
@@ -140,8 +162,8 @@ public class DDLKit {
 		 * @param columnSize 列的大小
 		 * @return
 		 */
-		public Column primaryKeyColumn(String columnName, String columnType, String comment, int columnSize){
-			return (new Column(columnName, columnType, comment, columnSize, true, false));
+		public Column primaryKeyColumn(String columnName, String columnType, String comment, int columnSize, String defalutValue){
+			return (new Column(columnName, columnType, comment, columnSize, defalutValue, true, false));
 		}
 		
 		/**
@@ -151,8 +173,8 @@ public class DDLKit {
 		 * @param columnSize 列的大小
 		 * @return
 		 */
-		public Column uniqueKeyColumn(String columnName, String columnType, String comment, int columnSize){
-			return (new Column(columnName, columnType, comment, columnSize, false, true));
+		public Column uniqueKeyColumn(String columnName, String columnType, String comment, int columnSize, String defalutValue){
+			return (new Column(columnName, columnType, comment, columnSize, defalutValue, false, true));
 		}
 
 		/**
@@ -162,8 +184,8 @@ public class DDLKit {
 		public String ddl(){
 			return new StringBuilder()
 					.append(this.columnName).append(" ").append(this.columnType)
-					.append("(").append(this.columnSize).append(") NOT NULL COMMENT ")
-					.append(this.comment).toString();
+					.append("(").append(this.columnSize).append(") ").append(this.defaultValue)
+					.append(" COMMENT ").append(this.comment).toString();
 		}
 	}
 	
