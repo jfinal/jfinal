@@ -32,14 +32,29 @@ import com.jfinal.render.Render;
 
 public class CaptchaRender extends Render {
 	
-	private static final int WIDTH = 85, HEIGHT = 20;
+	private static int WIDTH = 85, HEIGHT = 20, FONTSIZE = 18;
 	private static final String[] strArr = {"3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"};
 	
 	private String randomCodeKey;
 	
 	public CaptchaRender(String randomCodeKey) {
+		this(randomCodeKey, CaptchaRender.FONTSIZE);
+	}
+	
+	public CaptchaRender(String randomCodeKey, int fontSize) {
+		this(randomCodeKey, CaptchaRender.WIDTH, CaptchaRender.HEIGHT, fontSize);
+	}
+	
+	public CaptchaRender(String randomCodeKey, int width, int height) {
+		this(randomCodeKey, width, height, CaptchaRender.FONTSIZE);
+	}
+	
+	public CaptchaRender(String randomCodeKey, int width, int height,int fontSize) {
 		if (StrKit.isBlank(randomCodeKey))
 			throw new IllegalArgumentException("randomCodeKey can not be blank");
+		CaptchaRender.WIDTH = width;
+		CaptchaRender.HEIGHT = height;
+		CaptchaRender.FONTSIZE = fontSize;
 		this.randomCodeKey = randomCodeKey;
 	}
 	
@@ -78,7 +93,7 @@ public class CaptchaRender extends Render {
 		g.setColor(getRandColor(200, 250));
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		// 设定字体
-		g.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+		g.setFont(new Font("Times New Roman", Font.PLAIN, FONTSIZE));
 
 		// 随机产生155条干扰线，使图象中的认证码不易被其它程序探测到
 		g.setColor(getRandColor(160, 200));
@@ -98,7 +113,7 @@ public class CaptchaRender extends Render {
 			// 将认证码显示到图象中
 			g.setColor(new Color(20 + random.nextInt(110), 20 + random.nextInt(110), 20 + random.nextInt(110)));
 			// 调用函数出来的颜色相同，可能是因为种子太接近，所以只能直接生成
-			g.drawString(rand, 13 * i + 6, 16);
+			g.drawString(rand, 13 * i + 6, HEIGHT*2/3);
 		}
 
 		// 图象生效

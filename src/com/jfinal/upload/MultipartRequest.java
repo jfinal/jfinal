@@ -23,9 +23,12 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
+import com.oreilly.servlet.multipart.FileRenamePolicy;
 
 /**
  * MultipartRequest.
@@ -37,7 +40,6 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 	private static int maxPostSize;
 	private static String encoding;
 	private static boolean isMultipartSupported = false;
-	private static final DefaultFileRenamePolicy fileRenamePolicy = new DefaultFileRenamePolicy();
 	
 	private List<UploadFile> uploadFiles;
 	private com.oreilly.servlet.MultipartRequest multipartRequest;
@@ -49,25 +51,26 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 		MultipartRequest.isMultipartSupported = true;	// 在OreillyCos.java中保障了, 只要被初始化就一定为 true
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, String encoding) {
+	public MultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, String encoding, FileRenamePolicy fileRenamePolicy) {
 		super(request);
-		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding);
+		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding,fileRenamePolicy);
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize) {
+	public MultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, FileRenamePolicy fileRenamePolicy) {
 		super(request);
-		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding);
+		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding, fileRenamePolicy);
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String saveDirectory) {
+	public MultipartRequest(HttpServletRequest request, String saveDirectory, FileRenamePolicy fileRenamePolicy) {
 		super(request);
-		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding);
+		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding, fileRenamePolicy);
 	}
 	
-	public MultipartRequest(HttpServletRequest request) {
+	public MultipartRequest(HttpServletRequest request, FileRenamePolicy fileRenamePolicy) {
 		super(request);
-		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding);
+		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding, fileRenamePolicy);
 	}
+	
 	
 	/**
 	 * 添加对相对路径的支持
@@ -81,7 +84,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 			return MultipartRequest.saveDirectory + saveDirectory;
 	}
 	
-	private void wrapMultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, String encoding) {
+	private void wrapMultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, String encoding, FileRenamePolicy fileRenamePolicy) {
 		if (! isMultipartSupported)
 			throw new RuntimeException("Oreilly cos.jar is not found, Multipart post can not be supported.");
 		
@@ -102,7 +105,18 @@ public class MultipartRequest extends HttpServletRequestWrapper {
         uploadFiles = new ArrayList<UploadFile>();
 		
 		try {
+			if (null == fileRenamePolicy) {
+				fileRenamePolicy = new DefaultFileRenamePolicy();
+			}
+			
 			multipartRequest = new  com.oreilly.servlet.MultipartRequest(request, saveDirectory, maxPostSize, encoding, fileRenamePolicy);
+			
+			String saveDirectoryPath = saveDirectory;
+			// 使用了FileRenamePolicyWrapper，获取新的saveDirectory
+			if (fileRenamePolicy instanceof FileRenamePolicyWrapper){
+				saveDirectoryPath = ((FileRenamePolicyWrapper)fileRenamePolicy).getSaveDirectory();
+			}
+			
 			Enumeration files = multipartRequest.getFileNames();
 			while (files.hasMoreElements()) {
 				String name = (String)files.nextElement();
@@ -112,7 +126,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 				if (filesystemName != null) {
 					String originalFileName = multipartRequest.getOriginalFileName(name);
 					String contentType = multipartRequest.getContentType(name);
-					UploadFile uploadFile = new UploadFile(name, saveDirectory, filesystemName, originalFileName, contentType);
+					UploadFile uploadFile = new UploadFile(name, saveDirectoryPath, filesystemName, originalFileName, contentType);
 					if (isSafeFile(uploadFile))
 						uploadFiles.add(uploadFile);
 				}

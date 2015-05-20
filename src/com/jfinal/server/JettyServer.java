@@ -20,12 +20,14 @@ import java.io.File;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
+
 import com.jfinal.core.Const;
 import com.jfinal.kit.FileKit;
 import com.jfinal.kit.PathKit;
@@ -127,10 +129,10 @@ class JettyServer implements IServer {
 		return;
 	}
 	
-	@SuppressWarnings("resource")
 	private void changeClassLoader(WebAppContext webApp) {
 		try {
 			String classPath = getClassPath();
+			@SuppressWarnings("resource")
 			JFinalClassLoader wacl = new JFinalClassLoader(webApp, classPath);
 			wacl.addClassPath(classPath);
 		} catch (IOException e) {

@@ -16,7 +16,12 @@
 
 package com.jfinal.core;
 
+import static com.jfinal.core.Const.I18N_LOCALE;
+
 import java.io.File;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Field;
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Enumeration;
@@ -24,11 +29,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import static com.jfinal.core.Const.I18N_LOCALE;
+
 import com.jfinal.i18n.I18N;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.ContentType;
@@ -36,6 +42,8 @@ import com.jfinal.render.Render;
 import com.jfinal.render.RenderFactory;
 import com.jfinal.upload.MultipartRequest;
 import com.jfinal.upload.UploadFile;
+import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
+import com.oreilly.servlet.multipart.FileRenamePolicy;
 
 /**
  * Controller
@@ -55,6 +63,7 @@ public abstract class Controller {
 	
 	private static final String[] NULL_URL_PARA_ARRAY = new String[0];
 	private static final String URL_PARA_SEPARATOR = Config.getConstants().getUrlParaSeparator();
+	private static final FileRenamePolicy fileRenamePolicy = new DefaultFileRenamePolicy();
 	
 	void init(HttpServletRequest request, HttpServletResponse response, String urlPara) {
 		this.request = request;
@@ -62,6 +71,31 @@ public abstract class Controller {
 		this.urlPara = urlPara;
 	}
 	
+	public Controller() {
+		Field[] fields = this.getClass().getDeclaredFields();
+		for (int i = 0; i < fields.length; i++) {
+			Field field = fields[i];
+			Class clazz = field.getType();
+			if (Service.class.isAssignableFrom(clazz) && clazz != Service.class) {
+				try {
+					 ((Field)accessible(field)).set(this, Service.getInstance(clazz, this));
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException();
+				}
+			}
+		}
+	}
+	
+	private static <T extends AccessibleObject> T accessible(T accessible) {
+		if (accessible == null) {
+			return null;
+		}
+		if (!accessible.isAccessible()) {
+			accessible.setAccessible(true);
+		}
+		return accessible;
+	}
+
 	public void setUrlPara(String urlPara) {
 		this.urlPara = urlPara;
 		this.urlParaArray = null;
@@ -237,6 +271,30 @@ public abstract class Controller {
 		if (value.startsWith("N") || value.startsWith("n"))
 			return -Long.parseLong(value.substring(1));
 		return Long.parseLong(value);
+	}
+	
+	/**
+	 * Returns the value of a request parameter and convert to BigInteger.
+	 * @param name a String specifying the name of the parameter
+	 * @return a BigInteger representing the single value of the parameter
+	 */
+	public BigInteger getParaToBigInteger(String name){
+		return this.toBigInteger(getPara(name), null);
+	}
+	
+	/**
+	 * Returns the value of a request parameter and convert to BigInteger with a default value if it is null.
+	 * @param name a String specifying the name of the parameter
+	 * @return a BigInteger representing the single value of the parameter
+	 */
+	public BigInteger getParaToBigInteger(String name,BigInteger defaultValue){
+		return this.toBigInteger(getPara(name), defaultValue);
+	}
+	
+	private BigInteger toBigInteger(String value, BigInteger defaultValue) {
+		if (value == null || "".equals(value.trim()))
+			return defaultValue;
+		return (new BigInteger(value));
 	}
 	
 	/**
@@ -641,51 +699,87 @@ public abstract class Controller {
 	 * Get upload file from multipart request.
 	 */
 	public List<UploadFile> getFiles(String saveDirectory, Integer maxPostSize, String encoding) {
+		return getFiles(saveDirectory, maxPostSize, encoding, fileRenamePolicy);
+	}
+	
+	public List<UploadFile> getFiles(String saveDirectory, Integer maxPostSize, String encoding, FileRenamePolicy fileRenamePolicy) {
 		if (request instanceof MultipartRequest == false)
-			request = new MultipartRequest(request, saveDirectory, maxPostSize, encoding);
+			request = new MultipartRequest(request, saveDirectory, maxPostSize, encoding, fileRenamePolicy);
 		return ((MultipartRequest)request).getFiles();
 	}
 	
 	public UploadFile getFile(String parameterName, String saveDirectory, Integer maxPostSize, String encoding) {
-		getFiles(saveDirectory, maxPostSize, encoding);
-		return getFile(parameterName);
+		return getFile(parameterName, saveDirectory, maxPostSize, encoding, fileRenamePolicy);
+	}
+	
+	public UploadFile getFile(String parameterName, String saveDirectory, Integer maxPostSize, String encoding, FileRenamePolicy fileRenamePolicy) {
+		getFiles(saveDirectory, maxPostSize, encoding, fileRenamePolicy);
+		return getFile(parameterName,fileRenamePolicy);
 	}
 	
 	public List<UploadFile> getFiles(String saveDirectory, int maxPostSize) {
+		return getFiles(saveDirectory, maxPostSize, fileRenamePolicy);
+	}
+	
+	public List<UploadFile> getFiles(String saveDirectory, int maxPostSize, FileRenamePolicy fileRenamePolicy) {
 		if (request instanceof MultipartRequest == false)
-			request = new MultipartRequest(request, saveDirectory, maxPostSize);
+			request = new MultipartRequest(request, saveDirectory, maxPostSize, fileRenamePolicy);
 		return ((MultipartRequest)request).getFiles();
 	}
 	
 	public UploadFile getFile(String parameterName, String saveDirectory, int maxPostSize) {
-		getFiles(saveDirectory, maxPostSize);
-		return getFile(parameterName);
+		return getFile(parameterName, saveDirectory, maxPostSize, fileRenamePolicy);
+	}
+	
+	public UploadFile getFile(String parameterName, String saveDirectory, int maxPostSize, FileRenamePolicy fileRenamePolicy) {
+		getFiles(saveDirectory, maxPostSize, fileRenamePolicy);
+		return getFile(parameterName, fileRenamePolicy);
 	}
 	
 	public List<UploadFile> getFiles(String saveDirectory) {
+		return getFiles(saveDirectory, fileRenamePolicy);
+	}
+	
+	public List<UploadFile> getFiles(String saveDirectory, FileRenamePolicy fileRenamePolicy) {
 		if (request instanceof MultipartRequest == false)
-			request = new MultipartRequest(request, saveDirectory);
+			request = new MultipartRequest(request, saveDirectory, fileRenamePolicy);
 		return ((MultipartRequest)request).getFiles();
 	}
 	
 	public UploadFile getFile(String parameterName, String saveDirectory) {
-		getFiles(saveDirectory);
-		return getFile(parameterName);
+		return getFile(parameterName, saveDirectory, fileRenamePolicy);
+	}
+	
+	public UploadFile getFile(String parameterName, String saveDirectory, FileRenamePolicy fileRenamePolicy) {
+		getFiles(saveDirectory, fileRenamePolicy);
+		return getFile(parameterName, fileRenamePolicy);
 	}
 	
 	public List<UploadFile> getFiles() {
+		return getFiles(fileRenamePolicy);
+	}
+	
+	public List<UploadFile> getFiles(FileRenamePolicy fileRenamePolicy) {
 		if (request instanceof MultipartRequest == false)
-			request = new MultipartRequest(request);
+			request = new MultipartRequest(request,fileRenamePolicy);
 		return ((MultipartRequest)request).getFiles();
 	}
 	
 	public UploadFile getFile() {
-		List<UploadFile> uploadFiles = getFiles();
+		return getFile(fileRenamePolicy);
+	}
+	
+	public UploadFile getFile(FileRenamePolicy fileRenamePolicy) {
+		List<UploadFile> uploadFiles = getFiles(fileRenamePolicy);
 		return uploadFiles.size() > 0 ? uploadFiles.get(0) : null;
 	}
 	
 	public UploadFile getFile(String parameterName) {
-		List<UploadFile> uploadFiles = getFiles();
+		return getFile(parameterName, fileRenamePolicy);
+	}
+	
+	public UploadFile getFile(String parameterName, FileRenamePolicy fileRenamePolicy) {
+		List<UploadFile> uploadFiles = getFiles(fileRenamePolicy);
 		for (UploadFile uploadFile : uploadFiles) {
 			if (uploadFile.getParameterName().equals(parameterName)) {
 				return uploadFile;

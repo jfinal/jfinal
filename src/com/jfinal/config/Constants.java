@@ -142,6 +142,7 @@ final public class Constants {
 		this.freeMarkerViewExtension = freeMarkerViewExtension.startsWith(".") ? freeMarkerViewExtension : "." + freeMarkerViewExtension;
 	}
 	
+	
 	public String getVelocityViewExtension() {
 		return velocityViewExtension;
 	}
