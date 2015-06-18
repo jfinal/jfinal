@@ -19,7 +19,7 @@ package com.jfinal.plugin.activerecord.tx;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 import com.jfinal.aop.Interceptor;
-import com.jfinal.core.ActionInvocation;
+import com.jfinal.aop.Invocation;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.DbKit;
@@ -28,6 +28,8 @@ import com.jfinal.plugin.activerecord.IAtom;
 
 /**
  * TxByRegex.
+ * For controller interception, the regular expression matching the controller key,
+ * otherwise matching the method name of the method
  */
 public class TxByRegex implements Interceptor {
 	
@@ -44,24 +46,23 @@ public class TxByRegex implements Interceptor {
 		pattern = caseSensitive ? Pattern.compile(regex) : Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 	}
 	
-	public void intercept(final ActionInvocation ai) {
-		Config config = Tx.getConfigWithTxConfig(ai);
+	public void intercept(final Invocation inv) {
+		Config config = Tx.getConfigWithTxConfig(inv);
 		if (config == null)
 			config = DbKit.getConfig();
 		
-		if (pattern.matcher(ai.getActionKey()).matches()) {
+		String target = inv.isActionInvocation() ? inv.getActionKey() : inv.getMethodName();
+		if (pattern.matcher(target).matches()) {
 			DbPro.use(config.getName()).tx(new IAtom(){
 				public boolean run() throws SQLException {
-					ai.invoke();
+					inv.invoke();
 					return true;
 				}});
 		}
 		else {
-			ai.invoke();
+			inv.invoke();
 		}
 	}
 }
-
-
 
 

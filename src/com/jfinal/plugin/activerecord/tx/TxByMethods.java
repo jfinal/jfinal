@@ -20,20 +20,20 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import com.jfinal.aop.Interceptor;
-import com.jfinal.core.ActionInvocation;
+import com.jfinal.aop.Invocation;
 import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.DbKit;
 import com.jfinal.plugin.activerecord.DbPro;
 import com.jfinal.plugin.activerecord.IAtom;
 
 /**
- * TxByActionMethods
+ * TxByMethods
  */
-public class TxByActionMethods implements Interceptor {
+public class TxByMethods implements Interceptor {
 	
 	private Set<String> actionMethodSet = new HashSet<String>();
 	
-	public TxByActionMethods(String... actionMethods) {
+	public TxByMethods(String... actionMethods) {
 		if (actionMethods == null || actionMethods.length == 0)
 			throw new IllegalArgumentException("actionMethods can not be blank.");
 		
@@ -41,20 +41,20 @@ public class TxByActionMethods implements Interceptor {
 			actionMethodSet.add(actionMethod.trim());
 	}
 	
-	public void intercept(final ActionInvocation ai) {
-		Config config = Tx.getConfigWithTxConfig(ai);
+	public void intercept(final Invocation inv) {
+		Config config = Tx.getConfigWithTxConfig(inv);
 		if (config == null)
 			config = DbKit.getConfig();
 		
-		if (actionMethodSet.contains(ai.getMethodName())) {
+		if (actionMethodSet.contains(inv.getMethodName())) {
 			DbPro.use(config.getName()).tx(new IAtom(){
 				public boolean run() throws SQLException {
-					ai.invoke();
+					inv.invoke();
 					return true;
 				}});
 		}
 		else {
-			ai.invoke();
+			inv.invoke();
 		}
 	}
 }

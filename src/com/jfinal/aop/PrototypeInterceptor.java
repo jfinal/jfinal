@@ -16,16 +16,14 @@
 
 package com.jfinal.aop;
 
-import com.jfinal.core.ActionInvocation;
-
 /**
  * PrototypeInterceptor.
  */
 public abstract class PrototypeInterceptor implements Interceptor {
 	
-	final public void intercept(ActionInvocation ai) {
+	final public void intercept(Invocation inv) {
 		try {
-			getClass().newInstance().doIntercept(ai);
+			getClass().newInstance().doIntercept(inv);
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
@@ -33,5 +31,5 @@ public abstract class PrototypeInterceptor implements Interceptor {
 		}
 	}
 	
-	abstract public void doIntercept(ActionInvocation ai);
+	abstract public void doIntercept(Invocation inv);
 }

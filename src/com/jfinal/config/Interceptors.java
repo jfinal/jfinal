@@ -18,23 +18,49 @@ package com.jfinal.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.jfinal.aop.InterceptorBuilder;
 import com.jfinal.aop.Interceptor;
 
 /**
- * The interceptors applied to all actions.
+ * The Interceptors is used to config global action interceptors and global service interceptors.
  */
 final public class Interceptors {
 	
-	private final List<Interceptor> interceptorList = new ArrayList<Interceptor>();
+	private final List<Interceptor> globalActionInterceptor = new ArrayList<Interceptor>();
 	
-	public Interceptors add(Interceptor globalInterceptor) {
-		if (globalInterceptor != null)
-			this.interceptorList.add(globalInterceptor);
+	/**
+	 * The same as addGlobalActionInterceptor. It is used to compatible with earlier version of jfinal
+	 */
+	public Interceptors add(Interceptor globalActionInterceptor) {
+		if (globalActionInterceptor != null)
+			this.globalActionInterceptor.add(globalActionInterceptor);
 		return this;
 	}
 	
-	public Interceptor[] getInterceptorArray() {
-		Interceptor[] result = interceptorList.toArray(new Interceptor[interceptorList.size()]);
-		return result == null ? new Interceptor[0] : result;
+	/**
+	 * Add the global action interceptor to intercept all the actions.
+	 */
+	public void addGlobalActionInterceptor(Interceptor globalActionInterceptor) {
+		if (globalActionInterceptor != null)
+			this.globalActionInterceptor.add(globalActionInterceptor);
+	}
+	
+	/**
+	 * Add the global service interceptor to intercept all the method enhanced by aop Enhancer.
+	 */
+	public void addGlobalServiceInterceptor(Interceptor globalServiceInterceptor) {
+		if (globalServiceInterceptor != null)
+			InterceptorBuilder.addGlobalServiceInterceptor(globalServiceInterceptor);
+	}
+	
+	public Interceptor[] getGlobalActionInterceptor() {
+		return globalActionInterceptor.toArray(new Interceptor[globalActionInterceptor.size()]);
 	}
 }
+
+
+
+
+
+
+

@@ -26,6 +26,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
+import com.oreilly.servlet.multipart.FileRenamePolicy;
 
 /**
  * MultipartRequest.
@@ -36,8 +37,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 	private static String saveDirectory;
 	private static int maxPostSize;
 	private static String encoding;
-	private static boolean isMultipartSupported = false;
-	private static final DefaultFileRenamePolicy fileRenamePolicy = new DefaultFileRenamePolicy();
+	static FileRenamePolicy fileRenamePolicy = new DefaultFileRenamePolicy();
 	
 	private List<UploadFile> uploadFiles;
 	private com.oreilly.servlet.MultipartRequest multipartRequest;
@@ -46,7 +46,6 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 		MultipartRequest.saveDirectory = saveDirectory;
 		MultipartRequest.maxPostSize = maxPostSize;
 		MultipartRequest.encoding = encoding;
-		MultipartRequest.isMultipartSupported = true;	// 在OreillyCos.java中保障了, 只要被初始化就一定为 true
 	}
 	
 	public MultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, String encoding) {
@@ -82,9 +81,6 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 	}
 	
 	private void wrapMultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, String encoding) {
-		if (! isMultipartSupported)
-			throw new RuntimeException("Oreilly cos.jar is not found, Multipart post can not be supported.");
-		
 		saveDirectory = handleSaveDirectory(saveDirectory);
 		
 		File dir = new File(saveDirectory);
@@ -123,7 +119,8 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 	}
 	
 	private boolean isSafeFile(UploadFile uploadFile) {
-		if (uploadFile.getFileName().toLowerCase().endsWith(".jsp")) {
+		String fileName = uploadFile.getFileName().trim().toLowerCase();
+		if (fileName.endsWith(".jsp") || fileName.endsWith(".jspx")) {
 			uploadFile.getFile().delete();
 			return false;
 		}

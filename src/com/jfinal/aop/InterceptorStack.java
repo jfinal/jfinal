@@ -18,7 +18,6 @@ package com.jfinal.aop;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.jfinal.core.ActionInvocation;
 
 /**
  * InterceptorStack.
@@ -52,8 +51,8 @@ public abstract class InterceptorStack implements Interceptor {
 		return this;
 	}
 	
-	public final void intercept(ActionInvocation ai) {
-		new ActionInvocationWrapper(ai, inters).invoke();
+	public final void intercept(Invocation inv) {
+		new InvocationWrapper(inv, inters).invoke();
 	}
 	
 	public abstract void config();

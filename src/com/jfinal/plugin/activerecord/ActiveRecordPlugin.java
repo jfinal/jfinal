@@ -168,12 +168,10 @@ public class ActiveRecordPlugin implements IPlugin {
 			config = new Config(configName, dataSource, dialect, showSql, devMode, transactionLevel, containerFactory, cache);
 		DbKit.addConfig(config);
 		
-		boolean succeed = TableBuilder.build(tableList, config);
-		if (succeed) {
-			Db.init();
-			isStarted = true;
-		}
-		return succeed;
+		TableBuilder.build(tableList, config);
+		Db.init();
+		isStarted = true;
+		return true;
 	}
 	
 	public boolean stop() {

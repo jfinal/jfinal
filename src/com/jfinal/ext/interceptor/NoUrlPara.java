@@ -17,17 +17,17 @@
 package com.jfinal.ext.interceptor;
 
 import com.jfinal.aop.Interceptor;
-import com.jfinal.core.ActionInvocation;
+import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
 
 /**
- * Force action no urlPara, otherwise render error 404 to client.
+ * Force action no urlPara, otherwise render error 404.
  */
 public class NoUrlPara implements Interceptor {
-	public void intercept(ActionInvocation invocation) {
-		Controller controller = invocation.getController();
+	public void intercept(Invocation inv) {
+		Controller controller = inv.getController();
 		if (controller.getPara() == null)
-			invocation.invoke();
+			inv.invoke();
 		else
 			controller.renderError(404);
 	}

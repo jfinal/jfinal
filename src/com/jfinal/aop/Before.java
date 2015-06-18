@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Before is used to configure Interceptor or Validator.
+ * Before is used to configure Interceptor and Validator.
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
@@ -31,3 +31,5 @@ import java.lang.annotation.Target;
 public @interface Before {
 	Class<? extends Interceptor>[] value();
 }
+
+

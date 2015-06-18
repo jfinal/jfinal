@@ -40,7 +40,7 @@ import com.jfinal.plugin.activerecord.Record;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JsonKit {
 	
-	private static int convertDepth = 8;
+	private static int convertDepth = 15;
 	private static String timestampPattern = "yyyy-MM-dd HH:mm:ss";
 	private static String datePattern = "yyyy-MM-dd";
 	
@@ -299,13 +299,6 @@ public class JsonKit {
 		}
 		return mapToJson(map, depth);
 	}
-	
-	/**
-	 * TODO
-	public static Map jsonToMap(String jsonStr) {
-		throw new RuntimeException("not finished");
-	}
-	*/
 }
 
 
