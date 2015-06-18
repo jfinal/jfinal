@@ -18,9 +18,9 @@ package com.jfinal.config;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import com.jfinal.core.Const;
+import com.jfinal.i18n.I18n;
 import com.jfinal.kit.PathKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.log.ILoggerFactory;
@@ -46,7 +46,7 @@ final public class Constants {
 	private String jspViewExtension = Const.DEFAULT_JSP_EXTENSION;
 	private String freeMarkerViewExtension = Const.DEFAULT_FREE_MARKER_EXTENSION;
 	private String velocityViewExtension = Const.DEFAULT_VELOCITY_EXTENSION;
-	private Integer maxPostSize = Const.DEFAULT_MAX_POST_SIZE;
+	private int maxPostSize = Const.DEFAULT_MAX_POST_SIZE;
 	private int freeMarkerTemplateUpdateDelay = Const.DEFAULT_FREEMARKER_TEMPLATE_UPDATE_DELAY;	// just for not devMode
 	
 	private ITokenCache tokenCache;
@@ -224,58 +224,43 @@ final public class Constants {
 		if (StrKit.isBlank(uploadedFileSaveDirectory))
 			throw new IllegalArgumentException("uploadedFileSaveDirectory can not be blank");
 		
-		if (uploadedFileSaveDirectory.endsWith("/") || uploadedFileSaveDirectory.endsWith("\\"))
-			this.uploadedFileSaveDirectory = uploadedFileSaveDirectory;
-		else
-			this.uploadedFileSaveDirectory = uploadedFileSaveDirectory + File.separator;
+		this.uploadedFileSaveDirectory = uploadedFileSaveDirectory.trim();
 	}
 	
 	public String getUploadedFileSaveDirectory() {
 		return uploadedFileSaveDirectory;
 	}
 	
-	public Integer getMaxPostSize() {
+	public int getMaxPostSize() {
 		return maxPostSize;
 	}
 	
 	/**
 	 * Set max size of http post. The upload file size depend on this value.
 	 */
-	public void setMaxPostSize(Integer maxPostSize) {
-		if (maxPostSize != null && maxPostSize > 0) {
-			this.maxPostSize = maxPostSize;
-		}
+	public void setMaxPostSize(int maxPostSize) {
+		this.maxPostSize = maxPostSize;
 	}
 	
-	// i18n -----
-	private String i18nResourceBaseName;
-	
-	private Locale defaultLocale;
-	
-	private Integer i18nMaxAgeOfCookie;
-	
-	public void setI18n(String i18nResourceBaseName, Locale defaultLocale, Integer i18nMaxAgeOfCookie) {
-		this.i18nResourceBaseName = i18nResourceBaseName;
-		this.defaultLocale = defaultLocale;
-		this.i18nMaxAgeOfCookie = i18nMaxAgeOfCookie;
+	/**
+	 * Set default base name to load Resource bundle.
+	 * The default value is "i18n".<tr>
+	 * Example:
+	 * setI18nDefaultBaseName("i18n");
+	 */
+	public void setI18nDefaultBaseName(String defaultBaseName) {
+		I18n.setDefaultBaseName(defaultBaseName);
 	}
 	
-	public void setI18n(String i18nResourceBaseName) {
-		this.i18nResourceBaseName = i18nResourceBaseName;
+	/**
+	 * Set default locale to load Resource bundle.
+	 * The locale string like this: "zh_CN" "en_US".<br>
+	 * Example:
+	 * setI18nDefaultLocale("zh_CN");
+	 */
+	public void setI18nDefaultLocale(String defaultLocale) {
+		I18n.setDefaultLocale(defaultLocale);
 	}
-	
-	public String getI18nResourceBaseName() {
-		return i18nResourceBaseName;
-	}
-	
-	public Locale getI18nDefaultLocale() {
-		return defaultLocale;
-	}
-	
-	public Integer getI18nMaxAgeOfCookie() {
-		return this.i18nMaxAgeOfCookie;
-	}
-	// -----
 	
 	/**
 	 * FreeMarker template update delay for not devMode.
@@ -320,8 +305,6 @@ final public class Constants {
 		RenderFactory.setErrorRenderFactory(errorRenderFactory);
 	}
 }
-
-
 
 
 

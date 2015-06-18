@@ -21,15 +21,14 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import static com.jfinal.core.Const.I18N_LOCALE;
-import com.jfinal.i18n.I18N;
+import com.jfinal.aop.Enhancer;
+import com.jfinal.aop.Interceptor;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.ContentType;
 import com.jfinal.render.Render;
@@ -169,6 +168,16 @@ public abstract class Controller {
 		return result;
 	}
 	
+	public Long[] getParaValuesToLong(String name) {
+		String[] values = request.getParameterValues(name);
+		if (values == null)
+			return null;
+		Long[] result = new Long[values.length];
+		for (int i=0; i<result.length; i++)
+			result[i] = Long.parseLong(values[i]);
+		return result;
+	}
+	
 	/**
 	 * Returns an Enumeration containing the names of the attributes available to this request.
 	 * This method returns an empty Enumeration if the request has no attributes available to it. 
@@ -206,11 +215,17 @@ public abstract class Controller {
 	}
 	
 	private Integer toInt(String value, Integer defaultValue) {
-		if (value == null || "".equals(value.trim()))
-			return defaultValue;
-		if (value.startsWith("N") || value.startsWith("n"))
-			return -Integer.parseInt(value.substring(1));
-		return Integer.parseInt(value);
+		try {
+			if (value == null || "".equals(value.trim()))
+				return defaultValue;
+			value = value.trim();
+			if (value.startsWith("N") || value.startsWith("n"))
+				return -Integer.parseInt(value.substring(1));
+			return Integer.parseInt(value);
+		}
+		catch (Exception e) {
+			throw new ActionException(404, renderFactory.getErrorRender(404),  "Can not parse the parameter \"" + value + "\" to Integer value.");
+		}
 	}
 	
 	/**
@@ -232,11 +247,17 @@ public abstract class Controller {
 	}
 	
 	private Long toLong(String value, Long defaultValue) {
-		if (value == null || "".equals(value.trim()))
-			return defaultValue;
-		if (value.startsWith("N") || value.startsWith("n"))
-			return -Long.parseLong(value.substring(1));
-		return Long.parseLong(value);
+		try {
+			if (value == null || "".equals(value.trim()))
+				return defaultValue;
+			value = value.trim();
+			if (value.startsWith("N") || value.startsWith("n"))
+				return -Long.parseLong(value.substring(1));
+			return Long.parseLong(value);
+		}
+		catch (Exception e) {
+			throw new ActionException(404, renderFactory.getErrorRender(404),  "Can not parse the parameter \"" + value + "\" to Long value.");
+		}
 	}
 	
 	/**
@@ -265,7 +286,7 @@ public abstract class Controller {
 			return Boolean.TRUE;
 		else if ("0".equals(value) || "false".equals(value))
 			return Boolean.FALSE;
-		throw new RuntimeException("Can not parse the parameter \"" + value + "\" to boolean value.");
+		throw new ActionException(404, renderFactory.getErrorRender(404), "Can not parse the parameter \"" + value + "\" to Boolean value.");
 	}
 	
 	/**
@@ -308,12 +329,12 @@ public abstract class Controller {
 	}
 	
 	private Date toDate(String value, Date defaultValue) {
-		if (value == null || "".equals(value.trim()))
-			return defaultValue;
 		try {
-			return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value);
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
+			if (value == null || "".equals(value.trim()))
+				return defaultValue;
+			return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value.trim());
+		} catch (Exception e) {
+			throw new ActionException(404, renderFactory.getErrorRender(404),  "Can not parse the parameter \"" + value + "\" to Date value.");
 		}
 	}
 	
@@ -694,40 +715,6 @@ public abstract class Controller {
 		return null;
 	}
 	
-	// i18n features --------
-	/**
-	 * Write Local to cookie
-	 */
-	public Controller setLocaleToCookie(Locale locale) {
-		setCookie(I18N_LOCALE, locale.toString(), I18N.getI18nMaxAgeOfCookie());
-		return this;
-	}
-	
-	public Controller setLocaleToCookie(Locale locale, int maxAge) {
-		setCookie(I18N_LOCALE, locale.toString(), maxAge);
-		return this;
-	}
-	
-	public String getText(String key) {
-		return I18N.getText(key, getLocaleFromCookie());
-	}
-	
-	public String getText(String key, String defaultValue) {
-		return I18N.getText(key, defaultValue, getLocaleFromCookie());
-	}
-	
-	private Locale getLocaleFromCookie() {
-		Cookie cookie = getCookieObject(I18N_LOCALE);
-		if (cookie != null) {
-			return I18N.localeFromString(cookie.getValue());
-		}
-		else {
-			Locale defaultLocale = I18N.getDefaultLocale();
-			setLocaleToCookie(defaultLocale);
-			return I18N.localeFromString(defaultLocale.toString());
-		}
-	}
-	
 	/**
 	 * Keep all parameter's value except model value
 	 */
@@ -1088,6 +1075,90 @@ public abstract class Controller {
 	 */
 	public void renderXml(String view) {
 		render = renderFactory.getXmlRender(view);
+	}
+	
+	public void checkUrlPara(int minLength, int maxLength) {
+		getPara(0);
+		if (urlParaArray.length < minLength || urlParaArray.length > maxLength)
+			renderError(404);
+	}
+	
+	public void checkUrlPara(int length) {
+		checkUrlPara(length, length);
+	}
+	
+	// ---------
+	
+	public <T> T enhance(Class<T> targetClass) {
+		return (T)Enhancer.enhance(targetClass);
+	}
+	
+	public <T> T enhance(Class<T> targetClass, Interceptor... injectInters) {
+		return (T)Enhancer.enhance(targetClass, injectInters);
+	}
+	
+	public <T> T enhance(Class<T> targetClass, Class<? extends Interceptor>... injectIntersClasses) {
+		return (T)Enhancer.enhance(targetClass, injectIntersClasses);
+	}
+	
+	public <T> T enhance(Class<T> targetClass, Class<? extends Interceptor> injectIntersClass) {
+		return (T)Enhancer.enhance(targetClass, injectIntersClass);
+	}
+	
+	public <T> T enhance(Class<T> targetClass, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2) {
+		return (T)Enhancer.enhance(targetClass, injectIntersClass1, injectIntersClass2);
+	}
+	
+	public <T> T enhance(Class<T> targetClass, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2, Class<? extends Interceptor> injectIntersClass3) {
+		return (T)Enhancer.enhance(targetClass, injectIntersClass1, injectIntersClass2, injectIntersClass3);
+	}
+	
+	public <T> T enhance(String singletonKey, Class<T> targetClass) {
+		return (T)Enhancer.enhance(singletonKey, targetClass);
+	}
+	
+	public <T> T enhance(String singletonKey, Class<T> targetClass, Interceptor... injectInters) {
+		return (T)Enhancer.enhance(singletonKey, targetClass, injectInters);
+	}
+	
+	public <T> T enhance(String singletonKey, Class<T> targetClass, Class<? extends Interceptor>... injectIntersClasses) {
+		return (T)Enhancer.enhance(singletonKey, targetClass, injectIntersClasses);
+	}
+	
+	public <T> T enhance(Object target) {
+		return (T)Enhancer.enhance(target);
+	}
+	
+	public <T> T enhance(Object target, Interceptor... injectInters) {
+		return (T)Enhancer.enhance(target, injectInters);
+	}
+	
+	public <T> T enhance(Object target, Class<? extends Interceptor>... injectIntersClasses) {
+		return (T)Enhancer.enhance(target, injectIntersClasses);
+	}
+	
+	public <T> T enhance(Object target, Class<? extends Interceptor> injectIntersClass) {
+		return (T)Enhancer.enhance(target, injectIntersClass);
+	}
+	
+	public <T> T enhance(Object target, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2) {
+		return (T)Enhancer.enhance(target, injectIntersClass1, injectIntersClass2);
+	}
+	
+	public <T> T enhance(Object target, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2, Class<? extends Interceptor> injectIntersClass3) {
+		return (T)Enhancer.enhance(target, injectIntersClass1, injectIntersClass2, injectIntersClass3);
+	}
+	
+	public <T> T enhance(String singletonKey, Object target) {
+		return (T)Enhancer.enhance(singletonKey, target);
+	}
+	
+	public <T> T enhance(String singletonKey, Object target, Interceptor... injectInters) {
+		return (T)Enhancer.enhance(singletonKey, target, injectInters);
+	}
+	
+	public <T> T enhance(String singletonKey, Object target, Class<? extends Interceptor>... injectIntersClasses) {
+		return (T)Enhancer.enhance(singletonKey, target, injectIntersClasses);
 	}
 }
 

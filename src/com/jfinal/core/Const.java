@@ -24,7 +24,7 @@ import com.jfinal.render.ViewType;
  */
 public interface Const {
 	
-	String JFINAL_VERSION = "1.9";
+	String JFINAL_VERSION = "2.0";
 	
 	ViewType DEFAULT_VIEW_TYPE = ViewType.FREE_MARKER;
 	
@@ -45,8 +45,6 @@ public interface Const {
 	
 	int DEFAULT_MAX_POST_SIZE = 1024 * 1024 * 10;  			// Default max post size of multipart request: 10 Meg
 	
-	String I18N_LOCALE = "__I18N_LOCALE__";					// The i18n name of cookie
-	
 	int DEFAULT_I18N_MAX_AGE_OF_COOKIE = 999999999;
 	
 	int DEFAULT_FREEMARKER_TEMPLATE_UPDATE_DELAY = 3600;	// For not devMode only
@@ -57,10 +55,4 @@ public interface Const {
 	
 	int MIN_SECONDS_OF_TOKEN_TIME_OUT = 300;				// 300 seconds ---> 5 minutes
 }
-
-
-
-
-
-
 

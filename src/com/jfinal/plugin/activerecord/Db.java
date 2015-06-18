@@ -252,8 +252,11 @@ public class Db {
 	}
 	
 	/**
-	 * Find record by id.
-	 * Example: Record user = Db.findById("user", 15);
+	 * Find record by id with default primary key.
+	 * <pre>
+	 * Example:
+	 * Record user = Db.findById("user", 15);
+	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param idValue the id value of the record
 	 */
@@ -262,67 +265,58 @@ public class Db {
 	}
 	
 	/**
-	 * Find record by id. Fetch the specific columns only.
-	 * Example: Record user = Db.findById("user", 15, "name, age");
-	 * @param tableName the table name of the table
-	 * @param idValue the id value of the record
-	 * @param columns the specific columns separate with comma character ==> ","
-	 */
-	public static Record findById(String tableName, Number idValue, String columns) {
-		return dbPro.findById(tableName, idValue, columns);
-	}
-	
-	/**
 	 * Find record by id.
-	 * Example: Record user = Db.findById("user", "user_id", 15);
+	 * <pre>
+	 * Example:
+	 * Record user = Db.findById("user", "user_id", 123);
+	 * Record userRole = Db.findById("user_role", "user_id, role_id", 123, 456);
+	 * </pre>
 	 * @param tableName the table name of the table
-	 * @param primaryKey the primary key of the table
-	 * @param idValue the id value of the record
+	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
+	 * @param idValue the id value of the record, it can be composite id values
 	 */
-	public static Record findById(String tableName, String primaryKey, Number idValue) {
+	public static Record findById(String tableName, String primaryKey, Object... idValue) {
 		return dbPro.findById(tableName, primaryKey, idValue);
 	}
 	
 	/**
-	 * Find record by id. Fetch the specific columns only.
-	 * Example: Record user = Db.findById("user", "user_id", 15, "name, age");
+	 * Delete record by id with default primary key.
+	 * <pre>
+	 * Example:
+	 * Db.deleteById("user", 15);
+	 * </pre>
 	 * @param tableName the table name of the table
-	 * @param primaryKey the primary key of the table
 	 * @param idValue the id value of the record
-	 * @param columns the specific columns separate with comma character ==> ","
+	 * @return true if delete succeed otherwise false
 	 */
-	public static Record findById(String tableName, String primaryKey, Object idValue, String columns) {
-		return dbPro.findById(tableName, primaryKey, idValue, columns);
+	public static boolean deleteById(String tableName, Object idValue) {
+		return dbPro.deleteById(tableName, idValue);
 	}
 	
 	/**
 	 * Delete record by id.
-	 * Example: boolean succeed = Db.deleteById("user", 15);
+	 * <pre>
+	 * Example:
+	 * Db.deleteById("user", "user_id", 15);
+	 * Db.deleteById("user_role", "user_id, role_id", 123, 456);
+	 * </pre>
 	 * @param tableName the table name of the table
-	 * @param id the id value of the record
+	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
+	 * @param idValue the id value of the record, it can be composite id values
 	 * @return true if delete succeed otherwise false
 	 */
-	public static boolean deleteById(String tableName, Object id) {
-		return dbPro.deleteById(tableName, id);
-	}
-	
-	/**
-	 * Delete record by id.
-	 * Example: boolean succeed = Db.deleteById("user", "user_id", 15);
-	 * @param tableName the table name of the table
-	 * @param primaryKey the primary key of the table
-	 * @param id the id value of the record
-	 * @return true if delete succeed otherwise false
-	 */
-	public static boolean deleteById(String tableName, String primaryKey, Object id) {
-		return dbPro.deleteById(tableName, primaryKey, id);
+	public static boolean deleteById(String tableName, String primaryKey, Object... idValue) {
+		return dbPro.deleteById(tableName, primaryKey, idValue);
 	}
 	
 	/**
 	 * Delete record.
-	 * Example: boolean succeed = Db.delete("user", "id", user);
+	 * <pre>
+	 * Example:
+	 * boolean succeed = Db.delete("user", "id", user);
+	 * </pre>
 	 * @param tableName the table name of the table
-	 * @param primaryKey the primary key of the table
+	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
 	 * @param record the record
 	 * @return true if delete succeed otherwise false
 	 */
@@ -331,7 +325,10 @@ public class Db {
 	}
 	
 	/**
-	 * Example: boolean succeed = Db.delete("user", user);
+	 * <pre>
+	 * Example:
+	 * boolean succeed = Db.delete("user", user);
+	 * </pre>
 	 * @see #delete(String, String, Record)
 	 */
 	public static boolean delete(String tableName, Record record) {
@@ -362,8 +359,13 @@ public class Db {
 	
 	/**
 	 * Save record.
+	 * <pre>
+	 * Example:
+	 * Record userRole = new Record().set("user_id", 123).set("role_id", 456);
+	 * Db.save("user_role", "user_id, role_id", userRole);
+	 * </pre>
 	 * @param tableName the table name of the table
-	 * @param primaryKey the primary key of the table
+	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
 	 * @param record the record will be saved
 	 * @param true if save succeed otherwise false
 	 */
@@ -384,8 +386,12 @@ public class Db {
 	
 	/**
 	 * Update Record.
+	 * <pre>
+	 * Example:
+	 * Db.update("user_role", "user_id, role_id", record);
+	 * </pre>
 	 * @param tableName the table name of the Record save to
-	 * @param primaryKey the primary key of the table
+	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
 	 * @param record the Record object
 	 * @param true if update succeed otherwise false
 	 */
@@ -394,7 +400,11 @@ public class Db {
 	}
 	
 	/**
-	 * Update Record. The primary key of the table is: "id".
+	 * Update record with default primary key.
+	 * <pre>
+	 * Example:
+	 * Db.update("user", record);
+	 * </pre>
 	 * @see #update(String, String, Record)
 	 */
 	public static boolean update(String tableName, Record record) {
@@ -456,6 +466,26 @@ public class Db {
 	 */
 	public static List<Record> findByCache(String cacheName, Object key, String sql) {
 		return dbPro.findByCache(cacheName, key, sql);
+	}
+	
+	/**
+	 * Find first record by cache. I recommend add "limit 1" in your sql.
+	 * @see #findFirst(String, Object...)
+	 * @param cacheName the cache name
+	 * @param key the key used to get date from cache
+	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
+	 * @param paras the parameters of sql
+	 * @return the Record object
+	 */
+	public static Record findFirstByCache(String cacheName, Object key, String sql, Object... paras) {
+		return dbPro.findFirstByCache(cacheName, key, sql, paras);
+	}
+	
+	/**
+	 * @see #findFirstByCache(String, Object, String, Object...)
+	 */
+	public static Record findFirstByCache(String cacheName, Object key, String sql) {
+		return dbPro.findFirstByCache(cacheName, key, sql);
 	}
 	
 	/**

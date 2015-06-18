@@ -19,11 +19,11 @@ package com.jfinal.ext.interceptor;
 import java.util.HashSet;
 import java.util.Set;
 import com.jfinal.aop.Interceptor;
-import com.jfinal.core.ActionInvocation;
+import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
 
 /**
- * ActionInvocation 中添加 Method method
+ * Invocation 中添加 Method method
  * 
 	The standard definition is as follows:
 	index - GET - A view of all (or a selection of) the records
@@ -63,22 +63,22 @@ public class Restful implements Interceptor {
 	 * PUT		/user/id		--->	update
 	 * DELECT	/user/id		--->	delete
 	 */
-	public void intercept(ActionInvocation ai) {
+	public void intercept(Invocation inv) {
 		// 阻止 JFinal 原有规则 action 请求
-		Controller controller = ai.getController();
+		Controller controller = inv.getController();
 		Boolean isRestfulForward = controller.getAttr(isRestfulForwardKey);
-		String methodName = ai.getMethodName();
+		String methodName = inv.getMethodName();
 		if (set.contains(methodName) && isRestfulForward== null) {
-			ai.getController().renderError(404);
+			inv.getController().renderError(404);
 			return ;
 		}
 		
 		if (isRestfulForward != null && isRestfulForward) {
-			ai.invoke();
+			inv.invoke();
 			return ;
 		}
 		
-		String controllerKey = ai.getControllerKey();
+		String controllerKey = inv.getControllerKey();
 		String method = controller.getRequest().getMethod().toUpperCase();
 		String urlPara = controller.getPara();
 		if ("GET".equals(method)) {
@@ -104,7 +104,7 @@ public class Restful implements Interceptor {
 			return ;
 		}
 		
-		ai.invoke();
+		inv.invoke();
 	}
 }
 

@@ -115,6 +115,9 @@ public class RenderFactory {
 		catch (ClassNotFoundException e) {
 			// System.out.println("Jsp or JSTL can not be supported!");
 		}
+		catch (IllegalStateException e) {
+			throw e;
+		}
 		catch (Exception e) {
 			
 		}

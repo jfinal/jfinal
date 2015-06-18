@@ -16,14 +16,12 @@
 
 package com.jfinal.core;
 
-import java.io.File;
 import java.util.List;
 import javax.servlet.ServletContext;
 import com.jfinal.config.Constants;
 import com.jfinal.config.JFinalConfig;
 import com.jfinal.handler.Handler;
 import com.jfinal.handler.HandlerFactory;
-import com.jfinal.i18n.I18N;
 import com.jfinal.kit.PathKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.render.RenderFactory;
@@ -71,7 +69,6 @@ public final class JFinal {
 		initHandler();
 		initRender();
 		initOreillyCos();
-		initI18n();
 		initTokenManager();
 		
 		return true;
@@ -83,32 +80,13 @@ public final class JFinal {
 			TokenManager.init(tokenCache);
 	}
 	
-	private void initI18n() {
-		String i18nResourceBaseName = constants.getI18nResourceBaseName();
-		if (i18nResourceBaseName != null) {
-			I18N.init(i18nResourceBaseName, constants.getI18nDefaultLocale(), constants.getI18nMaxAgeOfCookie());
-		}
-	}
-	
 	private void initHandler() {
 		Handler actionHandler = new ActionHandler(actionMapping, constants);
 		handler = HandlerFactory.getHandler(Config.getHandlers().getHandlerList(), actionHandler);
 	}
 	
 	private void initOreillyCos() {
-		Constants ct = constants;
-		if (OreillyCos.isMultipartSupported()) {
-			String uploadedFileSaveDirectory = ct.getUploadedFileSaveDirectory();
-			if (uploadedFileSaveDirectory == null || "".equals(uploadedFileSaveDirectory.trim())) {
-				uploadedFileSaveDirectory = PathKit.getWebRootPath() + File.separator + "upload" + File.separator;
-				ct.setUploadedFileSaveDirectory(uploadedFileSaveDirectory);
-				
-				/*File file = new File(uploadedFileSaveDirectory);
-				if (!file.exists())
-					file.mkdirs();*/
-			}
-			OreillyCos.init(uploadedFileSaveDirectory, ct.getMaxPostSize(), ct.getEncoding());
-		}
+		OreillyCos.init(constants.getUploadedFileSaveDirectory(), constants.getMaxPostSize(), constants.getEncoding());
 	}
 	
 	private void initPathUtil() {

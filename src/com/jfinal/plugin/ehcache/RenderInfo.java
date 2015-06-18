@@ -17,7 +17,10 @@
 package com.jfinal.plugin.ehcache;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import com.jfinal.render.FreeMarkerRender;
+import com.jfinal.render.JsonRender;
 import com.jfinal.render.JspRender;
 import com.jfinal.render.Render;
 import com.jfinal.render.VelocityRender;
@@ -32,6 +35,7 @@ public class RenderInfo implements Serializable {
 	
 	private String view;
 	private Integer renderType;
+	private Map<String, Object> otherPara = null;
 	
 	public RenderInfo(Render render) {
 		if (render == null)
@@ -46,6 +50,14 @@ public class RenderInfo implements Serializable {
 			renderType = RenderType.VELOCITY_RENDER;
 		else if (render instanceof XmlRender)
 			renderType = RenderType.XML_RENDER;
+		else if(render instanceof JsonRender) {
+			JsonRender jr = (JsonRender)render;
+			renderType = RenderType.JSON_RENDER;
+			otherPara = new HashMap<String, Object>();
+			otherPara.put("jsonText", jr.getJsonText());
+			otherPara.put("attrs", jr.getAttrs());
+			otherPara.put("forIE", jr.getForIE());
+		}
 		else
 			throw new IllegalArgumentException("CacheInterceptor can not support the render of the type : " + render.getClass().getName());
 	}
@@ -59,6 +71,20 @@ public class RenderInfo implements Serializable {
 			return new VelocityRender(view);
 		else if (renderType == RenderType.XML_RENDER)
 			return new XmlRender(view);
+		else if (renderType == RenderType.JSON_RENDER) {
+			JsonRender jr;
+			if (otherPara.get("jsonText") != null)
+				jr = new JsonRender((String)otherPara.get("jsonText"));
+			else if (otherPara.get("attrs") != null)
+				jr = new JsonRender((String[])otherPara.get("attrs"));
+			else
+				jr = new JsonRender();
+			
+			if (Boolean.TRUE.equals(otherPara.get("forIE")))
+				jr.forIE();
+			
+			return jr;
+		}
 		throw new IllegalArgumentException("CacheInterceptor can not support the renderType of the value : " + renderType);
 	}
 }

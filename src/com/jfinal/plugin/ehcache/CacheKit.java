@@ -27,7 +27,7 @@ import net.sf.ehcache.Element;
  */
 public class CacheKit {
 	
-	private static volatile CacheManager cacheManager;
+	private static CacheManager cacheManager;
 	private static final Logger log = Logger.getLogger(CacheKit.class);
 	
 	static void init(CacheManager cacheManager) {

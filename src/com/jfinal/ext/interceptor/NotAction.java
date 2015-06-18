@@ -17,13 +17,13 @@
 package com.jfinal.ext.interceptor;
 
 import com.jfinal.aop.Interceptor;
-import com.jfinal.core.ActionInvocation;
+import com.jfinal.aop.Invocation;
 
 /**
  * NotAction
  */
 public class NotAction implements Interceptor {
-	public void intercept(ActionInvocation ai) {
-		ai.getController().renderError(404);
+	public void intercept(Invocation inv) {
+		inv.getController().renderError(404);
 	}
 }

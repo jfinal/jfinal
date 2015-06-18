@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package com.jfinal.aop;
+package com.jfinal.plugin.redis.serializer;
 
 /**
- * ClearLayer indicates ClearIntercptor which layer of interceptor should be cleared.
- * The JFinal interceptor has 3 layers, there are Global, Controller and Action.
+ * ISerializer.
  */
-public enum ClearLayer {
+public interface ISerializer {
 	
-	/**
-	 * clear the interceptor of upper layer
-	 */
-	UPPER,
-	
-	/**
-	 * clear the interceptor of all layers
-	 */
-	ALL;
+    byte[] keyToBytes(String key);
+    String keyFromBytes(byte[] bytes);
+    
+	byte[] valueToBytes(Object value);
+    Object valueFromBytes(byte[] bytes);
 }
+
 
 

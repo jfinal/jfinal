@@ -18,7 +18,7 @@ JFinal有如下主要特点
 #. 功能齐全，拥有struts2的绝大部分功能
 #. 体积小仅218K，且无第三方依赖
 
-**JFinal 极速开发QQ群欢迎您的加入: 335699801、38707273**
+**JFinal 极速开发QQ群欢迎您的加入: 335699801、326297041、424949661、38707273**
 
 **以下是JFinal实现Blog管理的示例：**
 
@@ -81,10 +81,10 @@ Blog()这行代码也不是必须)**
 ::
    
     public class BlogInterceptor implements Interceptor {
-        public void intercept(ActionInvocation ai) {
-            System.out.println("Before invoking " + ai.getActionKey());
-            ai.invoke();
-            System.out.println("After invoking " + ai.getActionKey());
+        public void intercept(Invocation inv) {
+            System.out.println("Before invoking " + inv.getActionKey());
+            inv.invoke();
+            System.out.println("After invoking " + inv.getActionKey());
         }
     }
 

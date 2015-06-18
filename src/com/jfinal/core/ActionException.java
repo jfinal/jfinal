@@ -16,7 +16,10 @@
 
 package com.jfinal.core;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import com.jfinal.kit.StrKit;
+import com.jfinal.log.Logger;
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderFactory;
 
@@ -26,15 +29,32 @@ import com.jfinal.render.RenderFactory;
 public class ActionException extends RuntimeException {
 	
 	private static final long serialVersionUID = 1998063243843477017L;
+	private static final Logger log = Logger.getLogger(ActionException.class);
 	private int errorCode;
 	private Render errorRender;
 	
-	public ActionException(int errorCode, Render errorRender) {
+	public ActionException(final int errorCode, final Render errorRender) {
 		if (errorRender == null)
 			throw new IllegalArgumentException("The parameter errorRender can not be null.");
 		
 		this.errorCode = errorCode;
-		this.errorRender = errorRender;
+		
+		if (errorRender instanceof com.jfinal.render.ErrorRender) {
+			this.errorRender = errorRender;
+		}
+		else {
+			this.errorRender = new Render() {
+				public Render setContext(HttpServletRequest req, HttpServletResponse res, String viewPath) {
+					errorRender.setContext(req, res, viewPath);
+					res.setStatus(errorCode);	// important
+					return this;
+				}
+				
+				public void render() {
+					errorRender.render();
+				}
+			};
+		}
 	}
 	
 	public ActionException(int errorCode, String errorView) {
@@ -45,6 +65,11 @@ public class ActionException extends RuntimeException {
 		this.errorRender = RenderFactory.me().getErrorRender(errorCode, errorView);
 	}
 	
+	public ActionException(int errorCode, Render errorRender, String errorMessage) {
+		this(errorCode, errorRender);
+		log.warn(errorMessage);
+	}
+	
 	public int getErrorCode() {
 		return errorCode;
 	}
@@ -53,5 +78,4 @@ public class ActionException extends RuntimeException {
 		return errorRender;
 	}
 }
-
 

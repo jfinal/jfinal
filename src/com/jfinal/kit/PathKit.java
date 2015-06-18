@@ -54,6 +54,10 @@ public class PathKit {
 		return rootClassPath;
 	}
 	
+	public void setRootClassPath(String rootClassPath) {
+		PathKit.rootClassPath = rootClassPath;
+	}
+	
 	public static String getPackagePath(Object object) {
 		Package p = object.getClass().getPackage();
 		return p != null ? p.getName().replaceAll("\\.", "/") : "";
@@ -65,7 +69,7 @@ public class PathKit {
 	
 	public static String getWebRootPath() {
 		if (webRootPath == null)
-			webRootPath = detectWebRootPath();;
+			webRootPath = detectWebRootPath();
 		return webRootPath;
 	}
 	
