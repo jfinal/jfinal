@@ -37,26 +37,28 @@ public class RecordBuilder {
 		String[] labelNames = new String[columnCount + 1];
 		int[] types = new int[columnCount + 1];
 		buildLabelNamesAndTypes(rsmd, labelNames, types);
-		while (rs.next()) {
-			Record record = new Record();
-			record.setColumnsMap(config.containerFactory.getColumnsMap());
-			Map<String, Object> columns = record.getColumns();
-			for (int i=1; i<=columnCount; i++) {
-				Object value;
-				if (types[i] < Types.BLOB)
-					value = rs.getObject(i);
-				else if (types[i] == Types.CLOB)
-					value = ModelBuilder.handleClob(rs.getClob(i));
-				else if (types[i] == Types.NCLOB)
-					value = ModelBuilder.handleClob(rs.getNClob(i));
-				else if (types[i] == Types.BLOB)
-					value = ModelBuilder.handleBlob(rs.getBlob(i));
-				else
-					value = rs.getObject(i);
-				
-				columns.put(labelNames[i], value);
+		if (rs.getRow()>0) {
+			while (rs.next()) {
+				Record record = new Record();
+				record.setColumnsMap(config.containerFactory.getColumnsMap());
+				Map<String, Object> columns = record.getColumns();
+				for (int i=1; i<=columnCount; i++) {
+					Object value;
+					if (types[i] < Types.BLOB)
+						value = rs.getObject(i);
+					else if (types[i] == Types.CLOB)
+						value = ModelBuilder.handleClob(rs.getClob(i));
+					else if (types[i] == Types.NCLOB)
+						value = ModelBuilder.handleClob(rs.getNClob(i));
+					else if (types[i] == Types.BLOB)
+						value = ModelBuilder.handleBlob(rs.getBlob(i));
+					else
+						value = rs.getObject(i);
+					
+					columns.put(labelNames[i], value);
+				}
+				result.add(record);
 			}
-			result.add(record);
 		}
 		return result;
 	}
