@@ -31,14 +31,14 @@ import com.jfinal.plugin.activerecord.IAtom;
  */
 public class TxByMethods implements Interceptor {
 	
-	private Set<String> actionMethodSet = new HashSet<String>();
+	private Set<String> methodSet = new HashSet<String>();
 	
-	public TxByMethods(String... actionMethods) {
-		if (actionMethods == null || actionMethods.length == 0)
-			throw new IllegalArgumentException("actionMethods can not be blank.");
+	public TxByMethods(String... methods) {
+		if (methods == null || methods.length == 0)
+			throw new IllegalArgumentException("methods can not be null.");
 		
-		for (String actionMethod : actionMethods)
-			actionMethodSet.add(actionMethod.trim());
+		for (String method : methods)
+			methodSet.add(method.trim());
 	}
 	
 	public void intercept(final Invocation inv) {
@@ -46,7 +46,7 @@ public class TxByMethods implements Interceptor {
 		if (config == null)
 			config = DbKit.getConfig();
 		
-		if (actionMethodSet.contains(inv.getMethodName())) {
+		if (methodSet.contains(inv.getMethodName())) {
 			DbPro.use(config.getName()).tx(new IAtom(){
 				public boolean run() throws SQLException {
 					inv.invoke();

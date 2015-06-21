@@ -26,8 +26,17 @@ import com.jfinal.aop.Invocation;
  * 改一下Redis.use() 为 Redis.use(otherCache) 即可
  */
 public class RedisInterceptor implements Interceptor {
+	
+	/**
+	 * 通过继承 RedisInterceptor 类并覆盖此方法，可以指定
+	 * 当前线程所使用的 cache
+	 */
+	protected Cache getCache() {
+		return Redis.use();
+	}
+	
 	public void intercept(Invocation inv) {
-		Cache cache = Redis.use();
+		Cache cache = getCache();
 		Jedis jedis = cache.getThreadLocalJedis();
 		if (jedis != null) {
 			inv.invoke();
