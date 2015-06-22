@@ -38,7 +38,7 @@ public class Redis {
 	static synchronized void addCache(Cache cache) {
 		if (cache == null)
 			throw new IllegalArgumentException("cache can not be null");
-		if (cacheMap.contains(cache.getName()))
+		if (cacheMap.containsKey(cache.getName()))
 			throw new IllegalArgumentException("cache already exists");
 		
 		cacheMap.put(cache.getName(), cache);
