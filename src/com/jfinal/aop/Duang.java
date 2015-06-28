@@ -47,6 +47,7 @@ public class Duang {
 		return (T)Enhancer.enhance(targetClass, injectIntersClass1, injectIntersClass2, injectIntersClass3);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T getTarget(String singletonKey) {
 		return (T)Enhancer.getTarget(singletonKey);
 	}
@@ -63,38 +64,47 @@ public class Duang {
 		return (T)Enhancer.enhance(singletonKey, targetClass, injectIntersClasses);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T duang(Object target) {
 		return (T)Enhancer.enhance(target);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T duang(Object target, Interceptor... injectInters) {
 		return (T)Enhancer.enhance(target, injectInters);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T duang(Object target, Class<? extends Interceptor>... injectIntersClasses) {
 		return (T)Enhancer.enhance(target, injectIntersClasses);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T duang(Object target, Class<? extends Interceptor> injectIntersClass) {
 		return (T)Enhancer.enhance(target, injectIntersClass);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T duang(Object target, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2) {
 		return (T)Enhancer.enhance(target, injectIntersClass1, injectIntersClass2);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T duang(Object target, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2, Class<? extends Interceptor> injectIntersClass3) {
 		return (T)Enhancer.enhance(target, injectIntersClass1, injectIntersClass2, injectIntersClass3);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T duang(String singletonKey, Object target) {
 		return (T)Enhancer.enhance(singletonKey, target);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T duang(String singletonKey, Object target, Interceptor... injectInters) {
 		return (T)Enhancer.enhance(singletonKey, target, injectInters);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static <T> T duang(String singletonKey, Object target, Class<? extends Interceptor>... injectIntersClasses) {
 		return (T)Enhancer.enhance(singletonKey, target, injectIntersClasses);
 	}

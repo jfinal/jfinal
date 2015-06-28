@@ -42,25 +42,27 @@ public class ModelBuilder {
 		String[] labelNames = new String[columnCount + 1];
 		int[] types = new int[columnCount + 1];
 		buildLabelNamesAndTypes(rsmd, labelNames, types);
-		while (rs.next()) {
-			Model<?> ar = modelClass.newInstance();
-			Map<String, Object> attrs = ar.getAttrs();
-			for (int i=1; i<=columnCount; i++) {
-				Object value;
-				if (types[i] < Types.BLOB)
-					value = rs.getObject(i);
-				else if (types[i] == Types.CLOB)
-					value = handleClob(rs.getClob(i));
-				else if (types[i] == Types.NCLOB)
-					value = handleClob(rs.getNClob(i));
-				else if (types[i] == Types.BLOB)
-					value = handleBlob(rs.getBlob(i));
-				else
-					value = rs.getObject(i);
-				
-				attrs.put(labelNames[i], value);
+		if (rs.getRow()>0) {
+			while (rs.next()) {
+				Model<?> ar = modelClass.newInstance();
+				Map<String, Object> attrs = ar.getAttrs();
+				for (int i=1; i<=columnCount; i++) {
+					Object value;
+					if (types[i] < Types.BLOB)
+						value = rs.getObject(i);
+					else if (types[i] == Types.CLOB)
+						value = handleClob(rs.getClob(i));
+					else if (types[i] == Types.NCLOB)
+						value = handleClob(rs.getNClob(i));
+					else if (types[i] == Types.BLOB)
+						value = handleBlob(rs.getBlob(i));
+					else
+						value = rs.getObject(i);
+					
+					attrs.put(labelNames[i], value);
+				}
+				result.add((T)ar);
 			}
-			result.add((T)ar);
 		}
 		return result;
 	}
