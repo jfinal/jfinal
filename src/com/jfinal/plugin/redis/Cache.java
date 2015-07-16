@@ -320,7 +320,7 @@ public class Cache {
 	}
 	
 	/**
-	 * 这个命令和 EXPIREAT 命令类似，但它以毫秒为单位设置 key 的过期 unix 时间戳，而不是像 EXPIREAT 那样，以秒为单位。
+	 * EXPIREAT 的作用和 EXPIRE 类似，都用于为 key 设置生存时间。不同在于 EXPIREAT 命令接受的时间参数是 UNIX 时间戳(unix timestamp)。
 	 */
 	public Long expireAt(Object key, long unixTime) {
 		Jedis jedis = getJedis();
