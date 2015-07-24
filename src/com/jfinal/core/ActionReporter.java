@@ -36,9 +36,9 @@ final class ActionReporter {
 	/**
 	 * Report action before action invoking when the common request coming
 	 */
-	static final boolean reportCommonRequest(Controller controller, Action action) {
+	static boolean reportCommonRequest(Controller controller, Action action) {
 		String content_type = controller.getRequest().getContentType();
-		if (content_type == null || content_type.toLowerCase().indexOf("multipart") == -1) {	// if (content_type == null || content_type.indexOf("multipart/form-data") == -1) {
+		if (content_type == null || !content_type.toLowerCase().contains("multipart")) {	// if (content_type == null || content_type.indexOf("multipart/form-data") == -1) {
 			doReport(controller, action);
 			return false;
 		}
@@ -48,11 +48,11 @@ final class ActionReporter {
 	/**
 	 * Report action after action invoking when the multipart request coming
 	 */
-	static final void reportMultipartRequest(Controller controller, Action action) {
+	static void reportMultipartRequest(Controller controller, Action action) {
 		doReport(controller, action);
 	}
 	
-	private static final void doReport(Controller controller, Action action) {
+	private static void doReport(Controller controller, Action action) {
 		StringBuilder sb = new StringBuilder("\nJFinal action report -------- ").append(sdf.get().format(new Date())).append(" ------------------------------\n");
 		Class<? extends Controller> cc = action.getControllerClass();
 		sb.append("Controller  : ").append(cc.getName()).append(".(").append(cc.getSimpleName()).append(".java:1)");

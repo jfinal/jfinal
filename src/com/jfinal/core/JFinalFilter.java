@@ -38,7 +38,6 @@ public final class JFinalFilter implements Filter {
 	private Handler handler;
 	private String encoding;
 	private JFinalConfig jfinalConfig;
-	private Constants constants;
 	private static final JFinal jfinal = JFinal.me();
 	private static Logger log;
 	private int contextPathLength;
@@ -46,11 +45,11 @@ public final class JFinalFilter implements Filter {
 	public void init(FilterConfig filterConfig) throws ServletException {
 		createJFinalConfig(filterConfig.getInitParameter("configClass"));
 		
-		if (jfinal.init(jfinalConfig, filterConfig.getServletContext()) == false)
+		if (!jfinal.init(jfinalConfig, filterConfig.getServletContext()))
 			throw new RuntimeException("JFinal init error!");
 		
 		handler = jfinal.getHandler();
-		constants = Config.getConstants();
+		Constants constants = Config.getConstants();
 		encoding = constants.getEncoding();
 		jfinalConfig.afterJFinalStart();
 		
@@ -78,7 +77,7 @@ public final class JFinalFilter implements Filter {
 			}
 		}
 		
-		if (isHandled[0] == false)
+		if (!isHandled[0])
 			chain.doFilter(request, response);
 	}
 	
@@ -91,7 +90,7 @@ public final class JFinalFilter implements Filter {
 		if (configClass == null)
 			throw new RuntimeException("Please set configClass parameter of JFinalFilter in web.xml");
 		
-		Object temp = null;
+		Object temp;
 		try {
 			temp = Class.forName(configClass).newInstance();
 		} catch (Exception e) {

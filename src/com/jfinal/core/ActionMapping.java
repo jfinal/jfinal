@@ -103,17 +103,17 @@ final class ActionMapping {
 		}
 		
 		// support url = controllerKey + urlParas with "/" of controllerKey
-		Action actoin = mapping.get("/");
-		if (actoin != null)
-			mapping.put("", actoin);
+		Action action = mapping.get("/");
+		if (action != null)
+			mapping.put("", action);
 	}
 	
-	private static final String buildMsg(String actionKey, Class<? extends Controller> controllerClass, Method method) {
+	private static String buildMsg(String actionKey, Class<? extends Controller> controllerClass, Method method) {
 		StringBuilder sb = new StringBuilder("The action \"")
 			.append(controllerClass.getName()).append(".")
 			.append(method.getName()).append("()\" can not be mapped, ")
 			.append("actionKey \"").append(actionKey).append("\" is already in use.");
-		
+
 		String msg = sb.toString();
 		System.err.println("\nException: " + msg);
 		return msg;
