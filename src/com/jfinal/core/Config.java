@@ -50,19 +50,19 @@ class Config {
 		jfinalConfig.configHandler(handlers);
 	}
 	
-	public static final Constants getConstants() {
+	public static Constants getConstants() {
 		return constants;
 	}
 	
-	public static final Routes getRoutes() {
+	public static Routes getRoutes() {
 		return routes;
 	}
 	
-	public static final Plugins getPlugins() {
+	public static Plugins getPlugins() {
 		return plugins;
 	}
 	
-	public static final Interceptors getInterceptors() {
+	public static Interceptors getInterceptors() {
 		return interceptors;
 	}
 	
@@ -84,7 +84,7 @@ class Config {
 						arp.setDevMode(constants.getDevMode());
 				}
 				
-				if (plugin.start() == false) {
+				if (!plugin.start()) {
 					String message = "Plugin start error: " + plugin.getClass().getName();
 					log.error(message);
 					throw new RuntimeException(message);
