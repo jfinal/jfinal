@@ -103,9 +103,9 @@ final class ActionMapping {
 		}
 		
 		// support url = controllerKey + urlParas with "/" of controllerKey
-		Action actoin = mapping.get("/");
-		if (actoin != null)
-			mapping.put("", actoin);
+		Action action = mapping.get("/");
+		if (action != null)
+			mapping.put("", action);
 	}
 	
 	private static final String buildMsg(String actionKey, Class<? extends Controller> controllerClass, Method method) {
