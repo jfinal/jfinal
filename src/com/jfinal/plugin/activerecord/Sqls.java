@@ -26,11 +26,11 @@ import com.jfinal.kit.Prop;
  * 示例：<br>
  * Sqls.load("mySql.txt");<br>
  * String findBlogs = Sqls.get("findBlogs");<br>
- * Blog.me.find(findBlogs);<br><br>
+ * Blog.dao.find(findBlogs);<br><br>
  * 
  * Sqls.load("otherSql.txt");<br>
  * String findUsers = Sqls.get("othersqls.txt", "findUser");<br>
- * User.me.find(findUsers);<br>
+ * User.dao.find(findUsers);<br>
  */
 public class Sqls {
 	

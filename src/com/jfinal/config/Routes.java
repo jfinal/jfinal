@@ -86,11 +86,11 @@ public abstract class Routes {
 	
 	/**
 	 * Add url mapping to controller. The view path is controllerKey
-	 * @param controllerkey A key can find controller
+	 * @param controllerKey A key can find controller
 	 * @param controllerClass Controller Class
 	 */
-	public Routes add(String controllerkey, Class<? extends Controller> controllerClass) {
-		return add(controllerkey, controllerClass, controllerkey);
+	public Routes add(String controllerKey, Class<? extends Controller> controllerClass) {
+		return add(controllerKey, controllerClass, controllerKey);
 	}
 	
 	public Set<Entry<String, Class<? extends Controller>>> getEntrySet() {
