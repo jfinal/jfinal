@@ -293,11 +293,11 @@ public class Cache {
 	/**
 	 * 切换到指定的数据库，数据库索引号 index 用数字值指定，以 0 作为起始索引值。
 	 * 默认使用 0 号数据库。
-	 * 注意：在 Jedis 对象被关闭时，数据库又会重新被设置为 1，所以本方法 select(...)
+	 * 注意：在 Jedis 对象被关闭时，数据库又会重新被设置为初始值，所以本方法 select(...)
 	 * 正常工作需要使用如下方式之一：
 	 * 1：使用 RedisInterceptor，在本线程内共享同一个 Jedis 对象
 	 * 2：使用 Redis.call(ICallback) 进行操作
-	 * 2：自行获取 Jedis 对象进行操作
+	 * 3：自行获取 Jedis 对象进行操作
 	 */
 	public String select(int databaseIndex) {
 		Jedis jedis = getJedis();
