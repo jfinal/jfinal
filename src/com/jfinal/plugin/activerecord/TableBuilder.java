@@ -68,6 +68,9 @@ class TableBuilder {
 		// decimal, numeric
 		put("java.math.BigDecimal", java.math.BigDecimal.class);
 		
+		// unsigned bigint
+		put("java.math.BigInteger", java.math.BigInteger.class);
+		
 		// binary, varbinary, tinyblob, blob, mediumblob, longblob
 		// qjd project: print_info.content varbinary(61800);
 		put("[B", byte[].class);
