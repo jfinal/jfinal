@@ -90,7 +90,7 @@ public class Prop {
 		if (file == null)
 			throw new IllegalArgumentException("File can not be null.");
 		if (file.isFile() == false)
-			throw new IllegalArgumentException("Not a file : " + file.getName());
+			throw new IllegalArgumentException("File not found : " + file.getName());
 		
 		InputStream inputStream = null;
 		try {
@@ -110,37 +110,33 @@ public class Prop {
 	}
 	
 	public String get(String key, String defaultValue) {
-		String value = get(key);
-		return (value != null) ? value : defaultValue;
+		return properties.getProperty(key, defaultValue);
 	}
 	
 	public Integer getInt(String key) {
-		String value = get(key);
-		return (value != null) ? Integer.parseInt(value) : null;
+		return getInt(key, null);
 	}
 	
 	public Integer getInt(String key, Integer defaultValue) {
-		String value = get(key);
+		String value = properties.getProperty(key);
 		return (value != null) ? Integer.parseInt(value) : defaultValue;
 	}
 	
 	public Long getLong(String key) {
-		String value = get(key);
-		return (value != null) ? Long.parseLong(value) : null;
+		return getLong(key, null);
 	}
 	
 	public Long getLong(String key, Long defaultValue) {
-		String value = get(key);
+		String value = properties.getProperty(key);
 		return (value != null) ? Long.parseLong(value) : defaultValue;
 	}
 	
 	public Boolean getBoolean(String key) {
-		String value = get(key);
-		return (value != null) ? Boolean.parseBoolean(value) : null;
+		return getBoolean(key, null);
 	}
 	
 	public Boolean getBoolean(String key, Boolean defaultValue) {
-		String value = get(key);
+		String value = properties.getProperty(key);
 		return (value != null) ? Boolean.parseBoolean(value) : defaultValue;
 	}
 	

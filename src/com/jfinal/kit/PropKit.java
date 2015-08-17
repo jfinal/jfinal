@@ -17,8 +17,8 @@
 package com.jfinal.kit;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import com.jfinal.core.Const;
 
 /**
@@ -27,7 +27,7 @@ import com.jfinal.core.Const;
 public class PropKit {
 	
 	private static Prop prop = null;
-	private static final Map<String, Prop> map = new ConcurrentHashMap<String, Prop>();
+	private static final Map<String, Prop> map = new HashMap<String, Prop>();
 	
 	private PropKit() {}
 	
@@ -59,10 +59,15 @@ public class PropKit {
 	public static Prop use(String fileName, String encoding) {
 		Prop result = map.get(fileName);
 		if (result == null) {
-			result = new Prop(fileName, encoding);
-			map.put(fileName, result);
-			if (PropKit.prop == null)
-				PropKit.prop = result;
+			synchronized (map) {
+				result = map.get(fileName);
+				if (result == null) {
+					result = new Prop(fileName, encoding);
+					map.put(fileName, result);
+					if (PropKit.prop == null)
+						PropKit.prop = result;
+				}
+			}
 		}
 		return result;
 	}
@@ -88,10 +93,15 @@ public class PropKit {
 	public static Prop use(File file, String encoding) {
 		Prop result = map.get(file.getName());
 		if (result == null) {
-			result = new Prop(file, encoding);
-			map.put(file.getName(), result);
-			if (PropKit.prop == null)
-				PropKit.prop = result;
+			synchronized (map) {
+				result = map.get(file.getName());
+				if (result == null) {
+					result = new Prop(file, encoding);
+					map.put(file.getName(), result);
+					if (PropKit.prop == null)
+						PropKit.prop = result;
+				}
+			}
 		}
 		return result;
 	}

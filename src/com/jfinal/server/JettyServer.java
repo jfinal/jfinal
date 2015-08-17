@@ -85,6 +85,7 @@ class JettyServer implements IServer {
 		connector.setPort(port);
 		server.addConnector(connector);
 		webApp = new WebAppContext();
+		webApp.setThrowUnavailableOnStartupException(true);	// 在启动过程中允许抛出异常终止启动并退出 JVM
 		webApp.setContextPath(context);
 		webApp.setResourceBase(webAppDir);	// webApp.setWar(webAppDir);
 		webApp.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");

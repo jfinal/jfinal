@@ -26,8 +26,7 @@ import com.jfinal.kit.StrKit;
 public class Table {
 	
 	private String name;
-	private String primaryKey;
-	private String secondaryKey = null;
+	private String[] primaryKey = null;
 	private Map<String, Class<?>> columnTypeMap;	// config.containerFactory.getAttrsMap();
 	
 	private Class<? extends Model<?>> modelClass;
@@ -51,24 +50,15 @@ public class Table {
 			throw new IllegalArgumentException("Model class can not be null.");
 		
 		this.name = name.trim();
-		setPrimaryKey(primaryKey.trim());	// this.primaryKey = primaryKey.trim();
+		setPrimaryKey(primaryKey.trim());
 		this.modelClass = modelClass;
 	}
 	
 	void setPrimaryKey(String primaryKey) {
-		String[] keyArr = primaryKey.split(",");
-		if (keyArr.length > 2)
-			throw new IllegalArgumentException("Supports only two primary key for Composite primary key.");
-		
-		if (keyArr.length > 1) {
-			if (StrKit.isBlank(keyArr[0]) || StrKit.isBlank(keyArr[1]))
-				throw new IllegalArgumentException("The composite primary key can not be blank.");
-			this.primaryKey = keyArr[0].trim();
-			this.secondaryKey = keyArr[1].trim();
-		}
-		else {
-			this.primaryKey = primaryKey;
-		}
+		String[] arr = primaryKey.split(",");
+		for (int i=0; i<arr.length; i++)
+			arr[i] = arr[i].trim();
+		this.primaryKey = arr;
 	}
 	
 	void setColumnTypeMap(Map<String, Class<?>> columnTypeMap) {
@@ -101,12 +91,8 @@ public class Table {
 	/**
 	 * update() and delete() need this method.
 	 */
-	public String getPrimaryKey() {
+	public String[] getPrimaryKey() {
 		return primaryKey;
-	}
-	
-	public String getSecondaryKey() {
-		return secondaryKey;
 	}
 	
 	public Class<? extends Model<?>> getModelClass() {
@@ -117,7 +103,6 @@ public class Table {
 		return Collections.unmodifiableMap(columnTypeMap);
 	}
 }
-
 
 
 

@@ -194,6 +194,13 @@ public class Config {
 	}
 	
 	/**
+	 * Return true if current thread in transaction.
+	 */
+	public final boolean isInTransaction() {
+		return threadLocal.get() != null;
+	}
+	
+	/**
 	 * Close ResultSet、Statement、Connection
 	 * ThreadLocal support declare transaction.
 	 */

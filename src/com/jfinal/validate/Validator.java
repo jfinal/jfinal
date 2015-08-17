@@ -19,14 +19,14 @@ package com.jfinal.validate;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.jfinal.aop.Interceptor;
-import com.jfinal.core.ActionInvocation;
+import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
+import com.jfinal.kit.StrKit;
 
 /**
  * Validator.
@@ -34,17 +34,28 @@ import com.jfinal.core.Controller;
 public abstract class Validator implements Interceptor {
 	
 	private Controller controller;
-	private ActionInvocation invocation;
+	private Invocation invocation;
 	private boolean shortCircuit = false;
 	private boolean invalid = false;
+	private String datePattern = null;
 	
+	// TODO set the DEFAULT_DATE_PATTERN in Const and config it in Constants. TypeConverter do the same thing.
+	private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
 	private static final String emailAddressPattern = "\\b(^['_A-Za-z0-9-]+(\\.['_A-Za-z0-9-]+)*@([A-Za-z0-9-])+(\\.[A-Za-z0-9-]+)*((\\.[A-Za-z0-9]{2,})|(\\.[A-Za-z0-9]{2,}\\.[A-Za-z0-9]{2,}))$)\\b";
 	
 	protected void setShortCircuit(boolean shortCircuit) {
 		this.shortCircuit = shortCircuit;
 	}
 	
-	final public void intercept(ActionInvocation invocation) {
+	protected void setDatePattern(String datePattern) {
+		this.datePattern = datePattern;
+	}
+	
+	protected String getDatePattern() {
+		return (datePattern != null ? datePattern : DEFAULT_DATE_PATTERN);
+	}
+	
+	final public void intercept(Invocation invocation) {
 		Validator validator = null;
 		try {validator = getClass().newInstance();}
 		catch (Exception e) {throw new RuntimeException(e);}
@@ -86,6 +97,13 @@ public abstract class Validator implements Interceptor {
 	}
 	
 	/**
+	 * Return the controller of this action.
+	 */
+	protected Controller getController() {
+		return controller;
+	}
+	
+	/**
 	 * Return the action key of this action.
 	 */
 	protected String getActionKey() {
@@ -114,11 +132,20 @@ public abstract class Validator implements Interceptor {
 	}
 	
 	/**
-	 * Validate Required.
+	 * Validate Required. Allow space characters.
 	 */
 	protected void validateRequired(String field, String errorKey, String errorMessage) {
 		String value = controller.getPara(field);
-		if (value == null || "".equals(value))	// 经测试,无输入时值为"",跳格键值为"\t",输入空格则为空格" "
+		if (value == null || "".equals(value))	// 经测试,form表单域无输入时值为"",跳格键值为"\t",输入空格则为空格" "
+			addError(errorKey, errorMessage);
+	}
+	
+	/**
+	 * Validate Required for urlPara.
+	 */
+	protected void validateRequired(int index, String errorKey, String errorMessage) {
+		String value = controller.getPara(index);
+		if (value == null /* || "".equals(value) */)
 			addError(errorKey, errorMessage);
 	}
 	
@@ -126,8 +153,15 @@ public abstract class Validator implements Interceptor {
 	 * Validate required string.
 	 */
 	protected void validateRequiredString(String field, String errorKey, String errorMessage) {
-		String value = controller.getPara(field);
-		if (value == null || "".equals(value.trim()))
+		if (StrKit.isBlank(controller.getPara(field)))
+			addError(errorKey, errorMessage);
+	}
+	
+	/**
+	 * Validate required string for urlPara.
+	 */
+	protected void validateRequiredString(int index, String errorKey, String errorMessage) {
+		if (StrKit.isBlank(controller.getPara(index)))
 			addError(errorKey, errorMessage);
 	}
 	
@@ -135,11 +169,58 @@ public abstract class Validator implements Interceptor {
 	 * Validate integer.
 	 */
 	protected void validateInteger(String field, int min, int max, String errorKey, String errorMessage) {
+		validateIntegerValue(controller.getPara(field), min, max, errorKey, errorMessage);
+	}
+	
+	/**
+	 * Validate integer for urlPara.
+	 */
+	protected void validateInteger(int index, int min, int max, String errorKey, String errorMessage) {
+		String value = controller.getPara(index);
+		if (value != null && (value.startsWith("N") || value.startsWith("n")))
+			value = "-" + value.substring(1);
+		validateIntegerValue(value, min, max, errorKey, errorMessage);
+	}
+	
+	private void validateIntegerValue(String value, int min, int max, String errorKey, String errorMessage) {
+		if (StrKit.isBlank(value)) {
+			addError(errorKey, errorMessage);
+			return ;
+		}
 		try {
-			String value = controller.getPara(field);
-			int temp = Integer.parseInt(value);
+			int temp = Integer.parseInt(value.trim());
 			if (temp < min || temp > max)
 				addError(errorKey, errorMessage);
+		}
+		catch (Exception e) {
+			addError(errorKey, errorMessage);
+		}
+	}
+	
+	/**
+	 * Validate integer.
+	 */
+	protected void validateInteger(String field, String errorKey, String errorMessage) {
+		validateIntegerValue(controller.getPara(field), errorKey, errorMessage);
+	}
+	
+	/**
+	 * Validate integer for urlPara.
+	 */
+	protected void validateInteger(int index, String errorKey, String errorMessage) {
+		String value = controller.getPara(index);
+		if (value != null && (value.startsWith("N") || value.startsWith("n")))
+			value = "-" + value.substring(1);
+		validateIntegerValue(value, errorKey, errorMessage);
+	}
+	
+	private void validateIntegerValue(String value, String errorKey, String errorMessage) {
+		if (StrKit.isBlank(value)) {
+			addError(errorKey, errorMessage);
+			return ;
+		}
+		try {
+			Integer.parseInt(value.trim());
 		}
 		catch (Exception e) {
 			addError(errorKey, errorMessage);
@@ -150,9 +231,26 @@ public abstract class Validator implements Interceptor {
 	 * Validate long.
 	 */
 	protected void validateLong(String field, long min, long max, String errorKey, String errorMessage) {
+		validateLongValue(controller.getPara(field), min, max, errorKey, errorMessage);
+	}
+	
+	/**
+	 * Validate long for urlPara.
+	 */
+	protected void validateLong(int index, long min, long max, String errorKey, String errorMessage) {
+		String value = controller.getPara(index);
+		if (value != null && (value.startsWith("N") || value.startsWith("n")))
+			value = "-" + value.substring(1);
+		validateLongValue(value, min, max, errorKey, errorMessage);
+	}
+	
+	private void validateLongValue(String value, long min, long max, String errorKey, String errorMessage) {
+		if (StrKit.isBlank(value)) {
+			addError(errorKey, errorMessage);
+			return ;
+		}
 		try {
-			String value = controller.getPara(field);
-			long temp = Long.parseLong(value);
+			long temp = Long.parseLong(value.trim());
 			if (temp < min || temp > max)
 				addError(errorKey, errorMessage);
 		}
@@ -165,9 +263,26 @@ public abstract class Validator implements Interceptor {
 	 * Validate long.
 	 */
 	protected void validateLong(String field, String errorKey, String errorMessage) {
+		validateLongValue(controller.getPara(field), errorKey, errorMessage);
+	}
+	
+	/**
+	 * Validate long for urlPara.
+	 */
+	protected void validateLong(int index, String errorKey, String errorMessage) {
+		String value = controller.getPara(index);
+		if (value != null && (value.startsWith("N") || value.startsWith("n")))
+			value = "-" + value.substring(1);
+		validateLongValue(value, errorKey, errorMessage);
+	}
+	
+	private void validateLongValue(String value, String errorKey, String errorMessage) {
+		if (StrKit.isBlank(value)) {
+			addError(errorKey, errorMessage);
+			return ;
+		}
 		try {
-			String value = controller.getPara(field);
-			Long.parseLong(value);
+			Long.parseLong(value.trim());
 		}
 		catch (Exception e) {
 			addError(errorKey, errorMessage);
@@ -178,9 +293,13 @@ public abstract class Validator implements Interceptor {
 	 * Validate double.
 	 */
 	protected void validateDouble(String field, double min, double max, String errorKey, String errorMessage) {
+		String value = controller.getPara(field);
+		if (StrKit.isBlank(value)) {
+			addError(errorKey, errorMessage);
+			return ;
+		}
 		try {
-			String value = controller.getPara(field);
-			double temp = Double.parseDouble(value);
+			double temp = Double.parseDouble(value.trim());
 			if (temp < min || temp > max)
 				addError(errorKey, errorMessage);
 		}
@@ -193,22 +312,47 @@ public abstract class Validator implements Interceptor {
 	 * Validate double.
 	 */
 	protected void validateDouble(String field, String errorKey, String errorMessage) {
+		String value = controller.getPara(field);
+		if (StrKit.isBlank(value)) {
+			addError(errorKey, errorMessage);
+			return ;
+		}
 		try {
-			String value = controller.getPara(field);
-			Double.parseDouble(value);
+			Double.parseDouble(value.trim());
 		}
 		catch (Exception e) {
 			addError(errorKey, errorMessage);
 		}
 	}
 	
-	/** 
+	/**
+	 * Validate date. Date formate: yyyy-MM-dd
+	 */
+	protected void validateDate(String field, String errorKey, String errorMessage) {
+		String value = controller.getPara(field);
+		if (StrKit.isBlank(value)) {
+			addError(errorKey, errorMessage);
+			return ;
+		}
+		try {
+			new SimpleDateFormat(getDatePattern()).parse(value.trim());	// Date temp = Date.valueOf(value); 为了兼容 64位 JDK
+		}
+		catch (Exception e) {
+			addError(errorKey, errorMessage);
+		}
+	}
+	
+	/**
 	 * Validate date.
 	 */
 	protected void validateDate(String field, Date min, Date max, String errorKey, String errorMessage) {
+		String value = controller.getPara(field);
+		if (StrKit.isBlank(value)) {
+			addError(errorKey, errorMessage);
+			return ;
+		}
 		try {
-			String value = controller.getPara(field);
-			Date temp = new SimpleDateFormat(datePattern).parse(value);	// Date temp = Date.valueOf(value); 为了兼容 64位 JDK
+			Date temp = new SimpleDateFormat(getDatePattern()).parse(value.trim());	// Date temp = Date.valueOf(value); 为了兼容 64位 JDK
 			if (temp.before(min) || temp.after(max))
 				addError(errorKey, errorMessage);
 		}
@@ -217,18 +361,15 @@ public abstract class Validator implements Interceptor {
 		}
 	}
 	
-	// TODO set in Const and config it in Constants. TypeConverter do the same thing.
-	private static final String datePattern = "yyyy-MM-dd";
-	
-	/** 
+	/**
 	 * Validate date. Date formate: yyyy-MM-dd
 	 */
 	protected void validateDate(String field, String min, String max, String errorKey, String errorMessage) {
 		// validateDate(field, Date.valueOf(min), Date.valueOf(max), errorKey, errorMessage);  为了兼容 64位 JDK
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat(datePattern);
-			validateDate(field, sdf.parse(min), sdf.parse(max), errorKey, errorMessage);
-		} catch (ParseException e) {
+			SimpleDateFormat sdf = new SimpleDateFormat(getDatePattern());
+			validateDate(field, sdf.parse(min.trim()), sdf.parse(max.trim()), errorKey, errorMessage);
+		} catch (Exception e) {
 			addError(errorKey, errorMessage);
 		}
 	}
@@ -270,8 +411,13 @@ public abstract class Validator implements Interceptor {
 	 * Validate URL.
 	 */
 	protected void validateUrl(String field, String errorKey, String errorMessage) {
+		String value = controller.getPara(field);
+		if (StrKit.isBlank(value)) {
+			addError(errorKey, errorMessage);
+			return ;
+		}
 		try {
-			String value = controller.getPara(field);
+			value = value.trim();
 			if (value.startsWith("https://"))
 				value = "http://" + value.substring(8); // URL doesn't understand the https protocol, hack it
 			new URL(value);
@@ -302,19 +448,27 @@ public abstract class Validator implements Interceptor {
 		validateRegex(field, regExpression, true, errorKey, errorMessage);
 	}
 	
-	protected void validateString(String field, boolean notBlank, int minLen, int maxLen, String errorKey, String errorMessage) {
-		String value = controller.getPara(field);
-		if (value == null || value.length() < minLen || value.length() > maxLen) 
-			addError(errorKey, errorMessage);
-		else if(notBlank && "".equals(value.trim()))
-			addError(errorKey, errorMessage);
-	}
-	
 	/**
 	 * Validate string.
 	 */
 	protected void validateString(String field, int minLen, int maxLen, String errorKey, String errorMessage) {
-		validateString(field, true, minLen, maxLen, errorKey, errorMessage);
+		validateStringValue(controller.getPara(field), minLen, maxLen, errorKey, errorMessage);
+	}
+	
+	/**
+	 * Validate string for urlPara
+	 */
+	protected void validateString(int index, int minLen, int maxLen, String errorKey, String errorMessage) {
+		validateStringValue(controller.getPara(index), minLen, maxLen, errorKey, errorMessage);
+	}
+	
+	private void validateStringValue(String value, int minLen, int maxLen, String errorKey, String errorMessage) {
+		if (StrKit.isBlank(value)) {
+			addError(errorKey, errorMessage);
+			return ;
+		}
+		if (value.length() < minLen || value.length() > maxLen)
+			addError(errorKey, errorMessage);
 	}
 	
 	/**
@@ -332,8 +486,34 @@ public abstract class Validator implements Interceptor {
 		if (controller.validateToken() == false)
 			addError(errorKey, errorMessage);
 	}
+	
+	/**
+	 * validate boolean.
+	 */
+	protected void validateBoolean(String field, String errorKey, String errorMessage) {
+		validateBooleanValue(controller.getPara(field), errorKey, errorMessage);
+	}
+	
+	/**
+	 * validate boolean for urlPara.
+	 */
+	protected void validateBoolean(int index, String errorKey, String errorMessage) {
+		validateBooleanValue(controller.getPara(index), errorKey, errorMessage);
+	}
+	
+	private void validateBooleanValue(String value, String errorKey, String errorMessage) {
+		if (StrKit.isBlank(value)) {
+			addError(errorKey, errorMessage);
+			return ;
+		}
+		value = value.trim().toLowerCase();
+		if ("1".equals(value) || "true".equals(value))
+			return ;
+		else if ("0".equals(value) || "false".equals(value))
+			return ;
+		addError(errorKey, errorMessage);
+	}
 }
-
 
 
 

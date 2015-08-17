@@ -79,7 +79,7 @@ public class JsonRender extends Render {
 	private static final String contentType = "application/json; charset=" + getEncoding();
 	private static final String contentTypeForIE = "text/html; charset=" + getEncoding();
 	private boolean forIE = false;
-	private static int convertDepth = 8;
+	private static int convertDepth = 15;
 	
 	public JsonRender forIE() {
 		forIE = true;
@@ -167,7 +167,21 @@ public class JsonRender extends Render {
 		
 		this.jsonText = JsonKit.toJson(map, convertDepth);
 	}
+	
+	public String[] getAttrs() {
+		return attrs;
+	}
+	
+	public String getJsonText() {
+		return jsonText;
+	}
+	
+	public Boolean getForIE() {
+		return forIE;
+	}
 }
+
+
 
 
 

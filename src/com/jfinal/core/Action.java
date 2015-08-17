@@ -22,7 +22,7 @@ import com.jfinal.aop.Interceptor;
 /**
  * Action
  */
-class Action {
+public class Action {
 	
 	private final Class<? extends Controller> controllerClass;
 	private final String controllerKey;

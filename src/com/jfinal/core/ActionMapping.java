@@ -17,6 +17,7 @@
 package com.jfinal.core;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,76 +59,64 @@ final class ActionMapping {
 	void buildActionMapping() {
 		mapping.clear();
 		Set<String> excludedMethodName = buildExcludedMethodName();
-		InterceptorBuilder interceptorBuilder = new InterceptorBuilder();
-		Interceptor[] defaultInters = interceptors.getInterceptorArray();
-		interceptorBuilder.addToInterceptorsMap(defaultInters);
+		ActionInterceptorBuilder interceptorBuilder = new ActionInterceptorBuilder();
+		Interceptor[] globalInters = interceptors.getGlobalActionInterceptor();
+		interceptorBuilder.addToInterceptorsMap(globalInters);
 		for (Entry<String, Class<? extends Controller>> entry : routes.getEntrySet()) {
 			Class<? extends Controller> controllerClass = entry.getValue();
 			Interceptor[] controllerInters = interceptorBuilder.buildControllerInterceptors(controllerClass);
-			Method[] methods = controllerClass.getMethods();
+			
+			boolean sonOfController = (controllerClass.getSuperclass() == Controller.class);
+			Method[] methods = (sonOfController ? controllerClass.getDeclaredMethods() : controllerClass.getMethods());
 			for (Method method : methods) {
 				String methodName = method.getName();
-				if (!excludedMethodName.contains(methodName) && method.getParameterTypes().length == 0) {
-					Interceptor[] methodInters = interceptorBuilder.buildMethodInterceptors(method);
-					Interceptor[] actionInters = interceptorBuilder.buildActionInterceptors(defaultInters, controllerInters, controllerClass, methodInters, method);
-					String controllerKey = entry.getKey();
+				if (excludedMethodName.contains(methodName) || method.getParameterTypes().length != 0)
+					continue ;
+				if (sonOfController && !Modifier.isPublic(method.getModifiers()))
+					continue ;
+				
+				Interceptor[] methodInters = interceptorBuilder.buildMethodInterceptors(method);
+				Interceptor[] actionInters = interceptorBuilder.buildActionInterceptors(globalInters, controllerInters, methodInters, method);
+				String controllerKey = entry.getKey();
+				
+				ActionKey ak = method.getAnnotation(ActionKey.class);
+				String actionKey;
+				if (ak != null) {
+					actionKey = ak.value().trim();
+					if ("".equals(actionKey))
+						throw new IllegalArgumentException(controllerClass.getName() + "." + methodName + "(): The argument of ActionKey can not be blank.");
 					
-					ActionKey ak = method.getAnnotation(ActionKey.class);
-					if (ak != null) {
-						String actionKey = ak.value().trim();
-						if ("".equals(actionKey))
-							throw new IllegalArgumentException(controllerClass.getName() + "." + methodName + "(): The argument of ActionKey can not be blank.");
-						
-						if (!actionKey.startsWith(SLASH))
-							actionKey = SLASH + actionKey;
-						
-						if (mapping.containsKey(actionKey)) {
-							warnning(actionKey, controllerClass, method);
-							continue;
-						}
-						
-						Action action = new Action(controllerKey, actionKey, controllerClass, method, methodName, actionInters, routes.getViewPath(controllerKey));
-						mapping.put(actionKey, action);
-					}
-					else if (methodName.equals("index")) {
-						String actionKey = controllerKey;
-						
-						Action action = new Action(controllerKey, actionKey, controllerClass, method, methodName, actionInters, routes.getViewPath(controllerKey));
-						action = mapping.put(actionKey, action);
-						
-						if (action != null) {
-							warnning(action.getActionKey(), action.getControllerClass(), action.getMethod());
-						}
-					}
-					else {
-						String actionKey = controllerKey.equals(SLASH) ? SLASH + methodName : controllerKey + SLASH + methodName;
-						
-						if (mapping.containsKey(actionKey)) {
-							warnning(actionKey, controllerClass, method);
-							continue;
-						}
-						
-						Action action = new Action(controllerKey, actionKey, controllerClass, method, methodName, actionInters, routes.getViewPath(controllerKey));
-						mapping.put(actionKey, action);
-					}
+					if (!actionKey.startsWith(SLASH))
+						actionKey = SLASH + actionKey;
 				}
+				else if (methodName.equals("index")) {
+					actionKey = controllerKey;
+				}
+				else {
+					actionKey = controllerKey.equals(SLASH) ? SLASH + methodName : controllerKey + SLASH + methodName;
+				}
+				
+				Action action = new Action(controllerKey, actionKey, controllerClass, method, methodName, actionInters, routes.getViewPath(controllerKey));
+				if (mapping.put(actionKey, action) != null)
+					throw new RuntimeException(buildMsg(actionKey, controllerClass, method));
 			}
 		}
 		
 		// support url = controllerKey + urlParas with "/" of controllerKey
-		Action actoin = mapping.get("/");
-		if (actoin != null)
-			mapping.put("", actoin);
+		Action action = mapping.get("/");
+		if (action != null)
+			mapping.put("", action);
 	}
 	
-	private static final void warnning(String actionKey, Class<? extends Controller> controllerClass, Method method) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("--------------------------------------------------------------------------------\nWarnning!!!\n")
-		.append("ActionKey already used: \"").append(actionKey).append("\" \n") 
-		.append("Action can not be mapped: \"")
-		.append(controllerClass.getName()).append(".").append(method.getName()).append("()\" \n")
-		.append("--------------------------------------------------------------------------------");
-		System.out.println(sb.toString());
+	private static final String buildMsg(String actionKey, Class<? extends Controller> controllerClass, Method method) {
+		StringBuilder sb = new StringBuilder("The action \"")
+			.append(controllerClass.getName()).append(".")
+			.append(method.getName()).append("()\" can not be mapped, ")
+			.append("actionKey \"").append(actionKey).append("\" is already in use.");
+		
+		String msg = sb.toString();
+		System.err.println("\nException: " + msg);
+		return msg;
 	}
 	
 	/**
@@ -136,6 +125,8 @@ final class ActionMapping {
 	 * 2: http://abc.com/controllerKey/para            ---> 01
 	 * 3: http://abc.com/controllerKey/method          ---> 10
 	 * 4: http://abc.com/controllerKey/method/para     ---> 11
+	 * The controllerKey can also contains "/"
+	 * Example: http://abc.com/uvw/xyz/method/para
 	 */
 	Action getAction(String url, String[] urlPara) {
 		Action action = mapping.get(url);
@@ -159,6 +150,14 @@ final class ActionMapping {
 		return allActionKeys;
 	}
 }
+
+
+
+
+
+
+
+
 
 
 

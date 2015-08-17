@@ -17,7 +17,7 @@
 package com.jfinal.ext.interceptor;
 
 import com.jfinal.aop.Interceptor;
-import com.jfinal.core.ActionInvocation;
+import com.jfinal.aop.Invocation;
 
 /**
  * LogInterceptor.
@@ -26,7 +26,7 @@ public class LogInterceptor implements Interceptor {
 	
 	// private FileWriter fw;
 	
-	public void intercept(ActionInvocation ai) {
+	public void intercept(Invocation inv) {
 		throw new RuntimeException("Not finished");
 	}
 }

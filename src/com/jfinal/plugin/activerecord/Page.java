@@ -82,6 +82,13 @@ public class Page<T> implements Serializable {
 	public int getTotalRow() {
 		return totalRow;
 	}
+	
+	public boolean isFirstPage() {
+		return pageNumber == 1;
+	}
+	
+	public boolean isLastPage() {
+		return pageNumber == totalPage;
+	}
 }
-
 

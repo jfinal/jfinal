@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-package com.jfinal.aop;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.jfinal.plugin.redis;
 
 /**
- * ClearInterceptor is used to clear interceptors of different level.
- * It clear the upper layer interceptors by default and clear 
- * all layers with parameter ClearLayer.ALL
+ * ICallback.
+ * 将多个 redis 操作放在同一个redis连下中使用，另外也可以让同一个
+ * Cache 对象使用 select(int) 方法临时切换数据库
  */
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface ClearInterceptor {
-	ClearLayer value() default ClearLayer.UPPER;
+public interface ICallback {
+	<T> T call(Cache cache);
 }
-
 
 

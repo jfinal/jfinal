@@ -22,7 +22,7 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import com.jfinal.aop.Interceptor;
-import com.jfinal.core.ActionInvocation;
+import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
 
 /**
@@ -40,10 +40,10 @@ public class SessionInViewInterceptor implements Interceptor {
 	}
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})	
-	public void intercept(ActionInvocation ai) {
-		ai.invoke();
+	public void intercept(Invocation inv) {
+		inv.invoke();
 		
-		Controller c = ai.getController();
+		Controller c = inv.getController();
 		if (c.getRender() instanceof com.jfinal.render.JsonRender)
 			return ;
 		
@@ -139,10 +139,10 @@ class JFinalSession extends HashMap implements HttpSession {
 }
 
 /*
-public void intercept(ActionInvocation ai) {
-	ai.invoke();
+public void intercept(Invocation inv) {
+	inv.invoke();
 	
-	Controller c = ai.getController();
+	Controller c = inv.getController();
 	HttpSession hs = c.getSession(createSession);
 	if (hs != null) {
 		c.setAttr("session", new JFinalSession(hs));

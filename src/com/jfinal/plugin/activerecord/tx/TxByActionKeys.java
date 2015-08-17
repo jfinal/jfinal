@@ -20,7 +20,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 import com.jfinal.aop.Interceptor;
-import com.jfinal.core.ActionInvocation;
+import com.jfinal.aop.Invocation;
 import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.DbKit;
 import com.jfinal.plugin.activerecord.DbPro;
@@ -41,20 +41,20 @@ public class TxByActionKeys implements Interceptor {
 			actionKeySet.add(actionKey.trim());
 	}
 	
-	public void intercept(final ActionInvocation ai) {
-		Config config = Tx.getConfigWithTxConfig(ai);
+	public void intercept(final Invocation inv) {
+		Config config = Tx.getConfigWithTxConfig(inv);
 		if (config == null)
 			config = DbKit.getConfig();
 		
-		if (actionKeySet.contains(ai.getActionKey())) {
+		if (actionKeySet.contains(inv.getActionKey())) {
 			DbPro.use(config.getName()).tx(new IAtom(){
 				public boolean run() throws SQLException {
-					ai.invoke();
+					inv.invoke();
 					return true;
 				}});
 		}
 		else {
-			ai.invoke();
+			inv.invoke();
 		}
 	}
 }
