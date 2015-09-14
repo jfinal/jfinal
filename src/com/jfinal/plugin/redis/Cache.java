@@ -24,9 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import com.jfinal.plugin.redis.serializer.ISerializer;
+
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
+import redis.clients.util.Pool;
 
 /**
  * Cache.
@@ -38,13 +40,13 @@ import redis.clients.jedis.JedisPool;
 public class Cache {
 	
 	final String name;
-	final JedisPool jedisPool;
+	final Pool<Jedis> jedisPool;
 	final ISerializer serializer;
 	final IKeyNamingPolicy keyNamingPolicy;
 	
 	private final ThreadLocal<Jedis> threadLocalJedis = new ThreadLocal<Jedis>();
 	
-	Cache(String name, JedisPool jedisPool, ISerializer serializer, IKeyNamingPolicy keyNamingPolicy) {
+	Cache(String name, Pool<Jedis> jedisPool, ISerializer serializer, IKeyNamingPolicy keyNamingPolicy) {
 		this.name = name;
 		this.jedisPool = jedisPool;
 		this.serializer = serializer;
