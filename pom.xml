@@ -57,12 +57,12 @@
 			<version>8.1.8</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
+		<!-- dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 			<scope>provided</scope>
-		</dependency>
+		</dependency -->
 		<!-- jsp support by jetty -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -72,9 +72,9 @@
 		</dependency>
 		<!-- cos -->
 		<dependency>
-			<groupId>c3p0</groupId>
+			<groupId>com.mchange</groupId>
 			<artifactId>c3p0</artifactId>
-			<version>0.9.1.2</version>
+			<version>0.9.5.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -144,6 +144,20 @@
 			<version>5.1.20</version>
 		</dependency>
 		-->
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.4.3</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.6</version>
+			<scope>provided</scope>
+		</dependency>
+		
 	</dependencies>
 	
 	<build>
