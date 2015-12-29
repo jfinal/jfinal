@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,38 +27,38 @@ import com.jfinal.render.Render;
  * I18nInterceptor is used to change the locale by request para,
  * and it is also switch the view or pass Res object to the view.
  * 
- * you can extends I18nInterceptor and override the getLocalePara() and getResName()
+ * you can extends I18nInterceptor and override the getLocaleParaName() and getResName()
  * to customize configuration for your own i18n Interceptor
  */
 public class I18nInterceptor implements Interceptor {
 	
-	private String localePara = "_locale";
+	private String localeParaName = "_locale";
 	private String resName = "_res";
 	private boolean isSwitchView = false;
 	
 	public I18nInterceptor() {
 	}
 	
-	public I18nInterceptor(String localePara, String resName) {
-		if (StrKit.isBlank(localePara))
-			throw new IllegalArgumentException("localePara can not be blank.");
+	public I18nInterceptor(String localeParaName, String resName) {
+		if (StrKit.isBlank(localeParaName))
+			throw new IllegalArgumentException("localeParaName can not be blank.");
 		if (StrKit.isBlank(resName))
 			throw new IllegalArgumentException("resName can not be blank.");
 		
-		this.localePara = localePara;
+		this.localeParaName = localeParaName;
 		this.resName = resName;
 	}
 	
-	public I18nInterceptor(String localePara, String resName, boolean isSwitchView) {
-		this(localePara, resName);
+	public I18nInterceptor(String localeParaName, String resName, boolean isSwitchView) {
+		this(localeParaName, resName);
 		this.isSwitchView = isSwitchView;
 	}
 	
 	/**
-	 * Return the localePara, which is used as para name to get locale from the request para and the cookie.
+	 * Return the localeParaName, which is used as para name to get locale from the request para and the cookie.
 	 */
-	protected String getLocalePara() {
-		return localePara;
+	protected String getLocaleParaName() {
+		return localeParaName;
 	}
 	
 	/**
@@ -82,17 +82,15 @@ public class I18nInterceptor implements Interceptor {
 	 * 4: use setAttr(resName, resObject) pass Res object to the view.
 	 */
 	public void intercept(Invocation inv) {
-		inv.invoke();
-		
 		Controller c = inv.getController();
-		String localePara = getLocalePara();
-		String locale = c.getPara(localePara);
+		String localeParaName = getLocaleParaName();
+		String locale = c.getPara(localeParaName);
 		
 		if (StrKit.notBlank(locale)) {	// change locale, write cookie
-			c.setCookie(localePara, locale, Const.DEFAULT_I18N_MAX_AGE_OF_COOKIE);
+			c.setCookie(localeParaName, locale, Const.DEFAULT_I18N_MAX_AGE_OF_COOKIE);
 		}
 		else {							// get locale from cookie and use the default locale if it is null
-			locale = c.getCookie(localePara);
+			locale = c.getCookie(localeParaName);
 			if (StrKit.isBlank(locale))
 				locale = I18n.defaultLocale;
 		}
@@ -104,6 +102,8 @@ public class I18nInterceptor implements Interceptor {
 			Res res = I18n.use(getBaseName(), locale);
 			c.setAttr(getResName(), res);
 		}
+		
+		inv.invoke();
 	}
 	
 	/**

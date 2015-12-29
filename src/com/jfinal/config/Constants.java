@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,19 @@
 
 package com.jfinal.config;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import com.jfinal.core.ActionReporter;
 import com.jfinal.core.Const;
 import com.jfinal.i18n.I18n;
-import com.jfinal.kit.PathKit;
+import com.jfinal.json.IJsonFactory;
+import com.jfinal.json.JsonManager;
 import com.jfinal.kit.StrKit;
-import com.jfinal.log.ILoggerFactory;
-import com.jfinal.log.Logger;
+import com.jfinal.log.ILogFactory;
+import com.jfinal.log.LogManager;
 import com.jfinal.render.IErrorRenderFactory;
 import com.jfinal.render.IMainRenderFactory;
+import com.jfinal.render.IXmlRenderFactory;
 import com.jfinal.render.RenderFactory;
 import com.jfinal.render.ViewType;
 import com.jfinal.token.ITokenCache;
@@ -36,10 +38,11 @@ import com.jfinal.token.ITokenCache;
  */
 final public class Constants {
 	
-	private String fileRenderPath;
-	private String uploadedFileSaveDirectory;
+	private boolean devMode = Const.DEFAULT_DEV_MODE;
 	
-	private boolean devMode = false;
+	private String baseUploadPath = Const.DEFAULT_BASE_UPLOAD_PATH;
+	private String baseDownloadPath = Const.DEFAULT_BASE_DOWNLOAD_PATH;
+	
 	private String encoding = Const.DEFAULT_ENCODING;
 	private String urlParaSeparator = Const.DEFAULT_URL_PARA_SEPARATOR;
 	private ViewType viewType = Const.DEFAULT_VIEW_TYPE;
@@ -49,7 +52,7 @@ final public class Constants {
 	private int maxPostSize = Const.DEFAULT_MAX_POST_SIZE;
 	private int freeMarkerTemplateUpdateDelay = Const.DEFAULT_FREEMARKER_TEMPLATE_UPDATE_DELAY;	// just for not devMode
 	
-	private ITokenCache tokenCache;
+	private ITokenCache tokenCache = null;
 	
 	/**
 	 * Set ITokenCache implementation otherwise JFinal will use the HttpSesion to hold the token.
@@ -101,11 +104,12 @@ final public class Constants {
 	 * @param viewType the view type 
 	 */
 	public void setViewType(ViewType viewType) {
-		if (viewType == null)
+		if (viewType == null) {
 			throw new IllegalArgumentException("viewType can not be null");
-		
-		if (viewType != ViewType.OTHER)	// setMainRenderFactory will set ViewType.OTHER
+		}
+		if (viewType != ViewType.OTHER) {	// setMainRenderFactory will set ViewType.OTHER
 			this.viewType = viewType;
+		}
 	}
 	
 	/**
@@ -113,8 +117,9 @@ final public class Constants {
 	 * @param urlParaSeparator the urlPara separator
 	 */
 	public void setUrlParaSeparator(String urlParaSeparator) {
-		if (StrKit.isBlank(urlParaSeparator) || urlParaSeparator.contains("/"))
+		if (StrKit.isBlank(urlParaSeparator) || urlParaSeparator.contains("/")) {
 			throw new IllegalArgumentException("urlParaSepartor can not be blank and can not contains \"/\"");
+		}
 		this.urlParaSeparator = urlParaSeparator;
 	}
 	
@@ -196,39 +201,46 @@ final public class Constants {
 		return errorViewMapping.get(errorCode);
 	}
 	
-	public String getFileRenderPath() {
-		return fileRenderPath;
+	public String getBaseDownloadPath() {
+		return baseDownloadPath;
 	}
 	
 	/**
-	 * Set the path of file render of controller.
-	 * <p>
-	 * The path is start with root path of this web application.
-	 * The default value is "/download" if you do not config this parameter.
+	 * Set file base download path for Controller.renderFile(...)
+	 * 设置文件下载基础路径，当路径以 "/" 打头或是以 windows 磁盘盘符打头，
+	 * 则将路径设置为绝对路径，否则路径将是以应用根路径为基础的相对路径
+	 * <pre>
+	 * 例如：
+	 * 1：参数 "/var/www/download" 为绝对路径，下载文件存放在此路径之下
+	 * 2：参数 "download" 为相对路径，下载文件存放在 PathKit.getWebRoot() + "/download" 路径之下
+	 * </pre>
 	 */
-	public void setFileRenderPath(String fileRenderPath) {
-		if (StrKit.isBlank(fileRenderPath))
-			throw new IllegalArgumentException("The argument fileRenderPath can not be blank");
-		
-		if (!fileRenderPath.startsWith("/") && !fileRenderPath.startsWith(File.separator))
-			fileRenderPath = File.separator + fileRenderPath;
-		this.fileRenderPath = PathKit.getWebRootPath() + fileRenderPath;
+	public void setBaseDownloadPath(String baseDownloadPath) {
+		if (StrKit.isBlank(baseDownloadPath)) {
+			throw new IllegalArgumentException("baseDownloadPath can not be blank.");
+		}
+		this.baseDownloadPath = baseDownloadPath;
 	}
 	
 	/**
-	 * Set the save directory for upload file. You can use PathUtil.getWebRootPath()
-	 * to get the web root path of this application, then create a path based on
-	 * web root path conveniently.
+	 * Set file base upload path.
+	 * 设置文件上传保存基础路径，当路径以 "/" 打头或是以 windows 磁盘盘符打头，
+	 * 则将路径设置为绝对路径，否则路径将是以应用根路径为基础的相对路径
+	 * <pre>
+	 * 例如：
+	 * 1：参数 "/var/www/upload" 为绝对路径，上传文件将保存到此路径之下
+	 * 2：参数 "upload" 为相对路径，上传文件将保存到 PathKit.getWebRoot() + "/upload" 路径之下
+	 * </pre>
 	 */
-	public void setUploadedFileSaveDirectory(String uploadedFileSaveDirectory) {
-		if (StrKit.isBlank(uploadedFileSaveDirectory))
-			throw new IllegalArgumentException("uploadedFileSaveDirectory can not be blank");
-		
-		this.uploadedFileSaveDirectory = uploadedFileSaveDirectory.trim();
+	public void setBaseUploadPath(String baseUploadPath) {
+		if (StrKit.isBlank(baseUploadPath)) {
+			throw new IllegalArgumentException("baseUploadPath can not be blank.");
+		}
+		this.baseUploadPath = baseUploadPath;
 	}
 	
-	public String getUploadedFileSaveDirectory() {
-		return uploadedFileSaveDirectory;
+	public String getBaseUploadPath() {
+		return baseUploadPath;
 	}
 	
 	public int getMaxPostSize() {
@@ -266,8 +278,9 @@ final public class Constants {
 	 * FreeMarker template update delay for not devMode.
 	 */
 	public void setFreeMarkerTemplateUpdateDelay(int delayInSeconds) {
-		if (delayInSeconds < 0)
+		if (delayInSeconds < 0) {
 			throw new IllegalArgumentException("template_update_delay must more than -1.");
+		}
 		this.freeMarkerTemplateUpdateDelay = delayInSeconds;
 	}
 	
@@ -286,23 +299,60 @@ final public class Constants {
 	 * Set the mainRenderFactory then your can use your custom render in controller as render(String).
 	 */
 	public void setMainRenderFactory(IMainRenderFactory mainRenderFactory) {
-		if (mainRenderFactory == null)
+		if (mainRenderFactory == null) {
 			throw new IllegalArgumentException("mainRenderFactory can not be null.");
-		
+		}
 		this.viewType = ViewType.OTHER;
-		RenderFactory.setMainRenderFactory(mainRenderFactory);
+		RenderFactory.me().setMainRenderFactory(mainRenderFactory);
 	}
 	
-	public void setLoggerFactory(ILoggerFactory loggerFactory) {
-		if (loggerFactory == null)
-			throw new IllegalArgumentException("loggerFactory can not be null.");
-		Logger.setLoggerFactory(loggerFactory);
+	public void setLogFactory(ILogFactory logFactory) {
+		if (logFactory == null) {
+			throw new IllegalArgumentException("logFactory can not be null.");
+		}
+		LogManager.me().setDefaultLogFactory(logFactory);
 	}
 	
 	public void setErrorRenderFactory(IErrorRenderFactory errorRenderFactory) {
-		if (errorRenderFactory == null)
+		if (errorRenderFactory == null) {
 			throw new IllegalArgumentException("errorRenderFactory can not be null.");
-		RenderFactory.setErrorRenderFactory(errorRenderFactory);
+		}
+		RenderFactory.me().setErrorRenderFactory(errorRenderFactory);
+	}
+	
+	public void setXmlRenderFactory(IXmlRenderFactory xmlRenderFactory) {
+		if (xmlRenderFactory == null) {
+			throw new IllegalArgumentException("xmlRenderFactory can not be null.");
+		}
+		RenderFactory.me().setXmlRenderFactory(xmlRenderFactory);
+	}
+	
+	/**
+	 * 设置 Json 转换工厂实现类，目前支持：JFinalJsonFactory(默认)、JacksonFactory、FastJsonFactory
+	 * 分别支持 JFinalJson、Jackson、FastJson
+	 */
+	public void setJsonFactory(IJsonFactory jsonFactory) {
+		if (jsonFactory == null) {
+			throw new IllegalArgumentException("jsonFactory can not be null.");
+		}
+		JsonManager.me().setDefaultJsonFactory(jsonFactory);
+	}
+	
+	/**
+	 * 设置json转换时日期格式，常用格式有："yyyy-MM-dd HH:mm:ss"、 "yyyy-MM-dd"
+	 */
+	public void setJsonDatePattern(String datePattern) {
+		if (StrKit.isBlank(datePattern)) {
+			throw new IllegalArgumentException("datePattern can not be blank.");
+		}
+		JsonManager.me().setDefaultDatePattern(datePattern);
+	}
+	
+	/**
+	 * 调置 devMode 之下的 action report 是否在 invocation 之后，默认值为 true
+	 */
+	public void setReportAfterInvocation(boolean reportAfterInvocation) {
+		ActionReporter.setReportAfterInvocation(reportAfterInvocation);
 	}
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,27 +135,16 @@ public class Enhancer {
 	}
 	
 	private static Interceptor[] createInjectInters(Class<? extends Interceptor>... injectInterClasses) {
-		if (injectInterClasses == null || injectInterClasses.length == 0)
-			throw new IllegalArgumentException("injectInterClasses can be null or be blank array");
-		
-		Interceptor[] result = new Interceptor[injectInterClasses.length];
-		try {
-			for (int i=0; i<result.length; i++)
-				result[i] = injectInterClasses[i].newInstance();
-			return result;
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		return InterceptorManager.me().createInterceptor(injectInterClasses);
 	}
 	
 	/**
 	 * Add global service interceptor, the same as me.addGlobalServiceInterceptor(...)
 	 * in YourJFinalConfig.configInterceptor(Interceptors me)
 	 */
-	public static void addGlobalServiceInterceptor(Interceptor... inters) {
-		InterceptorBuilder.addGlobalServiceInterceptor(inters);
-	}
+	// public static void addGlobalServiceInterceptor(Interceptor... inters) {
+		// InterceptorManager.me().addGlobalServiceInterceptor(inters);
+	// }
 }
 
 

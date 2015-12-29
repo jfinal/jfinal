@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,6 @@ public class JsonRender extends Render {
 	private static final String contentType = "application/json; charset=" + getEncoding();
 	private static final String contentTypeForIE = "text/html; charset=" + getEncoding();
 	private boolean forIE = false;
-	private static int convertDepth = 15;
 	
 	public JsonRender forIE() {
 		forIE = true;
@@ -97,7 +96,7 @@ public class JsonRender extends Render {
 	public JsonRender(final String key, final Object value) {
 		if (key == null)
 			throw new IllegalArgumentException("The parameter key can not be null.");
-		this.jsonText = JsonKit.toJson(new HashMap<String, Object>(){{put(key, value);}}, convertDepth);
+		this.jsonText = JsonKit.toJson(new HashMap<String, Object>(){{put(key, value);}});
 	}
 	
 	public JsonRender(String[] attrs) {
@@ -115,13 +114,7 @@ public class JsonRender extends Render {
 	public JsonRender(Object object) {
 		if (object == null)
 			throw new IllegalArgumentException("The parameter object can not be null.");
-		this.jsonText = JsonKit.toJson(object, convertDepth);
-	}
-	
-	public static void setConvertDepth(int convertDepth) {
-		if (convertDepth < 2)
-			throw new IllegalArgumentException("convert depth can not less than 2.");
-		JsonRender.convertDepth = convertDepth;
+		this.jsonText = JsonKit.toJson(object);
 	}
 	
 	public void render() {
@@ -165,7 +158,7 @@ public class JsonRender extends Render {
 			}
 		}
 		
-		this.jsonText = JsonKit.toJson(map, convertDepth);
+		this.jsonText = JsonKit.toJson(map);
 	}
 	
 	public String[] getAttrs() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@ public interface ISerializer {
 	
     byte[] keyToBytes(String key);
     String keyFromBytes(byte[] bytes);
+    
+    byte[] fieldToBytes(Object field);
+    Object fieldFromBytes(byte[] bytes);
     
 	byte[] valueToBytes(Object value);
     Object valueFromBytes(byte[] bytes);

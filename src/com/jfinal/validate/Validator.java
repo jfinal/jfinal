@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
+import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
 
 /**
@@ -33,15 +34,15 @@ import com.jfinal.kit.StrKit;
  */
 public abstract class Validator implements Interceptor {
 	
-	private Controller controller;
-	private Invocation invocation;
-	private boolean shortCircuit = false;
-	private boolean invalid = false;
-	private String datePattern = null;
+	protected Controller controller;
+	protected Invocation invocation;
+	protected boolean shortCircuit = false;
+	protected boolean invalid = false;
+	protected String datePattern = null;
 	
 	// TODO set the DEFAULT_DATE_PATTERN in Const and config it in Constants. TypeConverter do the same thing.
-	private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
-	private static final String emailAddressPattern = "\\b(^['_A-Za-z0-9-]+(\\.['_A-Za-z0-9-]+)*@([A-Za-z0-9-])+(\\.[A-Za-z0-9-]+)*((\\.[A-Za-z0-9]{2,})|(\\.[A-Za-z0-9]{2,}\\.[A-Za-z0-9]{2,}))$)\\b";
+	protected static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
+	protected static final String emailAddressPattern = "\\b(^['_A-Za-z0-9-]+(\\.['_A-Za-z0-9-]+)*@([A-Za-z0-9-])+(\\.[A-Za-z0-9-]+)*((\\.[A-Za-z0-9]{2,})|(\\.[A-Za-z0-9]{2,}\\.[A-Za-z0-9]{2,}))$)\\b";
 	
 	protected void setShortCircuit(boolean shortCircuit) {
 		this.shortCircuit = shortCircuit;
@@ -57,19 +58,27 @@ public abstract class Validator implements Interceptor {
 	
 	final public void intercept(Invocation invocation) {
 		Validator validator = null;
-		try {validator = getClass().newInstance();}
-		catch (Exception e) {throw new RuntimeException(e);}
+		try {
+			validator = getClass().newInstance();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 		
 		validator.controller = invocation.getController();
 		validator.invocation = invocation;
 		
-		try {validator.validate(validator.controller);} 
-		catch (ValidateException e) {/* should not be throw */}			// short circuit validate need this
+		try {
+			validator.validate(validator.controller);
+		} catch (ValidateException e) {
+			// should not be throw, short circuit validate need this
+			LogKit.logNothing(e);
+		}
 		
-		if (validator.invalid)
+		if (validator.invalid) {
 			validator.handleError(validator.controller);
-		else
+		} else {
 			invocation.invoke();
+		}
 	}
 	
 	/**
@@ -507,11 +516,18 @@ public abstract class Validator implements Interceptor {
 			return ;
 		}
 		value = value.trim().toLowerCase();
-		if ("1".equals(value) || "true".equals(value))
+		if ("1".equals(value) || "true".equals(value)) {
 			return ;
-		else if ("0".equals(value) || "false".equals(value))
+		} else if ("0".equals(value) || "false".equals(value)) {
 			return ;
+		}
 		addError(errorKey, errorMessage);
+	}
+	
+	protected void validateCaptcha(String field, String errorKey, String errorMessage) {
+		if (getController().validateCaptcha(field) == false) {
+			addError(errorKey, errorMessage);
+		}
 	}
 }
 

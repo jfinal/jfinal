@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.jfinal.plugin.activerecord;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -34,16 +35,18 @@ public final class DbKit {
 	static Config config = null;
 	
 	/**
-	 * For Model.getAttrsMap()/getModifyFlag() and Record.getColumnsMap()
+	 * 1: For ActiveRecordPlugin.useAsDataTransfer(...) 用于分布式场景
+	 * 2: For Model.getAttrsMap()/getModifyFlag() and Record.getColumnsMap()
 	 * while the ActiveRecordPlugin not start or the Exception throws of HashSessionManager.restorSession(..) by Jetty
 	 */
-	static Config brokenConfig = new Config();
+	static Config brokenConfig = Config.createBrokenConfig();
 	
 	private static Map<Class<? extends Model>, Config> modelToConfig = new HashMap<Class<? extends Model>, Config>();
 	private static Map<String, Config> configNameToConfig = new HashMap<String, Config>();
 	
 	static final Object[] NULL_PARA_ARRAY = new Object[0];
 	public static final String MAIN_CONFIG_NAME = "main";
+	public static final int DEFAULT_TRANSACTION_LEVEL = Connection.TRANSACTION_REPEATABLE_READ;
 	
 	private DbKit() {}
 	
@@ -89,25 +92,13 @@ public final class DbKit {
 		return modelToConfig.get(modelClass);
 	}
 	
-	static final void closeQuietly(ResultSet rs, Statement st) {
-		if (rs != null) {try {rs.close();} catch (SQLException e) {}}
-		if (st != null) {try {st.close();} catch (SQLException e) {}}
+	static final void close(ResultSet rs, Statement st) {
+		if (rs != null) {try {rs.close();} catch (SQLException e) {throw new ActiveRecordException(e);}}
+		if (st != null) {try {st.close();} catch (SQLException e) {throw new ActiveRecordException(e);}}
 	}
 	
-	static final void closeQuietly(Statement st) {
-		if (st != null) {try {st.close();} catch (SQLException e) {}}
-	}
-	
-	public static String replaceFormatSqlOrderBy(String sql) {
-		sql = sql.replaceAll("(\\s)+", " ");
-		int index = sql.toLowerCase().lastIndexOf("order by");
-		if (index > sql.toLowerCase().lastIndexOf(")")) {
-			String sql1 = sql.substring(0, index);
-			String sql2 = sql.substring(index);
-			sql2 = sql2.replaceAll("[oO][rR][dD][eE][rR] [bB][yY] [\u4e00-\u9fa5a-zA-Z0-9_.]+((\\s)+(([dD][eE][sS][cC])|([aA][sS][cC])))?(( )*,( )*[\u4e00-\u9fa5a-zA-Z0-9_.]+(( )+(([dD][eE][sS][cC])|([aA][sS][cC])))?)*", "");
-			return sql1 + sql2;
-		}
-		return sql;
+	static final void close(Statement st) {
+		if (st != null) {try {st.close();} catch (SQLException e) {throw new ActiveRecordException(e);}}
 	}
 	
 	public static Config removeConfig(String configName) {

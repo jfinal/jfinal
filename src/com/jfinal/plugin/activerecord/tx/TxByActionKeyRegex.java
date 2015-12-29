@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,19 +27,18 @@ import com.jfinal.plugin.activerecord.DbPro;
 import com.jfinal.plugin.activerecord.IAtom;
 
 /**
- * TxByRegex.
- * For controller interception, the regular expression matching the controller key,
- * otherwise matching the method name of the method
+ * TxByActionKeyRegex.
+ * The regular expression match the controller key.
  */
-public class TxByRegex implements Interceptor {
+public class TxByActionKeyRegex implements Interceptor {
 	
 	private Pattern pattern;
 	
-	public TxByRegex(String regex) {
+	public TxByActionKeyRegex(String regex) {
 		this(regex, true);
 	}
 	
-	public TxByRegex(String regex, boolean caseSensitive) {
+	public TxByActionKeyRegex(String regex, boolean caseSensitive) {
 		if (StrKit.isBlank(regex))
 			throw new IllegalArgumentException("regex can not be blank.");
 		
@@ -51,9 +50,8 @@ public class TxByRegex implements Interceptor {
 		if (config == null)
 			config = DbKit.getConfig();
 		
-		String target = inv.isActionInvocation() ? inv.getActionKey() : inv.getMethodName();
-		if (pattern.matcher(target).matches()) {
-			DbPro.use(config.getName()).tx(new IAtom(){
+		if (pattern.matcher(inv.getActionKey()).matches()) {
+			DbPro.use(config.getName()).tx(new IAtom() {
 				public boolean run() throws SQLException {
 					inv.invoke();
 					return true;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,19 +19,27 @@ package com.jfinal.log;
 import org.apache.log4j.Level;
 
 /**
- * Log4jLogger.
+ * Log4jLog.
  */
-public class Log4jLogger extends Logger {
+public class Log4jLog extends Log {
 	
 	private org.apache.log4j.Logger log;
-	private static final String callerFQCN = Log4jLogger.class.getName();
+	private static final String callerFQCN = Log4jLog.class.getName();
 	
-	Log4jLogger(Class<?> clazz) {
+	Log4jLog(Class<?> clazz) {
 		log = org.apache.log4j.Logger.getLogger(clazz);
 	}
 	
-	Log4jLogger(String name) {
+	Log4jLog(String name) {
 		log = org.apache.log4j.Logger.getLogger(name);
+	}
+	
+	public static Log getLog(Class<?> clazz) {
+		return new Log4jLog(clazz);
+	}
+	
+	public static Log getLog(String name) {
+		return new Log4jLog(name);
 	}
 	
 	public void info(String message) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.webapp.WebAppContext;
 import com.jfinal.core.Const;
 import com.jfinal.kit.FileKit;
+import com.jfinal.kit.LogKit;
 import com.jfinal.kit.PathKit;
 import com.jfinal.kit.StrKit;
 
@@ -61,14 +62,14 @@ class JettyServer implements IServer {
 	
 	public void start() {
 		if (!running) {
-			try {doStart();} catch (Exception e) {e.printStackTrace();}
+			try {doStart();} catch (Exception e) {LogKit.error(e.getMessage(), e);}
 			running = true;
 		}
 	}
 	
 	public void stop() {
 		if (running) {
-			try {server.stop();} catch (Exception e) {e.printStackTrace();}
+			try {server.stop();} catch (Exception e) {LogKit.error(e.getMessage(), e);}
 			running = false;
 		}
 	}
@@ -108,7 +109,7 @@ class JettyServer implements IServer {
 						System.err.println("Loading complete.");
 					} catch (Exception e) {
 						System.err.println("Error reconfiguring/restarting webapp after change in watched files");
-						e.printStackTrace();
+						LogKit.error(e.getMessage(), e);
 					}
 				}
 			};
@@ -122,7 +123,7 @@ class JettyServer implements IServer {
 			System.out.println("Starting Complete. Welcome To The JFinal World :)");
 			server.join();
 		} catch (Exception e) {
-			e.printStackTrace();
+			LogKit.error(e.getMessage(), e);
 			System.exit(100);
 		}
 		return;
@@ -135,7 +136,7 @@ class JettyServer implements IServer {
 			JFinalClassLoader wacl = new JFinalClassLoader(webApp, classPath);
 			wacl.addClassPath(classPath);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogKit.error(e.getMessage(), e);
 		}
 	}
 	
@@ -148,6 +149,7 @@ class JettyServer implements IServer {
 			FileKit.delete(new File(getStoreDir()));
 		}
 		catch (Exception e) {
+			LogKit.logNothing(e);
 		}
 	}
 	
@@ -188,6 +190,7 @@ class JettyServer implements IServer {
 			ds.setReuseAddress(true);
 			return true;
 		} catch (IOException e) {
+			LogKit.logNothing(e);
 		} finally {
 			if (ds != null) {
 				ds.close();
@@ -198,6 +201,7 @@ class JettyServer implements IServer {
 					ss.close();
 				} catch (IOException e) {
 					// should not be thrown, just detect port available.
+					LogKit.logNothing(e);
 				}
 			}
 		}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.CPI;
-import com.jfinal.plugin.activerecord.DbKit;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.ModelBuilder;
 import com.jfinal.plugin.activerecord.Page;
@@ -72,8 +71,9 @@ public class AnsiSqlDialect extends Dialect {
 		sql.append(table.getName());
 		sql.append(" where ");
 		for (int i=0; i<pKeys.length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				sql.append(" and ");
+			}
 			sql.append(pKeys[i]).append(" = ?");
 		}
 		return sql.toString();
@@ -84,27 +84,19 @@ public class AnsiSqlDialect extends Dialect {
 		String[] pKeys = table.getPrimaryKey();
 		for (Entry<String, Object> e : attrs.entrySet()) {
 			String colName = e.getKey();
-			if (modifyFlag.contains(colName) && table.hasColumnLabel(colName)) {
-				boolean isKey = false;
-				for (String pKey : pKeys)	// skip primaryKeys
-					if (pKey.equalsIgnoreCase(colName)) {
-						isKey = true ;
-						break ;
-					}
-				
-				if (isKey)
-					continue;
-				
-				if (paras.size() > 0)
+			if (modifyFlag.contains(colName) && !isPrimaryKey(colName, pKeys) && table.hasColumnLabel(colName)) {
+				if (paras.size() > 0) {
 					sql.append(", ");
+				}
 				sql.append(colName).append(" = ? ");
 				paras.add(e.getValue());
 			}
 		}
 		sql.append(" where ");
 		for (int i=0; i<pKeys.length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				sql.append(" and ");
+			}
 			sql.append(pKeys[i]).append(" = ?");
 			paras.add(attrs.get(pKeys[i]));
 		}
@@ -116,8 +108,9 @@ public class AnsiSqlDialect extends Dialect {
 		sql.append(" where ");
 		String[] pKeys = table.getPrimaryKey();
 		for (int i=0; i<pKeys.length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				sql.append(" and ");
+			}
 			sql.append(pKeys[i]).append(" = ?");
 		}
 		return sql.toString();
@@ -129,8 +122,9 @@ public class AnsiSqlDialect extends Dialect {
 		
 		StringBuilder sql = new StringBuilder("select * from ").append(tableName).append(" where ");
 		for (int i=0; i<pKeys.length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				sql.append(" and ");
+			}
 			sql.append(pKeys[i]).append(" = ?");
 		}
 		return sql.toString();
@@ -142,14 +136,15 @@ public class AnsiSqlDialect extends Dialect {
 		
 		StringBuilder sql = new StringBuilder("delete from ").append(tableName).append(" where ");
 		for (int i=0; i<pKeys.length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				sql.append(" and ");
+			}
 			sql.append(pKeys[i]).append(" = ?");
 		}
 		return sql.toString();
 	}
 	
-	public void forDbSave(StringBuilder sql, List<Object> paras, String tableName, String[] pKeys, Record record) {
+	public void forDbSave(String tableName, String[] pKeys, Record record, StringBuilder sql, List<Object> paras) {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
 		
@@ -187,8 +182,9 @@ public class AnsiSqlDialect extends Dialect {
 		}
 		sql.append(" where ");
 		for (int i=0; i<pKeys.length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				sql.append(" and ");
+			}
 			sql.append(pKeys[i]).append(" = ?");
 			paras.add(ids[i]);
 		}
@@ -197,7 +193,7 @@ public class AnsiSqlDialect extends Dialect {
 	/**
 	 * SELECT * FROM subject t1 WHERE (SELECT count(*) FROM subject t2 WHERE t2.id < t1.id AND t2.key = '123') > = 10 AND (SELECT count(*) FROM subject t2 WHERE t2.id < t1.id AND t2.key = '123') < 20 AND t1.key = '123'
 	 */
-	public void forPaginate(StringBuilder sql, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
+	public String forPaginate(int pageNumber, int pageSize, String sql) {
 		throw new ActiveRecordException("Your should not invoke this method because takeOverDbPaginate(...) will take over it.");
 	}
 	
@@ -206,26 +202,32 @@ public class AnsiSqlDialect extends Dialect {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
-		long totalRow = 0;
-		int totalPage = 0;
-		List result = CPI.query(conn, "select count(*) " + DbKit.replaceFormatSqlOrderBy(sqlExceptSelect), paras);
-		int size = result.size();
-		if (size == 1)
-			totalRow = ((Number)result.get(0)).longValue();
-		else if (size > 1)
-			totalRow = result.size();
-		else
-			return new Page<Record>(new ArrayList<Record>(0), pageNumber, pageSize, 0, 0);
+	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, String sql, Object... paras) throws SQLException {
+		Object[] actualSqlParas = new Object[2];
+		String totalRowSql = forTotalRow(actualSqlParas, sql, paras);
+		sql = (String)actualSqlParas[0];
+		paras = (Object[])actualSqlParas[1];
 		
-		totalPage = (int) (totalRow / pageSize);
+		long totalRow;
+		List result = CPI.query(conn, totalRowSql, paras);
+		if (isGroupBySql(sql)) {
+			totalRow = result.size();
+		} else {
+			totalRow = (result.size() > 0) ? ((Number)result.get(0)).longValue() : 0;
+		}
+		if (totalRow == 0) {
+			return new Page<Record>(new ArrayList<Record>(0), pageNumber, pageSize, 0, 0);
+		}
+		
+		int totalPage = (int) (totalRow / pageSize);
 		if (totalRow % pageSize != 0) {
 			totalPage++;
 		}
+		if (pageNumber > totalPage) {
+			return new Page<Record>(new ArrayList<Record>(0), pageNumber, pageSize, totalPage, (int)totalRow);
+		}
 		
-		StringBuilder sql = new StringBuilder();
-		sql.append(select).append(" ").append(sqlExceptSelect);
-		PreparedStatement pst = conn.prepareStatement(sql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 		for (int i=0; i<paras.length; i++) {
 			pst.setObject(i + 1, paras[i]);
 		}
@@ -233,9 +235,11 @@ public class AnsiSqlDialect extends Dialect {
 		
 		// move the cursor to the start
 		int offset = pageSize * (pageNumber - 1);
-		for (int i=0; i<offset; i++)
-			if (!rs.next())
+		for (int i=0; i<offset; i++) {
+			if (!rs.next()) {
 				break;
+			}
+		}
 		
 		List<Record> list = buildRecord(rs, pageSize);
 		if (rs != null) rs.close();
@@ -255,17 +259,17 @@ public class AnsiSqlDialect extends Dialect {
 			Map<String, Object> columns = record.getColumns();
 			for (int i=1; i<=columnCount; i++) {
 				Object value;
-				if (types[i] < Types.BLOB)
+				if (types[i] < Types.BLOB) {
 					value = rs.getObject(i);
-				else if (types[i] == Types.CLOB)
+				} else if (types[i] == Types.CLOB) {
 					value = ModelBuilder.handleClob(rs.getClob(i));
-				else if (types[i] == Types.NCLOB)
+				} else if (types[i] == Types.NCLOB) {
 					value = ModelBuilder.handleClob(rs.getNClob(i));
-				else if (types[i] == Types.BLOB)
+				} else if (types[i] == Types.BLOB) {
 					value = ModelBuilder.handleBlob(rs.getBlob(i));
-				else
+				} else {
 					value = rs.getObject(i);
-				
+				}
 				columns.put(labelNames[i], value);
 			}
 			result.add(record);
@@ -285,27 +289,33 @@ public class AnsiSqlDialect extends Dialect {
 	}
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Page<? extends Model> takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws Exception {
-		long totalRow = 0;
-		int totalPage = 0;
-		List result = CPI.query(conn, "select count(*) " + DbKit.replaceFormatSqlOrderBy(sqlExceptSelect), paras);
-		int size = result.size();
-		if (size == 1)
-			totalRow = ((Number)result.get(0)).longValue();		// totalRow = (Long)result.get(0);
-		else if (size > 1)
-			totalRow = result.size();
-		else
-			return new Page(new ArrayList(0), pageNumber, pageSize, 0, 0);	// totalRow = 0;
+	public Page<? extends Model> takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, String sql, Object... paras) throws Exception {
+		Object[] actualSqlParas = new Object[2];
+		String totalRowSql = forTotalRow(actualSqlParas, sql, paras);
+		sql = (String)actualSqlParas[0];
+		paras = (Object[])actualSqlParas[1];
 		
-		totalPage = (int) (totalRow / pageSize);
+		long totalRow;
+		List result = CPI.query(conn, totalRowSql, paras);
+		if (isGroupBySql(sql)) {
+			totalRow = result.size();
+		} else {
+			totalRow = (result.size() > 0) ? ((Number)result.get(0)).longValue() : 0;
+		}
+		if (totalRow == 0) {
+			return new Page(new ArrayList(0), pageNumber, pageSize, 0, 0);	// totalRow = 0;
+		}
+		
+		int totalPage = (int) (totalRow / pageSize);
 		if (totalRow % pageSize != 0) {
 			totalPage++;
 		}
+		if (pageNumber > totalPage) {
+			return new Page(new ArrayList(0), pageNumber, pageSize, totalPage, (int)totalRow);
+		}
 		
 		// --------
-		StringBuilder sql = new StringBuilder();
-		sql.append(select).append(" ").append(sqlExceptSelect);
-		PreparedStatement pst = conn.prepareStatement(sql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 		for (int i=0; i<paras.length; i++) {
 			pst.setObject(i + 1, paras[i]);
 		}
@@ -313,9 +323,11 @@ public class AnsiSqlDialect extends Dialect {
 		
 		// move the cursor to the start
 		int offset = pageSize * (pageNumber - 1);
-		for (int i=0; i<offset; i++)
-			if (!rs.next())
+		for (int i=0; i<offset; i++) {
+			if (!rs.next()) {
 				break;
+			}
+		}
 		
 		List list = buildModel(rs, modelClass, pageSize);
 		if (rs != null) rs.close();
@@ -336,17 +348,17 @@ public class AnsiSqlDialect extends Dialect {
 			Map<String, Object> attrs = CPI.getAttrs(ar);
 			for (int i=1; i<=columnCount; i++) {
 				Object value;
-				if (types[i] < Types.BLOB)
+				if (types[i] < Types.BLOB) {
 					value = rs.getObject(i);
-				else if (types[i] == Types.CLOB)
+				} else if (types[i] == Types.CLOB) {
 					value = ModelBuilder.handleClob(rs.getClob(i));
-				else if (types[i] == Types.NCLOB)
+				} else if (types[i] == Types.NCLOB) {
 					value = ModelBuilder.handleClob(rs.getNClob(i));
-				else if (types[i] == Types.BLOB)
+				} else if (types[i] == Types.BLOB) {
 					value = ModelBuilder.handleBlob(rs.getBlob(i));
-				else
+				} else {
 					value = rs.getObject(i);
-				
+				}
 				attrs.put(labelNames[i], value);
 			}
 			result.add((T)ar);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.jfinal.config.Constants;
 import com.jfinal.config.JFinalConfig;
 import com.jfinal.handler.Handler;
-import com.jfinal.log.Logger;
+import com.jfinal.log.Log;
 
 /**
  * JFinal framework filter
@@ -40,7 +40,7 @@ public final class JFinalFilter implements Filter {
 	private JFinalConfig jfinalConfig;
 	private Constants constants;
 	private static final JFinal jfinal = JFinal.me();
-	private static Logger log;
+	private static Log log;
 	private int contextPathLength;
 	
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -104,7 +104,7 @@ public final class JFinalFilter implements Filter {
 			throw new RuntimeException("Can not create instance of class: " + configClass + ". Please check the config in web.xml");
 	}
 	
-	static void initLogger() {
-		log = Logger.getLogger(JFinalFilter.class);
+	static void initLog() {
+		log = Log.getLog(JFinalFilter.class);
 	}
 }

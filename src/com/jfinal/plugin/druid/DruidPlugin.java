@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,6 +81,7 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	private List<Filter> filterList;
 	
 	private DruidDataSource ds;
+	private boolean isStarted = false;
 	
 	public DruidPlugin(String url, String username, String password) {
 		this.url = url;
@@ -124,6 +125,9 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	}
 	
 	public boolean start() {
+		if (isStarted)
+			return true;
+		
 		ds = new DruidDataSource();
 		
 		ds.setUrl(url);
@@ -155,6 +159,8 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 			try {ds.setFilters(filters);} catch (SQLException e) {throw new RuntimeException(e);}
 		
 		addFilterList(ds);
+		
+		isStarted = true;
 		return true;
 	}
 	
@@ -178,6 +184,9 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	public boolean stop() {
 		if (ds != null)
 			ds.close();
+		
+		ds = null;
+		isStarted = false;
 		return true;
 	}
 	

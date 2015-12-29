@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,9 @@ public class CaseInsensitiveContainerFactory implements IContainerFactory {
 	}
 	
 	private static Object convertCase(Object key) {
-		if (key instanceof String)
+		if (key instanceof String) {
 			return toLowerCase ? ((String)key).toLowerCase() : ((String)key).toUpperCase();
+		}
 		return key;
 	}
 	
@@ -77,9 +78,11 @@ public class CaseInsensitiveContainerFactory implements IContainerFactory {
 		
 		public boolean addAll(Collection c) {
 			boolean modified = false;
-			for (Object o : c)
-				if (super.add(convertCase(o)))
+			for (Object o : c) {
+				if (super.add(convertCase(o))) {
 					modified = true;
+				}
+			}
 			return modified;
 		}
 	}
@@ -101,8 +104,9 @@ public class CaseInsensitiveContainerFactory implements IContainerFactory {
 		}
 		
 		public void putAll(Map m) {
-			for (Map.Entry e : (Set<Map.Entry>)(m.entrySet()))
+			for (Map.Entry e : (Set<Map.Entry>)(m.entrySet())) {
 				super.put(convertCase(e.getKey()), e.getValue());
+			}
 		}
 		
 		public Object remove(Object key) {

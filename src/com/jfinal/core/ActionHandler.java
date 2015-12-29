@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.jfinal.config.Constants;
 import com.jfinal.aop.Invocation;
 import com.jfinal.handler.Handler;
-import com.jfinal.log.Logger;
+import com.jfinal.log.Log;
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderException;
 import com.jfinal.render.RenderFactory;
@@ -34,7 +34,7 @@ final class ActionHandler extends Handler {
 	private final boolean devMode;
 	private final ActionMapping actionMapping;
 	private static final RenderFactory renderFactory = RenderFactory.me();
-	private static final Logger log = Logger.getLogger(ActionHandler.class);
+	private static final Log log = Log.getLog(ActionHandler.class);
 	
 	public ActionHandler(ActionMapping actionMapping, Constants constants) {
 		this.actionMapping = actionMapping;
@@ -70,9 +70,13 @@ final class ActionHandler extends Handler {
 			controller.init(request, response, urlPara[0]);
 			
 			if (devMode) {
-				boolean isMultipartRequest = ActionReporter.reportCommonRequest(controller, action);
-				new Invocation(action, controller).invoke();
-				if (isMultipartRequest) ActionReporter.reportMultipartRequest(controller, action);
+				if (ActionReporter.isReportAfterInvocation(request)) {
+					new Invocation(action, controller).invoke();
+					ActionReporter.report(controller, action);
+				} else {
+					ActionReporter.report(controller, action);
+					new Invocation(action, controller).invoke();
+				}
 			}
 			else {
 				new Invocation(action, controller).invoke();

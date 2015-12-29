@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,32 +27,43 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.HashKit;
+import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.Render;
 
 /**
- * CaptchaRender
+ * CaptchaRender.本验证码实现已被 Deprecated 不建使用.
+ * 建议使用新版本的 Controller.renderCaptcha() 既简单又美观，并且还提供了 
+ * Controller.validateCaptcha(para)与 Validator.validateCaptcha(para)支持
  */
+@Deprecated
 public class CaptchaRender extends Render {
 	
 	private static final int WIDTH = 80, HEIGHT = 26;
 	private static final String[] strArr = {"3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"};
 	
-	private String randomCodeKey;
+	private String captchaName;
 	
-	public CaptchaRender(String randomCodeKey) {
-		if (StrKit.isBlank(randomCodeKey))
-			throw new IllegalArgumentException("randomCodeKey can not be blank");
-		this.randomCodeKey = randomCodeKey;
+	public CaptchaRender(String captchaName) {
+		if (StrKit.isBlank(captchaName))
+			throw new IllegalArgumentException("captchaName can not be blank");
+		this.captchaName = captchaName;
 	}
 	
 	public void render() {
 		BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		String vCode = drawGraphic(image);
+		vCode = vCode.toUpperCase();
 		vCode = HashKit.md5(vCode);
-		Cookie cookie = new Cookie(randomCodeKey, vCode);
+		Cookie cookie = new Cookie(captchaName, vCode);
 		cookie.setMaxAge(-1);
-		cookie.setPath("/");
+		// cookie.setPath("/");
+		try {
+			// try catch 用来兼容不支持 httpOnly 的 tomcat、jetty
+			cookie.setHttpOnly(true);
+		} catch (Throwable t) {
+			LogKit.logNothing(t);
+		}
 		response.addCookie(cookie);
 		response.setHeader("Pragma","no-cache");
         response.setHeader("Cache-Control","no-cache");
@@ -67,8 +78,9 @@ public class CaptchaRender extends Render {
 			throw new RuntimeException(e);
 		}
 		finally {
-			if (sos != null)
-				try {sos.close();} catch (IOException e) {e.printStackTrace();}
+			if (sos != null) {
+				try {sos.close();} catch (IOException e) {LogKit.logNothing(e);}
+			}
 		}
 	}
 
@@ -125,17 +137,18 @@ public class CaptchaRender extends Render {
 		return new Color(r, g, b);
 	}
 	
-//	public static boolean validate(String inputRandomCode, String rightRandomCode) {
-//		if (StrKit.isBlank(inputRandomCode))
-//			return false;
-//		return inputRandomCode.equalsIgnoreCase(rightRandomCode);
-//	}
-	
-	public static boolean validate(Controller controller, String inputRandomCode, String randomCodeKey) {
-		if (StrKit.isBlank(inputRandomCode))
+	public static boolean validate(Controller controller, String userInputCaptcha, String captchaName) {
+		if (StrKit.isBlank(userInputCaptcha)) {
 			return false;
-		inputRandomCode = HashKit.md5(inputRandomCode);
-		return inputRandomCode.equalsIgnoreCase(controller.getCookie(randomCodeKey));
+		}
+		
+		userInputCaptcha = userInputCaptcha.toUpperCase();
+		userInputCaptcha = HashKit.md5(userInputCaptcha);
+		boolean result = userInputCaptcha.equals(controller.getCookie(captchaName));
+		if (result == true) {
+			controller.removeCookie(captchaName);
+		}
+		return result;
 	}
 }
 

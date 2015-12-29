@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
-import com.jfinal.kit.PathKit;
+import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
 
 /**
@@ -36,23 +36,39 @@ public class FileRender extends Render {
 	private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
 	
 	private File file;
-	private static String fileDownloadPath;
+	private static String baseDownloadPath;
 	private static ServletContext servletContext;
-	private static String webRootPath;
 	
 	public FileRender(File file) {
+		if (file == null) {
+			throw new IllegalArgumentException("file can not be null.");
+		}
 		this.file = file;
 	}
 	
 	public FileRender(String fileName) {
-		fileName = fileName.startsWith("/") ? webRootPath + fileName : fileDownloadPath + fileName;
-		this.file = new File(fileName);
+		if (StrKit.isBlank(fileName)) {
+			throw new IllegalArgumentException("fileName can not be blank.");
+		}
+		
+		String fullFileName;
+		fileName = fileName.trim();
+		if (fileName.startsWith("/") || fileName.startsWith("\\")) {
+			if (baseDownloadPath.equals("/")) {
+				fullFileName = fileName;
+			} else {
+				fullFileName = baseDownloadPath + fileName;	
+			}
+		} else {
+			fullFileName = baseDownloadPath + File.separator + fileName;
+		}
+		
+		this.file = new File(fullFileName);
 	}
 	
-	static void init(String fileDownloadPath, ServletContext servletContext) {
-		FileRender.fileDownloadPath = fileDownloadPath;
+	static void init(String baseDownloadPath, ServletContext servletContext) {
+		FileRender.baseDownloadPath = baseDownloadPath;
 		FileRender.servletContext = servletContext;
-		webRootPath = PathKit.getWebRootPath();
 	}
 	
 	public void render() {
@@ -103,9 +119,9 @@ public class FileRender extends Render {
         }
         finally {
             if (inputStream != null)
-                try {inputStream.close();} catch (IOException e) {}
+                try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
             if (outputStream != null)
-            	try {outputStream.close();} catch (IOException e) {}
+            	try {outputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
         }
 	}
 	
@@ -154,9 +170,9 @@ public class FileRender extends Render {
         }
         finally {
             if (inputStream != null)
-                try {inputStream.close();} catch (IOException e) {}
+                try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
             if (outputStream != null)
-            	try {outputStream.close();} catch (IOException e) {}
+            	try {outputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
         }
 	}
 	
@@ -202,3 +218,4 @@ public class FileRender extends Render {
 			throw new RuntimeException("Range error");
 	}
 }
+

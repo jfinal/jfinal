@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,10 @@ import java.util.Map;
  */
 public class Ret {
 	
-	private Map<Object, Object> map = new HashMap<Object, Object>();
+	private Map<Object, Object> data = new HashMap<Object, Object>();
 	
 	public Ret() {
 		
-	}
-	
-	public Ret(Object key, Object value) {
-		map.put(key, value);
 	}
 	
 	public static Ret create() {
@@ -39,49 +35,77 @@ public class Ret {
 	}
 	
 	public static Ret create(Object key, Object value) {
-		return new Ret(key, value);
+		return new Ret().put(key, value);
 	}
 	
 	public Ret put(Object key, Object value) {
-		map.put(key, value);
+		data.put(key, value);
+		return this;
+	}
+	
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public Ret put(Map map) {
+		this.data.putAll(map);
+		return this;
+	}
+	
+	public Ret put(Ret ret) {
+		this.data.putAll(ret.data);
 		return this;
 	}
 	
 	@SuppressWarnings("unchecked")
 	public <T> T get(Object key) {
-		return (T)map.get(key);
+		return (T)data.get(key);
+	}
+	
+	public boolean isEmpty() {
+		return data.isEmpty();
+	}
+	
+	public int size() {
+		return data.size();
+	}
+	
+	public Ret clear() {
+		data.clear();
+		return this;
+	}
+	
+	public boolean equals(Ret ret) {
+		return ret != null && this.data.equals(ret.data);
 	}
 	
 	/**
 	 * key 存在，但 value 可能为 null
 	 */
 	public boolean containsKey(Object key) {
-		return map.containsKey(key);
+		return data.containsKey(key);
 	}
 	
 	public boolean containsValue(Object value) {
-		return map.containsValue(value);
+		return data.containsValue(value);
 	}
 	
 	/**
 	 * key 存在，并且 value 不为 null
 	 */
 	public boolean notNull(Object key) {
-		return map.get(key) != null;
+		return data.get(key) != null;
 	}
 	
 	/**
 	 * key 不存在，或者 key 存在但 value 为null
 	 */
 	public boolean isNull(Object key) {
-		return map.get(key) == null;
+		return data.get(key) == null;
 	}
 	
 	/**
 	 * key 存在，并且 value 为 true，则返回 true
 	 */
 	public boolean isTrue(Object key) {
-		Object value = map.get(key);
+		Object value = data.get(key);
 		return (value instanceof Boolean && ((Boolean)value == true));
 	}
 	
@@ -89,13 +113,17 @@ public class Ret {
 	 * key 存在，并且 value 为 false，则返回 true
 	 */
 	public boolean isFalse(Object key) {
-		Object value = map.get(key);
+		Object value = data.get(key);
 		return (value instanceof Boolean && ((Boolean)value == false));
 	}
 	
 	@SuppressWarnings("unchecked")
 	public <T> T remove(Object key) {
-		return (T)map.remove(key);
+		return (T)data.remove(key);
+	}
+	
+	public Map<Object, Object> getData() {
+		return data;
 	}
 }
 

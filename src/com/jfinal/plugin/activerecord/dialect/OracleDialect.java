@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,9 @@ public class OracleDialect extends Dialect {
 		sql.append(table.getName());
 		sql.append(" where ");
 		for (int i=0; i<pKeys.length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				sql.append(" and ");
+			}
 			sql.append(pKeys[i]).append(" = ?");
 		}
 		return sql.toString();
@@ -79,27 +80,19 @@ public class OracleDialect extends Dialect {
 		String[] pKeys = table.getPrimaryKey();
 		for (Entry<String, Object> e : attrs.entrySet()) {
 			String colName = e.getKey();
-			if (modifyFlag.contains(colName) && table.hasColumnLabel(colName)) {
-				boolean isKey = false;
-				for (String pKey : pKeys)	// skip primaryKeys
-					if (pKey.equalsIgnoreCase(colName)) {
-						isKey = true;
-						break ;
-					}
-				
-				if (isKey)
-					continue ;
-				
-				if (paras.size() > 0)
+			if (modifyFlag.contains(colName) && !isPrimaryKey(colName, pKeys) && table.hasColumnLabel(colName)) {
+				if (paras.size() > 0) {
 					sql.append(", ");
+				}
 				sql.append(colName).append(" = ? ");
 				paras.add(e.getValue());
 			}
 		}
 		sql.append(" where ");
 		for (int i=0; i<pKeys.length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				sql.append(" and ");
+			}
 			sql.append(pKeys[i]).append(" = ?");
 			paras.add(attrs.get(pKeys[i]));
 		}
@@ -111,8 +104,9 @@ public class OracleDialect extends Dialect {
 		sql.append(" where ");
 		String[] pKeys = table.getPrimaryKey();
 		for (int i=0; i<pKeys.length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				sql.append(" and ");
+			}
 			sql.append(pKeys[i]).append(" = ?");
 		}
 		return sql.toString();
@@ -124,8 +118,9 @@ public class OracleDialect extends Dialect {
 		
 		StringBuilder sql = new StringBuilder("select * from ").append(tableName).append(" where ");
 		for (int i=0; i<pKeys.length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				sql.append(" and ");
+			}
 			sql.append(pKeys[i]).append(" = ?");
 		}
 		return sql.toString();
@@ -137,14 +132,15 @@ public class OracleDialect extends Dialect {
 		
 		StringBuilder sql = new StringBuilder("delete from ").append(tableName).append(" where ");
 		for (int i=0; i<pKeys.length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				sql.append(" and ");
+			}
 			sql.append(pKeys[i]).append(" = ?");
 		}
 		return sql.toString();
 	}
 	
-	public void forDbSave(StringBuilder sql, List<Object> paras, String tableName, String[] pKeys, Record record) {
+	public void forDbSave(String tableName, String[] pKeys, Record record, StringBuilder sql, List<Object> paras) {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
 		
@@ -190,20 +186,23 @@ public class OracleDialect extends Dialect {
 		}
 		sql.append(" where ");
 		for (int i=0; i<pKeys.length; i++) {
-			if (i > 0)
+			if (i > 0) {
 				sql.append(" and ");
+			}
 			sql.append(pKeys[i]).append(" = ?");
 			paras.add(ids[i]);
 		}
 	}
 	
-	public void forPaginate(StringBuilder sql, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		int satrt = (pageNumber - 1) * pageSize + 1;
+	public String forPaginate(int pageNumber, int pageSize, String sql) {
+		int start = (pageNumber - 1) * pageSize + 1;
 		int end = pageNumber * pageSize;
-		sql.append("select * from ( select row_.*, rownum rownum_ from (  ");
-		sql.append(select).append(" ").append(sqlExceptSelect);
-		sql.append(" ) row_ where rownum <= ").append(end).append(") table_alias");
-		sql.append(" where table_alias.rownum_ >= ").append(satrt);
+		StringBuilder ret = new StringBuilder();
+		ret.append("select * from ( select row_.*, rownum rownum_ from (  ");
+		ret.append(sql);
+		ret.append(" ) row_ where rownum <= ").append(end).append(") table_alias");
+		ret.append(" where table_alias.rownum_ >= ").append(start);
+		return ret.toString();
 	}
 	
 	public boolean isOracle() {
@@ -213,22 +212,26 @@ public class OracleDialect extends Dialect {
 	public void fillStatement(PreparedStatement pst, List<Object> paras) throws SQLException {
 		for (int i=0, size=paras.size(); i<size; i++) {
 			Object value = paras.get(i);
-			if (value instanceof java.sql.Date)
+			if (value instanceof java.sql.Date) {
 				pst.setDate(i + 1, (java.sql.Date)value);
-			else
+			} else if (value instanceof java.sql.Timestamp) {
+				pst.setTimestamp(i + 1, (java.sql.Timestamp)value);
+			} else {
 				pst.setObject(i + 1, value);
+			}
 		}
 	}
 	
 	public void fillStatement(PreparedStatement pst, Object... paras) throws SQLException {
 		for (int i=0; i<paras.length; i++) {
 			Object value = paras[i];
-			if (value instanceof java.sql.Date)
+			if (value instanceof java.sql.Date) {
 				pst.setDate(i + 1, (java.sql.Date)value);
-			else if (value instanceof java.sql.Timestamp)
+			} else if (value instanceof java.sql.Timestamp) {
 				pst.setTimestamp(i + 1, (java.sql.Timestamp)value);
-			else
+			} else {
 				pst.setObject(i + 1, value);
+			}
 		}
 	}
 	

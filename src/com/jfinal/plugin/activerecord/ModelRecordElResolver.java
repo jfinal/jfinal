@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,9 @@ public class ModelRecordElResolver extends ELResolver {
 	}
 	
 	public Object getValue(ELContext context, Object base, Object property) {
-		if (isWorking == false)	return null;
+		if (isWorking == false || base instanceof IBean) {
+			return null;
+		}
 		
 		if (base instanceof Model) {
 			context.setPropertyResolved(true);
@@ -73,14 +75,18 @@ public class ModelRecordElResolver extends ELResolver {
 	}
 	
 	public Class<?> getType(ELContext context, Object base, Object property) {
-		if (isWorking == false)	return null;
+		if (isWorking == false || base instanceof IBean) {
+			return null;
+		}
 		
 		// return null;
 		return (base == null) ? null : Object.class;
 	}
 	
 	public void setValue(ELContext context, Object base, Object property, Object value) {
-		if (isWorking == false)	return ;
+		if (isWorking == false || base instanceof IBean) {
+			return ;
+		}
 		
 		if (base instanceof Model) {
 			context.setPropertyResolved(true);
@@ -101,7 +107,9 @@ public class ModelRecordElResolver extends ELResolver {
 	}
 	
 	public boolean isReadOnly(ELContext context, Object base, Object property) {
-		if (isWorking == false)	return false;
+		if (isWorking == false || base instanceof IBean) {
+			return false;
+		}
 		
 		if (base instanceof Model || base instanceof Record) {
 			context.setPropertyResolved(true);
@@ -117,7 +125,9 @@ public class ModelRecordElResolver extends ELResolver {
 	
 	// Do not invoke context.setPropertyResolved(true) for this method
 	public Class<?> getCommonPropertyType(ELContext context, Object base) {
-		if (isWorking == false)	return null;
+		if (isWorking == false || base instanceof IBean) {
+			return null;
+		}
 		
 		if (base instanceof Model || base instanceof Record)
 			return String.class;

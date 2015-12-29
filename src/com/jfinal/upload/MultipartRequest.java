@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import com.oreilly.servlet.multipart.FileRenamePolicy;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class MultipartRequest extends HttpServletRequestWrapper {
 	
-	private static String saveDirectory;
+	private static String baseUploadPath;
 	private static int maxPostSize;
 	private static String encoding;
 	static FileRenamePolicy fileRenamePolicy = new DefaultFileRenamePolicy();
@@ -42,51 +42,57 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 	private List<UploadFile> uploadFiles;
 	private com.oreilly.servlet.MultipartRequest multipartRequest;
 	
-	static void init(String saveDirectory, int maxPostSize, String encoding) {
-		MultipartRequest.saveDirectory = saveDirectory;
+	static void init(String baseUploadPath, int maxPostSize, String encoding) {
+		MultipartRequest.baseUploadPath = baseUploadPath;
 		MultipartRequest.maxPostSize = maxPostSize;
 		MultipartRequest.encoding = encoding;
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, String encoding) {
+	public MultipartRequest(HttpServletRequest request, String uploadPath, int maxPostSize, String encoding) {
 		super(request);
-		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding);
+		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, encoding);
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize) {
+	public MultipartRequest(HttpServletRequest request, String uploadPath, int maxPostSize) {
 		super(request);
-		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding);
+		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, encoding);
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String saveDirectory) {
+	public MultipartRequest(HttpServletRequest request, String uploadPath) {
 		super(request);
-		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding);
+		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, encoding);
 	}
 	
 	public MultipartRequest(HttpServletRequest request) {
 		super(request);
-		wrapMultipartRequest(request, saveDirectory, maxPostSize, encoding);
+		wrapMultipartRequest(request, baseUploadPath, maxPostSize, encoding);
 	}
 	
 	/**
-	 * 添加对相对路径的支持
-	 * 1: 以 "/" 开头或者以 "x:开头的目录被认为是绝对路径
-	 * 2: 其它路径被认为是相对路径, 需要 JFinalConfig.uploadedFileSaveDirectory 结合
+	 * 路径允许为 "" 值，表示直接使用基础路径 baseUploadPath
 	 */
-	private String handleSaveDirectory(String saveDirectory) {
-		if (saveDirectory.startsWith("/") || saveDirectory.indexOf(":") == 1)
-			return saveDirectory;
-		else 
-			return MultipartRequest.saveDirectory + saveDirectory;
+	private String getFinalPath(String uploadPath) {
+		if (uploadPath == null) {
+			throw new IllegalArgumentException("uploadPath can not be null.");
+		}
+		
+		uploadPath = uploadPath.trim();
+		if (uploadPath.startsWith("/") || uploadPath.startsWith("\\")) {
+			if (baseUploadPath.equals("/")) {
+				return uploadPath;
+			} else {
+				return baseUploadPath + uploadPath;
+			}
+		} else {
+			return baseUploadPath + File.separator + uploadPath;
+		}
 	}
 	
-	private void wrapMultipartRequest(HttpServletRequest request, String saveDirectory, int maxPostSize, String encoding) {
-		saveDirectory = handleSaveDirectory(saveDirectory);
-		
-		File dir = new File(saveDirectory);
+	private void wrapMultipartRequest(HttpServletRequest request, String uploadPath, int maxPostSize, String encoding) {
+		File dir = new File(uploadPath);
 		if ( !dir.exists()) {
 			if (!dir.mkdirs()) {
-				throw new RuntimeException("Directory " + saveDirectory + " not exists and can not create directory.");
+				throw new RuntimeException("Directory " + uploadPath + " not exists and can not create directory.");
 			}
 		}
 		
@@ -98,7 +104,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
         uploadFiles = new ArrayList<UploadFile>();
 		
 		try {
-			multipartRequest = new  com.oreilly.servlet.MultipartRequest(request, saveDirectory, maxPostSize, encoding, fileRenamePolicy);
+			multipartRequest = new  com.oreilly.servlet.MultipartRequest(request, uploadPath, maxPostSize, encoding, fileRenamePolicy);
 			Enumeration files = multipartRequest.getFileNames();
 			while (files.hasMoreElements()) {
 				String name = (String)files.nextElement();
@@ -108,7 +114,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 				if (filesystemName != null) {
 					String originalFileName = multipartRequest.getOriginalFileName(name);
 					String contentType = multipartRequest.getContentType(name);
-					UploadFile uploadFile = new UploadFile(name, saveDirectory, filesystemName, originalFileName, contentType);
+					UploadFile uploadFile = new UploadFile(name, uploadPath, filesystemName, originalFileName, contentType);
 					if (isSafeFile(uploadFile))
 						uploadFiles.add(uploadFile);
 				}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
 
 /**
@@ -68,7 +69,7 @@ public abstract class Scanner {
 			try {
 				curScan.put(file.getCanonicalPath(), new TimeSize(file.lastModified(),file.length()));
 			} catch (IOException e) {
-				e.printStackTrace();
+				LogKit.error(e.getMessage(), e);
 			}
 		}
 		else if (file.isDirectory()) {

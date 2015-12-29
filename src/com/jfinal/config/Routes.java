@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import com.jfinal.core.Controller;
  * Routes.
  */
 public abstract class Routes {
+	
+	private static String baseViewPath;
 	
 	private final Map<String, Class<? extends Controller>> map = new HashMap<String, Class<? extends Controller>>();
 	private final Map<String, String> viewPathMap = new HashMap<String, String>();
@@ -100,8 +102,6 @@ public abstract class Routes {
 	public String getViewPath(String key) {
 		return viewPathMap.get(key);
 	}
-	
-	private static String baseViewPath;
 	
 	/**
 	 * Set the base path for all views

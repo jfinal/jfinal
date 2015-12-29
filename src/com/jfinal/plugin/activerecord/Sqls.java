@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 package com.jfinal.plugin.activerecord;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.jfinal.core.Const;
 import com.jfinal.kit.Prop;
 
@@ -35,7 +34,7 @@ import com.jfinal.kit.Prop;
 public class Sqls {
 	
 	private static Prop prop = null;
-	private static final Map<String, Prop> map = new HashMap<String, Prop>();
+	private static final ConcurrentHashMap<String, Prop> map = new ConcurrentHashMap<String, Prop>();
 	
 	private Sqls() {}
 	
@@ -68,15 +67,10 @@ public class Sqls {
 	private static Prop use(String fileName, String encoding) {
 		Prop result = map.get(fileName);
 		if (result == null) {
-			synchronized (map) {
-				result = map.get(fileName);
-				if (result == null) {
-					result = new Prop(fileName, encoding);
-					map.put(fileName, result);
-					if (Sqls.prop == null)
-						Sqls.prop = result;
-				}
-			}
+			result = new Prop(fileName, encoding);
+			map.put(fileName, result);
+			if (Sqls.prop == null)
+				Sqls.prop = result;
 		}
 		return result;
 	}

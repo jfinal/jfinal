@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,14 @@ public class UploadFile {
 	
 	private String parameterName;
 	
-	private String saveDirectory;
+	private String uploadPath;
 	private String fileName;
 	private String originalFileName;
 	private String contentType;
 	
-	public UploadFile(String parameterName, String saveDirectory, String filesystemName, String originalFileName, String contentType) {
+	public UploadFile(String parameterName, String uploadPath, String filesystemName, String originalFileName, String contentType) {
 		this.parameterName = parameterName;
-		this.saveDirectory = saveDirectory;
+		this.uploadPath = uploadPath;
 		this.fileName = filesystemName;
 		this.originalFileName = originalFileName;
 		this.contentType = contentType;
@@ -54,15 +54,15 @@ public class UploadFile {
 		return contentType;
 	}
 	
-	public String getSaveDirectory() {
-		return saveDirectory;
+	public String getUploadPath() {
+		return uploadPath;
 	}
 	
 	public File getFile() {
-		if (saveDirectory == null || fileName == null) {
+		if (uploadPath == null || fileName == null) {
 			return null;
 		} else {
-			return new File(saveDirectory + File.separator + fileName);
+			return new File(uploadPath + File.separator + fileName);
 		}
 	}
 }

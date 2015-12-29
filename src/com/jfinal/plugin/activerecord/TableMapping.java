@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,11 +40,7 @@ public class TableMapping {
 	
 	@SuppressWarnings("rawtypes")
 	public Table getTable(Class<? extends Model> modelClass) {
-		Table table = modelToTableMap.get(modelClass);
-		if (table == null)
-			throw new RuntimeException("The Table mapping of model: " + modelClass.getName() + " not exists. Please add mapping to ActiveRecordPlugin: activeRecordPlugin.addMapping(tableName, YourModel.class).");
-		
-		return table;
+		return modelToTableMap.get(modelClass);
 	}
 }
 

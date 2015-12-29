@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package com.jfinal.plugin.activerecord;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,4 +26,19 @@ public interface IContainerFactory {
 	Map getAttrsMap();
 	Map getColumnsMap();
 	Set getModifyFlagSet();
+	
+	static final IContainerFactory defaultContainerFactory = new IContainerFactory() {
+		
+		public Map<String, Object> getAttrsMap() {
+			return new HashMap<String, Object>();
+		}
+		
+		public Map<String, Object> getColumnsMap() {
+			return new HashMap<String, Object>();
+		}
+		
+		public Set<String> getModifyFlagSet() {
+			return new HashSet<String>();
+		}
+	};
 }

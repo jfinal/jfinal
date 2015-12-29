@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -335,22 +335,27 @@ public class Db {
 		return dbPro.delete(tableName, record);
 	}
 	
-	static Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
-		return dbPro.paginate(config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
+	static Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String sql, Object... paras) throws SQLException {
+		return dbPro.paginate(config, conn, pageNumber, pageSize, sql, paras);
 	}
 	
 	/**
-	 * @see #paginate(String, int, int, String, String, Object...)
+	 * Paginate.
+	 * @param pageNumber the page number
+	 * @param pageSize the page size
+	 * @param sql the sql statement 
+	 * @param paras the parameters of sql
+	 * @return the Page object
 	 */
-	public static Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
-		return dbPro.paginate(pageNumber, pageSize, select, sqlExceptSelect, paras);
+	public static Page<Record> paginate(int pageNumber, int pageSize, String sql, Object... paras) {
+		return dbPro.paginate(pageNumber, pageSize, sql, paras);
 	}
 	
 	/**
-	 * @see #paginate(String, int, int, String, String, Object...)
+	 * @see #paginate(String, int, int, String, Object...)
 	 */
-	public static Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		return dbPro.paginate(pageNumber, pageSize, select, sqlExceptSelect);
+	public static Page<Record> paginate(int pageNumber, int pageSize, String sql) {
+		return dbPro.paginate(pageNumber, pageSize, sql);
 	}
 	
 	static boolean save(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
@@ -490,39 +495,74 @@ public class Db {
 	
 	/**
 	 * Paginate by cache.
-	 * @see #paginate(int, int, String, String, Object...)
+	 * @see #paginate(int, int, String, Object...)
 	 * @return Page
 	 */
-	public static Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
-		return dbPro.paginateByCache(cacheName, key, pageNumber, pageSize, select, sqlExceptSelect, paras);
+	public static Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String sql, Object... paras) {
+		return dbPro.paginateByCache(cacheName, key, pageNumber, pageSize, sql, paras);
 	}
 	
 	/**
-	 * @see #paginateByCache(String, Object, int, int, String, String, Object...)
+	 * @see #paginateByCache(String, Object, int, int, String, Object...)
 	 */
-	public static Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		return dbPro.paginateByCache(cacheName, key, pageNumber, pageSize, select, sqlExceptSelect);
+	public static Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String sql) {
+		return dbPro.paginateByCache(cacheName, key, pageNumber, pageSize, sql);
 	}
 	
 	/**
-	 * @see #batch(String, String, Object[][], int)
+	 * @see DbPro#batch(String, Object[][], int)
      */
     public static int[] batch(String sql, Object[][] paras, int batchSize) {
     	return dbPro.batch(sql, paras, batchSize);
     }
 	
 	/**
-	 * @see #batch(String, String, String, List, int)
+	 * @see DbPro#batch(String, String, List, int)
      */
 	public static int[] batch(String sql, String columns, List modelOrRecordList, int batchSize) {
 		return dbPro.batch(sql, columns, modelOrRecordList, batchSize);
 	}
 	
 	/**
-	 * @see #batch(String, List, int)
+	 * @see DbPro#batch(List, int)
      */
     public static int[] batch(List<String> sqlList, int batchSize) {
     	return dbPro.batch(sqlList, batchSize);
+    }
+    
+    /**
+	 * @see DbPro#batchSave(List, int)
+     */
+    public static int[] batchSave(List<? extends Model> modelList, int batchSize) {
+    	return dbPro.batchSave(modelList, batchSize);
+    }
+    
+    /**
+	 * @see DbPro#batchSave(String, List, int)
+     */
+    public static int[] batchSave(String tableName, List<Record> recordList, int batchSize) {
+    	return dbPro.batchSave(tableName, recordList, batchSize);
+    }
+    
+    /**
+	 * @see DbPro#batchUpdate(List, int)
+     */
+    public static int[] batchUpdate(List<? extends Model> modelList, int batchSize) {
+    	return dbPro.batchUpdate(modelList, batchSize);
+    }
+    
+    /**
+	 * @see DbPro#batchUpdate(String, String, List, int)
+     */
+    public static int[] batchUpdate(String tableName, String primaryKey, List<Record> recordList, int batchSize) {
+    	return dbPro.batchUpdate(tableName, primaryKey, recordList, batchSize);
+    }
+    
+    /**
+	 * @see DbPro#batchUpdate(String, List, int)
+     */
+    public static int[] batchUpdate(String tableName, List<Record> recordList, int batchSize) {
+    	return dbPro.batchUpdate(tableName, recordList, batchSize);
     }
 }
 

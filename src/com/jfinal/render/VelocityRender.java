@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@ import org.apache.velocity.exception.ResourceNotFoundException;
  */
 public class VelocityRender extends Render {
 	
-	private static final String encoding = getEncoding();
-	private static final String contentType = "text/html; charset=" + encoding;
+	private static final String contentType = "text/html; charset=" + getEncoding();
 	private static final Properties properties = new Properties();
 	
 	private static boolean notInit = true;
@@ -60,9 +59,9 @@ public class VelocityRender extends Render {
 	static void init(ServletContext servletContext) {
 		String webPath = servletContext.getRealPath("/");
 		properties.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH, webPath);
-		properties.setProperty(Velocity.ENCODING_DEFAULT, encoding); 
-		properties.setProperty(Velocity.INPUT_ENCODING, encoding); 
-		properties.setProperty(Velocity.OUTPUT_ENCODING, encoding);
+		properties.setProperty(Velocity.ENCODING_DEFAULT, getEncoding()); 
+		properties.setProperty(Velocity.INPUT_ENCODING, getEncoding()); 
+		properties.setProperty(Velocity.OUTPUT_ENCODING, getEncoding());
 	}
 	
 	public static void setProperties(Properties properties) {
@@ -71,6 +70,14 @@ public class VelocityRender extends Render {
 			Entry<Object, Object> e = it.next();
 			VelocityRender.properties.put(e.getKey(), e.getValue());
 		}
+	}
+	
+	/**
+	 * 继承类可通过覆盖此方法改变 contentType，从而重用 velocity 模板功能
+	 * 例如利用 velocity 实现  VelocityXmlRender
+	 */
+	public String getContentType() {
+		return contentType;
 	}
 	
 	public void render() {
@@ -109,7 +116,7 @@ public class VelocityRender extends Render {
              *  data placed into the context.  Think of it as a  'merge'
              *  of the template and the data to produce the output stream.
              */
-           response.setContentType(contentType);
+           response.setContentType(getContentType());
            writer = response.getWriter();	// BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out));
             
            template.merge(context, writer);

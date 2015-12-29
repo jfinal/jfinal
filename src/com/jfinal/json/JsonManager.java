@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,28 @@
  * limitations under the License.
  */
 
-package com.jfinal.kit;
+package com.jfinal.json;
 
 /**
- * StringKit. This class is Deprecated, useing StrKit instead of StringKit
+ * JsonManager.
  */
-@Deprecated
-public class StringKit extends StrKit {
+public class JsonManager {
 	
+	private static final JsonManager me = new JsonManager();
+	
+	private JsonManager() {}
+	
+	public static JsonManager me() {
+		return me;
+	}
+	
+	public void setDefaultJsonFactory(IJsonFactory defaultJsonFactory) {
+		Json.setDefaultJsonFactory(defaultJsonFactory);
+	}
+	
+	public void setDefaultDatePattern(String defaultDatePattern) {
+		Json.setDefaultDatePattern(defaultDatePattern);
+	}
 }
+
+

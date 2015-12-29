@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,15 @@
 package com.jfinal.log;
 
 /**
- * ILoggerFactory.
+ * Log4jLogFactory.
  */
-public interface ILoggerFactory {
+public class Log4jLogFactory implements ILogFactory {
 	
-	Logger getLogger(Class<?> clazz);
+	public Log getLog(Class<?> clazz) {
+		return new Log4jLog(clazz);
+	}
 	
-	Logger getLogger(String name);
+	public Log getLog(String name) {
+		return new Log4jLog(name);
+	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package com.jfinal.plugin.ehcache;
 
 import java.util.List;
-import com.jfinal.log.Logger;
+import com.jfinal.log.Log;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -28,7 +28,8 @@ import net.sf.ehcache.Element;
 public class CacheKit {
 	
 	private static CacheManager cacheManager;
-	private static final Logger log = Logger.getLogger(CacheKit.class);
+	private static volatile Object locker = new Object();
+	private static final Log log = Log.getLog(CacheKit.class);
 	
 	static void init(CacheManager cacheManager) {
 		CacheKit.cacheManager = cacheManager;
@@ -41,7 +42,7 @@ public class CacheKit {
 	static Cache getOrAddCache(String cacheName) {
 		Cache cache = cacheManager.getCache(cacheName);
 		if (cache == null) {
-			synchronized(cacheManager) {
+			synchronized(locker) {
 				cache = cacheManager.getCache(cacheName);
 				if (cache == null) {
 					log.warn("Could not find cache config [" + cacheName + "], using default.");

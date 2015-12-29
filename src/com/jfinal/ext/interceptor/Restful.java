@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import com.jfinal.core.Controller;
  */
 public class Restful implements Interceptor {
 	
-	private static final String isRestfulForwardKey = "_isRestfulForward_";
+	private static final String isRestfulForwardKey = "_isRestfulForward";
 	private Set<String> set = new HashSet<String>() {
 		private static final long serialVersionUID = 2717581127375143508L;{
 		// add edit 与  JFinal 原有规则相同

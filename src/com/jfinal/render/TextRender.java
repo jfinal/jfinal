@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,15 @@ import java.io.PrintWriter;
  */
 public class TextRender extends Render {
 	
-	private static final String DEFAULT_CONTENT_TYPE = "text/plain; charset=" + getEncoding();
+	// 与 encoding 与 contentType 在 render() 方法中分开设置，效果相同
+	private static final String DEFAULT_CONTENT_TYPE = "text/plain";
 	
 	private String text;
 	private String contentType;
 	
 	public TextRender(String text) {
 		this.text = text;
+		this.contentType = DEFAULT_CONTENT_TYPE;
 	}
 	
 	public TextRender(String text, String contentType) {
@@ -47,20 +49,15 @@ public class TextRender extends Render {
 		PrintWriter writer = null;
 		try {
 			response.setHeader("Pragma", "no-cache");	// HTTP/1.0 caches might not implement Cache-Control and might only implement Pragma: no-cache
-	        response.setHeader("Cache-Control", "no-cache");
-	        response.setDateHeader("Expires", 0);
-	        
-	        if (contentType == null) {
-	        	response.setContentType(DEFAULT_CONTENT_TYPE);
-	        }
-	        else {
-	        	response.setContentType(contentType);
-				response.setCharacterEncoding(getEncoding());
-	        }
-	        
-	        writer = response.getWriter();
-	        writer.write(text);
-	        writer.flush();
+			response.setHeader("Cache-Control", "no-cache");
+			response.setDateHeader("Expires", 0);
+			
+			response.setContentType(contentType);
+			response.setCharacterEncoding(getEncoding());	// 与 contentType 分开设置
+			
+			writer = response.getWriter();
+			writer.write(text);
+			writer.flush();
 		} catch (IOException e) {
 			throw new RenderException(e);
 		}

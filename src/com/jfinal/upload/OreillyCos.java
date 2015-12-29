@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.jfinal.upload;
 
 import java.io.File;
+import com.jfinal.kit.LogKit;
 import com.jfinal.kit.PathKit;
 import com.jfinal.kit.StrKit;
 import com.oreilly.servlet.multipart.FileRenamePolicy;
@@ -26,43 +27,44 @@ import com.oreilly.servlet.multipart.FileRenamePolicy;
  */
 public class OreillyCos {
 	
-	public static void init(String saveDirectory, int maxPostSize, String encoding) {
+	public static void init(String uploadPath, int maxPostSize, String encoding) {
+		if (StrKit.isBlank(uploadPath)) {
+			throw new IllegalArgumentException("uploadPath can not be blank.");
+		}
 		try {
 			Class.forName("com.oreilly.servlet.MultipartRequest");
-			doInit(saveDirectory, maxPostSize, encoding);
+			doInit(uploadPath, maxPostSize, encoding);
 		} catch (ClassNotFoundException e) {
-			
+			LogKit.logNothing(e);
 		}
 	}
 	
 	public static void setFileRenamePolicy(FileRenamePolicy fileRenamePolicy) {
-		if (fileRenamePolicy == null)
+		if (fileRenamePolicy == null) {
 			throw new IllegalArgumentException("fileRenamePolicy can not be null.");
+		}
 		MultipartRequest.fileRenamePolicy = fileRenamePolicy;
 	}
 	
-	private static void doInit(String saveDirectory, int maxPostSize, String encoding) {
-		String dir;
-		if (StrKit.isBlank(saveDirectory)) {
-			dir = PathKit.getWebRootPath() + File.separator + "upload";
-		}
-		else if (isAbsolutelyPath(saveDirectory)) {
-			dir = saveDirectory;
-		}
-		else {
-			dir = PathKit.getWebRootPath() + File.separator + saveDirectory;
+	private static void doInit(String uploadPath, int maxPostSize, String encoding) {
+		uploadPath = uploadPath.trim();
+		uploadPath = uploadPath.replaceAll("\\\\", "/");
+		
+		String baseUploadPath;
+		if (PathKit.isAbsolutelyPath(uploadPath)) {
+			baseUploadPath = uploadPath;
+		} else {
+			baseUploadPath = PathKit.getWebRootPath() + File.separator + uploadPath;
 		}
 		
-		// add "/" postfix
-		if (dir.endsWith("/") == false && dir.endsWith("\\") == false) {
-			dir = dir + File.separator;
+		// remove "/" postfix
+		if (baseUploadPath.equals("/") == false) {
+			if (baseUploadPath.endsWith("/")) {
+				baseUploadPath = baseUploadPath.substring(0, baseUploadPath.length() - 1);
+			}
 		}
 		
-		MultipartRequest.init(dir, maxPostSize, encoding);
-	}
-	
-	private static boolean isAbsolutelyPath(String saveDirectory) {
-		return saveDirectory.startsWith("/") || saveDirectory.indexOf(":") == 1;
+		MultipartRequest.init(baseUploadPath, maxPostSize, encoding);
 	}
 }
 

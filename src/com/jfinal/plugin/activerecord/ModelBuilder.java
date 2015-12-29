@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,15 +79,19 @@ public class ModelBuilder {
 		InputStream is = null;
 		try {
 			is = blob.getBinaryStream();
+			if (is == null)
+				return null;
 			byte[] data = new byte[(int)blob.length()];		// byte[] data = new byte[is.available()];
+			if (data.length == 0)
+				return null;
 			is.read(data);
-			is.close();
 			return data;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		finally {
-			try {is.close();} catch (IOException e) {throw new RuntimeException(e);}
+			if (is != null)
+				try {is.close();} catch (IOException e) {throw new RuntimeException(e);}
 		}
 	}
 	
@@ -98,14 +102,19 @@ public class ModelBuilder {
 		Reader reader = null;
 		try {
 			reader = clob.getCharacterStream();
+			if (reader == null)
+				return null;
 			char[] buffer = new char[(int)clob.length()];
+			if (buffer.length == 0)
+				return null;
 			reader.read(buffer);
 			return new String(buffer);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		finally {
-			try {reader.close();} catch (IOException e) {throw new RuntimeException(e);}
+			if (reader != null)
+				try {reader.close();} catch (IOException e) {throw new RuntimeException(e);}
 		}
 	}
 	

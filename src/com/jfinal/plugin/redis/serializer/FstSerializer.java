@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.nustaq.serialization.FSTObjectInput;
 import org.nustaq.serialization.FSTObjectOutput;
+import com.jfinal.kit.LogKit;
 import redis.clients.util.SafeEncoder;
 
 /**
@@ -38,6 +39,14 @@ public class FstSerializer implements ISerializer {
 		return SafeEncoder.encode(bytes);
 	}
 	
+	public byte[] fieldToBytes(Object field) {
+		return valueToBytes(field);
+	}
+	
+    public Object fieldFromBytes(byte[] bytes) {
+    	return valueFromBytes(bytes);
+    }
+	
 	public byte[] valueToBytes(Object value) {
 		FSTObjectOutput fstOut = null;
 		try {
@@ -52,7 +61,7 @@ public class FstSerializer implements ISerializer {
 		}
 		finally {
 			if(fstOut != null)
-				try {fstOut.close();} catch (IOException e) {}
+				try {fstOut.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
 		}
 	}
 	
@@ -70,7 +79,7 @@ public class FstSerializer implements ISerializer {
 		}
 		finally {
 			if(fstInput != null)
-				try {fstInput.close();} catch (IOException e) {}
+				try {fstInput.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
 		}
 	}
 }

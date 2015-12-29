@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		return modifyFlag;
 	}*/
 	
-	private Set<String> getModifyFlag() {
+	Set<String> getModifyFlag() {
 		if (modifyFlag == null) {
 			Config config = getConfig();
 			if (config == null)
@@ -111,7 +111,14 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @throws ActiveRecordException if the attribute is not exists of the model
 	 */
 	public M set(String attr, Object value) {
-		if (getTable().hasColumnLabel(attr)) {
+		Table table = getTable();
+		// 用于未启动 ActiveRecordPlugin 场景下使用 Model
+		if (table == null) {
+			attrs.put(attr, value);
+			getModifyFlag().add(attr);
+			return (M)this;
+		}
+		if (table.hasColumnLabel(attr)) {
 			attrs.put(attr, value);
 			getModifyFlag().add(attr);	// Add modify flag, update() need this flag.
 			return (M)this;
@@ -268,17 +275,16 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Paginate.
 	 * @param pageNumber the page number
 	 * @param pageSize the page size
-	 * @param select the select part of the sql statement 
-	 * @param sqlExceptSelect the sql statement excluded select part
+	 * @param sql the sql statement 
 	 * @param paras the parameters of sql
-	 * @return Page
+	 * @return the Page object
 	 */
-	public Page<M> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+	public Page<M> paginate(int pageNumber, int pageSize, String sql, Object... paras) {
 		Config config = getConfig();
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
-			return paginate(config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
+			return paginate(config, conn, pageNumber, pageSize, sql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
@@ -286,44 +292,49 @@ public abstract class Model<M extends Model> implements Serializable {
 		}
 	}
 	
-	private Page<M> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws Exception {
+	private Page<M> paginate(Config config, Connection conn, int pageNumber, int pageSize, String sql, Object... paras) throws Exception {
 		if (pageNumber < 1 || pageSize < 1)
 			throw new ActiveRecordException("pageNumber and pageSize must be more than 0");
 		
 		if (config.dialect.isTakeOverModelPaginate())
-			return config.dialect.takeOverModelPaginate(conn, getUsefulClass(), pageNumber, pageSize, select, sqlExceptSelect, paras);
+			return config.dialect.takeOverModelPaginate(conn, getUsefulClass(), pageNumber, pageSize, sql, paras);
 		
-		long totalRow = 0;
-		int totalPage = 0;
-		List result = Db.query(config, conn, "select count(*) " + DbKit.replaceFormatSqlOrderBy(sqlExceptSelect), paras);
-		int size = result.size();
-		if (size == 1)
-			totalRow = ((Number)result.get(0)).longValue();		// totalRow = (Long)result.get(0);
-		else if (size > 1)
+		Object[] actualSqlParas = new Object[2];
+		String totalRowSql = config.dialect.forTotalRow(actualSqlParas, sql, paras);
+		sql = (String)actualSqlParas[0];
+		paras = (Object[])actualSqlParas[1];
+		
+		long totalRow;
+		List result = Db.query(config, conn, totalRowSql, paras);
+		if (config.dialect.isGroupBySql(sql)) {
 			totalRow = result.size();
-		else
+		} else {
+			totalRow = (result.size() > 0) ? ((Number)result.get(0)).longValue() : 0;
+		}
+		if (totalRow == 0) {
 			return new Page<M>(new ArrayList<M>(0), pageNumber, pageSize, 0, 0);	// totalRow = 0;
+		}
 		
-		totalPage = (int) (totalRow / pageSize);
+		int totalPage = (int) (totalRow / pageSize);
 		if (totalRow % pageSize != 0) {
 			totalPage++;
 		}
 		
-		if (pageNumber > totalPage)
+		if (pageNumber > totalPage) {
 			return new Page<M>(new ArrayList<M>(0), pageNumber, pageSize, totalPage, (int)totalRow);
+		}
 		
 		// --------
-		StringBuilder sql = new StringBuilder();
-		config.dialect.forPaginate(sql, pageNumber, pageSize, select, sqlExceptSelect);
-		List<M> list = find(conn, sql.toString(), paras);
+		sql = config.dialect.forPaginate(pageNumber, pageSize, sql);
+		List<M> list = find(conn, sql, paras);
 		return new Page<M>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
 	/**
-	 * @see #paginate(int, int, String, String, Object...)
+	 * @see #paginate(int, int, String, Object...)
 	 */
-	public Page<M> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		return paginate(pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
+	public Page<M> paginate(int pageNumber, int pageSize, String sql) {
+		return paginate(pageNumber, pageSize, sql, NULL_PARA_ARRAY);
 	}
 	
 	/**
@@ -339,7 +350,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	/**
 	 * Return attribute Set.
 	 */
-	public Set<Entry<String, Object>> getAttrsEntrySet() {
+	public Set<Entry<String, Object>> _getAttrsEntrySet() {
 		return attrs.entrySet();
 	}
 	
@@ -507,7 +518,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		config.dialect.fillStatement(pst, paras);
 		ResultSet rs = pst.executeQuery();
 		List<M> result = ModelBuilder.build(rs, modelClass);
-		DbKit.closeQuietly(rs, pst);
+		DbKit.close(rs, pst);
 		return result;
 	}
 	
@@ -562,8 +573,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @param sql an SQL statement
 	 */
 	public M findFirst(String sql) {
-		List<M> result = find(sql, NULL_PARA_ARRAY);
-		return result.size() > 0 ? result.get(0) : null;
+		return findFirst(sql, NULL_PARA_ARRAY);
 	}
 	
 	/**
@@ -627,8 +637,8 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @param model the Model
 	 * @return this Model
 	 */
-	public M setAttrs(M model) {
-		return (M)setAttrs(model.getAttrs());
+	public M _setAttrs(M model) {
+		return (M)_setAttrs(model.getAttrs());
 	}
 	
 	/**
@@ -636,7 +646,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @param attrs attributes of this model
 	 * @return this Model
 	 */
-	public M setAttrs(Map<String, Object> attrs) {
+	public M _setAttrs(Map<String, Object> attrs) {
 		for (Entry<String, Object> e : attrs.entrySet())
 			set(e.getKey(), e.getValue());
 		return (M)this;
@@ -824,32 +834,32 @@ public abstract class Model<M extends Model> implements Serializable {
 	
 	/**
 	 * Paginate by cache.
-	 * @see #paginate(int, int, String, String, Object...)
+	 * @see #paginate(int, int, String, Object...)
 	 * @param cacheName the cache name
 	 * @param key the key used to get date from cache
 	 * @return Page
 	 */
-	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String sql, Object... paras) {
 		ICache cache = getConfig().getCache();
 		Page<M> result = cache.get(cacheName, key);
 		if (result == null) {
-			result = paginate(pageNumber, pageSize, select, sqlExceptSelect, paras);
+			result = paginate(pageNumber, pageSize, sql, paras);
 			cache.put(cacheName, key, result);
 		}
 		return result;
 	}
 	
 	/**
-	 * @see #paginateByCache(String, Object, int, int, String, String, Object...)
+	 * @see #paginateByCache(String, Object, int, int, String, Object...)
 	 */
-	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		return paginateByCache(cacheName, key, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
+	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String sql) {
+		return paginateByCache(cacheName, key, pageNumber, pageSize, sql, NULL_PARA_ARRAY);
 	}
 	
 	/**
 	 * Return attribute names of this model.
 	 */
-	public String[] getAttrNames() {
+	public String[] _getAttrNames() {
 		Set<String> attrNameSet = attrs.keySet();
 		return attrNameSet.toArray(new String[attrNameSet.size()]);
 	}
@@ -857,7 +867,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	/**
 	 * Return attribute values of this model.
 	 */
-	public Object[] getAttrValues() {
+	public Object[] _getAttrValues() {
 		java.util.Collection<Object> attrValueCollection = attrs.values();
 		return attrValueCollection.toArray(new Object[attrValueCollection.size()]);
 	}
@@ -866,7 +876,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Return json string of this model.
 	 */
 	public String toJson() {
-		return com.jfinal.kit.JsonKit.toJson(attrs, 4);
+		return com.jfinal.kit.JsonKit.toJson(attrs);
 	}
 	
 	private Class<? extends Model> getUsefulClass() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,6 @@
 
 package com.jfinal.render;
 
-import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import freemarker.template.Template;
-
 /**
  * XmlRender use FreeMarker
  */
@@ -33,27 +27,12 @@ public class XmlRender extends FreeMarkerRender {
 		super(view);
 	}
 	
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	public void render() {
-		response.setContentType(contentType);
-        
-		Map root = new HashMap();
-		for (Enumeration<String> attrs=request.getAttributeNames(); attrs.hasMoreElements();) {
-			String attrName = attrs.nextElement();
-			root.put(attrName, request.getAttribute(attrName));
-		}
-		
-		PrintWriter writer = null;
-        try {
-			Template template = getConfiguration().getTemplate(view);
-			writer = response.getWriter();
-			template.process(root, writer);		// Merge the data-model and the template
-		} catch (Exception e) {
-			throw new RenderException(e);
-		}
-		finally {
-			if (writer != null)
-				writer.close();
-		}
+	public String getContentType() {
+		return contentType;
 	}
 }
+
+
+
+
+

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package com.jfinal.plugin.activerecord;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import com.jfinal.kit.StrKit;
 
 /**
@@ -101,6 +103,10 @@ public class Table {
 	
 	public Map<String, Class<?>> getColumnTypeMap() {
 		return Collections.unmodifiableMap(columnTypeMap);
+	}
+	
+	public Set<Entry<String, Class<?>>> getColumnTypeMapEntrySet() {
+		return columnTypeMap.entrySet();
 	}
 }
 
