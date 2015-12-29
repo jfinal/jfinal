@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package com.jfinal.log;
+package com.jfinal.json;
 
 /**
- * Log4jLoggerFactory.
+ * IJsonFactory 的 jfinal 实现.
  */
-public class Log4jLoggerFactory implements ILoggerFactory {
+public class JFinalJsonFactory implements IJsonFactory {
 	
-	public Logger getLogger(Class<?> clazz) {
-		return new Log4jLogger(clazz);
+	private static final JFinalJsonFactory me = new JFinalJsonFactory();
+	
+	public static JFinalJsonFactory me() {
+		return me;
 	}
 	
-	public Logger getLogger(String name) {
-		return new Log4jLogger(name);
+	public Json getJson() {
+		return new JFinalJson();
 	}
 }
+
+

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,35 +21,28 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Redirect301Render.
  */
-public class Redirect301Render extends Render {
-	
-	private String url;
-	private boolean withQueryString;
-	private static final String contextPath = RedirectRender.getContxtPath();
+public class Redirect301Render extends RedirectRender {
 	
 	public Redirect301Render(String url) {
-		this.url = url;
-		this.withQueryString = false;
+		super(url);
 	}
 	
 	public Redirect301Render(String url, boolean withQueryString) {
-		this.url = url;
-		this.withQueryString = withQueryString;
+		super(url, withQueryString);
 	}
 	
 	public void render() {
-		if (contextPath != null && url.indexOf("://") == -1)
-			url = contextPath + url;
-		
-		if (withQueryString) {
-			String queryString = request.getQueryString();
-			if (queryString != null)
-				url = url + "?" + queryString;
-		}
+		String finalUrl = buildFinalUrl();
 		
 		response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
 		// response.sendRedirect(url);	// always 302
-		response.setHeader("Location", url);
+		response.setHeader("Location", finalUrl);
 		response.setHeader("Connection", "close");
 	}
 }
+
+
+
+
+
+

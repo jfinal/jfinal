@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,51 +16,45 @@
 
 package com.jfinal.config;
 
-import java.util.ArrayList;
-import java.util.List;
-import com.jfinal.aop.InterceptorBuilder;
 import com.jfinal.aop.Interceptor;
+import com.jfinal.aop.InterceptorManager;
 
 /**
  * The Interceptors is used to config global action interceptors and global service interceptors.
  */
 final public class Interceptors {
 	
-	private final List<Interceptor> globalActionInterceptor = new ArrayList<Interceptor>();
-	
 	/**
 	 * The same as addGlobalActionInterceptor. It is used to compatible with earlier version of jfinal
 	 */
 	public Interceptors add(Interceptor globalActionInterceptor) {
-		if (globalActionInterceptor != null)
-			this.globalActionInterceptor.add(globalActionInterceptor);
+		if (globalActionInterceptor == null) {
+			throw new IllegalArgumentException("globalActionInterceptor can not be null.");
+		}
+		InterceptorManager.me().addGlobalActionInterceptor(globalActionInterceptor);
 		return this;
 	}
 	
 	/**
 	 * Add the global action interceptor to intercept all the actions.
 	 */
-	public void addGlobalActionInterceptor(Interceptor globalActionInterceptor) {
-		if (globalActionInterceptor != null)
-			this.globalActionInterceptor.add(globalActionInterceptor);
+	public Interceptors addGlobalActionInterceptor(Interceptor globalActionInterceptor) {
+		if (globalActionInterceptor == null) {
+			throw new IllegalArgumentException("globalActionInterceptor can not be null.");
+		}
+		InterceptorManager.me().addGlobalActionInterceptor(globalActionInterceptor);
+		return this;
 	}
 	
 	/**
 	 * Add the global service interceptor to intercept all the method enhanced by aop Enhancer.
 	 */
-	public void addGlobalServiceInterceptor(Interceptor globalServiceInterceptor) {
-		if (globalServiceInterceptor != null)
-			InterceptorBuilder.addGlobalServiceInterceptor(globalServiceInterceptor);
-	}
-	
-	public Interceptor[] getGlobalActionInterceptor() {
-		return globalActionInterceptor.toArray(new Interceptor[globalActionInterceptor.size()]);
+	public Interceptors addGlobalServiceInterceptor(Interceptor globalServiceInterceptor) {
+		if (globalServiceInterceptor == null) {
+			throw new IllegalArgumentException("globalServiceInterceptor can not be null.");
+		}
+		InterceptorManager.me().addGlobalServiceInterceptor(globalServiceInterceptor);
+		return this;
 	}
 }
-
-
-
-
-
-
 

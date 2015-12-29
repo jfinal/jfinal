@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import com.jfinal.config.Constants;
 import com.jfinal.config.JFinalConfig;
 import com.jfinal.handler.Handler;
 import com.jfinal.handler.HandlerFactory;
+import com.jfinal.kit.LogKit;
 import com.jfinal.kit.PathKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.render.RenderFactory;
@@ -40,12 +41,8 @@ public final class JFinal {
 	private ActionMapping actionMapping;
 	private Handler handler;
 	private ServletContext servletContext;
-	private static IServer server;
 	private String contextPath = "";
-	
-	Handler getHandler() {
-		return handler;
-	}
+	private static IServer server;
 	
 	private static final JFinal me = new JFinal();
 	
@@ -62,7 +59,7 @@ public final class JFinal {
 		
 		initPathUtil();
 		
-		Config.configJFinal(jfinalConfig);	// start plugin and init logger factory in this method
+		Config.configJFinal(jfinalConfig);	// start plugin and init log factory in this method
 		constants = Config.getConstants();
 		
 		initActionMapping();
@@ -86,7 +83,7 @@ public final class JFinal {
 	}
 	
 	private void initOreillyCos() {
-		OreillyCos.init(constants.getUploadedFileSaveDirectory(), constants.getMaxPostSize(), constants.getEncoding());
+		OreillyCos.init(constants.getBaseUploadPath(), constants.getMaxPostSize(), constants.getEncoding());
 	}
 	
 	private void initPathUtil() {
@@ -95,8 +92,7 @@ public final class JFinal {
 	}
 	
 	private void initRender() {
-		RenderFactory renderFactory = RenderFactory.me();
-		renderFactory.init(constants, servletContext);
+		RenderFactory.me().init(constants, servletContext);
 	}
 	
 	private void initActionMapping() {
@@ -114,7 +110,7 @@ public final class JFinal {
 				} 
 				catch (Exception e) {
 					success = false;
-					e.printStackTrace();
+					LogKit.error(e.getMessage(), e);
 				}
 				if (!success) {
 					System.err.println("Plugin stop error: " + plugins.get(i).getClass().getName());
@@ -123,8 +119,28 @@ public final class JFinal {
 		}
 	}
 	
+	Handler getHandler() {
+		return handler;
+	}
+	
+	public Constants getConstants() {
+		return Config.getConstants();
+	}
+	
+	public String getContextPath() {
+		return contextPath;
+	}
+	
 	public ServletContext getServletContext() {
 		return this.servletContext;
+	}
+	
+	public Action getAction(String url, String[] urlPara) {
+		return actionMapping.getAction(url, urlPara);
+	}
+	
+	public List<String> getAllActionKeys() {
+		return actionMapping.getAllActionKeys();
 	}
 	
 	public static void start() {
@@ -158,22 +174,6 @@ public final class JFinal {
 			server = ServerFactory.getServer(webAppDir, port, context, scanIntervalSeconds);
 			server.start();
 		}
-	}
-	
-	public List<String> getAllActionKeys() {
-		return actionMapping.getAllActionKeys();
-	}
-	
-	public Constants getConstants() {
-		return Config.getConstants();
-	}
-	
-	public Action getAction(String url, String[] urlPara) {
-		return actionMapping.getAction(url, urlPara);
-	}
-	
-	public String getContextPath() {
-		return contextPath;
 	}
 }
 

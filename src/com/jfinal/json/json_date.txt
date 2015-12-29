@@ -1,0 +1,42 @@
+设置 date pattern 为 "yyyy-MM-dd HH:mm:ss"，与不设置时三种转换工具的行为总结：
+
+1： fastjson
+fastjson 只要配置了date format，所有值全一样：Date、time、timestamp，"yyyy-MM-dd 格式同样适用
+Fastjson:{"date":"2015-12-16 22:57:50"}
+Fastjson:{"date":"2015-12-16 22:58:25"}
+Fastjson:{"date":"2015-12-16 22:58:37"}
+Fastjson:{"date":"2015-12-16 22:58:49"}
+如果没有设置，则全部值为一个 long 值如： Fastjson:{"date":1450278036638}
+
+2：jackson
+类型次序：util.Date  sql.Date  Timestamp  Time，java.sql.Date 比较意外没有时间精度，
+可看成是 bug，"yyyy-MM-dd 格式同样适用，只不过只有日期精度
+Jackson: {"date":"2015-12-16 23:02:04"}
+Jackson: {"date":"2015-12-16"}
+Jackson: {"date":"2015-12-16 23:02:56"}
+Jackson: {"date":"23:02:43"}
+不设置时为：
+Jackson: {"date":1450278228808}
+Jackson: {"date":"2015-12-16"}
+Jackson: {"date":1450278307715}
+Jackson: {"date":"23:05:27"}
+
+3 jfinal json 实现
+util.Date  sql.Date  Timestamp  Time
+Json:    {"date":"2015-12-16 23:15:23"}
+Json:    {"date":"2015-12-16 23:15:23"}
+Json:    {"date":"2015-12-16 23:15:23"}
+Json:    {"date":"23:15:23"}
+不设置时值完全一样，
+特别一点：jfinal 实现可以针对 Date、Timestamp 分别设置 pattern，
+       JFinalJson 会根据类型区发 Timestamp、Date转换策略
+   由于数据库的 datetime 会返回 Timestamp 类型，所以控制范围更大
+   考虑未来版本统一 Date timestamp 的 pattern
+   
+TODO
+注意：jfinal 未来实现如果去掉对 Timestamp 的转换判断，由于 mysql datetime
+    被 jdbc 映射为 Timestamp，所以转换时会丢失精度，需要考虑默认 pattern 精确到时间
+    目前  JFinalJson.datePattern 没有时间精度。
+
+未来版本尽可能统一转换规则，暂时保持他们各自的特色
+

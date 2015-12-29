@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,14 @@ import javax.servlet.http.HttpServletRequest;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
+import com.jfinal.render.Render;
 
 /**
  * CacheInterceptor.
  */
 public class CacheInterceptor implements Interceptor {
 	
-	private static final String renderKey = "_renderKey_";
+	private static final String renderKey = "_renderKey";
 	private static ConcurrentHashMap<String, ReentrantLock> lockMap = new ConcurrentHashMap<String, ReentrantLock>();
 	
 	private ReentrantLock getLock(String key) {
@@ -101,7 +102,10 @@ public class CacheInterceptor implements Interceptor {
 			cacheData.put(name, request.getAttribute(name));
 		}
 		
-		cacheData.put(renderKey, new RenderInfo(controller.getRender()));		// cache RenderInfo
+		Render render = controller.getRender();
+		if (render != null) {
+			cacheData.put(renderKey, new RenderInfo(render));		// cache RenderInfo
+		}
 		CacheKit.put(cacheName, cacheKey, cacheData);
 	}
 	
@@ -114,7 +118,10 @@ public class CacheInterceptor implements Interceptor {
 		}
 		request.removeAttribute(renderKey);
 		
-		controller.render(((RenderInfo)cacheData.get(renderKey)).createRender());		// set render from cacheData
+		RenderInfo renderInfo = (RenderInfo)cacheData.get(renderKey);
+		if (renderInfo != null) {
+			controller.render(renderInfo.createRender());		// set render from cacheData
+		}
 	}
 }
 

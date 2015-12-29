@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import com.jfinal.kit.LogKit;
+import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.cache.ICache;
 import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 
@@ -82,7 +86,7 @@ public class DbPro {
 				result.add(rs.getObject(1));
 			}
 		}
-		DbKit.closeQuietly(rs, pst);
+		DbKit.close(rs, pst);
 		return result;
 	}
 	
@@ -258,7 +262,7 @@ public class DbPro {
 		PreparedStatement pst = conn.prepareStatement(sql);
 		config.dialect.fillStatement(pst, paras);
 		int result = pst.executeUpdate();
-		DbKit.closeQuietly(pst);
+		DbKit.close(pst);
 		return result;
 	}
 	
@@ -295,7 +299,7 @@ public class DbPro {
 		config.dialect.fillStatement(pst, paras);
 		ResultSet rs = pst.executeQuery();
 		List<Record> result = RecordBuilder.build(config, rs);
-		DbKit.closeQuietly(rs, pst);
+		DbKit.close(rs, pst);
 		return result;
 	}
 	
@@ -338,8 +342,7 @@ public class DbPro {
 	 * @param sql an SQL statement
 	 */
 	public Record findFirst(String sql) {
-		List<Record> result = find(sql, NULL_PARA_ARRAY);
-		return result.size() > 0 ? result.get(0) : null;
+		return findFirst(sql, NULL_PARA_ARRAY);
 	}
 	
 	/**
@@ -423,7 +426,18 @@ public class DbPro {
 	 * @return true if delete succeed otherwise false
 	 */
 	public boolean delete(String tableName, String primaryKey, Record record) {
-		return deleteById(tableName, primaryKey, record.get(primaryKey));
+		String[] pKeys = primaryKey.split(",");
+		if (pKeys.length <= 1)
+			return deleteById(tableName, primaryKey, record.get(primaryKey));
+		
+		config.dialect.trimPrimaryKeys(pKeys);
+		Object[] idValue = new Object[pKeys.length];
+		for (int i=0; i<pKeys.length; i++) {
+			idValue[i] = record.get(pKeys[i]);
+			if (idValue[i] == null)
+				throw new IllegalArgumentException("The value of primary key \"" + pKeys[i] + "\" can not be null in record object");
+		}
+		return deleteById(tableName, primaryKey, idValue);
 	}
 	
 	/**
@@ -438,47 +452,57 @@ public class DbPro {
 		return deleteById(tableName, defaultPrimaryKey, record.get(defaultPrimaryKey));
 	}
 	
-	Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
+	Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String sql, Object... paras) throws SQLException {
 		if (pageNumber < 1 || pageSize < 1)
 			throw new ActiveRecordException("pageNumber and pageSize must be more than 0");
 		
 		if (config.dialect.isTakeOverDbPaginate())
-			return config.dialect.takeOverDbPaginate(conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
+			return config.dialect.takeOverDbPaginate(conn, pageNumber, pageSize, sql, paras);
 		
-		long totalRow = 0;
-		int totalPage = 0;
-		List result = query(config, conn, "select count(*) " + DbKit.replaceFormatSqlOrderBy(sqlExceptSelect), paras);
-		int size = result.size();
-		if (size == 1)
-			totalRow = ((Number)result.get(0)).longValue();
-		else if (size > 1)
+		Object[] actualSqlParas = new Object[2];
+		String totalRowSql = config.dialect.forTotalRow(actualSqlParas, sql, paras);
+		sql = (String)actualSqlParas[0];
+		paras = (Object[])actualSqlParas[1];
+		
+		long totalRow;
+		List result = query(config, conn, totalRowSql, paras);
+		if (config.dialect.isGroupBySql(sql)) {
 			totalRow = result.size();
-		else
+		} else {
+			totalRow = (result.size() > 0) ? ((Number)result.get(0)).longValue() : 0;
+		}
+		if (totalRow == 0) {
 			return new Page<Record>(new ArrayList<Record>(0), pageNumber, pageSize, 0, 0);
+		}
 		
-		totalPage = (int) (totalRow / pageSize);
+		int totalPage = (int) (totalRow / pageSize);
 		if (totalRow % pageSize != 0) {
 			totalPage++;
 		}
 		
-		if (pageNumber > totalPage)
+		if (pageNumber > totalPage) {
 			return new Page<Record>(new ArrayList<Record>(0), pageNumber, pageSize, totalPage, (int)totalRow);
+		}
 		
 		// --------
-		StringBuilder sql = new StringBuilder();
-		config.dialect.forPaginate(sql, pageNumber, pageSize, select, sqlExceptSelect);
-		List<Record> list = find(config, conn, sql.toString(), paras);
+		sql = config.dialect.forPaginate(pageNumber, pageSize, sql);
+		List<Record> list = find(config, conn, sql, paras);
 		return new Page<Record>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
 	/**
-	 * @see #paginate(String, int, int, String, String, Object...)
+	 * Paginate.
+	 * @param pageNumber the page number
+	 * @param pageSize the page size
+	 * @param sql the sql statement 
+	 * @param paras the parameters of sql
+	 * @return the Page object
 	 */
-	public Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+	public Page<Record> paginate(int pageNumber, int pageSize, String sql, Object... paras) {
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
-			return paginate(config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
+			return paginate(config, conn, pageNumber, pageSize, sql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
@@ -487,17 +511,17 @@ public class DbPro {
 	}
 	
 	/**
-	 * @see #paginate(String, int, int, String, String, Object...)
+	 * @see #paginate(String, int, int, String, Object...)
 	 */
-	public Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		return paginate(pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
+	public Page<Record> paginate(int pageNumber, int pageSize, String sql) {
+		return paginate(pageNumber, pageSize, sql, NULL_PARA_ARRAY);
 	}
 	
 	boolean save(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
 		String[] pKeys = primaryKey.split(",");
 		List<Object> paras = new ArrayList<Object>();
 		StringBuilder sql = new StringBuilder();
-		config.dialect.forDbSave(sql, paras, tableName, pKeys, record);
+		config.dialect.forDbSave(tableName, pKeys, record, sql, paras);
 		
 		PreparedStatement pst;
 		if (config.dialect.isOracle())
@@ -508,7 +532,7 @@ public class DbPro {
 		config.dialect.fillStatement(pst, paras);
 		int result = pst.executeUpdate();
 		getGeneratedKey(pst, record, pKeys);
-		DbKit.closeQuietly(pst);
+		DbKit.close(pst);
 		return result >= 1;
 	}
 	
@@ -672,10 +696,11 @@ public class DbPro {
 				conn.rollback();
 			return result;
 		} catch (NestedTransactionHelpException e) {
-			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
+			if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}
+			LogKit.logNothing(e);
 			return false;
 		} catch (Throwable t) {
-			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
+			if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}
 			throw t instanceof RuntimeException ? (RuntimeException)t : new ActiveRecordException(t);
 		} finally {
 			try {
@@ -685,7 +710,7 @@ public class DbPro {
 					conn.close();
 				}
 			} catch (Throwable t) {
-				t.printStackTrace();	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
+				LogKit.error(t.getMessage(), t);	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
 			} finally {
 				config.removeThreadLocalConnection();	// prevent memory leak
 			}
@@ -756,29 +781,29 @@ public class DbPro {
 	
 	/**
 	 * Paginate by cache.
-	 * @see #paginate(int, int, String, String, Object...)
+	 * @see #paginate(int, int, String, Object...)
 	 * @return Page
 	 */
-	public Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+	public Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String sql, Object... paras) {
 		ICache cache = config.getCache();
 		Page<Record> result = cache.get(cacheName, key);
 		if (result == null) {
-			result = paginate(pageNumber, pageSize, select, sqlExceptSelect, paras);
+			result = paginate(pageNumber, pageSize, sql, paras);
 			cache.put(cacheName, key, result);
 		}
 		return result;
 	}
 	
 	/**
-	 * @see #paginateByCache(String, Object, int, int, String, String, Object...)
+	 * @see #paginateByCache(String, Object, int, int, String, Object...)
 	 */
-	public Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		return paginateByCache(cacheName, key, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
+	public Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String sql) {
+		return paginateByCache(cacheName, key, pageNumber, pageSize, sql, NULL_PARA_ARRAY);
 	}
 	
 	private int[] batch(Config config, Connection conn, String sql, Object[][] paras, int batchSize) throws SQLException {
 		if (paras == null || paras.length == 0)
-			throw new IllegalArgumentException("The paras array length must more than 0.");
+			return new int[0];
 		if (batchSize < 1)
 			throw new IllegalArgumentException("The batchSize must more than 0.");
 		
@@ -816,7 +841,7 @@ public class DbPro {
 			conn.commit();
 		for (int k=0; k<r.length; k++)
 			result[pointer++] = r[k];
-		DbKit.closeQuietly(pst);
+		DbKit.close(pst);
 		return result;
 	}
 	
@@ -825,7 +850,7 @@ public class DbPro {
      * <pre>
      * Example:
      * String sql = "insert into user(name, cash) values(?, ?)";
-     * int[] result = DbPro.use().batch("myConfig", sql, new Object[][]{{"James", 888}, {"zhanjin", 888}});
+     * int[] result = DbPro.use().batch(sql, new Object[][]{{"James", 888}, {"zhanjin", 888}});
      * </pre>
      * @param sql The SQL to execute.
      * @param paras An array of query replacement parameters.  Each row in this array is one set of batch replacement values.
@@ -843,7 +868,7 @@ public class DbPro {
 			throw new ActiveRecordException(e);
 		} finally {
 			if (autoCommit != null)
-				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
+				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {LogKit.error(e.getMessage(), e);}
 			config.close(conn);
 		}
 	}
@@ -898,7 +923,7 @@ public class DbPro {
 			conn.commit();
 		for (int k=0; k<r.length; k++)
 			result[pointer++] = r[k];
-		DbKit.closeQuietly(pst);
+		DbKit.close(pst);
 		return result;
 	}
 	
@@ -907,7 +932,7 @@ public class DbPro {
      * <pre>
      * Example:
      * String sql = "insert into user(name, cash) values(?, ?)";
-     * int[] result = DbPro.use().batch("myConfig", sql, "name, cash", modelList, 500);
+     * int[] result = DbPro.use().batch(sql, "name, cash", modelList, 500);
      * </pre>
 	 * @param sql The SQL to execute.
 	 * @param columns the columns need be processed by sql.
@@ -927,14 +952,14 @@ public class DbPro {
 			throw new ActiveRecordException(e);
 		} finally {
 			if (autoCommit != null)
-				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
+				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {LogKit.error(e.getMessage(), e);}
 			config.close(conn);
 		}
 	}
 	
 	private int[] batch(Config config, Connection conn, List<String> sqlList, int batchSize) throws SQLException {
 		if (sqlList == null || sqlList.size() == 0)
-			throw new IllegalArgumentException("The sqlList length must more than 0.");
+			return new int[0];
 		if (batchSize < 1)
 			throw new IllegalArgumentException("The batchSize must more than 0.");
 		
@@ -960,7 +985,7 @@ public class DbPro {
 			conn.commit();
 		for (int k=0; k<r.length; k++)
 			result[pointer++] = r[k];
-		DbKit.closeQuietly(st);
+		DbKit.close(st);
 		return result;
 	}
 	
@@ -968,7 +993,7 @@ public class DbPro {
      * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.
      * <pre>
      * Example:
-     * int[] result = DbPro.use().batch("myConfig", sqlList, 500);
+     * int[] result = DbPro.use().batch(sqlList, 500);
      * </pre>
 	 * @param sqlList The SQL list to execute.
 	 * @param batchSize batch size.
@@ -986,9 +1011,131 @@ public class DbPro {
 			throw new ActiveRecordException(e);
 		} finally {
 			if (autoCommit != null)
-				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {e.printStackTrace();}
+				try {conn.setAutoCommit(autoCommit);} catch (Exception e) {LogKit.error(e.getMessage(), e);}
 			config.close(conn);
 		}
+    }
+    
+    /**
+     * Batch save models using the "insert into ..." sql generated by the first model in modelList.
+     * Ensure all the models can use the same sql as the first model.
+     */
+    public int[] batchSave(List<? extends Model> modelList, int batchSize) {
+    	if (modelList == null || modelList.size() == 0)
+    		return new int[0];
+    	
+    	Model model = modelList.get(0);
+    	Map<String, Object> attrs = model.getAttrs();
+    	String[] attrNames = new String[attrs.entrySet().size()];
+    	int index = 0;
+    	// the same as the iterator in Dialect.forModelSave() to ensure the order of the attrs
+    	for (Entry<String, Object> e: attrs.entrySet())
+    		attrNames[index++] = e.getKey();
+    	String columns = StrKit.join(attrNames, ",");
+    	
+    	StringBuilder sql = new StringBuilder();
+    	List<Object> parasNoUse = new ArrayList<Object>();
+    	config.dialect.forModelSave(TableMapping.me().getTable(model.getClass()), attrs, sql, parasNoUse);
+    	return batch(sql.toString(), columns, modelList, batchSize);
+    }
+    
+    /**
+     * Batch save records using the "insert into ..." sql generated by the first record in recordList.
+     * Ensure all the record can use the same sql as the first record.
+     * @param tableName the table name
+     */
+    public int[] batchSave(String tableName, List<Record> recordList, int batchSize) {
+    	if (recordList == null || recordList.size() == 0)
+    		return new int[0];
+    	
+    	Record record = recordList.get(0);
+    	Map<String, Object> cols = record.getColumns();
+    	String[] colNames = new String[cols.entrySet().size()];
+    	int index = 0;
+    	// the same as the iterator in Dialect.forDbSave() to ensure the order of the columns
+    	for (Entry<String, Object> e : cols.entrySet())
+    		colNames[index++] = e.getKey();
+    	String columns = StrKit.join(colNames, ",");
+    	
+    	String[] pKeysNoUse = new String[0];
+    	StringBuilder sql = new StringBuilder();
+    	List<Object> parasNoUse = new ArrayList<Object>();
+    	config.dialect.forDbSave(tableName, pKeysNoUse, record, sql, parasNoUse);
+    	return batch(sql.toString(), columns, recordList, batchSize);
+    }
+    
+    /**
+     * Batch update models using the attrs names of the first model in modelList.
+     * Ensure all the models can use the same sql as the first model.
+     */
+    public int[] batchUpdate(List<? extends Model> modelList, int batchSize) {
+    	if (modelList == null || modelList.size() == 0)
+    		return new int[0];
+    	
+    	Model model = modelList.get(0);
+    	Table table = TableMapping.me().getTable(model.getClass());
+    	String[] pKeys = table.getPrimaryKey();
+    	Map<String, Object> attrs = model.getAttrs();
+    	List<String> attrNames = new ArrayList<String>();
+    	// the same as the iterator in Dialect.forModelSave() to ensure the order of the attrs
+    	for (Entry<String, Object> e : attrs.entrySet()) {
+    		String attr = e.getKey();
+    		if (config.dialect.isPrimaryKey(attr, pKeys) == false)
+    			attrNames.add(attr);
+    	}
+    	for (String pKey : pKeys)
+    		attrNames.add(pKey);
+    	String columns = StrKit.join(attrNames.toArray(new String[attrNames.size()]), ",");
+    	
+    	// update all attrs of the model not use the midifyFlag of every single model
+    	Set<String> modifyFlag = attrs.keySet();	// model.getModifyFlag();
+    	
+    	StringBuilder sql = new StringBuilder();
+    	List<Object> parasNoUse = new ArrayList<Object>();
+    	config.dialect.forModelUpdate(TableMapping.me().getTable(model.getClass()), attrs, modifyFlag, sql, parasNoUse);
+    	return batch(sql.toString(), columns, modelList, batchSize);
+    }
+    
+    /**
+     * Batch update records using the columns names of the first record in recordList.
+     * Ensure all the records can use the same sql as the first record.
+     * @param tableName the table name
+     * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
+     */
+    public int[] batchUpdate(String tableName, String primaryKey, List<Record> recordList, int batchSize) {
+    	if (recordList == null || recordList.size() == 0)
+    		return new int[0];
+    	
+    	String[] pKeys = primaryKey.split(",");
+    	config.dialect.trimPrimaryKeys(pKeys);
+    	
+    	Record record = recordList.get(0);
+    	Map<String, Object> cols = record.getColumns();
+    	List<String> colNames = new ArrayList<String>();
+    	// the same as the iterator in Dialect.forDbUpdate() to ensure the order of the columns
+    	for (Entry<String, Object> e : cols.entrySet()) {
+    		String col = e.getKey();
+    		if (config.dialect.isPrimaryKey(col, pKeys) == false)
+    			colNames.add(col);
+    	}
+    	for (String pKey : pKeys)
+    		colNames.add(pKey);
+    	String columns = StrKit.join(colNames.toArray(new String[colNames.size()]), ",");
+    	
+    	Object[] idsNoUse = new Object[pKeys.length];
+    	StringBuilder sql = new StringBuilder();
+    	List<Object> parasNoUse = new ArrayList<Object>();
+    	config.dialect.forDbUpdate(tableName, pKeys, idsNoUse, record, sql, parasNoUse);
+    	return batch(sql.toString(), columns, recordList, batchSize);
+    }
+    
+    /**
+     * Batch update records with default primary key, using the columns names of the first record in recordList.
+     * Ensure all the records can use the same sql as the first record.
+     * @param tableName the table name
+     */
+    public int[] batchUpdate(String tableName, List<Record> recordList, int batchSize) {
+    	return batchUpdate(tableName, config.dialect.getDefaultPrimaryKey(),recordList, batchSize);
     }
     
     /**

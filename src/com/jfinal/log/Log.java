@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,37 +24,39 @@ package com.jfinal.log;
  * 4. ERROR
  * 5. FATAL (the most serious)
  */
-public abstract class Logger {
+public abstract class Log {
 	
-	private static ILoggerFactory factory;
+	private static ILogFactory defaultLogFactory = null;
 	
 	static {
 		init();
 	}
 	
-	public static void setLoggerFactory(ILoggerFactory loggerFactory) {
-		if (loggerFactory != null)
-			Logger.factory = loggerFactory;
-	}
-	
-	public static Logger getLogger(Class<?> clazz) {
-		return factory.getLogger(clazz);
-	}
-	
-	public static Logger getLogger(String name) {
-		return factory.getLogger(name);
-	}
-	
-	public static void init() {
-		if (factory != null)
-			return ;
-		try {
-			Class.forName("org.apache.log4j.Logger");
-			Class<?> log4jLoggerFactoryClass = Class.forName("com.jfinal.log.Log4jLoggerFactory");
-			factory = (ILoggerFactory)log4jLoggerFactoryClass.newInstance();	// return new Log4jLoggerFactory();
-		} catch (Exception e) {
-			factory = new JdkLoggerFactory();
+	static void init() {
+		if (defaultLogFactory == null) {
+			try {
+				Class.forName("org.apache.log4j.Logger");
+				Class<?> log4jLogFactoryClass = Class.forName("com.jfinal.log.Log4jLogFactory");
+				defaultLogFactory = (ILogFactory)log4jLogFactoryClass.newInstance();	// return new Log4jLogFactory();
+			} catch (Exception e) {
+				defaultLogFactory = new JdkLogFactory();
+			}
 		}
+	}
+	
+	static void setDefaultLogFactory(ILogFactory defaultLogFactory) {
+		if (defaultLogFactory == null) {
+			throw new IllegalArgumentException("defaultLogFactory can not be null.");
+		}
+		Log.defaultLogFactory = defaultLogFactory;
+	}
+	
+	public static Log getLog(Class<?> clazz) {
+		return defaultLogFactory.getLog(clazz);
+	}
+	
+	public static Log getLog(String name) {
+		return defaultLogFactory.getLog(name);
 	}
 	
 	public abstract void debug(String message);

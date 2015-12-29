@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,18 +35,18 @@ public class Redis {
 	
 	private static final ConcurrentHashMap<String, Cache> cacheMap = new ConcurrentHashMap<String, Cache>();
 	
-	static synchronized void addCache(Cache cache) {
+	public static void addCache(Cache cache) {
 		if (cache == null)
 			throw new IllegalArgumentException("cache can not be null");
 		if (cacheMap.containsKey(cache.getName()))
-			throw new IllegalArgumentException("cache already exists");
+			throw new IllegalArgumentException("The cache name already exists");
 		
 		cacheMap.put(cache.getName(), cache);
 		if (mainCache == null)
 			mainCache = cache;
 	}
 	
-	static Cache removeCache(String cacheName) {
+	public static Cache removeCache(String cacheName) {
 		return cacheMap.remove(cacheName);
 	}
 	
@@ -73,11 +73,14 @@ public class Redis {
 	}
 	
 	public static Object call(ICallback callback) {
-		return call(callback, null);
+		return call(callback, use());
 	}
 	
 	public static Object call(ICallback callback, String cacheName) {
-		Cache cache = (cacheName != null ? use(cacheName) : use());	
+		return call(callback, use(cacheName));
+	}
+	
+	private static Object call(ICallback callback, Cache cache) {
 		Jedis jedis = cache.getThreadLocalJedis();
 		boolean notThreadLocalJedis = (jedis == null);
 		if (notThreadLocalJedis) {

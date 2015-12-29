@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.jfinal.core;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.jfinal.kit.StrKit;
-import com.jfinal.log.Logger;
+import com.jfinal.log.Log;
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderFactory;
 
@@ -29,7 +29,7 @@ import com.jfinal.render.RenderFactory;
 public class ActionException extends RuntimeException {
 	
 	private static final long serialVersionUID = 1998063243843477017L;
-	private static final Logger log = Logger.getLogger(ActionException.class);
+	private static final Log log = Log.getLog(ActionException.class);
 	private int errorCode;
 	private Render errorRender;
 	

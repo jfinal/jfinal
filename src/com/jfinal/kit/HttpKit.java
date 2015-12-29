@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,21 +72,28 @@ public class HttpKit {
 	
 	private static final String GET  = "GET";
 	private static final String POST = "POST";
-	private static final String CHARSET = "UTF-8";
+	private static String CHARSET = "UTF-8";
 	
 	private static final SSLSocketFactory sslSocketFactory = initSSLSocketFactory();
 	private static final TrustAnyHostnameVerifier trustAnyHostnameVerifier = new HttpKit().new TrustAnyHostnameVerifier();
 	
 	private static SSLSocketFactory initSSLSocketFactory() {
 		try {
-			TrustManager[] tm = {new HttpKit().new TrustAnyTrustManager() };  
-			SSLContext sslContext = SSLContext.getInstance("TLS", "SunJSSE");  
-			sslContext.init(null, tm, new java.security.SecureRandom());  
+			TrustManager[] tm = {new HttpKit().new TrustAnyTrustManager() };
+			SSLContext sslContext = SSLContext.getInstance("TLS");	// ("TLS", "SunJSSE");
+			sslContext.init(null, tm, new java.security.SecureRandom());
 			return sslContext.getSocketFactory();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static void setCharSet(String charSet) {
+		if (StrKit.isBlank(charSet)) {
+			throw new IllegalArgumentException("charSet can not be blank.");
+		}
+		HttpKit.CHARSET = charSet;
 	}
 	
 	private static HttpURLConnection getHttpConnection(String url, String method, Map<String, String> headers) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
@@ -200,7 +207,7 @@ public class HttpKit {
 				try {
 					inputStream.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					LogKit.error(e.getMessage(), e);
 				}
 			}
 		}
@@ -236,7 +243,7 @@ public class HttpKit {
 		return sb.toString();
 	}
 	
-	public static String readIncommingRequestData(HttpServletRequest request) {
+	public static String readData(HttpServletRequest request) {
 		BufferedReader br = null;
 		try {
 			StringBuilder result = new StringBuilder();
@@ -251,8 +258,13 @@ public class HttpKit {
 		}
 		finally {
 			if (br != null)
-				try {br.close();} catch (IOException e) {e.printStackTrace();}
+				try {br.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
 		}
+	}
+	
+	@Deprecated
+	public static String readIncommingRequestData(HttpServletRequest request) {
+		return readData(request);
 	}
 }
 

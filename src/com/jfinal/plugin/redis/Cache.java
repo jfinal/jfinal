@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,18 @@ import redis.clients.jedis.JedisPool;
  */
 public class Cache {
 	
-	final String name;
-	final JedisPool jedisPool;
-	final ISerializer serializer;
-	final IKeyNamingPolicy keyNamingPolicy;
+	protected String name;
+	protected JedisPool jedisPool;
+	protected ISerializer serializer;
+	protected IKeyNamingPolicy keyNamingPolicy;
 	
-	private final ThreadLocal<Jedis> threadLocalJedis = new ThreadLocal<Jedis>();
+	protected final ThreadLocal<Jedis> threadLocalJedis = new ThreadLocal<Jedis>();
 	
-	Cache(String name, JedisPool jedisPool, ISerializer serializer, IKeyNamingPolicy keyNamingPolicy) {
+	protected Cache() {
+		
+	}
+	
+	public Cache(String name, JedisPool jedisPool, ISerializer serializer, IKeyNamingPolicy keyNamingPolicy) {
 		this.name = name;
 		this.jedisPool = jedisPool;
 		this.serializer = serializer;
@@ -293,11 +297,11 @@ public class Cache {
 	/**
 	 * 切换到指定的数据库，数据库索引号 index 用数字值指定，以 0 作为起始索引值。
 	 * 默认使用 0 号数据库。
-	 * 注意：在 Jedis 对象被关闭时，数据库又会重新被设置为 1，所以本方法 select(...)
+	 * 注意：在 Jedis 对象被关闭时，数据库又会重新被设置为初始值，所以本方法 select(...)
 	 * 正常工作需要使用如下方式之一：
 	 * 1：使用 RedisInterceptor，在本线程内共享同一个 Jedis 对象
 	 * 2：使用 Redis.call(ICallback) 进行操作
-	 * 2：自行获取 Jedis 对象进行操作
+	 * 3：自行获取 Jedis 对象进行操作
 	 */
 	public String select(int databaseIndex) {
 		Jedis jedis = getJedis();
@@ -439,7 +443,7 @@ public class Cache {
 	public Long hset(Object key, Object field, Object value) {
 		Jedis jedis = getJedis();
 		try {
-			return jedis.hset(keyToBytes(key), keyToBytes(field), valueToBytes(value));
+			return jedis.hset(keyToBytes(key), fieldToBytes(field), valueToBytes(value));
 		}
 		finally {close(jedis);}
 	}
@@ -454,7 +458,7 @@ public class Cache {
 		try {
 			Map<byte[], byte[]> para = new HashMap<byte[], byte[]>();
 			for (Entry<Object, Object> e : hash.entrySet())
-				para.put(keyToBytes(e.getKey()), valueToBytes(e.getValue()));
+				para.put(fieldToBytes(e.getKey()), valueToBytes(e.getValue()));
 			return jedis.hmset(keyToBytes(key), para);
 		}
 		finally {close(jedis);}
@@ -467,7 +471,7 @@ public class Cache {
 	public <T> T hget(Object key, Object field) {
 		Jedis jedis = getJedis();
 		try {
-			return (T)valueFromBytes(jedis.hget(keyToBytes(key), keyToBytes(field)));
+			return (T)valueFromBytes(jedis.hget(keyToBytes(key), fieldToBytes(field)));
 		}
 		finally {close(jedis);}
 	}
@@ -481,7 +485,7 @@ public class Cache {
 	public List hmget(Object key, Object... fields) {
 		Jedis jedis = getJedis();
 		try {
-			List<byte[]> data = jedis.hmget(keyToBytes(key), keysToBytesArray(fields));
+			List<byte[]> data = jedis.hmget(keyToBytes(key), fieldsToBytesArray(fields));
 			return valueListFromBytesList(data);
 		}
 		finally {close(jedis);}
@@ -493,7 +497,7 @@ public class Cache {
 	public Long hdel(Object key, Object... fields) {
 		Jedis jedis = getJedis();
 		try {
-			return jedis.hdel(keyToBytes(key), keysToBytesArray(fields));
+			return jedis.hdel(keyToBytes(key), fieldsToBytesArray(fields));
 		}
 		finally {close(jedis);}
 	}
@@ -504,7 +508,7 @@ public class Cache {
 	public boolean hexists(Object key, Object field) {
 		Jedis jedis = getJedis();
 		try {
-			return jedis.hexists(keyToBytes(key), keyToBytes(field));
+			return jedis.hexists(keyToBytes(key), fieldToBytes(field));
 		}
 		finally {close(jedis);}
 	}
@@ -520,7 +524,7 @@ public class Cache {
 			Map<byte[], byte[]> data = jedis.hgetAll(keyToBytes(key));
 			Map<Object, Object> result = new HashMap<Object, Object>();
 			for (Entry<byte[], byte[]> e : data.entrySet())
-				result.put(keyFromBytes(e.getKey()), valueFromBytes(e.getValue()));
+				result.put(fieldFromBytes(e.getKey()), valueFromBytes(e.getValue()));
 			return result;
 		}
 		finally {close(jedis);}
@@ -541,12 +545,15 @@ public class Cache {
 	
 	/**
 	 * 返回哈希表 key 中的所有域。
+	 * 底层实现此方法取名为 hfields 更为合适，在此仅为与底层保持一致
 	 */
-	public Set<String> hkeys(Object key) {
+	public Set<Object> hkeys(Object key) {
 		Jedis jedis = getJedis();
 		try {
-			Set<byte[]> keySet = jedis.hkeys(keyToBytes(key));
-			return keySetFromBytesSet(keySet);	// 返回 key 的方法不能使用 valueSetFromBytesSet(...)
+			Set<byte[]> fieldSet = jedis.hkeys(keyToBytes(key));
+			Set<Object> result = new HashSet<Object>();
+			fieldSetFromBytesSet(fieldSet, result);
+			return result;
 		}
 		finally {close(jedis);}
 	}
@@ -1130,51 +1137,62 @@ public class Cache {
 	
 	// ---------
 	
-	private byte[] keyToBytes(Object key) {
+	protected byte[] keyToBytes(Object key) {
 		String keyStr = keyNamingPolicy.getKeyName(key);
 		return serializer.keyToBytes(keyStr);
 	}
 	
-	private String keyFromBytes(byte[] bytes) {
-		return serializer.keyFromBytes(bytes);
-	}
-	
-	private byte[][] keysToBytesArray(Object... keys) {
+	protected byte[][] keysToBytesArray(Object... keys) {
 		byte[][] result = new byte[keys.length][];
 		for (int i=0; i<result.length; i++)
 			result[i] = keyToBytes(keys[i]);
 		return result;
 	}
 	
-	private Set<String> keySetFromBytesSet(Set<byte[]> data) {
-		Set<String> result = new HashSet<String>();
-		for (byte[] keyBytes : data)
-			result.add(keyFromBytes(keyBytes));
-		return result;
+	protected byte[] fieldToBytes(Object field) {
+		return serializer.fieldToBytes(field);
 	}
 	
-	private byte[] valueToBytes(Object object) {
-		return serializer.valueToBytes(object);
+	protected Object fieldFromBytes(byte[] bytes) {
+		return serializer.fieldFromBytes(bytes);
 	}
 	
-	private Object valueFromBytes(byte[] bytes) {
-		return serializer.valueFromBytes(bytes);
-	}
-	
-	private byte[][] valuesToBytesArray(Object... objectArray) {
-		byte[][] data = new byte[objectArray.length][];
+	protected byte[][] fieldsToBytesArray(Object... fieldsArray) {
+		byte[][] data = new byte[fieldsArray.length][];
 		for (int i=0; i<data.length; i++)
-			data[i] = valueToBytes(objectArray[i]);
+			data[i] = fieldToBytes(fieldsArray[i]);
 		return data;
 	}
 	
-	private void valueSetFromBytesSet(Set<byte[]> data, Set<Object> result) {
-		for (byte[] d : data)
-			result.add(valueFromBytes(d));
+	protected void fieldSetFromBytesSet(Set<byte[]> data, Set<Object> result) {
+		for (byte[] fieldBytes : data) {
+			result.add(fieldFromBytes(fieldBytes));
+		}
+	}
+	
+	protected byte[] valueToBytes(Object value) {
+		return serializer.valueToBytes(value);
+	}
+	
+	protected Object valueFromBytes(byte[] bytes) {
+		return serializer.valueFromBytes(bytes);
+	}
+	
+	protected byte[][] valuesToBytesArray(Object... valuesArray) {
+		byte[][] data = new byte[valuesArray.length][];
+		for (int i=0; i<data.length; i++)
+			data[i] = valueToBytes(valuesArray[i]);
+		return data;
+	}
+	
+	protected void valueSetFromBytesSet(Set<byte[]> data, Set<Object> result) {
+		for (byte[] valueBytes : data) {
+			result.add(valueFromBytes(valueBytes));
+		}
 	}
 	
 	@SuppressWarnings("rawtypes")
-	private List valueListFromBytesList(List<byte[]> data) {
+	protected List valueListFromBytesList(List<byte[]> data) {
 		List<Object> result = new ArrayList<Object>();
 		for (byte[] d : data)
 			result.add(valueFromBytes(d));

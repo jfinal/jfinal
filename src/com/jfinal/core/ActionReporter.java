@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import com.jfinal.aop.Interceptor;
 /**
  * ActionReporter
  */
-final class ActionReporter {
+public class ActionReporter {
+	
+	private static boolean reportAfterInvocation = true;
 	
 	private static final ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<SimpleDateFormat>() {
 		protected SimpleDateFormat initialValue() {
@@ -33,26 +35,27 @@ final class ActionReporter {
 		}
 	};
 	
-	/**
-	 * Report action before action invoking when the common request coming
-	 */
-	static final boolean reportCommonRequest(Controller controller, Action action) {
-		String content_type = controller.getRequest().getContentType();
-		if (content_type == null || content_type.toLowerCase().indexOf("multipart") == -1) {	// if (content_type == null || content_type.indexOf("multipart/form-data") == -1) {
-			doReport(controller, action);
-			return false;
+	public static void setReportAfterInvocation(boolean reportAfterInvocation) {
+		ActionReporter.reportAfterInvocation = reportAfterInvocation;
+	}
+	
+	public static boolean isReportAfterInvocation(HttpServletRequest request) {
+		if (reportAfterInvocation) {
+			return true;
+		} else {
+			String contentType = request.getContentType();
+			if (contentType != null && contentType.toLowerCase().indexOf("multipart") != -1) {
+				return true;
+			} else {
+				return false;
+			}
 		}
-		return true;
 	}
 	
 	/**
-	 * Report action after action invoking when the multipart request coming
+	 * Report the action
 	 */
-	static final void reportMultipartRequest(Controller controller, Action action) {
-		doReport(controller, action);
-	}
-	
-	private static final void doReport(Controller controller, Action action) {
+	public static final void report(Controller controller, Action action) {
 		StringBuilder sb = new StringBuilder("\nJFinal action report -------- ").append(sdf.get().format(new Date())).append(" ------------------------------\n");
 		Class<? extends Controller> cc = action.getControllerClass();
 		sb.append("Controller  : ").append(cc.getName()).append(".(").append(cc.getSimpleName()).append(".java:1)");

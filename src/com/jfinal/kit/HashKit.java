@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,8 @@ import java.security.MessageDigest;
 
 public class HashKit {
 	
-	private static java.security.SecureRandom random = new java.security.SecureRandom();
+	private static final java.security.SecureRandom random = new java.security.SecureRandom();
+	private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 	
 	public static String md5(String srcStr){
 		return hash("MD5", srcStr);
@@ -44,16 +45,9 @@ public class HashKit {
 	
 	public static String hash(String algorithm, String srcStr) {
 		try {
-			StringBuilder result = new StringBuilder();
 			MessageDigest md = MessageDigest.getInstance(algorithm);
 			byte[] bytes = md.digest(srcStr.getBytes("utf-8"));
-			for (byte b : bytes) {
-				String hex = Integer.toHexString(b&0xFF);
-				if (hex.length() == 1)
-					result.append("0");
-				result.append(hex);
-			}
-			return result.toString();
+			return toHex(bytes);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
@@ -61,14 +55,12 @@ public class HashKit {
 	}
 	
 	private static String toHex(byte[] bytes) {
-		StringBuilder result = new StringBuilder();
-		for (byte b : bytes) {
-			String hex = Integer.toHexString(b&0xFF);
-			if (hex.length() == 1)
-				result.append("0");
-			result.append(hex);
+		StringBuilder ret = new StringBuilder(bytes.length * 2);
+		for (int i=0; i<bytes.length; i++) {
+			ret.append(HEX_DIGITS[(bytes[i] >> 4) & 0x0f]);
+			ret.append(HEX_DIGITS[bytes[i] & 0x0f]);
 		}
-		return result.toString();
+		return ret.toString();
 	}
 	
 	/**

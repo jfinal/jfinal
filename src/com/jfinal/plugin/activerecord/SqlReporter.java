@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
-import com.jfinal.log.Logger;
+import com.jfinal.log.Log;
 
 /**
  * SqlReporter.
@@ -29,15 +29,15 @@ import com.jfinal.log.Logger;
 public class SqlReporter implements InvocationHandler {
 	
 	private Connection conn;
-	private static boolean loggerOn = false;
-	private static final Logger log = Logger.getLogger(SqlReporter.class);
+	private static boolean logOn = false;
+	private static final Log log = Log.getLog(SqlReporter.class);
 	
 	SqlReporter(Connection conn) {
 		this.conn = conn;
 	}
 	
-	public static void setLogger(boolean on) {
-		SqlReporter.loggerOn = on;
+	public static void setLog(boolean on) {
+		SqlReporter.logOn = on;
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -50,7 +50,7 @@ public class SqlReporter implements InvocationHandler {
 		try {
 			if (method.getName().equals("prepareStatement")) {
 				String info = "Sql: " + args[0];
-				if (loggerOn)
+				if (logOn)
 					log.info(info);
 				else
 					System.out.println(info);

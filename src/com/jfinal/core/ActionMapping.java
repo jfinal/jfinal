@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import com.jfinal.aop.Interceptor;
+import com.jfinal.aop.InterceptorManager;
 import com.jfinal.config.Interceptors;
 import com.jfinal.config.Routes;
 
@@ -37,13 +38,13 @@ final class ActionMapping {
 	
 	private static final String SLASH = "/";
 	private Routes routes;
-	private Interceptors interceptors;
+	// private Interceptors interceptors;
 	
 	private final Map<String, Action> mapping = new HashMap<String, Action>();
 	
 	ActionMapping(Routes routes, Interceptors interceptors) {
 		this.routes = routes;
-		this.interceptors = interceptors;
+		// this.interceptors = interceptors;
 	}
 	
 	private Set<String> buildExcludedMethodName() {
@@ -59,12 +60,11 @@ final class ActionMapping {
 	void buildActionMapping() {
 		mapping.clear();
 		Set<String> excludedMethodName = buildExcludedMethodName();
-		ActionInterceptorBuilder interceptorBuilder = new ActionInterceptorBuilder();
-		Interceptor[] globalInters = interceptors.getGlobalActionInterceptor();
-		interceptorBuilder.addToInterceptorsMap(globalInters);
+		InterceptorManager interMan = InterceptorManager.me();
+		
 		for (Entry<String, Class<? extends Controller>> entry : routes.getEntrySet()) {
 			Class<? extends Controller> controllerClass = entry.getValue();
-			Interceptor[] controllerInters = interceptorBuilder.buildControllerInterceptors(controllerClass);
+			Interceptor[] controllerInters = interMan.createControllerInterceptor(controllerClass);
 			
 			boolean sonOfController = (controllerClass.getSuperclass() == Controller.class);
 			Method[] methods = (sonOfController ? controllerClass.getDeclaredMethods() : controllerClass.getMethods());
@@ -75,8 +75,7 @@ final class ActionMapping {
 				if (sonOfController && !Modifier.isPublic(method.getModifiers()))
 					continue ;
 				
-				Interceptor[] methodInters = interceptorBuilder.buildMethodInterceptors(method);
-				Interceptor[] actionInters = interceptorBuilder.buildActionInterceptors(globalInters, controllerInters, methodInters, method);
+				Interceptor[] actionInters = interMan.buildControllerActionInterceptor(controllerInters, controllerClass, method);
 				String controllerKey = entry.getKey();
 				
 				ActionKey ak = method.getAnnotation(ActionKey.class);
@@ -150,12 +149,6 @@ final class ActionMapping {
 		return allActionKeys;
 	}
 }
-
-
-
-
-
-
 
 
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import net.sf.cglib.proxy.MethodProxy;
 @SuppressWarnings("unchecked")
 public class Invocation {
 	
-	private Action action = null;
+	private Action action;
 	private static final Object[] NULL_ARGS = new Object[0];	// Prevent new Object[0] by jvm for paras of action invocation.
 	
 	boolean useInjectTarget;
@@ -43,16 +43,18 @@ public class Invocation {
 	
 	// InvocationWrapper need this constructor
 	protected Invocation() {
+		this.action = null;
 	}
 	
 	public Invocation(Action action, Controller controller) {
-		this.target = controller;
-		this.inters = action.getInterceptors();
 		this.action = action;
+		this.inters = action.getInterceptors();
+		this.target = controller;
 		this.args = NULL_ARGS;
 	}
 	
 	public Invocation(Object target, Method method, Object[] args, MethodProxy methodProxy, Interceptor[] inters) {
+		this.action = null;
 		this.target = target;
 		this.method = method;
 		this.args = args;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,13 @@ public class HandlerFactory {
 	/**
 	 * Build handler chain
 	 */
+	@SuppressWarnings("deprecation")
 	public static Handler getHandler(List<Handler> handlerList, Handler actionHandler) {
 		Handler result = actionHandler;
 		
 		for (int i=handlerList.size()-1; i>=0; i--) {
 			Handler temp = handlerList.get(i);
+			temp.next = result;
 			temp.nextHandler = result;
 			result = temp;
 		}

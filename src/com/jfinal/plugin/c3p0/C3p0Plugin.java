@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import javax.sql.DataSource;
+import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.plugin.activerecord.IDataSourceProvider;
@@ -43,6 +44,7 @@ public class C3p0Plugin implements IPlugin, IDataSourceProvider {
 	private int acquireIncrement = 2;
 	
 	private ComboPooledDataSource dataSource;
+	private boolean isStarted = false;
 	
 	public C3p0Plugin setDriverClass(String driverClass) {
 		if (StrKit.isBlank(driverClass))
@@ -126,11 +128,11 @@ public class C3p0Plugin implements IPlugin, IDataSourceProvider {
 					toInt(ps.getProperty("maxPoolSize")), toInt(ps.getProperty("minPoolSize")), toInt(ps.getProperty("initialPoolSize")),
 					toInt(ps.getProperty("maxIdleTime")),toInt(ps.getProperty("acquireIncrement")));
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw e instanceof RuntimeException ? (RuntimeException)e : new RuntimeException(e);
 		}
 		finally {
 			if (fis != null)
-				try {fis.close();} catch (IOException e) {e.printStackTrace();}
+				try {fis.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
 		}
 	}
 	
@@ -142,6 +144,9 @@ public class C3p0Plugin implements IPlugin, IDataSourceProvider {
 	}
 	
 	public boolean start() {
+		if (isStarted)
+			return true;
+		
 		dataSource = new ComboPooledDataSource();
 		dataSource.setJdbcUrl(jdbcUrl);
 		dataSource.setUser(user);
@@ -154,6 +159,7 @@ public class C3p0Plugin implements IPlugin, IDataSourceProvider {
 		dataSource.setMaxIdleTime(maxIdleTime);
 		dataSource.setAcquireIncrement(acquireIncrement);
 		
+		isStarted = true;
 		return true;
 	}
 	
@@ -165,9 +171,16 @@ public class C3p0Plugin implements IPlugin, IDataSourceProvider {
 		return dataSource;
 	}
 	
+	public ComboPooledDataSource getComboPooledDataSource() {
+		return dataSource;
+	}
+	
 	public boolean stop() {
 		if (dataSource != null)
 			dataSource.close();
+		
+		dataSource = null;
+		isStarted = false;
 		return true;
 	}
 }

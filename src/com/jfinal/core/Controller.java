@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import com.jfinal.aop.Enhancer;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.ContentType;
+import com.jfinal.render.JsonRender;
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderFactory;
 import com.jfinal.upload.MultipartRequest;
@@ -59,6 +60,14 @@ public abstract class Controller {
 		this.request = request;
 		this.response = response;
 		this.urlPara = urlPara;
+	}
+	
+	public void setHttpServletRequest(HttpServletRequest request) {
+		this.request = request;
+	}
+	
+	public void setHttpServletResponse(HttpServletResponse response) {
+		this.response = response;
 	}
 	
 	public void setUrlPara(String urlPara) {
@@ -407,7 +416,7 @@ public abstract class Controller {
 	 * @param value a Object specifying the value stored in session
 	 */
 	public Controller setSessionAttr(String key, Object value) {
-		request.getSession().setAttribute(key, value);
+		request.getSession(true).setAttribute(key, value);
 		return this;
 	}
 	
@@ -490,6 +499,27 @@ public abstract class Controller {
 	}
 	
 	/**
+	 * Set Cookie.
+	 * @param name cookie name
+	 * @param value cookie value
+	 * @param maxAgeInSeconds -1: clear cookie when close browser. 0: clear cookie immediately.  n>0 : max age in n seconds.
+	 * @param isHttpOnly true if this cookie is to be marked as HttpOnly, false otherwise
+	 */
+	public Controller setCookie(String name, String value, int maxAgeInSeconds, boolean isHttpOnly) {
+		return doSetCookie(name, value, maxAgeInSeconds, null, null, isHttpOnly);
+	}
+	
+	/**
+	 * Set Cookie.
+	 * @param name cookie name
+	 * @param value cookie value
+	 * @param maxAgeInSeconds -1: clear cookie when close browser. 0: clear cookie immediately.  n>0 : max age in n seconds.
+	 */
+	public Controller setCookie(String name, String value, int maxAgeInSeconds) {
+		return doSetCookie(name, value, maxAgeInSeconds, null, null, null);
+	}
+	
+	/**
 	 * Set Cookie to response.
 	 */
 	public Controller setCookie(Cookie cookie) {
@@ -503,10 +533,21 @@ public abstract class Controller {
 	 * @param value cookie value
 	 * @param maxAgeInSeconds -1: clear cookie when close browser. 0: clear cookie immediately.  n>0 : max age in n seconds.
 	 * @param path see Cookie.setPath(String)
+	 * @param isHttpOnly true if this cookie is to be marked as HttpOnly, false otherwise
+	 */
+	public Controller setCookie(String name, String value, int maxAgeInSeconds, String path, boolean isHttpOnly) {
+		return doSetCookie(name, value, maxAgeInSeconds, path, null, isHttpOnly);
+	}
+	
+	/**
+	 * Set Cookie to response.
+	 * @param name cookie name
+	 * @param value cookie value
+	 * @param maxAgeInSeconds -1: clear cookie when close browser. 0: clear cookie immediately.  n>0 : max age in n seconds.
+	 * @param path see Cookie.setPath(String)
 	 */
 	public Controller setCookie(String name, String value, int maxAgeInSeconds, String path) {
-		setCookie(name, value, maxAgeInSeconds, path, null);
-		return this;
+		return doSetCookie(name, value, maxAgeInSeconds, path, null, null);
 	}
 	
 	/**
@@ -516,46 +557,46 @@ public abstract class Controller {
 	 * @param maxAgeInSeconds -1: clear cookie when close browser. 0: clear cookie immediately.  n>0 : max age in n seconds.
 	 * @param path see Cookie.setPath(String)
 	 * @param domain the domain name within which this cookie is visible; form is according to RFC 2109
+	 * @param isHttpOnly true if this cookie is to be marked as HttpOnly, false otherwise
 	 */
-	public Controller setCookie(String name, String value, int maxAgeInSeconds, String path, String domain) {
-		Cookie cookie = new Cookie(name, value);
-		if (domain != null)
-			cookie.setDomain(domain);
-		cookie.setMaxAge(maxAgeInSeconds);
-		cookie.setPath(path);
-		response.addCookie(cookie);
-		return this;
+	public Controller setCookie(String name, String value, int maxAgeInSeconds, String path, String domain, boolean isHttpOnly) {
+		return doSetCookie(name, value, maxAgeInSeconds, path, domain, isHttpOnly);
 	}
 	
 	/**
-	 * Set Cookie with path = "/".
-	 */
-	public Controller setCookie(String name, String value, int maxAgeInSeconds) {
-		setCookie(name, value, maxAgeInSeconds, "/", null);
-		return this;
-	}
-	
-	/**
-	 * Remove Cookie with path = "/".
+	 * Remove Cookie.
 	 */
 	public Controller removeCookie(String name) {
-		setCookie(name, null, 0, "/", null);
-		return this;
+		return doSetCookie(name, null, 0, null, null, null);
 	}
 	
 	/**
 	 * Remove Cookie.
 	 */
 	public Controller removeCookie(String name, String path) {
-		setCookie(name, null, 0, path, null);
-		return this;
+		return doSetCookie(name, null, 0, path, null, null);
 	}
 	
 	/**
 	 * Remove Cookie.
 	 */
 	public Controller removeCookie(String name, String path, String domain) {
-		setCookie(name, null, 0, path, domain);
+		return doSetCookie(name, null, 0, path, domain, null);
+	}
+	
+	private Controller doSetCookie(String name, String value, int maxAgeInSeconds, String path, String domain, Boolean isHttpOnly) {
+		Cookie cookie = new Cookie(name, value);
+		cookie.setMaxAge(maxAgeInSeconds);
+		if (path != null) {
+			cookie.setPath(path);
+		}
+		if (domain != null) {
+			cookie.setDomain(domain);
+		}
+		if (isHttpOnly != null) {
+			cookie.setHttpOnly(isHttpOnly);
+		}
+		response.addCookie(cookie);
 		return this;
 	}
 	
@@ -644,14 +685,38 @@ public abstract class Controller {
 	 * Get model from http request.
 	 */
 	public <T> T getModel(Class<T> modelClass) {
-		return (T)ModelInjector.inject(modelClass, request, false);
+		return (T)Injector.injectModel(modelClass, request, false);
+	}
+	
+	public <T> T getModel(Class<T> modelClass, boolean skipConvertError) {
+		return (T)Injector.injectModel(modelClass, request, skipConvertError);
 	}
 	
 	/**
 	 * Get model from http request.
 	 */
 	public <T> T getModel(Class<T> modelClass, String modelName) {
-		return (T)ModelInjector.inject(modelClass, modelName, request, false);
+		return (T)Injector.injectModel(modelClass, modelName, request, false);
+	}
+	
+	public <T> T getModel(Class<T> modelClass, String modelName, boolean skipConvertError) {
+		return (T)Injector.injectModel(modelClass, modelName, request, skipConvertError);
+	}
+	
+	public <T> T getBean(Class<T> beanClass) {
+		return (T)Injector.injectBean(beanClass, request, false);
+	}
+	
+	public <T> T getBean(Class<T> beanClass, boolean skipConvertError) {
+		return (T)Injector.injectBean(beanClass, request, skipConvertError);
+	}
+	
+	public <T> T getBean(Class<T> beanClass, String beanName) {
+		return (T)Injector.injectBean(beanClass, beanName, request, false);
+	}
+	
+	public <T> T getBean(Class<T> beanClass, String beanName, boolean skipConvertError) {
+		return (T)Injector.injectBean(beanClass, beanName, request, skipConvertError);
 	}
 	
 	// TODO public <T> List<T> getModels(Class<T> modelClass, String modelName) {}
@@ -661,36 +726,36 @@ public abstract class Controller {
 	/**
 	 * Get upload file from multipart request.
 	 */
-	public List<UploadFile> getFiles(String saveDirectory, Integer maxPostSize, String encoding) {
+	public List<UploadFile> getFiles(String uploadPath, Integer maxPostSize, String encoding) {
 		if (request instanceof MultipartRequest == false)
-			request = new MultipartRequest(request, saveDirectory, maxPostSize, encoding);
+			request = new MultipartRequest(request, uploadPath, maxPostSize, encoding);
 		return ((MultipartRequest)request).getFiles();
 	}
 	
-	public UploadFile getFile(String parameterName, String saveDirectory, Integer maxPostSize, String encoding) {
-		getFiles(saveDirectory, maxPostSize, encoding);
+	public UploadFile getFile(String parameterName, String uploadPath, Integer maxPostSize, String encoding) {
+		getFiles(uploadPath, maxPostSize, encoding);
 		return getFile(parameterName);
 	}
 	
-	public List<UploadFile> getFiles(String saveDirectory, int maxPostSize) {
+	public List<UploadFile> getFiles(String uploadPath, int maxPostSize) {
 		if (request instanceof MultipartRequest == false)
-			request = new MultipartRequest(request, saveDirectory, maxPostSize);
+			request = new MultipartRequest(request, uploadPath, maxPostSize);
 		return ((MultipartRequest)request).getFiles();
 	}
 	
-	public UploadFile getFile(String parameterName, String saveDirectory, int maxPostSize) {
-		getFiles(saveDirectory, maxPostSize);
+	public UploadFile getFile(String parameterName, String uploadPath, int maxPostSize) {
+		getFiles(uploadPath, maxPostSize);
 		return getFile(parameterName);
 	}
 	
-	public List<UploadFile> getFiles(String saveDirectory) {
+	public List<UploadFile> getFiles(String uploadPath) {
 		if (request instanceof MultipartRequest == false)
-			request = new MultipartRequest(request, saveDirectory);
+			request = new MultipartRequest(request, uploadPath);
 		return ((MultipartRequest)request).getFiles();
 	}
 	
-	public UploadFile getFile(String parameterName, String saveDirectory) {
-		getFiles(saveDirectory);
+	public UploadFile getFile(String parameterName, String uploadPath) {
+		getFiles(uploadPath);
 		return getFile(parameterName);
 	}
 	
@@ -753,7 +818,7 @@ public abstract class Controller {
 		String[] values = request.getParameterValues(name);
 		if (values != null) {
 			if (values.length == 1)
-				try {request.setAttribute(name, TypeConverter.convert(type, values[0]));} catch (ParseException e) {}
+				try {request.setAttribute(name, TypeConverter.convert(type, values[0]));} catch (ParseException e) {com.jfinal.kit.LogKit.logNothing(e);}
 			else
 				request.setAttribute(name, values);
 		}
@@ -770,15 +835,27 @@ public abstract class Controller {
 		return this;
 	}
 	
-	public Controller keepModel(Class modelClass, String modelName) {
-		Object model = ModelInjector.inject(modelClass, modelName, request, true);
+	public Controller keepModel(Class<? extends com.jfinal.plugin.activerecord.Model> modelClass, String modelName) {
+		Object model = Injector.injectModel(modelClass, modelName, request, true);
 		request.setAttribute(modelName, model);
 		return this;
 	}
 	
-	public Controller keepModel(Class modelClass) {
+	public Controller keepModel(Class<? extends com.jfinal.plugin.activerecord.Model> modelClass) {
 		String modelName = StrKit.firstCharToLowerCase(modelClass.getSimpleName());
 		keepModel(modelClass, modelName);
+		return this;
+	}
+	
+	public Controller keepBean(Class<?> beanClass, String beanName) {
+		Object bean = Injector.injectBean(beanClass, beanName, request, true);
+		request.setAttribute(beanName, bean);
+		return this;
+	}
+	
+	public Controller keepBean(Class<?> beanClass) {
+		String beanName = StrKit.firstCharToLowerCase(beanClass.getSimpleName());
+		keepBean(beanClass, beanName);
 		return this;
 	}
 	
@@ -943,7 +1020,7 @@ public abstract class Controller {
 	 * Example: renderJson(new User().set("name", "JFinal").set("age", 18));
 	 */
 	public void renderJson(Object object) {
-		render = renderFactory.getJsonRender(object);
+		render = object instanceof JsonRender ? (JsonRender)object : renderFactory.getJsonRender(object);
 	}
 	
 	/**
@@ -1075,6 +1152,14 @@ public abstract class Controller {
 	 */
 	public void renderXml(String view) {
 		render = renderFactory.getXmlRender(view);
+	}
+	
+	public void renderCaptcha() {
+		render = renderFactory.getCaptchaRender();
+	}
+	
+	public boolean validateCaptcha(String paraName) {
+		return com.jfinal.render.CaptchaRender.validate(this, getPara(paraName));
 	}
 	
 	public void checkUrlPara(int minLength, int maxLength) {

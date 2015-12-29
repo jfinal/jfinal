@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import javax.sql.DataSource;
+import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.cache.EhCache;
 import com.jfinal.plugin.activerecord.cache.ICache;
@@ -32,102 +29,81 @@ import com.jfinal.plugin.activerecord.dialect.Dialect;
 import com.jfinal.plugin.activerecord.dialect.MysqlDialect;
 
 public class Config {
-	
-	String name;
-	
 	private final ThreadLocal<Connection> threadLocal = new ThreadLocal<Connection>();
 	
+	String name;
 	DataSource dataSource;
-	int transactionLevel = Connection.TRANSACTION_READ_COMMITTED;
 	
-	ICache cache = new EhCache();
-	boolean showSql = false;
-	boolean devMode = false;
-	Dialect dialect = new MysqlDialect();
-	
-	IContainerFactory containerFactory = new IContainerFactory(){
-		public Map<String, Object> getAttrsMap() {return new HashMap<String, Object>();}
-		public Map<String, Object> getColumnsMap() {return new HashMap<String, Object>();}
-		public Set<String> getModifyFlagSet() {return new HashSet<String>();}
-	};
+	Dialect dialect;
+	boolean showSql;
+	boolean devMode;
+	int transactionLevel;
+	IContainerFactory containerFactory;
+	ICache cache;
 	
 	/**
-	 * For DbKit.brokenConfig = new Config();
+	 * Constructor with full parameters
+	 * @param name the name of the config
+	 * @param dataSource the dataSource
+	 * @param dialect the dialect
+	 * @param showSql the showSql
+	 * @param devMode the devMode
+	 * @param transactionLevel the transaction level
+	 * @param containerFactory the containerFactory
+	 * @param cache the cache
 	 */
-	Config() {
-		
-	}
-	
-	/**
-	 * Constructor with DataSource
-	 * @param dataSource the dataSource, can not be null
-	 */
-	public Config(String name, DataSource dataSource) {
-		if (StrKit.isBlank(name))
-			throw new IllegalArgumentException("Config name can not be blank");
-		if (dataSource == null)
-			throw new IllegalArgumentException("DataSource can not be null");
-		
-		this.name = name.trim();
-		this.dataSource = dataSource;
-	}
-	
-	/**
-	 * Constructor with DataSource and Dialect
-	 * @param dataSource the dataSource, can not be null
-	 * @param dialect the dialect, can not be null
-	 */
-	public Config(String name, DataSource dataSource, Dialect dialect) {
+	public Config(String name, DataSource dataSource, Dialect dialect, boolean showSql, boolean devMode, int transactionLevel, IContainerFactory containerFactory, ICache cache) {
 		if (StrKit.isBlank(name))
 			throw new IllegalArgumentException("Config name can not be blank");
 		if (dataSource == null)
 			throw new IllegalArgumentException("DataSource can not be null");
 		if (dialect == null)
 			throw new IllegalArgumentException("Dialect can not be null");
+		if (containerFactory == null)
+			throw new IllegalArgumentException("ContainerFactory can not be null");
+		if (cache == null)
+			throw new IllegalArgumentException("Cache can not be null");
 		
 		this.name = name.trim();
 		this.dataSource = dataSource;
 		this.dialect = dialect;
+		this.showSql = showSql;
+		this.devMode = devMode;
+		this.transactionLevel = transactionLevel;
+		this.containerFactory = containerFactory;
+		this.cache = cache;
 	}
 	
 	/**
-	 * Constructor with full parameters
-	 * @param dataSource the dataSource, can not be null
-	 * @param dialect the dialect, set null with default value: new MysqlDialect()
-	 * @param showSql the showSql,set null with default value: false
-	 * @param devMode the devMode, set null with default value: false
-	 * @param transactionLevel the transaction level, set null with default value: Connection.TRANSACTION_READ_COMMITTED
-	 * @param containerFactory the containerFactory, set null with default value: new IContainerFactory(){......}
-	 * @param cache the cache, set null with default value: new EhCache()
+	 * Constructor with name and dataSource
 	 */
-	public Config(String name,
-				  DataSource dataSource,
-				  Dialect dialect,
-				  Boolean showSql,
-				  Boolean devMode,
-				  Integer transactionLevel,
-				  IContainerFactory containerFactory,
-				  ICache cache) {
-		if (StrKit.isBlank(name))
-			throw new IllegalArgumentException("Config name can not be blank");
-		if (dataSource == null)
-			throw new IllegalArgumentException("DataSource can not be null");
+	public Config(String name, DataSource dataSource) {
+		this(name, dataSource, new MysqlDialect());
+	}
+	
+	/**
+	 * Constructor with name, dataSource and dialect
+	 */
+	public Config(String name, DataSource dataSource, Dialect dialect) {
+		this(name, dataSource, dialect, false, false, DbKit.DEFAULT_TRANSACTION_LEVEL, IContainerFactory.defaultContainerFactory, new EhCache());
+	}
+	
+	private Config() {
 		
-		this.name = name.trim();
-		this.dataSource = dataSource;
-		
-		if (dialect != null)
-			this.dialect = dialect;
-		if (showSql != null)
-			this.showSql = showSql;
-		if (devMode != null)
-			this.devMode = devMode;
-		if (transactionLevel != null)
-			this.transactionLevel = transactionLevel;
-		if (containerFactory != null)
-			this.containerFactory = containerFactory;
-		if (cache != null)
-			this.cache = cache;
+	}
+	
+	/**
+	 * Create broken config for DbKit.brokenConfig = Config.createBrokenConfig();
+	 */
+	static Config createBrokenConfig() {
+		Config ret = new Config();
+		ret.dialect = new MysqlDialect();
+		ret.showSql = false;
+		ret.devMode = false;
+		ret.transactionLevel = DbKit.DEFAULT_TRANSACTION_LEVEL;
+		ret.containerFactory = IContainerFactory.defaultContainerFactory;
+		ret.cache = new EhCache();
+		return ret;
 	}
 	
 	public String getName() {
@@ -205,8 +181,8 @@ public class Config {
 	 * ThreadLocal support declare transaction.
 	 */
 	public final void close(ResultSet rs, Statement st, Connection conn) {
-		if (rs != null) {try {rs.close();} catch (SQLException e) {}}
-		if (st != null) {try {st.close();} catch (SQLException e) {}}
+		if (rs != null) {try {rs.close();} catch (SQLException e) {LogKit.error(e.getMessage(), e);}}
+		if (st != null) {try {st.close();} catch (SQLException e) {LogKit.error(e.getMessage(), e);}}
 		
 		if (threadLocal.get() == null) {	// in transaction if conn in threadlocal
 			if (conn != null) {try {conn.close();}
@@ -215,7 +191,7 @@ public class Config {
 	}
 	
 	public final void close(Statement st, Connection conn) {
-		if (st != null) {try {st.close();} catch (SQLException e) {}}
+		if (st != null) {try {st.close();} catch (SQLException e) {LogKit.error(e.getMessage(), e);}}
 		
 		if (threadLocal.get() == null) {	// in transaction if conn in threadlocal
 			if (conn != null) {try {conn.close();}

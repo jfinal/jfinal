@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package com.jfinal.i18n;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.jfinal.kit.StrKit;
 
 /**
@@ -42,7 +41,7 @@ public class I18n {
 	static String defaultBaseName = "i18n";
 	static String defaultLocale = Locale.getDefault().getLanguage() + "_" + Locale.getDefault().getCountry();
 	
-	private static final Map<String, Res> resMap = new HashMap<String, Res>();
+	private static final ConcurrentHashMap<String, Res> resMap = new ConcurrentHashMap<String, Res>();
 	
 	private I18n(){
 	}
@@ -69,19 +68,14 @@ public class I18n {
 		String resKey = baseName + locale;
 		Res res = resMap.get(resKey);
 		if (res == null) {
-			synchronized (resMap) {
-				res = resMap.get(resKey);
-				if (res == null) {
-					res = new Res(baseName, locale);
-					resMap.put(resKey, res);
-				}
-			}
+			res = new Res(baseName, locale);
+			resMap.put(resKey, res);
 		}
 		return res;
 	}
 	
 	public static Res use(String baseName, Locale locale) {
-		return use(baseName, locale.getLanguage() + "_" + locale.getCountry());
+		return use(baseName, toLocale(locale));
 	}
 	
 	public static Res use(String locale) {
@@ -90,5 +84,16 @@ public class I18n {
 	
 	public static Res use() {
 		return use(defaultBaseName, defaultLocale);
+	}
+	
+	public static Locale toLocale(String locale) {
+		String[] array = locale.split("_");
+		if (array.length == 1)
+			return new Locale(array[0]);
+		return new Locale(array[0], array[1]);
+	}
+	
+	public static String toLocale(Locale locale) {
+		return locale.getLanguage() + "_" + locale.getCountry();
 	}
 }

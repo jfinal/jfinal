@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Cross Package Invoking pattern for package activerecord.
@@ -34,6 +35,11 @@ public abstract class CPI {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static final Map<String, Object> getAttrs(Model model) {
 		return model.getAttrs();
+	}
+	
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public static final Set<String> getModifyFlag(Model model) {
+		return model.getModifyFlag();
 	}
 	
 	public static <T> List<T> query(Connection conn, String sql, Object... paras) throws SQLException {
@@ -74,6 +80,10 @@ public abstract class CPI {
 	
 	public static int update(String configName, Connection conn, String sql, Object... paras) throws SQLException {
 		return Db.update(DbKit.getConfig(configName), conn, sql, paras);
+	}
+	
+	public static void setTablePrimaryKey(Table table, String primaryKey) {
+		table.setPrimaryKey(primaryKey);
 	}
 }
 

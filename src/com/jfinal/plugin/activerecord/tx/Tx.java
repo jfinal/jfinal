@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
+import com.jfinal.kit.LogKit;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.DbKit;
@@ -76,9 +77,10 @@ public class Tx implements Interceptor {
 			inv.invoke();
 			conn.commit();
 		} catch (NestedTransactionHelpException e) {
-			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
+			if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}
+			LogKit.logNothing(e);
 		} catch (Throwable t) {
-			if (conn != null) try {conn.rollback();} catch (Exception e1) {e1.printStackTrace();}
+			if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}
 			throw t instanceof RuntimeException ? (RuntimeException)t : new ActiveRecordException(t);
 		}
 		finally {
@@ -89,7 +91,7 @@ public class Tx implements Interceptor {
 					conn.close();
 				}
 			} catch (Throwable t) {
-				t.printStackTrace();	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
+				LogKit.error(t.getMessage(), t);	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
 			}
 			finally {
 				config.removeThreadLocalConnection();	// prevent memory leak

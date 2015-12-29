@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2015, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2016, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,29 @@ package com.jfinal.log;
 import java.util.logging.Level;
 
 /**
- * JdkLogger.
+ * JdkLog.
  */
-public class JdkLogger extends Logger {
+public class JdkLog extends Log {
 
 	private java.util.logging.Logger log;
 	private String clazzName;
 	
-	JdkLogger(Class<?> clazz) {
+	JdkLog(Class<?> clazz) {
 		log = java.util.logging.Logger.getLogger(clazz.getName());
 		clazzName = clazz.getName();
 	}
 	
-	JdkLogger(String name) {
+	JdkLog(String name) {
 		log = java.util.logging.Logger.getLogger(name);
 		clazzName = name;
+	}
+	
+	public static Log getLog(Class<?> clazz) {
+		return new JdkLog(clazz);
+	}
+	
+	public static Log getLog(String name) {
+		return new JdkLog(name);
 	}
 	
 	public void debug(String message) {
@@ -69,14 +77,14 @@ public class JdkLogger extends Logger {
 	}
 	
 	/**
-	 * JdkLogger fatal is the same as the error.
+	 * JdkLog fatal is the same as the error.
 	 */
 	public void fatal(String message) {
 		log.logp(Level.SEVERE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
 	}
 	
 	/**
-	 * JdkLogger fatal is the same as the error.
+	 * JdkLog fatal is the same as the error.
 	 */
 	public void fatal(String message, Throwable t) {
 		log.logp(Level.SEVERE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
