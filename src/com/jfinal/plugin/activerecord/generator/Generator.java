@@ -147,8 +147,9 @@ public class Generator {
 	 * 设置是否在 Model 中生成 dao 对象，默认生成
 	 */
 	public void setGenerateDaoInModel(boolean generateDaoInModel) {
-		if (modelGenerator != null)
+		if (modelGenerator != null) {
 			modelGenerator.setGenerateDaoInModel(generateDaoInModel);
+		}
 	}
 	
 	/**

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import com.jfinal.kit.StrKit;
+import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Table;
 import com.jfinal.plugin.activerecord.TableMapping;
@@ -91,23 +92,43 @@ public class Injector {
 		}
 		
 		Model<?> model = (Model<?>)temp;
-		String modelNameAndDot = StrKit.notBlank(modelName) ? modelName + "." : null;
-		
 		Table table = TableMapping.me().getTable(model.getClass());
+		if (table == null) {
+			throw new ActiveRecordException("The Table mapping of model: " + modelClass.getName() + 
+					" not exists or the ActiveRecordPlugin not start.");
+		}
+		
+		String modelNameAndDot = StrKit.notBlank(modelName) ? modelName + "." : null;
 		Map<String, String[]> parasMap = request.getParameterMap();
-		for (Entry<String, Class<?>> entry : table.getColumnTypeMapEntrySet()) {
-			String attrName = entry.getKey();
-			String paraName = modelNameAndDot != null ? modelNameAndDot + attrName : attrName;
-			if (parasMap.containsKey(paraName)) {
-				try {
-					Class<?> colType = entry.getValue();
-					String paraValue = request.getParameter(paraName);
-					Object value = paraValue != null ? TypeConverter.convert(colType, paraValue) : null;
-					model.set(attrName, value);
-				} catch (Exception e) {
-					if (skipConvertError == false) {
-						throw new RuntimeException("Can not convert parameter: " + paraName, e);
-					}
+		// 对 paraMap进行遍历而不是对table.getColumnTypeMapEntrySet()进行遍历，以便支持 CaseInsensitiveContainerFactory
+		// 以及支持界面的 attrName有误时可以感知并抛出异常避免出错
+		for (Entry<String, String[]> entry : parasMap.entrySet()) {
+			String paraName = entry.getKey();
+			String attrName;
+			if (modelNameAndDot != null) {
+				if (paraName.startsWith(modelNameAndDot)) {
+					attrName = paraName.substring(modelNameAndDot.length());
+				} else {
+					continue ;
+				}
+			} else {
+				attrName = paraName;
+			}
+			
+			try {
+				Class<?> colType = table.getColumnType(attrName);
+				if (colType == null) {
+					throw new ActiveRecordException("The model attribute " + attrName + " is not exists.");
+				}
+				
+				String[] paraValueArray = entry.getValue();
+				String paraValue = (paraValueArray != null && paraValueArray.length > 0) ? paraValueArray[0] : null;
+				
+				Object value = paraValue != null ? TypeConverter.convert(colType, paraValue) : null;
+				model.set(attrName, value);
+			} catch (Exception e) {
+				if (skipConvertError == false) {
+					throw new RuntimeException("Can not convert parameter: " + paraName, e);
 				}
 			}
 		}

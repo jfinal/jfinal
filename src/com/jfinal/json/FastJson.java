@@ -24,7 +24,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
  */
 public class FastJson extends Json {
 	
-	public static Json getJson() {
+	public static FastJson getJson() {
 		return new FastJson();
 	}
 	

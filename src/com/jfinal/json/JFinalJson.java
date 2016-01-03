@@ -81,7 +81,7 @@ public class JFinalJson extends Json {
 		return this;
 	}
 	
-	public static Json getJson() {
+	public static JFinalJson getJson() {
 		return new JFinalJson();
 	}
 	

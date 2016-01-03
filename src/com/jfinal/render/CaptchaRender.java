@@ -69,8 +69,8 @@ public class CaptchaRender extends Render {
 		try {
 			// try catch 用来兼容不支持 httpOnly 的 tomcat、jetty
 			cookie.setHttpOnly(true);
-		} catch (Throwable t) {
-			LogKit.logNothing(t);
+		} catch (Exception e) {
+			LogKit.logNothing(e);
 		}
 		response.addCookie(cookie);
 		response.setHeader("Pragma","no-cache");
