@@ -120,8 +120,8 @@ public abstract class Dialect {
 		// "(^\\s*select\\s+[\\s\\S]+?(\\s+|\\)))from\\b";
 		// "(^\\s*select\\s+(\\s*\\S*\\([\\s\\S]+\\)\\s*as\\s+\\S+|\\s*\\S+(\\s+as\\s+\\S+)?)+?\\s*)from"
 		private static final Pattern SELECT_PATTERN = Pattern.compile(
-			// "(^\\s*select\\s+[\\s\\S]+?(\\s+|\\)))from",
-			"(^\\s*select\\s+(\\s*\\S*\\([\\s\\S]+\\)\\s*as\\s+\\S+|\\s*\\S+(\\s+as\\s+\\S+)?)+?\\s*)from",
+			"(^\\s*select\\s+[\\s\\S]+?(\\s+|\\)))from",
+			// "(^\\s*select\\s+(\\s*\\S*\\([\\s\\S]+\\)\\s*as\\s+\\S+|\\s*\\S+(\\s+as\\s+\\S+)?)+?\\s*)from",
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		
 		private static final Pattern GROUP_BY_PATTERN = Pattern.compile(
