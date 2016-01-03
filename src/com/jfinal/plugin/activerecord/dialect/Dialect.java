@@ -114,12 +114,14 @@ public abstract class Dialect {
 	protected static class Holder {
 		// "order\\s+by\\s+[^,\\s]+(\\s+asc|\\s+desc)?(\\s*,\\s*[^,\\s]+(\\s+asc|\\s+desc)?)*";
 		private static final Pattern ORDER_BY_PATTERN = Pattern.compile(
-			"order\\s+by\\s+[^,\\)\\s]+(\\s+asc|\\s+desc)?(\\s*,\\s*[^,\\)\\s]+(\\s+asc|\\s+desc)?)*",
+			"order\\s+by\\s+[^,\\s]+(\\s+asc|\\s+desc)?(\\s*,\\s*[^,\\s]+(\\s+asc|\\s+desc)?)*",
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		
 		// "(^\\s*select\\s+[\\s\\S]+?(\\s+|\\)))from\\b";
+		// "(^\\s*select\\s+(\\s*\\S*\\([\\s\\S]+\\)\\s*as\\s+\\S+|\\s*\\S+(\\s+as\\s+\\S+)?)+?\\s*)from"
 		private static final Pattern SELECT_PATTERN = Pattern.compile(
-			"(^\\s*select\\s+[\\s\\S]+?(\\s+|\\)))from",
+			// "(^\\s*select\\s+[\\s\\S]+?(\\s+|\\)))from",
+			"(^\\s*select\\s+(\\s*\\S*\\([\\s\\S]+\\)\\s*as\\s+\\S+|\\s*\\S+(\\s+as\\s+\\S+)?)+?\\s*)from",
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		
 		private static final Pattern GROUP_BY_PATTERN = Pattern.compile(

@@ -59,7 +59,7 @@ public class Jackson extends Json {
 		return objectMapper;
 	}
 	
-	public static Json getJson() {
+	public static Jackson getJson() {
 		return new Jackson();
 	}
 	

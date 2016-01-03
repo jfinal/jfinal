@@ -349,7 +349,7 @@ final public class Constants {
 	}
 	
 	/**
-	 * 调置 devMode 之下的 action report 是否在 invocation 之后，默认值为 true
+	 * 设置 devMode 之下的 action report 是否在 invocation 之后，默认值为 true
 	 */
 	public void setReportAfterInvocation(boolean reportAfterInvocation) {
 		ActionReporter.setReportAfterInvocation(reportAfterInvocation);

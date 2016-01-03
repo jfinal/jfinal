@@ -107,7 +107,8 @@ public class MetaBuilder {
 	}
 	
 	protected void buildTableNames(List<TableMeta> ret) throws SQLException {
-		ResultSet rs = dbMeta.getTables(conn.getCatalog(), null, null, new String[]{"TABLE", "VIEW"});
+		String userName = dialect.isOracle() ? dbMeta.getUserName() : null;
+		ResultSet rs = dbMeta.getTables(conn.getCatalog(), userName, null, new String[]{"TABLE", "VIEW"});
 		while (rs.next()) {
 			String tableName = rs.getString("TABLE_NAME");
 			
@@ -127,6 +128,9 @@ public class MetaBuilder {
 							break;
 						}
 					}
+				}
+				if (dialect.isOracle()) {
+					tableName = tableName.toLowerCase();
 				}
 				tableMeta.modelName = StrKit.firstCharToUpperCase(StrKit.toCamelCase(tableName));
 				tableMeta.baseModelName = "Base" + tableMeta.modelName;

@@ -34,11 +34,11 @@ public class Log4jLog extends Log {
 		log = org.apache.log4j.Logger.getLogger(name);
 	}
 	
-	public static Log getLog(Class<?> clazz) {
+	public static Log4jLog getLog(Class<?> clazz) {
 		return new Log4jLog(clazz);
 	}
 	
-	public static Log getLog(String name) {
+	public static Log4jLog getLog(String name) {
 		return new Log4jLog(name);
 	}
 	

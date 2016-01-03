@@ -112,8 +112,9 @@ public abstract class JFinalConfig {
 	}
 	
 	private Prop getProp() {
-		if (prop == null)
+		if (prop == null) {
 			throw new IllegalStateException("Load propties file by invoking loadPropertyFile(String fileName) method first.");
+		}
 		return prop;
 	}
 	

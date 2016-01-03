@@ -36,11 +36,11 @@ public class JdkLog extends Log {
 		clazzName = name;
 	}
 	
-	public static Log getLog(Class<?> clazz) {
+	public static JdkLog getLog(Class<?> clazz) {
 		return new JdkLog(clazz);
 	}
 	
-	public static Log getLog(String name) {
+	public static JdkLog getLog(String name) {
 		return new JdkLog(name);
 	}
 	
