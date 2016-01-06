@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import com.jfinal.core.Controller;
-import com.jfinal.kit.StrKit;
 
 /**
  * Routes.
@@ -44,13 +43,12 @@ public abstract class Routes {
 			
 			for (Entry<String, Class<? extends Controller>> e : routes.map.entrySet()) {
 				String controllerKey = e.getKey();
-				Class<? extends Controller> controllerClass = e.getValue();
-				String viewPath = routes.getViewPath(controllerKey);
-				if (StrKit.notBlank(viewPath)) {
-					add(controllerKey, controllerClass, viewPath);
-				} else {
-					add(controllerKey, controllerClass);
+				if (this.map.containsKey(controllerKey)) {
+					throw new IllegalArgumentException("The controllerKey already exists: " + controllerKey); 
 				}
+				
+				this.map.put(controllerKey, e.getValue());
+				this.viewPathMap.put(controllerKey, routes.getViewPath(controllerKey));
 			}
 		}
 		return this;
