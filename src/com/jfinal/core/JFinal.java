@@ -98,6 +98,7 @@ public final class JFinal {
 	private void initActionMapping() {
 		actionMapping = new ActionMapping(Config.getRoutes(), Config.getInterceptors());
 		actionMapping.buildActionMapping();
+		Config.getRoutes().clear();
 	}
 	
 	void stopPlugins() {
