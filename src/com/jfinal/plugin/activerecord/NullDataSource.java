@@ -30,47 +30,38 @@ class NullDataSource implements DataSource {
 	
 	private String msg = "Can not invoke the method of NullDataSource";
 	
-	@Override
 	public PrintWriter getLogWriter() throws SQLException {
 		throw new RuntimeException(msg);
 	}
 
-	@Override
 	public void setLogWriter(PrintWriter out) throws SQLException {
 		throw new RuntimeException(msg);
 	}
 
-	@Override
 	public void setLoginTimeout(int seconds) throws SQLException {
 		throw new RuntimeException(msg);
 	}
 
-	@Override
 	public int getLoginTimeout() throws SQLException {
 		throw new RuntimeException(msg);
 	}
 
-	@Override
 	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
 		throw new RuntimeException(msg);
 	}
 
-	@Override
 	public <T> T unwrap(Class<T> iface) throws SQLException {
 		throw new RuntimeException(msg);
 	}
 
-	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		throw new RuntimeException(msg);
 	}
 
-	@Override
 	public Connection getConnection() throws SQLException {
 		throw new RuntimeException(msg);
 	}
 
-	@Override
 	public Connection getConnection(String username, String password) throws SQLException {
 		throw new RuntimeException(msg);
 	}
