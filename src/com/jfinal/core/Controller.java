@@ -836,8 +836,12 @@ public abstract class Controller {
 	}
 	
 	public Controller keepModel(Class<? extends com.jfinal.plugin.activerecord.Model> modelClass, String modelName) {
-		Object model = Injector.injectModel(modelClass, modelName, request, true);
-		request.setAttribute(modelName, model);
+		if (StrKit.notBlank(modelName)) {
+			Object model = Injector.injectModel(modelClass, modelName, request, true);
+			request.setAttribute(modelName, model);
+		} else {
+			keepPara();
+		}
 		return this;
 	}
 	
@@ -848,8 +852,12 @@ public abstract class Controller {
 	}
 	
 	public Controller keepBean(Class<?> beanClass, String beanName) {
-		Object bean = Injector.injectBean(beanClass, beanName, request, true);
-		request.setAttribute(beanName, bean);
+		if (StrKit.notBlank(beanName)) {
+			Object bean = Injector.injectBean(beanClass, beanName, request, true);
+			request.setAttribute(beanName, bean);
+		} else {
+			keepPara();
+		}
 		return this;
 	}
 	
