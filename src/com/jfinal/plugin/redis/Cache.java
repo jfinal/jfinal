@@ -570,6 +570,39 @@ public class Cache {
 	}
 	
 	/**
+	 * 为哈希表 key 中的域 field 的值加上增量 increment 。
+	 * 增量也可以为负数，相当于对给定域进行减法操作。
+	 * 如果 key 不存在，一个新的哈希表被创建并执行 HINCRBY 命令。
+	 * 如果域 field 不存在，那么在执行命令前，域的值被初始化为 0 。
+	 * 对一个储存字符串值的域 field 执行 HINCRBY 命令将造成一个错误。
+	 * 本操作的值被限制在 64 位(bit)有符号数字表示之内。
+	 */
+	public Long hincrBy(Object key, Object field, long value) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.hincrBy(keyToBytes(key), fieldToBytes(field), value);
+		}
+		finally {close(jedis);}
+	}
+	
+	/**
+	 * 为哈希表 key 中的域 field 加上浮点数增量 increment 。
+	 * 如果哈希表中没有域 field ，那么 HINCRBYFLOAT 会先将域 field 的值设为 0 ，然后再执行加法操作。
+	 * 如果键 key 不存在，那么 HINCRBYFLOAT 会先创建一个哈希表，再创建域 field ，最后再执行加法操作。
+	 * 当以下任意一个条件发生时，返回一个错误：
+	 * 1:域 field 的值不是字符串类型(因为 redis 中的数字和浮点数都以字符串的形式保存，所以它们都属于字符串类型）
+	 * 2:域 field 当前的值或给定的增量 increment 不能解释(parse)为双精度浮点数(double precision floating point number)
+	 * HINCRBYFLOAT 命令的详细功能和 INCRBYFLOAT 命令类似，请查看 INCRBYFLOAT 命令获取更多相关信息。
+	 */
+	public Double hincrByFloat(Object key, Object field, double value) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.hincrByFloat(keyToBytes(key), fieldToBytes(field), value);
+		}
+		finally {close(jedis);}
+	}
+	
+	/**
 	 * 返回列表 key 中，下标为 index 的元素。
 	 * 下标(index)参数 start 和 stop 都以 0 为底，也就是说，以 0 表示列表的第一个元素，以 1 表示列表的第二个元素，以此类推。
 	 * 你也可以使用负数下标，以 -1 表示列表的最后一个元素， -2 表示列表的倒数第二个元素，以此类推。
