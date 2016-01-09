@@ -115,12 +115,16 @@ public class Injector {
 				attrName = paraName;
 			}
 			
-			try {
-				Class<?> colType = table.getColumnType(attrName);
-				if (colType == null) {
+			Class<?> colType = table.getColumnType(attrName);
+			if (colType == null) {
+				if (skipConvertError) {
+					continue ;
+				} else {
 					throw new ActiveRecordException("The model attribute " + attrName + " is not exists.");
 				}
-				
+			}
+			
+			try {
 				String[] paraValueArray = entry.getValue();
 				String paraValue = (paraValueArray != null && paraValueArray.length > 0) ? paraValueArray[0] : null;
 				
