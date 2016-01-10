@@ -453,16 +453,20 @@ public class DbPro {
 	}
 	
 	Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String sql, Object... paras) throws SQLException {
-		if (pageNumber < 1 || pageSize < 1)
-			throw new ActiveRecordException("pageNumber and pageSize must be more than 0");
-		
-		if (config.dialect.isTakeOverDbPaginate())
-			return config.dialect.takeOverDbPaginate(conn, pageNumber, pageSize, sql, paras);
-		
 		Object[] actualSqlParas = new Object[2];
 		String totalRowSql = config.dialect.forTotalRow(actualSqlParas, sql, paras);
 		sql = (String)actualSqlParas[0];
 		paras = (Object[])actualSqlParas[1];
+		return doPaginate(config, conn, pageNumber, pageSize, totalRowSql, sql, paras);
+	}
+	
+	Page<Record> doPaginate(Config config, Connection conn, int pageNumber, int pageSize, String totalRowSql, String sql, Object... paras) throws SQLException {
+		if (pageNumber < 1 || pageSize < 1) {
+			throw new ActiveRecordException("pageNumber and pageSize must be more than 0");
+		}
+		if (config.dialect.isTakeOverDbPaginate()) {
+			return config.dialect.takeOverDbPaginate(conn, pageNumber, pageSize, totalRowSql, sql, paras);
+		}
 		
 		long totalRow;
 		List result = query(config, conn, totalRowSql, paras);
@@ -503,6 +507,20 @@ public class DbPro {
 		try {
 			conn = config.getConnection();
 			return paginate(config, conn, pageNumber, pageSize, sql, paras);
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			config.close(conn);
+		}
+	}
+	
+	public Page<Record> paginate(int pageNumber, int pageSize, String[] selectAndSqlExceptSelect, Object... paras) {
+		Connection conn = null;
+		try {
+			String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(selectAndSqlExceptSelect[1]);
+			String sql = selectAndSqlExceptSelect[0] + " " + selectAndSqlExceptSelect[1];
+			conn = config.getConnection();
+			return doPaginate(config, conn, pageNumber, pageSize, totalRowSql, sql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
@@ -789,6 +807,16 @@ public class DbPro {
 		Page<Record> result = cache.get(cacheName, key);
 		if (result == null) {
 			result = paginate(pageNumber, pageSize, sql, paras);
+			cache.put(cacheName, key, result);
+		}
+		return result;
+	}
+	
+	public Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String[] selectAndSqlExceptSelect, Object... paras) {
+		ICache cache = config.getCache();
+		Page<Record> result = cache.get(cacheName, key);
+		if (result == null) {
+			result = paginate(pageNumber, pageSize, selectAndSqlExceptSelect, paras);
 			cache.put(cacheName, key, result);
 		}
 		return result;

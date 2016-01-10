@@ -39,8 +39,8 @@ public class JavaType {
 		// bigint
 		put("java.lang.Long", java.lang.Long.class);
 		
-		// java.util.Data can not be returned
-		// java.sql.Date, java.sql.Time, java.sql.Timestamp all extends java.util.Data so getDate can return the three types data
+		// java.util.Date can not be returned
+		// java.sql.Date, java.sql.Time, java.sql.Timestamp all extends java.util.Date so getDate can return the three types data
 		// put("java.util.Date", java.util.Date.class);
 		
 		// date, year

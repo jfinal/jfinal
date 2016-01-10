@@ -202,12 +202,7 @@ public class AnsiSqlDialect extends Dialect {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, String sql, Object... paras) throws SQLException {
-		Object[] actualSqlParas = new Object[2];
-		String totalRowSql = forTotalRow(actualSqlParas, sql, paras);
-		sql = (String)actualSqlParas[0];
-		paras = (Object[])actualSqlParas[1];
-		
+	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, String totalRowSql, String sql, Object... paras) throws SQLException {
 		long totalRow;
 		List result = CPI.query(conn, totalRowSql, paras);
 		if (isGroupBySql(sql)) {
@@ -289,12 +284,7 @@ public class AnsiSqlDialect extends Dialect {
 	}
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Page<? extends Model> takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, String sql, Object... paras) throws Exception {
-		Object[] actualSqlParas = new Object[2];
-		String totalRowSql = forTotalRow(actualSqlParas, sql, paras);
-		sql = (String)actualSqlParas[0];
-		paras = (Object[])actualSqlParas[1];
-		
+	public Page<? extends Model> takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, String totalRowSql, String sql, Object... paras) throws Exception {
 		long totalRow;
 		List result = CPI.query(conn, totalRowSql, paras);
 		if (isGroupBySql(sql)) {

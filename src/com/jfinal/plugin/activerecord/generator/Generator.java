@@ -62,10 +62,12 @@ public class Generator {
 	}
 	
 	public Generator(DataSource dataSource, BaseModelGenerator baseModelGenerator) {
-		if (dataSource == null)
+		if (dataSource == null) {
 			throw new IllegalArgumentException("dataSource can not be null.");
-		if (baseModelGenerator == null)
+		}
+		if (baseModelGenerator == null) {
 			throw new IllegalArgumentException("baseModelGenerator can not be null.");
+		}
 		
 		this.metaBuilder = new MetaBuilder(dataSource);
 		this.baseModelGenerator = baseModelGenerator;
@@ -79,12 +81,15 @@ public class Generator {
 	 * 生成 BaseModel、Model、MappingKit 三类文件，其中 MappingKit 输出目录与包名与 Model相同
 	 */
 	public Generator(DataSource dataSource, BaseModelGenerator baseModelGenerator, ModelGenerator modelGenerator) {
-		if (dataSource == null)
+		if (dataSource == null) {
 			throw new IllegalArgumentException("dataSource can not be null.");
-		if (baseModelGenerator == null)
+		}
+		if (baseModelGenerator == null) {
 			throw new IllegalArgumentException("baseModelGenerator can not be null.");
-		if (modelGenerator == null)
+		}
+		if (modelGenerator == null) {
 			throw new IllegalArgumentException("modelGenerator can not be null.");
+		}
 		
 		this.metaBuilder = new MetaBuilder(dataSource);
 		this.baseModelGenerator = baseModelGenerator;
@@ -97,8 +102,9 @@ public class Generator {
 	 * 设置 MetaBuilder，便于扩展自定义 MetaBuilder
 	 */
 	public void setMetaBuilder(MetaBuilder metaBuilder) {
-		if (metaBuilder != null)
+		if (metaBuilder != null) {
 			this.metaBuilder = metaBuilder;
+		}
 	}
 	
 	public void setTypeMapping(TypeMapping typeMapping) {
@@ -109,16 +115,18 @@ public class Generator {
 	 * 设置 MappingKitGenerator，便于扩展自定义 MappingKitGenerator
 	 */
 	public void setMappingKitGenerator(MappingKitGenerator mappingKitGenerator) {
-		if (mappingKitGenerator != null)
+		if (mappingKitGenerator != null) {
 			this.mappingKitGenerator = mappingKitGenerator;
+		}
 	}
 	
 	/**
 	 * 设置 DataDictionaryGenerator，便于扩展自定义 DataDictionaryGenerator
 	 */
 	public void setDataDictionaryGenerator(DataDictionaryGenerator dataDictionaryGenerator) {
-		if (dataDictionaryGenerator != null)
+		if (dataDictionaryGenerator != null) {
 			this.dataDictionaryGenerator = dataDictionaryGenerator;
+		}
 	}
 	
 	/**
@@ -164,8 +172,9 @@ public class Generator {
 	 * 在设置此变量的同时需要设置 mappingKitPackageName
 	 */
 	public void setMappingKitOutputDir(String mappingKitOutputDir) {
-		if (this.mappingKitGenerator != null)
+		if (this.mappingKitGenerator != null) {
 			this.mappingKitGenerator.setMappingKitOutputDir(mappingKitOutputDir);
+		}
 	}
 	
 	/**
@@ -173,27 +182,31 @@ public class Generator {
 	 * 在设置此变的同时需要设置 mappingKitOutputDir
 	 */
 	public void setMappingKitPackageName(String mappingKitPackageName) {
-		if (this.mappingKitGenerator != null)
+		if (this.mappingKitGenerator != null) {
 			this.mappingKitGenerator.setMappingKitPackageName(mappingKitPackageName);
+		}
 	}
 	
 	/**
 	 * 设置数据字典 DataDictionary 文件输出目录，默认与 modelOutputDir 相同
 	 */
 	public void setDataDictionaryOutputDir(String dataDictionaryOutputDir) {
-		if (this.dataDictionaryGenerator != null)
+		if (this.dataDictionaryGenerator != null) {
 			this.dataDictionaryGenerator.setDataDictionaryOutputDir(dataDictionaryOutputDir);
+		}
 	}
 	
 	/**
 	 * 设置数据字典 DataDictionary 文件输出目录，默认值为 "_DataDictionary.txt"
 	 */
 	public void setDataDictionaryFileName(String dataDictionaryFileName) {
-		if (dataDictionaryGenerator != null)
+		if (dataDictionaryGenerator != null) {
 			dataDictionaryGenerator.setDataDictionaryFileName(dataDictionaryFileName);
+		}
 	}
 	
 	public void generate() {
+		long start = System.currentTimeMillis();
 		List<TableMeta> tableMetas = metaBuilder.build();
 		if (tableMetas.size() == 0) {
 			System.out.println("TableMeta 数量为 0，不生成任何文件");
@@ -202,16 +215,20 @@ public class Generator {
 		
 		baseModelGenerator.generate(tableMetas);
 		
-		if (modelGenerator != null)	
+		if (modelGenerator != null) {
 			modelGenerator.generate(tableMetas);
+		}
 		
-		if (mappingKitGenerator != null)
+		if (mappingKitGenerator != null) {
 			mappingKitGenerator.generate(tableMetas);
+		}
 		
-		if (dataDictionaryGenerator != null && generateDataDictionary)
+		if (dataDictionaryGenerator != null && generateDataDictionary) {
 			dataDictionaryGenerator.generate(tableMetas);
+		}
 		
-		System.out.println("Generate complete.");
+		long usedTime = (System.currentTimeMillis() - start) / 1000;
+		System.out.println("Generate complete in " + usedTime + " seconds.");
 	}
 }
 

@@ -50,6 +50,8 @@ public class BaseModelGenerator {
 	protected String baseModelPackageName;
 	protected String baseModelOutputDir;
 	
+	protected JavaKeyword javaKeyword = new JavaKeyword();
+	
 	public BaseModelGenerator(String baseModelPackageName, String baseModelOutputDir) {
 		if (StrKit.isBlank(baseModelPackageName))
 			throw new IllegalArgumentException("baseModelPackageName can not be blank.");
@@ -65,11 +67,11 @@ public class BaseModelGenerator {
 	public void generate(List<TableMeta> tableMetas) {
 		System.out.println("Generate base model ...");
 		for (TableMeta tableMeta : tableMetas)
-			genBaseModel(tableMeta);
+			genBaseModelContent(tableMeta);
 		wirtToFile(tableMetas);
 	}
 	
-	protected void genBaseModel(TableMeta tableMeta) {
+	protected void genBaseModelContent(TableMeta tableMeta) {
 		StringBuilder ret = new StringBuilder();
 		genPackage(ret);
 		genImport(ret);
@@ -95,14 +97,15 @@ public class BaseModelGenerator {
 	}
 	
 	protected void genSetMethodName(ColumnMeta columnMeta, StringBuilder ret) {
-		String setterMethodName = "set" + StrKit.firstCharToUpperCase(StrKit.toCamelCase(columnMeta.name));
-		String attrName = StrKit.toCamelCase(columnMeta.name);
-		String setter = String.format(setterTemplate, setterMethodName, columnMeta.javaType, attrName, columnMeta.name, attrName);
+		String setterMethodName = "set" + StrKit.firstCharToUpperCase(columnMeta.attrName);
+		// 如果 setter 参数名为 java 语言关键字，则添加下划线前缀 "_"
+		String argName = javaKeyword.contains(columnMeta.attrName) ? "_" + columnMeta.attrName : columnMeta.attrName;
+		String setter = String.format(setterTemplate, setterMethodName, columnMeta.javaType, argName, columnMeta.name, argName);
 		ret.append(setter);
 	}
 	
 	protected void genGetMethodName(ColumnMeta columnMeta, StringBuilder ret) {
-		String getterMethodName = "get" + StrKit.firstCharToUpperCase(StrKit.toCamelCase(columnMeta.name));
+		String getterMethodName = "get" + StrKit.firstCharToUpperCase(columnMeta.attrName);
 		String getter = String.format(getterTemplate, columnMeta.javaType, getterMethodName, columnMeta.name);
 		ret.append(getter);
 	}

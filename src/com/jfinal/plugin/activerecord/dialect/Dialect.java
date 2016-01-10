@@ -58,7 +58,7 @@ public abstract class Dialect {
 		return false;
 	}
 	
-	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, String sql, Object... paras) throws SQLException {
+	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, String totalRowSql, String sql, Object... paras) throws SQLException {
 		throw new RuntimeException("You should implements this method in " + getClass().getName());
 	}
 	
@@ -67,7 +67,7 @@ public abstract class Dialect {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Page takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, String sql, Object... paras) throws Exception {
+	public Page takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, String totalRowSql, String sql, Object... paras) throws Exception {
 		throw new RuntimeException("You should implements this method in " + getClass().getName());
 	}
 	
@@ -118,10 +118,8 @@ public abstract class Dialect {
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		
 		// "(^\\s*select\\s+[\\s\\S]+?(\\s+|\\)))from\\b";
-		// "(^\\s*select\\s+(\\s*\\S*\\([\\s\\S]+\\)\\s*as\\s+\\S+|\\s*\\S+(\\s+as\\s+\\S+)?)+?\\s*)from"
 		private static final Pattern SELECT_PATTERN = Pattern.compile(
 			"(^\\s*select\\s+[\\s\\S]+?(\\s+|\\)))from",
-			// "(^\\s*select\\s+(\\s*\\S*\\([\\s\\S]+\\)\\s*as\\s+\\S+|\\s*\\S+(\\s+as\\s+\\S+)?)+?\\s*)from",
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 		
 		private static final Pattern GROUP_BY_PATTERN = Pattern.compile(

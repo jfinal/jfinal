@@ -292,17 +292,44 @@ public abstract class Model<M extends Model> implements Serializable {
 		}
 	}
 	
+	/**
+	 * 支持 select 中带有嵌套 select 语句的 sql，避免正则解析拖慢性能
+	 * 将 sql 分成 select 部分与 非 select 部分来写，并传入 selectAndSqlExceptSelect 数组中
+	 * <pre>
+	 * 举例：
+	 * paginate(1, 10, new String[]{"select *", "from user where id>?"} , 123);
+	 * </pre>
+	 */
+	public Page<M> paginate(int pageNumber, int pageSize, String[] selectAndSqlExceptSelect, Object... paras) {
+		Config config = getConfig();
+		Connection conn = null;
+		try {
+			String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(selectAndSqlExceptSelect[1]);
+			String sql = selectAndSqlExceptSelect[0] + " " + selectAndSqlExceptSelect[1];
+			conn = config.getConnection();
+			return doPaginate(config, conn, pageNumber, pageSize, totalRowSql, sql, paras);
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			config.close(conn);
+		}
+	}
+	
 	private Page<M> paginate(Config config, Connection conn, int pageNumber, int pageSize, String sql, Object... paras) throws Exception {
-		if (pageNumber < 1 || pageSize < 1)
-			throw new ActiveRecordException("pageNumber and pageSize must be more than 0");
-		
-		if (config.dialect.isTakeOverModelPaginate())
-			return config.dialect.takeOverModelPaginate(conn, getUsefulClass(), pageNumber, pageSize, sql, paras);
-		
 		Object[] actualSqlParas = new Object[2];
 		String totalRowSql = config.dialect.forTotalRow(actualSqlParas, sql, paras);
 		sql = (String)actualSqlParas[0];
 		paras = (Object[])actualSqlParas[1];
+		return doPaginate(config, conn, pageNumber, pageSize, totalRowSql, sql, paras);
+	}
+	
+	private Page<M> doPaginate(Config config, Connection conn, int pageNumber, int pageSize, String totalRowSql, String sql, Object... paras) throws Exception {
+		if (pageNumber < 1 || pageSize < 1) {
+			throw new ActiveRecordException("pageNumber and pageSize must be more than 0");
+		}
+		if (config.dialect.isTakeOverModelPaginate()) {
+			return config.dialect.takeOverModelPaginate(conn, getUsefulClass(), pageNumber, pageSize, totalRowSql, sql, paras);
+		}
 		
 		long totalRow;
 		List result = Db.query(config, conn, totalRowSql, paras);
@@ -844,6 +871,16 @@ public abstract class Model<M extends Model> implements Serializable {
 		Page<M> result = cache.get(cacheName, key);
 		if (result == null) {
 			result = paginate(pageNumber, pageSize, sql, paras);
+			cache.put(cacheName, key, result);
+		}
+		return result;
+	}
+	
+	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String[] selectAndSqlExceptSelect, Object... paras) {
+		ICache cache = getConfig().getCache();
+		Page<M> result = cache.get(cacheName, key);
+		if (result == null) {
+			result = paginate(pageNumber, pageSize, selectAndSqlExceptSelect, paras);
 			cache.put(cacheName, key, result);
 		}
 		return result;

@@ -31,6 +31,7 @@ import javax.sql.DataSource;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.dialect.Dialect;
 import com.jfinal.plugin.activerecord.dialect.MysqlDialect;
+import com.jfinal.plugin.activerecord.dialect.OracleDialect;
 
 /**
  * MetaBuilder
@@ -106,36 +107,78 @@ public class MetaBuilder {
 		}
 	}
 	
+	/**
+	 * 通过继承并覆盖此方法，跳过一些不希望处理的 table，定制更加灵活的 table 过滤规则
+	 * @return 返回 true 时将跳过当前 tableName 的处理
+	 */
+	protected boolean isSkipTable(String tableName) {
+		return false;
+	}
+	
+	/**
+	 * 构造 modelName，mysql 的 tableName 建议使用小写字母，多单词表名使用下划线分隔，不建议使用驼峰命名
+	 * oracle 之下的 tableName 建议使用下划线分隔多单词名，无论 mysql还是 oralce，tableName 都不建议使用驼峰命名
+	 */
+	protected String buildModelName(String tableName) {
+		// 移除表名前缀仅用于生成 modelName、baseModelName，而 tableMeta.name 表名自身不能受影响
+		if (removedTableNamePrefixes != null) {
+			for (String prefix : removedTableNamePrefixes) {
+				if (tableName.startsWith(prefix)) {
+					tableName = tableName.replaceFirst(prefix, "");
+					break;
+				}
+			}
+		}
+		
+		// 将 oralce 大写的 tableName 转成小写，再生成 modelName
+		if (dialect instanceof OracleDialect) {
+			tableName = tableName.toLowerCase();
+		}
+		
+		return StrKit.firstCharToUpperCase(StrKit.toCamelCase(tableName));
+	}
+	
+	/**
+	 * 使用 modelName 构建 baseModelName
+	 */
+	protected String buildBaseModelName(String modelName) {
+		return "Base" + modelName;
+	}
+	
+	/**
+	 * 不同数据库 dbMeta.getTables(...) 的 schemaPattern 参数意义不同
+	 * 1：oracle 数据库这个参数代表 dbMeta.getUserName()
+	 * 2：postgresql 数据库中需要在 jdbcUrl中配置 schemaPatter，例如：
+	 *   jdbc:postgresql://localhost:15432/djpt?currentSchema=public,sys,app
+	 *   最后的参数就是搜索schema的顺序，DruidPlugin 下测试成功
+	 * 3：开发者若在其它库中发现工作不正常，可通过继承 MetaBuilder并覆盖此方法来实现功能
+	 */
+	protected ResultSet getTablesResultSet() throws SQLException {
+		String schemaPattern = dialect instanceof OracleDialect ? dbMeta.getUserName() : null;
+		return dbMeta.getTables(conn.getCatalog(), schemaPattern, null, new String[]{"TABLE", "VIEW"});
+	}
+	
 	protected void buildTableNames(List<TableMeta> ret) throws SQLException {
-		String userName = dialect.isOracle() ? dbMeta.getUserName() : null;
-		ResultSet rs = dbMeta.getTables(conn.getCatalog(), userName, null, new String[]{"TABLE", "VIEW"});
+		ResultSet rs = getTablesResultSet();
 		while (rs.next()) {
 			String tableName = rs.getString("TABLE_NAME");
 			
 			if (excludedTables.contains(tableName)) {
-				System.out.println("Skip excluded table :" + tableName);
+				System.out.println("Skip table :" + tableName);
+				continue ;
 			}
-			else {
-				TableMeta tableMeta = new TableMeta();
-				tableMeta.name = tableName;
-				tableMeta.remarks = rs.getString("REMARKS");
-				
-				// 移除表名前缀仅用于生成 modelName、baseModelName。tableMeta.name 表名自身不受影响
-				if (removedTableNamePrefixes != null) {
-					for (String prefix : removedTableNamePrefixes) {
-						if (tableName.startsWith(prefix)) {
-							tableName = tableName.replaceFirst(prefix, "");
-							break;
-						}
-					}
-				}
-				if (dialect.isOracle()) {
-					tableName = tableName.toLowerCase();
-				}
-				tableMeta.modelName = StrKit.firstCharToUpperCase(StrKit.toCamelCase(tableName));
-				tableMeta.baseModelName = "Base" + tableMeta.modelName;
-				ret.add(tableMeta);
+			if (isSkipTable(tableName)) {
+				System.out.println("Skip table :" + tableName);
+				continue ;
 			}
+			
+			TableMeta tableMeta = new TableMeta();
+			tableMeta.name = tableName;
+			tableMeta.remarks = rs.getString("REMARKS");
+			
+			tableMeta.modelName = buildModelName(tableName);
+			tableMeta.baseModelName = buildBaseModelName(tableMeta.modelName);
+			ret.add(tableMeta);
 		}
 		rs.close();
 	}
@@ -195,11 +238,25 @@ public class MetaBuilder {
 				}
 			}
 			
+			// 构造字段对应的属性名 attrName
+			cm.attrName = buildAttrName(cm.name);
+			
 			tableMeta.columnMetas.add(cm);
 		}
 		
 		rs.close();
 		stm.close();
+	}
+	
+	/**
+	 * 构造 colName 所对应的 attrName，mysql 数据库建议使用小写字段名或者驼峰字段名
+	 * Oralce 反射将得到大写字段名，所以不建议使用驼峰命名，建议使用下划线分隔单词命名法
+	 */
+	protected String buildAttrName(String colName) {
+		if (dialect instanceof OracleDialect) {
+			colName = colName.toLowerCase();
+		}
+		return StrKit.toCamelCase(colName);
 	}
 }
 

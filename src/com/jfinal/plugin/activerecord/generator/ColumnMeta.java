@@ -23,6 +23,7 @@ public class ColumnMeta {
 	
 	public String name;				// 字段名
 	public String javaType;			// 字段对应的 java 类型
+	public String attrName;			// 字段对应的属性名
 	
 	// ---------
 	
