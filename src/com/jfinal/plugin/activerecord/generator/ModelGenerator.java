@@ -69,11 +69,11 @@ public class ModelGenerator {
 	public void generate(List<TableMeta> tableMetas) {
 		System.out.println("Generate model ...");
 		for (TableMeta tableMeta : tableMetas)
-			genBaseModel(tableMeta);
+			genModelContent(tableMeta);
 		wirtToFile(tableMetas);
 	}
 	
-	protected void genBaseModel(TableMeta tableMeta) {
+	protected void genModelContent(TableMeta tableMeta) {
 		StringBuilder ret = new StringBuilder();
 		genPackage(ret);
 		genImport(tableMeta, ret);
