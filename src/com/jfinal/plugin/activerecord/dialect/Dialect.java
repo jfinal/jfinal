@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Page;
@@ -36,7 +35,7 @@ public abstract class Dialect {
 	
 	// Methods for common
 	public abstract String forTableBuilderDoBuild(String tableName);
-	public abstract String forPaginate(int pageNumber, int pageSize, String sql);
+	public abstract String forPaginate(int pageNumber, int pageSize, String select, String sqlExceptSelect);
 	
 	// Methods for Model
 	public abstract String forModelFindById(Table table, String columns);
@@ -58,7 +57,7 @@ public abstract class Dialect {
 		return false;
 	}
 	
-	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, String totalRowSql, String sql, Object... paras) throws SQLException {
+	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) throws SQLException {
 		throw new RuntimeException("You should implements this method in " + getClass().getName());
 	}
 	
@@ -67,7 +66,7 @@ public abstract class Dialect {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Page takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, String totalRowSql, String sql, Object... paras) throws Exception {
+	public Page takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) throws Exception {
 		throw new RuntimeException("You should implements this method in " + getClass().getName());
 	}
 	
@@ -116,66 +115,10 @@ public abstract class Dialect {
 		private static final Pattern ORDER_BY_PATTERN = Pattern.compile(
 			"order\\s+by\\s+[^,\\s]+(\\s+asc|\\s+desc)?(\\s*,\\s*[^,\\s]+(\\s+asc|\\s+desc)?)*",
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		
-		// "(^\\s*select\\s+[\\s\\S]+?(\\s+|\\)))from\\b";
-		private static final Pattern SELECT_PATTERN = Pattern.compile(
-			"(^\\s*select\\s+[\\s\\S]+?(\\s+|\\)))from",
-			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-		
-		private static final Pattern GROUP_BY_PATTERN = Pattern.compile(
-			".+?\\s+group\\s+by\\s+.+?",
-			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
 	}
 	
 	public String replaceOrderBy(String sql) {
 		return Holder.ORDER_BY_PATTERN.matcher(sql).replaceAll("");
-	}
-	
-	public String forTotalRow(Object[] actualSqlParas, String sql, Object... paras) {
-		String sqlExceptSelect = getSqlExceptSelect(sql);
-		if (sqlExceptSelect != null) {
-			actualSqlParas[0] = sql;
-			actualSqlParas[1] = paras;
-			return "select count(*) " + replaceOrderBy(sqlExceptSelect);
-		}
-		
-		// Compatible with paginate(1, 10, "select *", "from ...", a, b);
-		if (paras != null && paras.length > 0 && paras[0] instanceof String) {
-			sqlExceptSelect = (String)paras[0];
-			actualSqlParas[0] = sql + " " + sqlExceptSelect;
-			
-			// Compatible with paginate(1, 10, "select *", "from ...", paras.toArray());
-			if (paras.length == 2 && paras[1] instanceof Object[]) {
-				actualSqlParas[1] = (Object[])paras[1];
-			}
-			else {
-				Object[] newParas = new Object[paras.length - 1];
-				for (int i=1; i<paras.length; i++) {
-					newParas[i-1] = paras[i];
-				}
-				actualSqlParas[1] = newParas;
-			}
-			return "select count(*) " + replaceOrderBy(sqlExceptSelect);
-		}
-		
-		throw new RuntimeException("Sql error : " + sql);
-	}
-	
-	public String getSqlExceptSelect(String sql) {
-		Matcher matcher = Holder.SELECT_PATTERN.matcher(sql);
-		if (matcher.find()) {
-			return sql.substring(matcher.end(1));
-		} else {
-			return null;
-		}
-	}
-	
-	/**
-	 * 判断 sql 中是否带有 group by 子句
-	 */
-	public boolean isGroupBySql(String sql) {
-		Matcher matcher = Holder.GROUP_BY_PATTERN.matcher(sql);
-		return matcher.find();
 	}
 }
 
