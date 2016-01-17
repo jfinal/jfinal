@@ -193,7 +193,7 @@ public class AnsiSqlDialect extends Dialect {
 	/**
 	 * SELECT * FROM subject t1 WHERE (SELECT count(*) FROM subject t2 WHERE t2.id < t1.id AND t2.key = '123') > = 10 AND (SELECT count(*) FROM subject t2 WHERE t2.id < t1.id AND t2.key = '123') < 20 AND t1.key = '123'
 	 */
-	public String forPaginate(int pageNumber, int pageSize, String sql) {
+	public String forPaginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
 		throw new ActiveRecordException("Your should not invoke this method because takeOverDbPaginate(...) will take over it.");
 	}
 	
@@ -202,13 +202,19 @@ public class AnsiSqlDialect extends Dialect {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, String totalRowSql, String sql, Object... paras) throws SQLException {
-		long totalRow;
+	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) throws SQLException {
+		String totalRowSql = "select count(*) " + replaceOrderBy(sqlExceptSelect);
 		List result = CPI.query(conn, totalRowSql, paras);
-		if (isGroupBySql(sql)) {
-			totalRow = result.size();
+		int size = result.size();
+		if (isGroupBySql == null) {
+			isGroupBySql = size > 1;
+		}
+		
+		long totalRow;
+		if (isGroupBySql) {
+			totalRow = size;
 		} else {
-			totalRow = (result.size() > 0) ? ((Number)result.get(0)).longValue() : 0;
+			totalRow = (size > 0) ? ((Number)result.get(0)).longValue() : 0;
 		}
 		if (totalRow == 0) {
 			return new Page<Record>(new ArrayList<Record>(0), pageNumber, pageSize, 0, 0);
@@ -222,7 +228,9 @@ public class AnsiSqlDialect extends Dialect {
 			return new Page<Record>(new ArrayList<Record>(0), pageNumber, pageSize, totalPage, (int)totalRow);
 		}
 		
-		PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+		StringBuilder sql = new StringBuilder();
+		sql.append(select).append(" ").append(sqlExceptSelect);
+		PreparedStatement pst = conn.prepareStatement(sql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 		for (int i=0; i<paras.length; i++) {
 			pst.setObject(i + 1, paras[i]);
 		}
@@ -284,13 +292,19 @@ public class AnsiSqlDialect extends Dialect {
 	}
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Page<? extends Model> takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, String totalRowSql, String sql, Object... paras) throws Exception {
-		long totalRow;
+	public Page<? extends Model> takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) throws Exception {
+		String totalRowSql = "select count(*) " + replaceOrderBy(sqlExceptSelect);
 		List result = CPI.query(conn, totalRowSql, paras);
-		if (isGroupBySql(sql)) {
-			totalRow = result.size();
+		int size = result.size();
+		if (isGroupBySql == null) {
+			isGroupBySql = size > 1;
+		}
+		
+		long totalRow;
+		if (isGroupBySql) {
+			totalRow = size;
 		} else {
-			totalRow = (result.size() > 0) ? ((Number)result.get(0)).longValue() : 0;
+			totalRow = (size > 0) ? ((Number)result.get(0)).longValue() : 0;
 		}
 		if (totalRow == 0) {
 			return new Page(new ArrayList(0), pageNumber, pageSize, 0, 0);	// totalRow = 0;
@@ -305,7 +319,9 @@ public class AnsiSqlDialect extends Dialect {
 		}
 		
 		// --------
-		PreparedStatement pst = conn.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+		StringBuilder sql = new StringBuilder();
+		sql.append(select).append(" ").append(sqlExceptSelect);
+		PreparedStatement pst = conn.prepareStatement(sql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 		for (int i=0; i<paras.length; i++) {
 			pst.setObject(i + 1, paras[i]);
 		}

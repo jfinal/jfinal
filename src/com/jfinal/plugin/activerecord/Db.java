@@ -335,31 +335,32 @@ public class Db {
 		return dbPro.delete(tableName, record);
 	}
 	
-	static Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String sql, Object... paras) throws SQLException {
-		return dbPro.paginate(config, conn, pageNumber, pageSize, sql, paras);
+	static Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
+		return dbPro.paginate(config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
 	}
 	
 	/**
 	 * Paginate.
 	 * @param pageNumber the page number
 	 * @param pageSize the page size
-	 * @param sql the sql statement 
+	 * @param select the select part of the sql statement
+	 * @param sqlExceptSelect the sql statement excluded select part
 	 * @param paras the parameters of sql
 	 * @return the Page object
 	 */
-	public static Page<Record> paginate(int pageNumber, int pageSize, String sql, Object... paras) {
-		return dbPro.paginate(pageNumber, pageSize, sql, paras);
+	public static Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+		return dbPro.paginate(pageNumber, pageSize, select, sqlExceptSelect, paras);
 	}
 	
-	public static Page<Record> paginate(int pageNumber, int pageSize, String[] selectAndSqlExceptSelect, Object... paras) {
-		return dbPro.paginate(pageNumber, pageSize, selectAndSqlExceptSelect, paras);
+	public static Page<Record> paginate(int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+		return dbPro.paginate(pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
 	}
 	
 	/**
-	 * @see #paginate(String, int, int, String, Object...)
+	 * @see #paginate(String, int, int, String, String, Object...)
 	 */
-	public static Page<Record> paginate(int pageNumber, int pageSize, String sql) {
-		return dbPro.paginate(pageNumber, pageSize, sql);
+	public static Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
+		return dbPro.paginate(pageNumber, pageSize, select, sqlExceptSelect);
 	}
 	
 	static boolean save(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
@@ -499,22 +500,22 @@ public class Db {
 	
 	/**
 	 * Paginate by cache.
-	 * @see #paginate(int, int, String, Object...)
+	 * @see #paginate(int, int, String, String, Object...)
 	 * @return Page
 	 */
-	public static Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String sql, Object... paras) {
-		return dbPro.paginateByCache(cacheName, key, pageNumber, pageSize, sql, paras);
+	public static Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+		return dbPro.paginateByCache(cacheName, key, pageNumber, pageSize, select, sqlExceptSelect, paras);
 	}
 	
-	public static Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String[] selectAndSqlExceptSelect, Object... paras) {
-		return dbPro.paginateByCache(cacheName, key, pageNumber, pageSize, selectAndSqlExceptSelect, paras);
+	public static Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+		return dbPro.paginateByCache(cacheName, key, pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
 	}
 	
 	/**
-	 * @see #paginateByCache(String, Object, int, int, String, Object...)
+	 * @see #paginateByCache(String, Object, int, int, String, String, Object...)
 	 */
-	public static Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String sql) {
-		return dbPro.paginateByCache(cacheName, key, pageNumber, pageSize, sql);
+	public static Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
+		return dbPro.paginateByCache(cacheName, key, pageNumber, pageSize, select, sqlExceptSelect);
 	}
 	
 	/**
