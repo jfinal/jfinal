@@ -194,10 +194,10 @@ public class MysqlDialect extends Dialect {
 		}
 	}
 	
-	public String forPaginate(int pageNumber, int pageSize, String sql) {
+	public String forPaginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
 		int offset = pageSize * (pageNumber - 1);
 		StringBuilder ret = new StringBuilder();
-		ret.append(sql);
+		ret.append(select).append(" ").append(sqlExceptSelect);
 		ret.append(" limit ").append(offset).append(", ").append(pageSize);	// limit can use one or two '?' to pass paras
 		return ret.toString();
 	}

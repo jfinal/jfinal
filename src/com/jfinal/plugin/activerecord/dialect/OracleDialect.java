@@ -194,14 +194,14 @@ public class OracleDialect extends Dialect {
 		}
 	}
 	
-	public String forPaginate(int pageNumber, int pageSize, String sql) {
-		int start = (pageNumber - 1) * pageSize + 1;
+	public String forPaginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
+		int start = (pageNumber - 1) * pageSize;
 		int end = pageNumber * pageSize;
 		StringBuilder ret = new StringBuilder();
 		ret.append("select * from ( select row_.*, rownum rownum_ from (  ");
-		ret.append(sql);
+		ret.append(select).append(" ").append(sqlExceptSelect);
 		ret.append(" ) row_ where rownum <= ").append(end).append(") table_alias");
-		ret.append(" where table_alias.rownum_ >= ").append(start);
+		ret.append(" where table_alias.rownum_ > ").append(start);
 		return ret.toString();
 	}
 	

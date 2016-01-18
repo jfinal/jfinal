@@ -275,16 +275,17 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Paginate.
 	 * @param pageNumber the page number
 	 * @param pageSize the page size
-	 * @param sql the sql statement 
+	 * @param select the select part of the sql statement
+	 * @param sqlExceptSelect the sql statement excluded select part
 	 * @param paras the parameters of sql
 	 * @return the Page object
 	 */
-	public Page<M> paginate(int pageNumber, int pageSize, String sql, Object... paras) {
+	public Page<M> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
 		Config config = getConfig();
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
-			return paginate(config, conn, pageNumber, pageSize, sql, paras);
+			return paginate(config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
@@ -293,21 +294,18 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	/**
-	 * 支持 select 中带有嵌套 select 语句的 sql，避免正则解析拖慢性能
-	 * 将 sql 分成 select 部分与 非 select 部分来写，并传入 selectAndSqlExceptSelect 数组中
+	 * 指定分页 sql 最外层以是否含有 group by 语句
 	 * <pre>
 	 * 举例：
-	 * paginate(1, 10, new String[]{"select *", "from user where id>?"} , 123);
+	 * paginate(1, 10, true, "select *", "from user where id>? group by age", 123);
 	 * </pre>
 	 */
-	public Page<M> paginate(int pageNumber, int pageSize, String[] selectAndSqlExceptSelect, Object... paras) {
+	public Page<M> paginate(int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
 		Config config = getConfig();
 		Connection conn = null;
 		try {
-			String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(selectAndSqlExceptSelect[1]);
-			String sql = selectAndSqlExceptSelect[0] + " " + selectAndSqlExceptSelect[1];
 			conn = config.getConnection();
-			return doPaginate(config, conn, pageNumber, pageSize, totalRowSql, sql, paras);
+			return doPaginate(config, conn, pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
@@ -315,28 +313,30 @@ public abstract class Model<M extends Model> implements Serializable {
 		}
 	}
 	
-	private Page<M> paginate(Config config, Connection conn, int pageNumber, int pageSize, String sql, Object... paras) throws Exception {
-		Object[] actualSqlParas = new Object[2];
-		String totalRowSql = config.dialect.forTotalRow(actualSqlParas, sql, paras);
-		sql = (String)actualSqlParas[0];
-		paras = (Object[])actualSqlParas[1];
-		return doPaginate(config, conn, pageNumber, pageSize, totalRowSql, sql, paras);
+	private Page<M> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws Exception {
+		return doPaginate(config, conn, pageNumber, pageSize, null, select, sqlExceptSelect, paras);
 	}
 	
-	private Page<M> doPaginate(Config config, Connection conn, int pageNumber, int pageSize, String totalRowSql, String sql, Object... paras) throws Exception {
+	private Page<M> doPaginate(Config config, Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) throws Exception {
 		if (pageNumber < 1 || pageSize < 1) {
-			throw new ActiveRecordException("pageNumber and pageSize must be more than 0");
+			throw new ActiveRecordException("pageNumber and pageSize must more than 0");
 		}
 		if (config.dialect.isTakeOverModelPaginate()) {
-			return config.dialect.takeOverModelPaginate(conn, getUsefulClass(), pageNumber, pageSize, totalRowSql, sql, paras);
+			return config.dialect.takeOverModelPaginate(conn, getUsefulClass(), pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
+		}
+		
+		String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
+		List result = Db.query(config, conn, totalRowSql, paras);
+		int size = result.size();
+		if (isGroupBySql == null) {
+			isGroupBySql = size > 1;
 		}
 		
 		long totalRow;
-		List result = Db.query(config, conn, totalRowSql, paras);
-		if (config.dialect.isGroupBySql(sql)) {
-			totalRow = result.size();
+		if (isGroupBySql) {
+			totalRow = size;
 		} else {
-			totalRow = (result.size() > 0) ? ((Number)result.get(0)).longValue() : 0;
+			totalRow = (size > 0) ? ((Number)result.get(0)).longValue() : 0;
 		}
 		if (totalRow == 0) {
 			return new Page<M>(new ArrayList<M>(0), pageNumber, pageSize, 0, 0);	// totalRow = 0;
@@ -352,16 +352,16 @@ public abstract class Model<M extends Model> implements Serializable {
 		}
 		
 		// --------
-		sql = config.dialect.forPaginate(pageNumber, pageSize, sql);
+		String sql = config.dialect.forPaginate(pageNumber, pageSize, select, sqlExceptSelect);
 		List<M> list = find(conn, sql, paras);
 		return new Page<M>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
 	/**
-	 * @see #paginate(int, int, String, Object...)
+	 * @see #paginate(int, int, String, String, Object...)
 	 */
-	public Page<M> paginate(int pageNumber, int pageSize, String sql) {
-		return paginate(pageNumber, pageSize, sql, NULL_PARA_ARRAY);
+	public Page<M> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
+		return paginate(pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
 	}
 	
 	/**
@@ -861,36 +861,36 @@ public abstract class Model<M extends Model> implements Serializable {
 	
 	/**
 	 * Paginate by cache.
-	 * @see #paginate(int, int, String, Object...)
+	 * @see #paginate(int, int, String, String, Object...)
 	 * @param cacheName the cache name
 	 * @param key the key used to get date from cache
 	 * @return Page
 	 */
-	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String sql, Object... paras) {
+	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
 		ICache cache = getConfig().getCache();
 		Page<M> result = cache.get(cacheName, key);
 		if (result == null) {
-			result = paginate(pageNumber, pageSize, sql, paras);
+			result = paginate(pageNumber, pageSize, select, sqlExceptSelect, paras);
 			cache.put(cacheName, key, result);
 		}
 		return result;
 	}
 	
-	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String[] selectAndSqlExceptSelect, Object... paras) {
+	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
 		ICache cache = getConfig().getCache();
 		Page<M> result = cache.get(cacheName, key);
 		if (result == null) {
-			result = paginate(pageNumber, pageSize, selectAndSqlExceptSelect, paras);
+			result = paginate(pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
 			cache.put(cacheName, key, result);
 		}
 		return result;
 	}
 	
 	/**
-	 * @see #paginateByCache(String, Object, int, int, String, Object...)
+	 * @see #paginateByCache(String, Object, int, int, String, String, Object...)
 	 */
-	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String sql) {
-		return paginateByCache(cacheName, key, pageNumber, pageSize, sql, NULL_PARA_ARRAY);
+	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
+		return paginateByCache(cacheName, key, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
 	}
 	
 	/**

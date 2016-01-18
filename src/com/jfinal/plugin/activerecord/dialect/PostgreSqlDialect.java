@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.Table;
 
@@ -191,10 +192,10 @@ public class PostgreSqlDialect extends Dialect {
 		}
 	}
 	
-	public String forPaginate(int pageNumber, int pageSize, String sql) {
+	public String forPaginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
 		int offset = pageSize * (pageNumber - 1);
 		StringBuilder ret = new StringBuilder();
-		ret.append(sql);
+		ret.append(select).append(" ").append(sqlExceptSelect);
 		ret.append(" limit ").append(pageSize).append(" offset ").append(offset);
 		return ret.toString();
 	}
