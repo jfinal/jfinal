@@ -39,9 +39,9 @@ public class Jackson extends Json {
 	private static boolean defaultGenerateNullValue = true;
 	
 	// generateNullValue 通过设置此值，可临时改变默认生成 null value 的行为
-	private Boolean generateNullValue = null;
+	protected Boolean generateNullValue = null;
 	
-	private ObjectMapper objectMapper = new ObjectMapper();
+	protected ObjectMapper objectMapper = new ObjectMapper();
 	
 	public static void setDefaultGenerateNullValue(boolean defaultGenerateNullValue) {
 		Jackson.defaultGenerateNullValue = defaultGenerateNullValue;

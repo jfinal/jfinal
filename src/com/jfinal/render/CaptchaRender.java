@@ -39,7 +39,7 @@ import com.jfinal.render.Render;
  */
 public class CaptchaRender extends Render {
 
-	private static final String DEFAULT_CAPTCHA_NAME = "_jfinal_captcha";
+	private static String captchaName = "_jfinal_captcha";
 
 	// 默认的验证码大小
 	private static final int WIDTH = 108, HEIGHT = 40;
@@ -54,7 +54,17 @@ public class CaptchaRender extends Render {
 		new Font("Impact", Font.BOLD, 32),
 		new Font(Font.MONOSPACED, Font.BOLD, 40)
 	};
-
+	
+	/**
+	 * 设置 captchaName
+	 */
+	public static void setCaptchaName(String captchaName) {
+		if (StrKit.isBlank(captchaName)) {
+			throw new IllegalArgumentException("captchaName can not be blank.");
+		}
+		CaptchaRender.captchaName = captchaName;
+	}
+	
 	/**
 	 * 生成验证码
 	 */
@@ -63,9 +73,9 @@ public class CaptchaRender extends Render {
 		String vCode = drawGraphic(image);
 		vCode = vCode.toUpperCase();	// 转成大写重要
 		vCode = HashKit.md5(vCode);
-		Cookie cookie = new Cookie(DEFAULT_CAPTCHA_NAME, vCode);
+		Cookie cookie = new Cookie(captchaName, vCode);
 		cookie.setMaxAge(-1);
-		// cookie.setPath("/");
+		cookie.setPath("/");
 		try {
 			// try catch 用来兼容不支持 httpOnly 的 tomcat、jetty
 			cookie.setHttpOnly(true);
@@ -82,8 +92,12 @@ public class CaptchaRender extends Render {
 		try {
 			sos = response.getOutputStream();
 			ImageIO.write(image, "jpeg", sos);
+		} catch (IOException e) {
+			if (getDevMode()) {
+				throw new RenderException(e);
+			}
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RenderException(e);
 		} finally {
 			if (sos != null) {
 				try {sos.close();} catch (IOException e) {LogKit.logNothing(e);}
@@ -183,9 +197,9 @@ public class CaptchaRender extends Render {
 		
 		userInputCaptcha = userInputCaptcha.toUpperCase();	// 转成大写重要
 		userInputCaptcha = HashKit.md5(userInputCaptcha);
-		boolean result = userInputCaptcha.equals(controller.getCookie(DEFAULT_CAPTCHA_NAME));
+		boolean result = userInputCaptcha.equals(controller.getCookie(captchaName));
 		if (result == true) {
-			controller.removeCookie(DEFAULT_CAPTCHA_NAME);
+			controller.removeCookie(captchaName);
 		}
 		return result;
 	}

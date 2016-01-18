@@ -43,9 +43,9 @@ public class JFinalJson extends Json {
 	
 	private static int defaultConvertDepth = 15;
 	
-	private int convertDepth = defaultConvertDepth;
-	private String timestampPattern = "yyyy-MM-dd HH:mm:ss";
-	private String datePattern = "yyyy-MM-dd";
+	protected int convertDepth = defaultConvertDepth;
+	protected String timestampPattern = "yyyy-MM-dd HH:mm:ss";
+	protected String datePattern = "yyyy-MM-dd";
 	
 	/**
 	 * 设置全局性默认转换深度
@@ -85,7 +85,7 @@ public class JFinalJson extends Json {
 		return new JFinalJson();
 	}
 	
-	private String mapToJson(Map map, int depth) {
+	protected String mapToJson(Map map, int depth) {
 		if(map == null) {
 			return "null";
 		}
@@ -107,7 +107,7 @@ public class JFinalJson extends Json {
 		return sb.toString();
 	}
 	
-	private String toKeyValue(String key, Object value, StringBuilder sb, int depth){
+	protected String toKeyValue(String key, Object value, StringBuilder sb, int depth){
 		sb.append('\"');
         if(key == null)
             sb.append("null");
@@ -120,7 +120,7 @@ public class JFinalJson extends Json {
 		return sb.toString();
 	}
 	
-	private String listToJson(List list, int depth) {
+	protected String listToJson(List list, int depth) {
 		if(list == null)
 			return "null";
 		
@@ -149,7 +149,7 @@ public class JFinalJson extends Json {
 	/**
 	 * Escape quotes, \, /, \r, \n, \b, \f, \t and other control characters (U+0000 through U+001F).
 	 */
-	private String escape(String s) {
+	protected String escape(String s) {
 		if(s == null)
 			return null;
         StringBuilder sb = new StringBuilder();
@@ -157,7 +157,7 @@ public class JFinalJson extends Json {
         return sb.toString();
     }
 	
-	private void escape(String s, StringBuilder sb) {
+	protected void escape(String s, StringBuilder sb) {
 		for(int i=0; i<s.length(); i++){
 			char ch = s.charAt(i);
 			switch(ch){
@@ -205,7 +205,7 @@ public class JFinalJson extends Json {
 		return toJson(object, convertDepth);
 	}
 	
-	private String toJson(Object value, int depth) {
+	protected String toJson(Object value, int depth) {
 		if(value == null || (depth--) < 0)
 			return "null";
 		
@@ -265,7 +265,7 @@ public class JFinalJson extends Json {
 		return "\"" + escape(value.toString()) + "\"";
 	}
 	
-	private String otherToJson(Object value, int depth) {
+	protected String otherToJson(Object value, int depth) {
 		if (value instanceof Character) {
 			return "\"" + escape(value.toString()) + "\"";
 		}
@@ -292,7 +292,7 @@ public class JFinalJson extends Json {
 		return beanToJson(value, depth);
 	}
 	
-	private String beanToJson(Object model, int depth) {
+	protected String beanToJson(Object model, int depth) {
 		Map map = new HashMap();
 		Method[] methods = model.getClass().getMethods();
 		for (Method m : methods) {

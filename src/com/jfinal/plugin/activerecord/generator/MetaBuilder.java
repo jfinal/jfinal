@@ -47,7 +47,7 @@ public class MetaBuilder {
 	
 	protected String[] removedTableNamePrefixes = null;
 	
-	private TypeMapping typeMapping = new TypeMapping();
+	protected TypeMapping typeMapping = new TypeMapping();
 	
 	public MetaBuilder(DataSource dataSource) {
 		if (dataSource == null) {

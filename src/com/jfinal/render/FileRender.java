@@ -90,9 +90,10 @@ public class FileRender extends Render {
         	rangeRender();
 	}
 	
-	private String encodeFileName(String fileName) {
+	protected String encodeFileName(String fileName) {
 		try {
-			return new String(fileName.getBytes("GBK"), "ISO8859-1");
+			// return new String(fileName.getBytes("GBK"), "ISO8859-1");
+			return new String(fileName.getBytes(getEncoding()), "ISO8859-1");
 		} catch (UnsupportedEncodingException e) {
 			return fileName;
 		}
@@ -110,14 +111,13 @@ public class FileRender extends Render {
                 outputStream.write(buffer, 0, len);
             }
             outputStream.flush();
-        }
-        catch (IOException e) {
-        	if (getDevMode())	throw new RenderException(e);
-        }
-        catch (Exception e) {
+        } catch (IOException e) {
+        	if (getDevMode()) {
+        		throw new RenderException(e);
+        	}
+        } catch (Exception e) {
         	throw new RenderException(e);
-        }
-        finally {
+        } finally {
             if (inputStream != null)
                 try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
             if (outputStream != null)
