@@ -587,9 +587,12 @@ public abstract class Controller {
 	private Controller doSetCookie(String name, String value, int maxAgeInSeconds, String path, String domain, Boolean isHttpOnly) {
 		Cookie cookie = new Cookie(name, value);
 		cookie.setMaxAge(maxAgeInSeconds);
-		if (path != null) {
-			cookie.setPath(path);
+		// set the default path value to "/"
+		if (path == null) {
+			path = "/";
 		}
+		cookie.setPath(path);
+		
 		if (domain != null) {
 			cookie.setDomain(domain);
 		}
