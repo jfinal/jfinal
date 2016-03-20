@@ -38,6 +38,8 @@ public class FileRender extends Render {
 	private File file;
 	private static String baseDownloadPath;
 	private static ServletContext servletContext;
+	private String downloadName;
+	
 	
 	public FileRender(File file) {
 		if (file == null) {
@@ -66,6 +68,16 @@ public class FileRender extends Render {
 		this.file = new File(fullFileName);
 	}
 	
+	public FileRender(File file,String downloadName) {
+		this(file);
+		this.downloadName = downloadName;
+	}
+	
+	public FileRender(String fileName,String downloadName) {
+		this(fileName);
+		this.downloadName = downloadName;
+	}
+	
 	static void init(String baseDownloadPath, ServletContext servletContext) {
 		FileRender.baseDownloadPath = baseDownloadPath;
 		FileRender.servletContext = servletContext;
@@ -79,7 +91,7 @@ public class FileRender extends Render {
 		
 		// ---------
 		response.setHeader("Accept-Ranges", "bytes");
-		response.setHeader("Content-disposition", "attachment; filename=" + encodeFileName(file.getName()));
+		response.setHeader("Content-disposition", "attachment; filename=" + this.getDownloadName());
         String contentType = servletContext.getMimeType(file.getName());
         response.setContentType(contentType != null ? contentType : DEFAULT_CONTENT_TYPE);
         
@@ -90,6 +102,10 @@ public class FileRender extends Render {
         	rangeRender();
 	}
 	
+	private String getDownloadName() {
+		return StrKit.isBlank(this.downloadName)?encodeFileName(this.file.getName()):encodeFileName(this.downloadName);
+	}
+
 	protected String encodeFileName(String fileName) {
 		try {
 			// return new String(fileName.getBytes("GBK"), "ISO8859-1");
