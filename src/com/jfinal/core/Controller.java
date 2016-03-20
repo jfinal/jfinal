@@ -1081,6 +1081,20 @@ public abstract class Controller {
 	}
 	
 	/**
+	 * Render with file with downloadName
+	 */
+	public void renderFile(String fileName,String downloadName) {
+		render = renderFactory.getFileRender(fileName,downloadName);
+	}
+	
+	/**
+	 * Render with file with downloadName
+	 */
+	public void renderFile(File file,String downloadName) {
+		render = renderFactory.getFileRender(file,downloadName);
+	}
+	
+	/**
 	 * Redirect to url
 	 */
 	public void redirect(String url) {
