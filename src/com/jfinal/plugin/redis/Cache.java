@@ -720,7 +720,11 @@ public class Cache {
 		Jedis jedis = getJedis();
 		try {
 			List<byte[]> data = jedis.lrange(keyToBytes(key), start, end);
-			return valueListFromBytesList(data);
+			if (data != null) {
+				return valueListFromBytesList(data);
+			} else {
+				return new ArrayList<byte[]>(0);
+			}
 		}
 		finally {close(jedis);}
 	}
