@@ -23,7 +23,7 @@ import com.jfinal.render.ViewType;
  */
 public interface Const {
 	
-	String JFINAL_VERSION = "2.2";
+	String JFINAL_VERSION = "2.3";
 	
 	ViewType DEFAULT_VIEW_TYPE = ViewType.FREE_MARKER;
 	
