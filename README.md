@@ -23,40 +23,40 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 **1. 控制器(支持FreeMarker、JSP、Velocity、JSON等等以及自定义视图渲染)**
 
 ```java
-    @Before(BlogInterceptor.class)
-    public class BlogController extends Controller {
-        public void index() {
-            setAttr("blogList", Blog.dao.find("select * from blog"));
-        }
-        public void add() {
-        }
-	
-        @Before(BlogValidator.class)
-        public void save() {
-            getModel(Blog.class).save();
-        }
-	
-        public void edit() {
-            setAttr("blog", Blog.dao.findById(getParaToInt()));
-        }
-	
-        @Before(BlogValidator.class)
-        public void update() {
-            getModel(Blog.class).update();
-        }
-	
-        public void delete() {
-            Blog.dao.deleteById(getParaToInt());
-        }
+@Before(BlogInterceptor.class)
+public class BlogController extends Controller {
+    public void index() {
+        setAttr("blogList", Blog.dao.find("select * from blog"));
     }
+    public void add() {
+    }
+
+    @Before(BlogValidator.class)
+    public void save() {
+        getModel(Blog.class).save();
+    }
+
+    public void edit() {
+        setAttr("blog", Blog.dao.findById(getParaToInt()));
+    }
+
+    @Before(BlogValidator.class)
+    public void update() {
+        getModel(Blog.class).update();
+    }
+
+    public void delete() {
+        Blog.dao.deleteById(getParaToInt());
+    }
+}
 ```
 
 **2.Model(无xml、无annotaion、无attribute、无getter、无setter)**
 
 ```java
-     public class Blog extends Model<Blog> {
-        public static final Blog dao = new Blog();
-     }
+public class Blog extends Model<Blog> {
+    public static final Blog dao = new Blog();
+}
 ```
 
 **3.Validator(API引导式校验，比xml校验方便N倍，有代码检查不易出错)**
