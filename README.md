@@ -55,7 +55,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 
 ```java
      public class Blog extends Model {
-           public static final Blog dao = new Blog();
+     
      }
 ```
 
