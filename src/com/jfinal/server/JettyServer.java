@@ -129,12 +129,12 @@ class JettyServer implements IServer {
 		return;
 	}
 	
-	@SuppressWarnings("resource")
 	private void changeClassLoader(WebAppContext webApp) {
 		try {
 			String classPath = getClassPath();
-			JFinalClassLoader wacl = new JFinalClassLoader(webApp, classPath);
-			wacl.addClassPath(classPath);
+			JFinalClassLoader jfcl = new JFinalClassLoader(webApp, classPath);
+			jfcl.addClassPath(classPath);
+			webApp.setClassLoader(jfcl);
 		} catch (IOException e) {
 			LogKit.error(e.getMessage(), e);
 		}
