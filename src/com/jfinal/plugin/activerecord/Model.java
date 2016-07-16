@@ -49,7 +49,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	private Map<String, Object> attrs = getAttrsMap();	// getConfig().containerFactory.getAttrsMap();	// new HashMap<String, Object>();
 	
 	private Map<String, Object> getAttrsMap() {
-		Config config = _getConfig();
+		Config config = getConfig();
 		if (config == null)
 			return DbKit.brokenConfig.containerFactory.getAttrsMap();
 		return config.containerFactory.getAttrsMap();
@@ -69,7 +69,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	
 	Set<String> getModifyFlag() {
 		if (modifyFlag == null) {
-			Config config = _getConfig();
+			Config config = getConfig();
 			if (config == null)
 				modifyFlag = DbKit.brokenConfig.containerFactory.getModifyFlagSet();
 			else
@@ -88,7 +88,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		return (M)this;
 	}
 	
-	public Config _getConfig() {
+	protected Config getConfig() {
 		if (configName != null)
 			return DbKit.getConfig(configName);
 		return DbKit.getConfig(getUsefulClass());
@@ -281,7 +281,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return the Page object
 	 */
 	public Page<M> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
-		Config config = _getConfig();
+		Config config = getConfig();
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
@@ -301,7 +301,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * </pre>
 	 */
 	public Page<M> paginate(int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
-		Config config = _getConfig();
+		Config config = getConfig();
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
@@ -385,7 +385,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Save model.
 	 */
 	public boolean save() {
-		Config config = _getConfig();
+		Config config = getConfig();
 		Table table = getTable();
 		
 		StringBuilder sql = new StringBuilder();
@@ -478,7 +478,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	private boolean deleteById(Table table, Object... idValues) {
-		Config config = _getConfig();
+		Config config = getConfig();
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
@@ -506,7 +506,7 @@ public abstract class Model<M extends Model> implements Serializable {
 				throw new ActiveRecordException("You can't update model without Primary Key, " + pKey + " can not be null.");
 		}
 		
-		Config config = _getConfig();
+		Config config = getConfig();
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();
 		config.dialect.forModelUpdate(table, attrs, getModifyFlag(), sql, paras);
@@ -536,7 +536,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Find model.
 	 */
 	private List<M> find(Connection conn, String sql, Object... paras) throws Exception {
-		Config config = _getConfig();
+		Config config = getConfig();
 		Class<? extends Model> modelClass = getUsefulClass();
 		if (config.devMode)
 			checkTableName(modelClass, sql);
@@ -556,7 +556,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return the list of Model
 	 */
 	public List<M> find(String sql, Object... paras) {
-		Config config = _getConfig();
+		Config config = getConfig();
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
@@ -654,7 +654,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		if (table.getPrimaryKey().length != idValues.length)
 			throw new IllegalArgumentException("id values error, need " + table.getPrimaryKey().length + " id value");
 		
-		String sql = _getConfig().dialect.forModelFindById(table, columns);
+		String sql = getConfig().dialect.forModelFindById(table, columns);
 		List<M> result = find(sql, idValues);
 		return result.size() > 0 ? result.get(0) : null;
 	}
@@ -726,7 +726,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	public M keep(String... attrs) {
 		if (attrs != null && attrs.length > 0) {
-			Config config = _getConfig();
+			Config config = getConfig();
 			Map<String, Object> newAttrs = config.containerFactory.getAttrsMap();	// new HashMap<String, Object>(attrs.length);
 			Set<String> newModifyFlag = config.containerFactory.getModifyFlagSet();	// new HashSet<String>();
 			for (String a : attrs) {
@@ -818,7 +818,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return the list of Model
 	 */
 	public List<M> findByCache(String cacheName, Object key, String sql, Object... paras) {
-		ICache cache = _getConfig().getCache();
+		ICache cache = getConfig().getCache();
 		List<M> result = cache.get(cacheName, key);
 		if (result == null) {
 			result = find(sql, paras);
@@ -843,7 +843,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @param paras the parameters of sql
 	 */
 	public M findFirstByCache(String cacheName, Object key, String sql, Object... paras) {
-		ICache cache = _getConfig().getCache();
+		ICache cache = getConfig().getCache();
 		M result = cache.get(cacheName, key);
 		if (result == null) {
 			result = findFirst(sql, paras);
@@ -867,7 +867,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return Page
 	 */
 	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
-		ICache cache = _getConfig().getCache();
+		ICache cache = getConfig().getCache();
 		Page<M> result = cache.get(cacheName, key);
 		if (result == null) {
 			result = paginate(pageNumber, pageSize, select, sqlExceptSelect, paras);
@@ -877,7 +877,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
-		ICache cache = _getConfig().getCache();
+		ICache cache = getConfig().getCache();
 		Page<M> result = cache.get(cacheName, key);
 		if (result == null) {
 			result = paginate(pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
