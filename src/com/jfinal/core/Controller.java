@@ -1256,6 +1256,41 @@ public abstract class Controller {
 	public <T> T enhance(String singletonKey, Object target, Class<? extends Interceptor>... injectIntersClasses) {
 		return (T)Enhancer.enhance(singletonKey, target, injectIntersClasses);
 	}
+	
+	/**
+	 * MODIFY by zxy get application/json
+	 * @return
+	 * @throws IOException
+	 */
+	public String getJson() throws IOException{
+		BufferedReader reader  = null;
+		try{
+			
+			StringBuilder json = new StringBuilder(); 
+			reader = this.getRequest().getReader();
+			String line = null;
+			
+			while((line = reader.readLine()) != null){
+				json.append(line);
+			}
+			
+			return json.toString();
+		
+		}catch(IOException ex){
+			
+			throw new ActionException(404, renderFactory.getErrorRender(404),  "Can not parse the parameter to json.");
+		
+		}finally{
+			
+			if(reader != null){
+				try {
+					reader.close();
+				} catch (IOException e) {
+						// TODO Auto-generated catch block
+					throw new ActionException(404, renderFactory.getErrorRender(404),  "Can not parse the parameter to json.");
+				}
+			}
+		
+		}	  
+	}
 }
-
-
