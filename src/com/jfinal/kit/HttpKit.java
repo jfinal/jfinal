@@ -16,12 +16,9 @@
 
 package com.jfinal.kit;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import javax.net.ssl.*;
+import javax.servlet.http.HttpServletRequest;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -32,14 +29,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 import java.util.Map.Entry;
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * HttpKit
@@ -222,7 +211,7 @@ public class HttpKit {
 		
 		StringBuilder sb = new StringBuilder(url);
 		boolean isFirst;
-		if (url.indexOf("?") == -1) {
+		if (!url.contains("?")) {
 			isFirst = true;
 			sb.append("?");
 		}
@@ -248,10 +237,13 @@ public class HttpKit {
 		try {
 			StringBuilder result = new StringBuilder();
 			br = request.getReader();
-			for (String line=null; (line=br.readLine())!=null;) {
-				result.append(line).append("\n");
+			for (String line; (line=br.readLine())!=null;) {
+				if (result.length() > 0) {
+					result.append("\n");
+				}
+				result.append(line);
 			}
-			
+
 			return result.toString();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
