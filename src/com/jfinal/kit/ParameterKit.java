@@ -62,12 +62,12 @@ public class ParameterKit {
 	 * @param excludeFields
 	 * @return
 	 */
-	public static <T> T getParametersToBean(Class<T> clazz,String root, HttpServletRequest request, String... excludeFields){
-		return BeanKit.mapToBean(parseObjectParameters(request, excludeFields).get(root), clazz);
+	public static <T> T getParametersToBean(Class<T> clazz,String root, HttpServletRequest request){
+		return BeanKit.mapToBean(parseObjectParameters(request).get(root), clazz);
 	}
 	
-	public static <T> T getParametersToBean(Class<T> clazz, HttpServletRequest request, String... excludeFields){
-		return BeanKit.mapToBean(parseObjectParameters(request, excludeFields).get(DEFAULT_PARAM_OBJECT_NAME), clazz);
+	public static <T> T getParametersToBean(Class<T> clazz, HttpServletRequest request){
+		return BeanKit.mapToBean(parseObjectParameters(request).get(DEFAULT_PARAM_OBJECT_NAME), clazz);
 	}
 
 	/**
