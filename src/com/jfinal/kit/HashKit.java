@@ -22,6 +22,7 @@ public class HashKit {
 	
 	private static final java.security.SecureRandom random = new java.security.SecureRandom();
 	private static final char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+	private static final char[] CHAR_ARRAY = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 	
 	public static String md5(String srcStr){
 		return hash("MD5", srcStr);
@@ -67,14 +68,36 @@ public class HashKit {
 	 * md5 128bit 16bytes
 	 * sha1 160bit 20bytes
 	 * sha256 256bit 32bytes
-	 * sha384 384bit 48bites
-	 * sha512 512bit 64bites
+	 * sha384 384bit 48bytes
+	 * sha512 512bit 64bytes
 	 */
-	public static String generateSalt(int numberOfBytes) {
-		byte[] salt = new byte[numberOfBytes];
-		random.nextBytes(salt);
-		return toHex(salt);
+	public static String generateSalt(int saltLength) {
+		StringBuilder salt = new StringBuilder();
+		for (int i=0; i<saltLength; i++) {
+			salt.append(CHAR_ARRAY[random.nextInt(CHAR_ARRAY.length)]);
+		}
+		return salt.toString();
 	}
+	
+	public static String generateSaltForSha256() {
+		return generateSalt(32);
+	}
+	
+	public static String generateSaltForSha512() {
+		return generateSalt(64);
+	}
+	
+	public static boolean slowEquals(byte[] a, byte[] b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		
+		int diff = a.length ^ b.length;
+		for(int i=0; i<a.length && i<b.length; i++) {
+			diff |= a[i] ^ b[i];
+		}
+		return diff == 0;
+    }
 }
 
 

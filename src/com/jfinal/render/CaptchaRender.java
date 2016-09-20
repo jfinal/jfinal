@@ -40,6 +40,14 @@ import com.jfinal.render.Render;
 public class CaptchaRender extends Render {
 
 	private static String captchaName = "_jfinal_captcha";
+	private static String salt = HashKit.generateSaltForSha256();
+	
+	public static void setSalt(String salt) {
+		if (StrKit.isBlank(salt)) {
+			throw new IllegalArgumentException("salt can not be blank.");
+		}
+		CaptchaRender.salt = salt;
+	}
 
 	// 默认的验证码大小
 	private static final int WIDTH = 108, HEIGHT = 40;
@@ -72,7 +80,7 @@ public class CaptchaRender extends Render {
 		BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		String vCode = drawGraphic(image);
 		vCode = vCode.toUpperCase();	// 转成大写重要
-		vCode = HashKit.md5(vCode);
+		vCode = HashKit.md5(salt + vCode);
 		Cookie cookie = new Cookie(captchaName, vCode);
 		cookie.setMaxAge(-1);
 		cookie.setPath("/");
@@ -196,7 +204,7 @@ public class CaptchaRender extends Render {
 		}
 		
 		userInputCaptcha = userInputCaptcha.toUpperCase();	// 转成大写重要
-		userInputCaptcha = HashKit.md5(userInputCaptcha);
+		userInputCaptcha = HashKit.md5(salt + userInputCaptcha);
 		boolean result = userInputCaptcha.equals(controller.getCookie(captchaName));
 		if (result == true) {
 			controller.removeCookie(captchaName);
