@@ -12,6 +12,7 @@ Log.getLog(ActionReporter.class).info(sb.toString());
   1. 添加[boolean]参数[withMethod],是否使用方法名作为action的结尾。默认【true】
   2. value以"/"开头表示绝对路径
   3. value不以"/"开头表示相对路径，前面补全controller的路径
+  4. value中可以包含"/"
 
 ````
 // MyConfig.java
@@ -36,6 +37,9 @@ public class CtrlController extend Controller{
     
     @Action(value="action",withMethod=false)
     public void method3(){}     //url : /ctrl/action
+    
+    @Action(value="action1/action2",withMethod=false)
+    public void method3(){}     //url : /ctrl/action1/action2
 }
 ````
 
