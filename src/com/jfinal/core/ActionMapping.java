@@ -85,8 +85,12 @@ final class ActionMapping {
 					if ("".equals(actionKey))
 						throw new IllegalArgumentException(controllerClass.getName() + "." + methodName + "(): The argument of ActionKey can not be blank.");
 					
-					if (!actionKey.startsWith(SLASH))
-						actionKey = SLASH + actionKey;
+					if (!actionKey.startsWith(SLASH)){
+						actionKey = controllerKey + SLASH + actionKey;
+						if(ak.withMethod()){
+							actionKey = actionKey + SLASH + methodName;
+						}
+					}
 				}
 				else if (methodName.equals("index")) {
 					actionKey = controllerKey;

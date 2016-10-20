@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import com.jfinal.aop.Interceptor;
+import com.jfinal.log.Log;
 
 /**
  * ActionReporter
@@ -104,6 +105,7 @@ public class ActionReporter {
 			sb.append("\n");
 		}
 		sb.append("--------------------------------------------------------------------------------\n");
-		System.out.print(sb.toString());
+//		System.out.print(sb.toString());
+		Log.getLog(ActionReporter.class).info(sb.toString());
 	}
 }
