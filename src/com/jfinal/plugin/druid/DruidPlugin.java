@@ -51,7 +51,6 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	private long minEvictableIdleTimeMillis = DruidDataSource.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 	// 配置发生错误时多久重连
 	private long timeBetweenConnectErrorMillis = DruidDataSource.DEFAULT_TIME_BETWEEN_CONNECT_ERROR_MILLIS;
-
 	/**
 	 * <pre>
 	 * 配置了 timeBetweenLogStatsMillis 属性（大于0）之后，就会定时输出统计信息到日志中。
