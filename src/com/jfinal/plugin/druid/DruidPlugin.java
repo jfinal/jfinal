@@ -151,6 +151,8 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		ds.setMaxWait(maxWait);
 		ds.setTimeBetweenConnectErrorMillis(timeBetweenConnectErrorMillis);
 		ds.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+		if (timeBetweenLogStatsMillis > 0)
+			ds.setTimeBetweenLogStatsMillis(timeBetweenLogStatsMillis);
 		ds.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
 		
 		ds.setValidationQuery(validationQuery);
