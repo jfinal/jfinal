@@ -148,7 +148,7 @@ public class HttpKit {
 			conn.connect();
 			
 			OutputStream out = conn.getOutputStream();
-			out.write(data.getBytes(CHARSET));
+			out.write(null==data?"".getBytes(CHARSET):data.getBytes(CHARSET));
 			out.flush();
 			out.close();
 			
