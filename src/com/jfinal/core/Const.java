@@ -35,6 +35,8 @@ public interface Const {
 	
 	boolean DEFAULT_DEV_MODE = false;
 	
+	boolean DEFAULT_AUTO_ROUTE = false;
+	
 	String DEFAULT_URL_PARA_SEPARATOR = "-";
 	
 	String DEFAULT_JSP_EXTENSION = ".jsp";

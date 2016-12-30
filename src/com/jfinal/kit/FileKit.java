@@ -22,6 +22,7 @@ import java.io.File;
  * FileKit.
  */
 public class FileKit {
+	
 	public static void delete(File file) {
 		if (file != null && file.exists()) {
 			if (file.isFile()) {

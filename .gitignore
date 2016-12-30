@@ -19,6 +19,9 @@ integration-repo
 *.ipr
 *.iws
 out
+.project
+.classpath
+/.settings/
 
 /webapp/WEB-INF/classes/
 /webapp/WEB-INF/target/

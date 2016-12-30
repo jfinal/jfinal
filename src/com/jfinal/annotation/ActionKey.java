@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jfinal.core;
+package com.jfinal.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

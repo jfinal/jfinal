@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,45 +43,107 @@ public class LogKit {
 		
 	}
 	
-	public static void debug(String message) {
+	public static void debug(String message){
 		Holder.log.debug(message);
 	}
-	
-	public static void debug(String message, Throwable t) {
-		Holder.log.debug(message, t);
+	public static void debug(String message, Object arg){
+		Holder.log.debug(message,arg);
 	}
 	
-	public static void info(String message) {
+	public static void debug(String message, Object arg1, Object arg2){
+		Holder.log.debug(message,arg1,arg2);
+	}
+	public static void debug(String message, Object[] arg){
+		Holder.log.debug(message,arg);
+	}
+	public static void debug(String message, Throwable t){
+		Holder.log.debug(message,t);
+	}
+	public static void info(String message){
 		Holder.log.info(message);
 	}
-	
-	public static void info(String message, Throwable t) {
-		Holder.log.info(message, t);
+	public static void info(String message, Object arg){
+		Holder.log.info(message,arg);
 	}
-	
-	public static void warn(String message) {
+	public static void info(String message, Object arg1, Object arg2){
+		Holder.log.info(message,arg1,arg2);
+	}
+	public static void info(String message, Object[] arg){
+		Holder.log.info(message,arg);
+	}
+	public static void info(String message, Throwable t){
+		Holder.log.info(message,t);
+	}
+	public static void warn(String message){
 		Holder.log.warn(message);
 	}
-	
-	public static void warn(String message, Throwable t) {
-		Holder.log.warn(message, t);
+	public static void warn(String message, Object arg){
+		Holder.log.warn(message,arg);
 	}
-	
-	public static void error(String message) {
+	public static void warn(String message, Object[] arg){
+		Holder.log.warn(message,arg);
+	}
+	public static void warn(String message, Object arg1, Object arg2){
+		Holder.log.warn(message,arg1,arg2);
+	}
+	public static void warn(String message, Throwable t){
+		Holder.log.warn(message,t);
+	}
+	public static void error(String message){
 		Holder.log.error(message);
 	}
-	
-	public static void error(String message, Throwable t) {
-		Holder.log.error(message, t);
+	public static void error(String message, Object arg){
+		Holder.log.error(message,arg);
+	}
+	public static void error(String message, Object arg1, Object arg2){
+		Holder.log.error(message,arg1,arg2);
+	}
+	public static void error(String message, Object[] arg){
+		Holder.log.error(message,arg);
+	}
+	public static void error(String message, Throwable t){
+		Holder.log.error(message,t);
 	}
 	
-	public static void fatal(String message) {
-		Holder.log.fatal(message);
-	}
-	
-	public static void fatal(String message, Throwable t) {
-		Holder.log.fatal(message, t);
-	}
+//	public static void debug(String message) {
+//		Holder.log.debug(message);
+//	}
+//	
+//	public static void debug(String message, Throwable t) {
+//		Holder.log.debug(message, t);
+//	}
+//	
+//	public static void info(String message) {
+//		Holder.log.info(message);
+//	}
+//	
+//	public static void info(String message, Throwable t) {
+//		Holder.log.info(message, t);
+//	}
+//	
+//	public static void warn(String message) {
+//		Holder.log.warn(message);
+//	}
+//	
+//	public static void warn(String message, Throwable t) {
+//		Holder.log.warn(message, t);
+//	}
+//	
+//	public static void error(String message) {
+//		Holder.log.error(message);
+//	}
+//	
+//	public static void error(String message, Throwable t) {
+//		Holder.log.error(message, t);
+//	}
+//	
+//	public static void fatal(String message) {
+//		Holder.log.fatal(message);
+//	}
+//	
+//	public static void fatal(String message, Throwable t) {
+//		Holder.log.fatal(message, t);
+//	}
 	
 	public static boolean isDebugEnabled() {
 		return Holder.log.isDebugEnabled();

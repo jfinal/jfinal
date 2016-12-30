@@ -19,14 +19,19 @@ package com.jfinal.core;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+
 import javax.servlet.http.HttpServletRequest;
+
 import com.jfinal.aop.Interceptor;
+import com.jfinal.log.JdkLogFactory;
 import com.jfinal.log.Log;
 
 /**
  * ActionReporter
  */
 public class ActionReporter {
+	
+	private static final Log log = new JdkLogFactory().getLog(ActionReporter.class);
 	
 	private static boolean reportAfterInvocation = true;
 	
@@ -106,6 +111,6 @@ public class ActionReporter {
 		}
 		sb.append("--------------------------------------------------------------------------------\n");
 //		System.out.print(sb.toString());
-		Log.getLog(ActionReporter.class).info(sb.toString());
+		log.info(sb.toString());
 	}
 }

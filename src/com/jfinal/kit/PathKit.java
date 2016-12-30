@@ -28,6 +28,7 @@ public class PathKit {
 	
 	private static String webRootPath;
 	private static String rootClassPath;
+	private static String libPath;
 	
 	@SuppressWarnings("rawtypes")
 	public static String getPath(Class clazz) {
@@ -95,16 +96,12 @@ public class PathKit {
 		return path.startsWith("/") || path.indexOf(":") == 1;
 	}
 	
-	/*
-	private static String detectWebRootPath() {
-		try {
-			String path = PathKit.class.getResource("/").getFile();
-			return new File(path).getParentFile().getParentFile().getCanonicalPath();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+	public static String getLibPath(){
+		if(libPath == null){
+			libPath = getWebRootPath() + File.separator + "WEB-INF" + File.separator + "lib";
 		}
+		return libPath;
 	}
-	*/
 }
 
 
