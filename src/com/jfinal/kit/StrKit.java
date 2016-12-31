@@ -51,21 +51,21 @@ public class StrKit {
 	 * 字符串为 null 或者为  "" 时返回 true
 	 */
 	public static boolean isBlank(String str) {
-		return str == null || "".equals(str.trim());
+		return str == null || "".equals(str.trim()) || "null".equals(str) ;
 	}
 	
 	/**
 	 * 字符串不为 null 而且不为  "" 时返回 true
 	 */
 	public static boolean notBlank(String str) {
-		return str != null && !"".equals(str.trim());
+		return str != null && !"".equals(str.trim()) && !"null".equals(str);
 	}
 	
 	public static boolean notBlank(String... strings) {
 		if (strings == null)
 			return false;
 		for (String str : strings)
-			if (str == null || "".equals(str.trim()))
+			if (str == null || "".equals(str.trim()) || "null".equals(str))
 				return false;
 		return true;
 	}
