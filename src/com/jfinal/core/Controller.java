@@ -20,13 +20,16 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import com.jfinal.aop.Enhancer;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.kit.StrKit;
@@ -136,6 +139,20 @@ public abstract class Controller {
 	 */
 	public Map<String, String[]> getParaMap() {
 		return request.getParameterMap();
+	}
+	
+	/**
+	 * Returns the values of the request parameters as a Map.
+	 * @return a Map contains all the parameters name and value
+	 */
+	public Map<String, String> getParamMap() {
+		Map<String, String> paraMap = new HashMap<String,String>();
+		Enumeration<String> names = request.getParameterNames();
+		while(names.hasMoreElements()){
+			String name = names.nextElement();
+			paraMap.put(name, request.getParameter(name));
+		}
+		return paraMap;
 	}
 	
 	/**

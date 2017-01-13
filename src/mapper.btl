@@ -1,0 +1,13 @@
+package ${package};
+import org.beetl.sql.core.annotatoin.*;
+import org.beetl.sql.core.db.KeyHolder;
+import org.beetl.sql.core.engine.PageQuery;
+import org.beetl.sql.core.mapper.BaseMapper;
+${imports}
+/*
+* 
+* gen by beetlsql mapper ${date(),"yyyy-MM-dd"}
+*/
+public interface ${className} extends BaseMapper<${entityClass}> {
+	
+}
