@@ -23,7 +23,6 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 
 import com.jfinal.aop.Interceptor;
-import com.jfinal.log.JdkLogFactory;
 import com.jfinal.log.Log;
 
 /**
@@ -31,7 +30,7 @@ import com.jfinal.log.Log;
  */
 public class ActionReporter {
 	
-	private static final Log log = new JdkLogFactory().getLog(ActionReporter.class);
+	private static final Log log = Log.getLog(ActionReporter.class);
 	
 	private static boolean reportAfterInvocation = true;
 	
