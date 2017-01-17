@@ -27,56 +27,56 @@ import com.jfinal.kit.PathKit;
  * RenderFactory.
  */
 public class RenderFactory {
-	
+
 	private Constants constants;
 	private ServletContext servletContext;
 	private IMainRenderFactory mainRenderFactory = null;
 	private IErrorRenderFactory errorRenderFactory = null;
 	private IXmlRenderFactory xmlRenderFactory = null;
-	
+
 	ServletContext getServletContext() {
 		return servletContext;
 	}
-	
+
 	private static final RenderFactory me = new RenderFactory();
-	
+
 	private RenderFactory() {
-		
+
 	}
-	
+
 	public static RenderFactory me() {
 		return me;
 	}
-	
+
 	public void setMainRenderFactory(IMainRenderFactory mainRenderFactory) {
 		if (mainRenderFactory != null) {
 			this.mainRenderFactory = mainRenderFactory;
 		}
 	}
-	
+
 	public void setErrorRenderFactory(IErrorRenderFactory errorRenderFactory) {
 		if (errorRenderFactory != null) {
 			this.errorRenderFactory = errorRenderFactory;
 		}
 	}
-	
+
 	public void setXmlRenderFactory(IXmlRenderFactory xmlRenderFactory) {
 		if (xmlRenderFactory != null) {
 			this.xmlRenderFactory = xmlRenderFactory;
 		}
 	}
-	
+
 	public void init(Constants constants, ServletContext servletContext) {
 		this.constants = constants;
 		this.servletContext = servletContext;
-		
+
 		// init Render
 		Render.init(constants.getEncoding(), constants.getDevMode());
 		initFreeMarkerRender(servletContext);
 		initVelocityRender(servletContext);
 		initJspRender(servletContext);
 		initFileRender(servletContext);
-		
+
 		// create mainRenderFactory
 		if (mainRenderFactory == null) {
 			ViewType defaultViewType = constants.getViewType();
@@ -90,61 +90,58 @@ public class RenderFactory {
 				throw new RuntimeException("View Type can not be null.");
 			}
 		}
-		
+
 		// create errorRenderFactory
 		if (errorRenderFactory == null) {
 			errorRenderFactory = new ErrorRenderFactory();
 		}
-		
+
 		if (xmlRenderFactory == null) {
 			xmlRenderFactory = new XmlRenderFactory();
 		}
 	}
-	
+
 	private void initFreeMarkerRender(ServletContext servletContext) {
 		try {
-			Class.forName("freemarker.template.Template");	// detect freemarker.jar
+			Class.forName("freemarker.template.Template"); // detect
+															// freemarker.jar
 			FreeMarkerRender.init(servletContext, Locale.getDefault(), constants.getFreeMarkerTemplateUpdateDelay());
 		} catch (ClassNotFoundException e) {
 			// System.out.println("freemarker can not be supported!");
 			LogKit.logNothing(e);
 		}
 	}
-	
+
 	private void initVelocityRender(ServletContext servletContext) {
 		try {
 			Class.forName("org.apache.velocity.VelocityContext");
 			VelocityRender.init(servletContext);
-		}
-		catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			// System.out.println("Velocity can not be supported!");
 			LogKit.logNothing(e);
 		}
 	}
-	
+
 	private void initJspRender(ServletContext servletContext) {
 		try {
 			Class.forName("javax.el.ELResolver");
 			Class.forName("javax.servlet.jsp.JspFactory");
 			com.jfinal.plugin.activerecord.ModelRecordElResolver.init(servletContext);
-		}
-		catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			// System.out.println("Jsp or JSTL can not be supported!");
 			LogKit.logNothing(e);
-		}
-		catch (IllegalStateException e) {
+		} catch (IllegalStateException e) {
 			throw e;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LogKit.logNothing(e);
 		}
 	}
-	
+
 	private void initFileRender(ServletContext servletContext) {
 		String downloadPath = constants.getBaseDownloadPath();
 		downloadPath = downloadPath.trim();
 		downloadPath = downloadPath.replaceAll("\\\\", "/");
-		
+
 		String baseDownloadPath;
 		// 如果为绝对路径则直接使用，否则把 downloadPath 参数作为项目根路径的相对路径
 		if (PathKit.isAbsolutelyPath(downloadPath)) {
@@ -152,68 +149,68 @@ public class RenderFactory {
 		} else {
 			baseDownloadPath = PathKit.getWebRootPath() + File.separator + downloadPath;
 		}
-		
+
 		// remove "/" postfix
 		if (baseDownloadPath.equals("/") == false) {
 			if (baseDownloadPath.endsWith("/")) {
 				baseDownloadPath = baseDownloadPath.substring(0, baseDownloadPath.length() - 1);
 			}
 		}
-		
+
 		FileRender.init(baseDownloadPath, servletContext);
 	}
-	
+
 	/**
 	 * Return Render by default ViewType which config in JFinalConfig
 	 */
 	public Render getRender(String view) {
 		return mainRenderFactory.getRender(view);
 	}
-	
+
 	public Render getFreeMarkerRender(String view) {
 		return new FreeMarkerRender(view);
 	}
-	
+
 	public Render getJspRender(String view) {
 		return new JspRender(view);
 	}
-	
+
 	public Render getVelocityRender(String view) {
 		return new VelocityRender(view);
 	}
-	
+
 	public Render getJsonRender() {
 		return new JsonRender();
 	}
-	
+
 	public Render getJsonRender(String key, Object value) {
 		return new JsonRender(key, value);
 	}
-	
+
 	public Render getJsonRender(String[] attrs) {
 		return new JsonRender(attrs);
 	}
-	
+
 	public Render getJsonRender(String jsonText) {
 		return new JsonRender(jsonText);
 	}
-	
+
 	public Render getJsonRender(Object object) {
 		return new JsonRender(object);
 	}
-	
+
 	public Render getTextRender(String text) {
 		return new TextRender(text);
 	}
-	
+
 	public Render getTextRender(String text, String contentType) {
 		return new TextRender(text, contentType);
 	}
-	
+
 	public Render getTextRender(String text, ContentType contentType) {
 		return new TextRender(text, contentType);
 	}
-	
+
 	public Render getDefaultRender(String view) {
 		ViewType viewType = constants.getViewType();
 		if (viewType == ViewType.FREE_MARKER) {
@@ -226,98 +223,107 @@ public class RenderFactory {
 			return mainRenderFactory.getRender(view + mainRenderFactory.getViewExtension());
 		}
 	}
-	
+
 	public Render getErrorRender(int errorCode, String view) {
 		return errorRenderFactory.getRender(errorCode, view);
 	}
-	
+
 	public Render getErrorRender(int errorCode) {
 		return errorRenderFactory.getRender(errorCode, constants.getErrorView(errorCode));
 	}
-	
+
 	public Render getFileRender(String fileName) {
 		return new FileRender(fileName);
 	}
-	
+
+	public Render getFileRender(String fileName, String downloadName) {
+		return new FileRender(fileName, downloadName);
+	}
+
 	public Render getFileRender(File file) {
 		return new FileRender(file);
 	}
-	
+
+	public Render getFileRender(File file, String downloadName) {
+		return new FileRender(file, downloadName);
+	}
+
 	public Render getRedirectRender(String url) {
 		return new RedirectRender(url);
 	}
-	
+
 	public Render getRedirectRender(String url, boolean withQueryString) {
 		return new RedirectRender(url, withQueryString);
 	}
-	
+
 	public Render getRedirect301Render(String url) {
 		return new Redirect301Render(url);
 	}
-	
+
 	public Render getRedirect301Render(String url, boolean withQueryString) {
 		return new Redirect301Render(url, withQueryString);
 	}
-	
+
 	public Render getNullRender() {
 		return new NullRender();
 	}
-	
+
 	public Render getJavascriptRender(String jsText) {
 		return new JavascriptRender(jsText);
 	}
-	
+
 	public Render getHtmlRender(String htmlText) {
 		return new HtmlRender(htmlText);
 	}
-	
+
 	public Render getXmlRender(String view) {
 		return xmlRenderFactory.getRender(view);
 	}
-	
+
 	public Render getCaptchaRender() {
 		return new CaptchaRender();
 	}
-	
+
 	// --------
 	private static final class FreeMarkerRenderFactory implements IMainRenderFactory {
 		public Render getRender(String view) {
 			return new FreeMarkerRender(view);
 		}
+
 		public String getViewExtension() {
 			return ".html";
 		}
 	}
-	
+
 	private static final class JspRenderFactory implements IMainRenderFactory {
 		public Render getRender(String view) {
 			return new JspRender(view);
 		}
+
 		public String getViewExtension() {
 			return ".jsp";
 		}
 	}
-	
+
 	private static final class VelocityRenderFactory implements IMainRenderFactory {
 		public Render getRender(String view) {
 			return new VelocityRender(view);
 		}
+
 		public String getViewExtension() {
 			return ".html";
 		}
 	}
-	
+
 	private static final class ErrorRenderFactory implements IErrorRenderFactory {
 		public Render getRender(int errorCode, String view) {
 			return new ErrorRender(errorCode, view);
 		}
 	}
-	
+
 	private static final class XmlRenderFactory implements IXmlRenderFactory {
 		public Render getRender(String view) {
 			return new XmlRender(view);
 		}
 	}
 }
-
-
