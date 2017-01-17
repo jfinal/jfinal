@@ -51,6 +51,16 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	private long minEvictableIdleTimeMillis = DruidDataSource.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 	// 配置发生错误时多久重连
 	private long timeBetweenConnectErrorMillis = DruidDataSource.DEFAULT_TIME_BETWEEN_CONNECT_ERROR_MILLIS;
+	/**
+	 * <pre>
+	 * 配置了 timeBetweenLogStatsMillis 属性（大于0）之后，就会定时输出统计信息到日志中。
+	 * 每次输出日志会导致清零（reset）连接池相关的计数器。
+	 *
+	 * https://github.com/alibaba/druid/wiki/定时输出统计信息到日志中
+	 *
+	 * </pre>
+	 */
+	private long timeBetweenLogStatsMillis = 0;
 	
 	/**
 	 * hsqldb - "select 1 from INFORMATION_SCHEMA.SYSTEM_USERS"
@@ -141,6 +151,8 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		ds.setMaxWait(maxWait);
 		ds.setTimeBetweenConnectErrorMillis(timeBetweenConnectErrorMillis);
 		ds.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);
+		if (timeBetweenLogStatsMillis > 0)
+			ds.setTimeBetweenLogStatsMillis(timeBetweenLogStatsMillis);
 		ds.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
 		
 		ds.setValidationQuery(validationQuery);
@@ -270,7 +282,11 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	public final void setTimeBetweenConnectErrorMillis(long timeBetweenConnectErrorMillis) {
 		this.timeBetweenConnectErrorMillis = timeBetweenConnectErrorMillis;
 	}
-	
+
+	public final void setTimeBetweenLogStatsMillis(long timeBetweenLogStatsMillis) {
+		this.timeBetweenLogStatsMillis = timeBetweenLogStatsMillis;
+	}
+
 	public final void setRemoveAbandoned(boolean removeAbandoned) {
 		this.removeAbandoned = removeAbandoned;
 	}
