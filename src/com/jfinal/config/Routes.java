@@ -16,16 +16,26 @@
 
 package com.jfinal.config;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import com.jfinal.annotation.Ctrl;
 import com.jfinal.core.Controller;
+import com.jfinal.kit.RoutesLoadKit;
+import com.jfinal.kit.StrKit;
+import com.jfinal.log.Log;
 
 /**
  * Routes.
  */
 public abstract class Routes {
+	
+	private static final Log log = Log.getLog(Routes.class);
 	
 	private static String baseViewPath;
 	
@@ -136,6 +146,75 @@ public abstract class Routes {
 		
 		map = null;
 		viewPathMap = null;
+	}
+	
+	/**
+	 * 读取属性配置，扫描指定jar包里的package和指定classes下的package
+	 * <pre>
+	 *  //配置文件
+	 * autoRoutes.paks = com.jfinal.controller1[,com.jfinal.controller2...]
+	 * </pre>
+	 * 
+	 * <pre>
+	 *  //JfinalConfig
+	 * public void configRoute(Routes me) {
+	 *    String paks = PropKit.get("autoRoutes.paks");
+	 *    me.autoRoutes(paks);
+	 * }
+	 * </pre>
+	 * @param paks
+	 * @param jars
+	 */
+	public void autoRoutes(String paks){
+		List<String> paks_list = new ArrayList<String>();
+		if(StrKit.notBlank(paks)){
+			paks_list = Arrays.asList(paks.split(","));
+		}
+		if(null == paks_list || paks_list.size() <= 0){
+			throw new RuntimeException("配置包路由为空，自动扫描路由，需要指定包路径！【jar包里的包路径一样可以】");
+		}
+		autoRoutes(paks_list);
+	}
+	
+	/**
+	 * <ol>扫描指定jar包，指定package
+	 * <li> 全部classes文件下的指定package下的class文件
+	 * <li> 全部WEB-INF/lib下的指定jar文件
+	 */
+	@SuppressWarnings({"unchecked", "rawtypes"})
+    public void autoRoutes(List<String> paks){
+		//初始化扫描路径
+		RoutesLoadKit.setScanPkgList(paks);
+		// 查询所有继承BaseController的子类
+		Set<Class<?>> controllerClasses = RoutesLoadKit.searchByClassLoader(Controller.class);
+		// 循环处理自动注册映射
+		for (Class controller : controllerClasses) {
+			// 获取注解对象
+			Ctrl controllerBind = (Ctrl) controller.getAnnotation(Ctrl.class);
+			if (controllerBind == null) {
+				log.warn("{}继承了Controller，但是没有注解绑定映射路径!",controller.getName());
+				continue;
+			}
+			// 获取映射路径数组
+			String[] controllerKeys = controllerBind.value();
+			String viewPath = controllerBind.viewPath();
+			for (String controllerKey : controllerKeys) {
+				controllerKey.trim();
+				if (controllerKey.equals("")) {
+					throw new RuntimeException(controller.getName() + "注解错误，映射路径为空");
+				}
+				// 注册映射
+				if(StrKit.notBlank(viewPath)){
+					viewPath = viewPath.trim();
+					if(viewPath.isEmpty()){
+						add(controllerKey, controller, viewPath);
+					}
+				}else{
+					add(controllerKey, controller);
+				}
+				log.error("Controller注册： controller = " + controller + ", " + controllerKey);
+			}
+		}
 	}
 }
 

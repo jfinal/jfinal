@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import com.jfinal.annotation.ActionKey;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.InterceptorManager;
 import com.jfinal.config.Interceptors;
@@ -85,8 +87,12 @@ final class ActionMapping {
 					if ("".equals(actionKey))
 						throw new IllegalArgumentException(controllerClass.getName() + "." + methodName + "(): The argument of ActionKey can not be blank.");
 					
-					if (!actionKey.startsWith(SLASH))
-						actionKey = SLASH + actionKey;
+					if (!actionKey.startsWith(SLASH)){
+						actionKey = controllerKey + SLASH + actionKey;
+						if(ak.withMethod()){
+							actionKey = actionKey + SLASH + methodName;
+						}
+					}
 				}
 				else if (methodName.equals("index")) {
 					actionKey = controllerKey;

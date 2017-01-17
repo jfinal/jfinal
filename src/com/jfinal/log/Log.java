@@ -26,10 +26,10 @@ package com.jfinal.log;
  */
 public abstract class Log {
 	
-	private static ILogFactory defaultLogFactory = null;
+	private static ILogFactory defaultLogFactory = new JdkLogFactory();
 	
 	static {
-		init();
+//		init();
 	}
 	
 	static void init() {
@@ -59,25 +59,66 @@ public abstract class Log {
 		return defaultLogFactory.getLog(name);
 	}
 	
-	public abstract void debug(String message);
+	  public abstract void debug(String message);
+
+	  public abstract void debug(String message, Object arg);
+
+	  public abstract void debug(String message, Object arg1, Object arg2);
+
+	  public abstract void debug(String message, Object... arg);
+
+	  public abstract void debug(String message, Throwable t);
+
+	  public abstract void info(String message);
+
+	  public abstract void info(String message, Object arg);
+
+	  public abstract void info(String message, Object arg1, Object arg2);
+
+	  public abstract void info(String message, Object... arg);
+
+	  public abstract void info(String message, Throwable t);
+
+	  public abstract void warn(String message);
+
+	  public abstract void warn(String message, Object arg);
+
+	  public abstract void warn(String message, Object... arg);
+
+	  public abstract void warn(String message, Object arg1, Object arg2);
+
+	  public abstract void warn(String message, Throwable t);
+
+	  public abstract void error(String message);
+
+	  public abstract void error(String message, Object arg);
+
+	  public abstract void error(String message, Object arg1, Object arg2);
+
+	  public abstract void error(String message, Object... arg);
+
+	  public abstract void error(String message, Throwable t);
+
 	
-	public abstract void debug(String message, Throwable t);
-	
-	public abstract void info(String message);
-	
-	public abstract void info(String message, Throwable t);
-	
-	public abstract void warn(String message);
-	
-	public abstract void warn(String message, Throwable t);
-	
-	public abstract void error(String message);
-	
-	public abstract void error(String message, Throwable t);
-	
-	public abstract void fatal(String message);
-	
-	public abstract void fatal(String message, Throwable t);
+//	public abstract void debug(String message);
+//	
+//	public abstract void debug(String message, Throwable t);
+//	
+//	public abstract void info(String message);
+//	
+//	public abstract void info(String message, Throwable t);
+//	
+//	public abstract void warn(String message);
+//	
+//	public abstract void warn(String message, Throwable t);
+//	
+//	public abstract void error(String message);
+//	
+//	public abstract void error(String message, Throwable t);
+//	
+//	public abstract void fatal(String message);
+//	
+//	public abstract void fatal(String message, Throwable t);
 	
 	public abstract boolean isDebugEnabled();
 

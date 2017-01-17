@@ -44,51 +44,53 @@ public class JdkLog extends Log {
 		return new JdkLog(name);
 	}
 	
-	public void debug(String message) {
-		log.logp(Level.FINE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
-	}
 	
-	public void debug(String message,  Throwable t) {
-		log.logp(Level.FINE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
-	}
 	
-	public void info(String message) {
-		log.logp(Level.INFO, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
-	}
-	
-	public void info(String message, Throwable t) {
-		log.logp(Level.INFO, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
-	}
-	
-	public void warn(String message) {
-		log.logp(Level.WARNING, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
-	}
-	
-	public void warn(String message, Throwable t) {
-		log.logp(Level.WARNING, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
-	}
-	
-	public void error(String message) {
-		log.logp(Level.SEVERE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
-	}
-	
-	public void error(String message, Throwable t) {
-		log.logp(Level.SEVERE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
-	}
-	
-	/**
-	 * JdkLog fatal is the same as the error.
-	 */
-	public void fatal(String message) {
-		log.logp(Level.SEVERE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
-	}
-	
-	/**
-	 * JdkLog fatal is the same as the error.
-	 */
-	public void fatal(String message, Throwable t) {
-		log.logp(Level.SEVERE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
-	}
+//	public void debug(String message) {
+//		log.logp(Level.FINE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
+//	}
+//	
+//	public void debug(String message,  Throwable t) {
+//		log.logp(Level.FINE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
+//	}
+//	
+//	public void info(String message) {
+//		log.logp(Level.INFO, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
+//	}
+//	
+//	public void info(String message, Throwable t) {
+//		log.logp(Level.INFO, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
+//	}
+//	
+//	public void warn(String message) {
+//		log.logp(Level.WARNING, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
+//	}
+//	
+//	public void warn(String message, Throwable t) {
+//		log.logp(Level.WARNING, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
+//	}
+//	
+//	public void error(String message) {
+//		log.logp(Level.SEVERE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
+//	}
+//	
+//	public void error(String message, Throwable t) {
+//		log.logp(Level.SEVERE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
+//	}
+//	
+//	/**
+//	 * JdkLog fatal is the same as the error.
+//	 */
+//	public void fatal(String message) {
+//		log.logp(Level.SEVERE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
+//	}
+//	
+//	/**
+//	 * JdkLog fatal is the same as the error.
+//	 */
+//	public void fatal(String message, Throwable t) {
+//		log.logp(Level.SEVERE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
+//	}
 	
 	public boolean isDebugEnabled() {
 		return log.isLoggable(Level.FINE);
@@ -109,6 +111,162 @@ public class JdkLog extends Log {
 	public boolean isFatalEnabled() {
 		return log.isLoggable(Level.SEVERE);
 	}
+
+	
+    public void debug(String message) {
+		if (isDebugEnabled()) {
+			log.logp(Level.FINE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
+		}
+	}
+
+	
+    public void debug(String message, Object arg) {
+		if (isDebugEnabled()) {
+	      FormattingTuple ft = MessageFormatter.format(message, arg);
+	      log.logp(Level.FINE, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), ft.getMessage(), ft.getThrowable());
+	    }
+    }
+
+	
+    public void debug(String message, Object arg1,
+            Object arg2) {
+		if (isDebugEnabled()) {
+	      FormattingTuple ft = MessageFormatter.format(message, arg1,arg2);
+	      log.logp(Level.FINE, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), ft.getMessage(), ft.getThrowable());
+	    }
+    }
+
+	
+    public void debug(String message, Object... arg) {
+		if (isDebugEnabled()) {
+	      FormattingTuple ft = MessageFormatter.format(message, arg);
+	      log.logp(Level.FINE, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), ft.getMessage(), ft.getThrowable());
+	    }
+    }
+
+	
+    public void debug(String message, Throwable t) {
+		if (isDebugEnabled()) {
+			log.logp(Level.FINE, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
+		}
+	}
+
+	
+    public void info(String message) {
+		if (isInfoEnabled()) {
+			log.logp(Level.INFO, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), message);
+		}
+    }
+
+	
+    public void info(String message, Object arg) {
+		if (isInfoEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message, arg);
+			log.logp(Level.INFO, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void info(String message, Object arg1,
+            Object arg2) {
+		if (isInfoEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message, arg1,arg2);
+			log.logp(Level.INFO, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void info(String message, Object... arg) {
+		if (isInfoEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message,arg);
+			log.logp(Level.INFO, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void info(String message, Throwable t) {
+		if (isInfoEnabled()) {
+			log.logp(Level.INFO, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), message,t);
+		}
+    }
+
+	
+    public void warn(String message) {
+		if (isWarnEnabled()) {
+			log.logp(Level.WARNING, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), message);
+		}
+    }
+
+	
+    public void warn(String message, Object arg) {
+		if (isWarnEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message,arg);
+			log.logp(Level.WARNING, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void warn(String message, Object... arg) {
+		if (isWarnEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message, arg);
+			log.logp(Level.WARNING, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void warn(String message, Object arg1,
+            Object arg2) {
+		if (isWarnEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message, arg1,arg2);
+			log.logp(Level.WARNING, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void warn(String message, Throwable t) {
+		if (isWarnEnabled()) {
+			log.logp(Level.WARNING, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), message,t);
+		}
+    }
+
+	
+    public void error(String message) {
+		if (isErrorEnabled()) {
+			log.logp(Level.SEVERE, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), message);
+		}
+    }
+
+	
+    public void error(String message, Object arg) {
+		if (isErrorEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message,arg);
+			log.logp(Level.SEVERE, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void error(String message, Object arg1,
+            Object arg2) {
+		if (isErrorEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message, arg1,arg2);
+			log.logp(Level.SEVERE, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void error(String message, Object... arg) {
+		if (isErrorEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message, arg);
+			log.logp(Level.SEVERE, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void error(String message, Throwable t) {
+		if (isErrorEnabled()) {
+			log.logp(Level.SEVERE, clazzName,Thread.currentThread().getStackTrace()[1].getMethodName(), message,t);
+		}
+    }
 }
 
 

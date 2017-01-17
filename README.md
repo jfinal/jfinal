@@ -87,4 +87,3 @@ public class BlogInterceptor implements Interceptor {
 ```
 
 **JFinal 官方网站：[http://www.jfinal.com](http://www.jfinal.com)**
-

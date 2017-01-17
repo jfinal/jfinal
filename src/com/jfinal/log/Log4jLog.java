@@ -42,45 +42,45 @@ public class Log4jLog extends Log {
 		return new Log4jLog(name);
 	}
 	
-	public void info(String message) {
-		log.log(callerFQCN, Level.INFO, message, null);
-	}
-	
-	public void info(String message, Throwable t) {
-		log.log(callerFQCN, Level.INFO, message, t);
-	}
-	
-	public void debug(String message) {
-		log.log(callerFQCN, Level.DEBUG, message, null);
-	}
-	
-	public void debug(String message, Throwable t) {
-		log.log(callerFQCN, Level.DEBUG, message, t);
-	}
-	
-	public void warn(String message) {
-		log.log(callerFQCN, Level.WARN, message, null);
-	}
-	
-	public void warn(String message, Throwable t) {
-		log.log(callerFQCN, Level.WARN, message, t);
-	}
-	
-	public void error(String message) {
-		log.log(callerFQCN, Level.ERROR, message, null);
-	}
-	
-	public void error(String message, Throwable t) {
-		log.log(callerFQCN, Level.ERROR, message, t);
-	}
-	
-	public void fatal(String message) {
-		log.log(callerFQCN, Level.FATAL, message, null);
-	}
-	
-	public void fatal(String message, Throwable t) {
-		log.log(callerFQCN, Level.FATAL, message, t);
-	}
+//	public void info(String message) {
+//		log.log(callerFQCN, Level.INFO, message, null);
+//	}
+//	
+//	public void info(String message, Throwable t) {
+//		log.log(callerFQCN, Level.INFO, message, t);
+//	}
+//	
+//	public void debug(String message) {
+//		log.log(callerFQCN, Level.DEBUG, message, null);
+//	}
+//	
+//	public void debug(String message, Throwable t) {
+//		log.log(callerFQCN, Level.DEBUG, message, t);
+//	}
+//	
+//	public void warn(String message) {
+//		log.log(callerFQCN, Level.WARN, message, null);
+//	}
+//	
+//	public void warn(String message, Throwable t) {
+//		log.log(callerFQCN, Level.WARN, message, t);
+//	}
+//	
+//	public void error(String message) {
+//		log.log(callerFQCN, Level.ERROR, message, null);
+//	}
+//	
+//	public void error(String message, Throwable t) {
+//		log.log(callerFQCN, Level.ERROR, message, t);
+//	}
+//	
+//	public void fatal(String message) {
+//		log.log(callerFQCN, Level.FATAL, message, null);
+//	}
+//	
+//	public void fatal(String message, Throwable t) {
+//		log.log(callerFQCN, Level.FATAL, message, t);
+//	}
 	
 	public boolean isDebugEnabled() {
 		return log.isDebugEnabled();
@@ -101,5 +101,160 @@ public class Log4jLog extends Log {
 	public boolean isFatalEnabled() {
 		return log.isEnabledFor(Level.FATAL);
 	}
+	
+    public void debug(String message) {
+		if (isDebugEnabled()) {
+			log.log(callerFQCN, Level.DEBUG,  message,null);
+		}
+	}
+
+	
+    public void debug(String message, Object arg) {
+		if (isDebugEnabled()) {
+	      FormattingTuple ft = MessageFormatter.format(message, arg);
+	      log.log(callerFQCN, Level.DEBUG, ft.getMessage(), ft.getThrowable());
+	    }
+    }
+
+	
+    public void debug(String message, Object arg1,
+            Object arg2) {
+		if (isDebugEnabled()) {
+	      FormattingTuple ft = MessageFormatter.format(message, arg1,arg2);
+	      log.log(callerFQCN, Level.DEBUG, ft.getMessage(), ft.getThrowable());
+	    }
+    }
+
+	
+    public void debug(String message, Object... arg) {
+		if (isDebugEnabled()) {
+	      FormattingTuple ft = MessageFormatter.format(message, arg);
+	      log.log(callerFQCN, Level.DEBUG, ft.getMessage(), ft.getThrowable());
+	    }
+    }
+
+	
+    public void debug(String message, Throwable t) {
+		if (isDebugEnabled()) {
+			log.log(callerFQCN, Level.DEBUG, message, t);
+		}
+	}
+
+	
+    public void info(String message) {
+		if (isInfoEnabled()) {
+			log.log(callerFQCN, Level.INFO, message,null);
+		}
+    }
+
+	
+    public void info(String message, Object arg) {
+		if (isInfoEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message, arg);
+			log.log(callerFQCN, Level.INFO, ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void info(String message, Object arg1,
+            Object arg2) {
+		if (isInfoEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message, arg1,arg2);
+			log.log(callerFQCN, Level.INFO, ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void info(String message, Object... arg) {
+		if (isInfoEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message,arg);
+			log.log(callerFQCN, Level.INFO, ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void info(String message, Throwable t) {
+		if (isInfoEnabled()) {
+			log.log(callerFQCN, Level.INFO, message,t);
+		}
+    }
+
+	
+    public void warn(String message) {
+		if (isWarnEnabled()) {
+			log.log(callerFQCN, Level.WARN, message,null);
+		}
+    }
+
+	
+    public void warn(String message, Object arg) {
+		if (isWarnEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message,arg);
+			log.log(callerFQCN, Level.WARN, ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void warn(String message, Object... arg) {
+		if (isWarnEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message, arg);
+			log.log(callerFQCN, Level.WARN, ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void warn(String message, Object arg1,
+            Object arg2) {
+		if (isWarnEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message, arg1,arg2);
+			log.log(callerFQCN, Level.WARN, ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void warn(String message, Throwable t) {
+		if (isWarnEnabled()) {
+			log.log(callerFQCN, Level.WARN, message,t);
+		}
+    }
+
+	
+    public void error(String message) {
+		if (isErrorEnabled()) {
+			log.log(callerFQCN, Level.ERROR, message,null);
+		}
+    }
+
+	
+    public void error(String message, Object arg) {
+		if (isErrorEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message,arg);
+			log.log(callerFQCN, Level.ERROR, ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void error(String message, Object arg1,
+            Object arg2) {
+		if (isErrorEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message, arg1,arg2);
+			log.log(callerFQCN, Level.ERROR, ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void error(String message, Object... arg) {
+		if (isErrorEnabled()) {
+			FormattingTuple ft = MessageFormatter.format(message, arg);
+			log.log(callerFQCN, Level.ERROR, ft.getMessage(),ft.getThrowable());
+		}
+    }
+
+	
+    public void error(String message, Throwable t) {
+		if (isErrorEnabled()) {
+			log.log(callerFQCN, Level.ERROR, message,t);
+		}
+    }
 }
 
