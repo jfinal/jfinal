@@ -94,7 +94,8 @@ final class ActionHandler extends Handler {
 			
 			if (render == null)
 				render = renderFactory.getDefaultRender(action.getViewPath() + action.getMethodName());
-			render.setContext(request, response, action.getViewPath()).render();
+			if (!response.isCommitted())
+				render.setContext(request, response, action.getViewPath()).render();
 		}
 		catch (RenderException e) {
 			if (log.isErrorEnabled()) {
