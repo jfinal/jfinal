@@ -31,7 +31,7 @@ import com.jfinal.template.stat.Scope;
  * 1：假如 user.getName() 存在，则优先调用
  * 2：假如 user 为 Model 子类，则调用 user.get("name")
  * 3：假如 user 为 Record，则调用 user.get("name")
- * 4：假如 user 为 Map，则调用 user.get("user")
+ * 4：假如 user 为 Map，则调用 user.get("name")
  * 5：假如 user 具有 public name 属性，则取 user.name 属性值
  */
 public class Field extends Expr {
