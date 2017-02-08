@@ -1,27 +1,52 @@
+# maven #
+target
+
+logs
+
+# eclipse #
+.settings
+.project
+.classpath
+.log
+
+# windows #
+Thumbs.db
+
+# Mac #
+.DS_Store
+
 # Package Files #
-*.jar
 *.war
 *.ear
 
+# idea #
+.idea
+*.iml
+
+plan.txt
+
 *.class
+
+# Package Files #
+*.jar
+
+
 *.bak
 *.tmp
 *.log
-
 /bin/
 build.sh
 integration-repo
 /build/
 
 # IDEA metadata and output dirs
-/.idea/
-*.iml
 *.ipr
 *.iws
-out
 
 /webapp/WEB-INF/classes/
+/webapp/WEB-INF/test-classes/
 /webapp/WEB-INF/target/
 
+a_little_config_pro.txt
 
-
+dev_plan.txt

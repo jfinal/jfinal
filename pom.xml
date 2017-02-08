@@ -4,7 +4,7 @@
 	<artifactId>jfinal</artifactId>
 	<packaging>jar</packaging>
 	<name>JFinal</name>
-	<version>2.3-SNAPSHOT</version>
+	<version>3.1-SNAPSHOT</version>
 	<url>http://www.jfinal.com</url>
 	<description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
 	
@@ -158,33 +158,22 @@
 			<scope>provided</scope>
 		</dependency>
 		
+		<dependency>
+			<groupId>it.sauronsoftware.cron4j</groupId>
+			<artifactId>cron4j</artifactId>
+			<version>2.2.5</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.google.zxing</groupId>
+			<artifactId>javase</artifactId>
+			<version>3.2.1</version>
+			<scope>provided</scope>
+		 </dependency>
+		 
 	</dependencies>
 	
 	<build>
-		<sourceDirectory>${project.basedir}/src</sourceDirectory>
-		<testSourceDirectory>${project.basedir}/test</testSourceDirectory>
-
-		<resources>
-			<resource>
-				<directory>${project.basedir}/src</directory>
-				<filtering>false</filtering>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
-		<testResources>
-			<testResource>
-				<directory>${project.basedir}/test</directory>
-				<filtering>false</filtering>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</testResource>
-		</testResources>
-		<!-- directory>${project.basedir}/target</directory -->
-	    <directory>${project.basedir}/webapp/WEB-INF/target</directory><!-- vi -->
-		
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -195,6 +184,22 @@
 					<target>1.6</target>
 				</configuration>
 			</plugin>
+
+<!-- 安装源码到本地仓库 -->
+<!-- plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-source-plugin</artifactId>
+	<version>2.1.2</version>
+	<executions>
+		<execution>
+			<id>attach-sources</id>
+			<phase>verify</phase>
+			<goals>
+				<goal>jar-no-fork</goal>
+			</goals>
+		</execution>
+	</executions>
+</plugin -->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -8,19 +8,20 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 - 遵循COC原则，零配置，无xml
 - 独创Db + Record模式，灵活便利
 - ActiveRecord支持，使数据库开发极致快速
+- 极简、高性能Template Engine，十分钟内掌握基本用法
 - 自动加载修改后的java文件，开发过程中无需重启web server
 - AOP支持，拦截器配置灵活，功能强大
 - Plugin体系结构，扩展性强
 - 多视图支持，支持FreeMarker、JSP、Velocity
 - 强大的Validator后端校验功能
 - 功能齐全，拥有struts2的绝大部分功能
-- 体积小仅218K，且无第三方依赖
+- 体积小仅521K，且无第三方依赖
 
-**JFinal 极速开发QQ群欢迎您的加入: 322076903、432462639**
+**JFinal 极速开发QQ群欢迎您的加入: 540853725、576124753**
 
 #### 以下是JFinal实现Blog管理的示例：
 
-**1. 控制器(支持FreeMarker、JSP、Velocity、JSON等等以及自定义视图渲染)**
+**1. 控制器(支持JFinal Template、JSP、Velocity、JSON等等以及自定义视图渲染)**
 
 ```java
 @Before(BlogInterceptor.class)
@@ -55,7 +56,7 @@ public class BlogController extends Controller {
 
 ```java
 public class Blog extends Model<Blog> {
-    public static final Blog dao = new Blog();
+    public static final Blog dao = new Blog().dao();
 }
 ```
 
@@ -87,4 +88,3 @@ public class BlogInterceptor implements Interceptor {
 ```
 
 **JFinal 官方网站：[http://www.jfinal.com](http://www.jfinal.com)**
-
