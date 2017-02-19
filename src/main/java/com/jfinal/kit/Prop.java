@@ -107,13 +107,15 @@ public class Prop {
 			if (inputStream != null) try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
 		}
 	}
-	
+
 	public String get(String key) {
-		return properties.getProperty(key);
+		String value = properties.getProperty(key);
+		return (value == null) ? value : value.trim();
 	}
 	
 	public String get(String key, String defaultValue) {
-		return properties.getProperty(key, defaultValue);
+		String value = properties.getProperty(key, defaultValue);
+		return (value == null) ? value : value.trim();
 	}
 	
 	public Integer getInt(String key) {
