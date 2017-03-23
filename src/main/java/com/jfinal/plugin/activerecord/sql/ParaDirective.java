@@ -17,15 +17,10 @@
 package com.jfinal.plugin.activerecord.sql;
 
 import java.io.Writer;
-
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
 import com.jfinal.template.TemplateException;
-import com.jfinal.template.expr.ast.Expr;
-import com.jfinal.template.expr.ast.ExprList;
-import com.jfinal.template.expr.ast.Id;
-import com.jfinal.template.stat.ParseException;
 import com.jfinal.template.stat.Scope;
 
 /**
@@ -46,6 +41,7 @@ import com.jfinal.template.stat.Scope;
  */
 public class ParaDirective extends Directive {
 	
+	/*
 	private Id id;
 	
 	public void setExprList(ExprList exprList) {
@@ -58,7 +54,7 @@ public class ParaDirective extends Directive {
 		}
 		
 		this.id = (Id)exprs[0];
-	}
+	}*/
 	
 	public void exec(Env env, Scope scope, Writer writer) {
 		SqlPara sqlPara = (SqlPara)scope.get(SqlKit.SQL_PARA_KEY);
@@ -67,7 +63,7 @@ public class ParaDirective extends Directive {
 		}
 		
 		write(writer, "?");
-		sqlPara.addPara(id.eval(scope));
+		sqlPara.addPara(exprList.eval(scope));
 	}
 }
 
