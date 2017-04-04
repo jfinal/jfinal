@@ -16,6 +16,7 @@
 
 package com.jfinal.template.expr.ast;
 
+import java.lang.reflect.Array;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Record;
@@ -87,6 +88,11 @@ public class Field extends Expr {
 			java.lang.reflect.Field field = FieldKit.getField(key, targetClass, fieldName);
 			if (field != null) {
 				return field.get(target);
+			}
+			
+			// 支持获取数组长度： array.length
+			if ("length".equals(fieldName) && target.getClass().isArray()) {
+				return Array.getLength(target);
 			}
 		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);

@@ -36,6 +36,10 @@ public class Text extends Stat {
 		write(writer, text);
 	}
 	
+	public boolean isEmpty() {
+		return text.length == 0;
+	}
+	
 	public String toString() {
 		return text != null ? new String(text) : "";
 	}

@@ -37,41 +37,34 @@ class TextToken extends Token {
 	}
 	
 	/**
-	 * 如果下一个是指令(输出指令除外)，需要移除该指令前方的空格，直到碰到 '\n'
-	 * 这些空格会影响到指令后面输出的数据，那些数据会额外添加一些空格进来
+	 * 1：当前指令"后方"全是空白字符并且以 '\n' 或 EOF 结尾，当前指令"前方"为 TextToken 时调用此方法
+	 * 2：当前指令本行内前方为空白字符(必须遭遇 '\n')，则删掉前方的空白字符
+	 * 3：当前指令前方全为空白字符(不含 '\n')，表明是两个指令之间全为空白字符的情况，
+	 *   或者两指令不在同一行且第二个指令前方全是空白字符的情况，则删掉这两指令之间的全部空白字符
+	 * 4：返回 true，告知调用方需要吃掉本指令行尾的 '\n'
+	 * 
+	 * 简单描述：
+	 * 1：当前指令独占一行，删除当前指令前方空白字符，并告知调用方吃掉行尾 '\n'
+	 * 2：当前指令前方仍然是指令，两指令之间有空白字符，吃掉前方(即所有)的空白字符，并告知调用方吃掉行尾 '\n'
+	 * 3：情况 2 时，相当于本 TextToken 内容变成了空字符串，后续的 Parser 将过滤掉这类节点
 	 */
-	public void deleteBlankTails_old() {
-		int i = text.length() - 1;
-		for (; i>=0; i--) {
-			if ( !CharTable.isBlank(text.charAt(i)) ) {
-				break ;
-			}
-		}
-		text.delete(i+1, text.length());
-	}
-	
-	/**
-	 * 当下一个指令与当前 TextToken 不在同一行时，返回 true
-	 * 如果下一个是指令(输出指令除外)，需要移除该指令前方的空格，直到碰到 '\n'
-	 * 这些空格会影响到指令后面输出的数据，那些数据会额外添加一些空格进来
-	 */
-	// 在调用这个之前，应该先判断 paraToken 之后是否没有非空字符，如果有的话，不用删除这里
-	// 上面的 old 方法从代码上看，是没有删除最后一个 \n 字符的，这个需要测试
 	public boolean deleteBlankTails() {
 		for (int i = text.length() - 1; i >= 0; i--) {
 			if (CharTable.isBlank(text.charAt(i))) {
 				continue ;
 			}
-			// 新方法这里是最大的不同，只有在碰到 \n 后，才真正去删，就是说如果 text 与后续 token 不在同一行才去删
-			// 无 \n 表示在同一行，则不去删这些东东
-			// Lexer 的事情改完了，再测试这里的新旧两个方法，新方法应该是更合理的，但需要严格测试
+			
 			if (text.charAt(i) == '\n') {
 				text.delete(i+1, text.length());
 				return true;
+			} else {
+				return false;
 			}
-			break ;
 		}
-		return false;
+		
+		// 两个指令之间全是空白字符， 设置其长度为 0，为 Parser 过滤内容为空的 Text 节点做准备
+		text.setLength(0);
+		return true;		// 当两指令之间全为空白字符时，告知调用方需要吃掉行尾的 '\n'
 	}
 	
 	public String value() {

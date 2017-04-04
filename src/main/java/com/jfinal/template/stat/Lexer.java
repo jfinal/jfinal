@@ -300,6 +300,7 @@ class Lexer {
 						}
 					}
 					if (c == EOF) {
+						deletePreviousTextTokenBlankTails();
 						return prepareNextScan(0);
 					}
 				}
@@ -325,8 +326,8 @@ class Lexer {
 				for (char c=next(); true; c=next()) {
 					if (c == '-' && buf[forward + 1] == '-' && buf[forward + 2] == '#') {
 						forward = forward + 3;
-						if (lookForwardLineFeed() && deletePreviousTextTokenBlankTails()) {
-							return prepareNextScan(1);
+						if (lookForwardLineFeedAndEof() && deletePreviousTextTokenBlankTails()) {
+							return prepareNextScan(peek() != EOF ? 1 : 0);
 						} else {
 							return prepareNextScan(0);
 						}
@@ -458,15 +459,15 @@ class Lexer {
 		return prepareNextScan(0);
 	}
 	
-	// 向前看后续是否跟随的是空白 + 换行，是则表示当前指令后续没有其它有用内容
-	boolean lookForwardLineFeed() {
+	// 向前看后续是否跟随的是空白 + 换行或者是空白 + EOF，是则表示当前指令后续没有其它有用内容
+	boolean lookForwardLineFeedAndEof() {
 		int forwardBak = forward;
 		int forwardRowBak = forwardRow;
 		for (char c=peek(); true; c=next()) {
 			if (CharTable.isBlank(c)) {
 				continue ;
 			}
-			if (c == '\n') {
+			if (c == '\n' || c == EOF) {
 				return true;
 			}
 			forward = forwardBak;
@@ -487,8 +488,9 @@ class Lexer {
 		tokens.add(idToken);
 		tokens.add(paraToken);
 		
-		if (lookForwardLineFeed() && (deletePreviousTextTokenBlankTails() || lexemeBegin == 0)) {
-			prepareNextScan(1);
+		// if (lookForwardLineFeed() && (deletePreviousTextTokenBlankTails() || lexemeBegin == 0)) {
+		if (lookForwardLineFeedAndEof() && deletePreviousTextTokenBlankTails()) {
+			prepareNextScan(peek() != EOF ? 1 : 0);
 		} else {
 			prepareNextScan(0);
 		}
@@ -503,8 +505,8 @@ class Lexer {
 			next();	// 无参指令之后紧随的一个空白字符仅为分隔符，不参与后续扫描
 		}
 		
-		if (lookForwardLineFeed() && deletePreviousTextTokenBlankTails()) {
-			prepareNextScan(1);
+		if (lookForwardLineFeedAndEof() && deletePreviousTextTokenBlankTails()) {
+			prepareNextScan(peek() != EOF ? 1 : 0);
 		} else {
 			prepareNextScan(0);
 		}
@@ -512,8 +514,13 @@ class Lexer {
 		return true;
 	}
 	
+	/**
+	 * 1：当前指令前方仍然是指令 (previousTextToken 为 null)，直接返回 true
+	 * 2：当前指令前方为 TextToken 时的处理逻辑与返回值完全依赖于 TextToken.deleteBlankTails()
+	 */
 	boolean deletePreviousTextTokenBlankTails() {
-		return previousTextToken != null ? previousTextToken.deleteBlankTails() : false;
+		// return previousTextToken != null ? previousTextToken.deleteBlankTails() : false;
+		return previousTextToken == null || previousTextToken.deleteBlankTails();
 	}
 }
 

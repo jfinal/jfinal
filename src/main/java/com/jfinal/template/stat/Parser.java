@@ -41,7 +41,7 @@ import com.jfinal.template.stat.ast.StatList;
 import com.jfinal.template.stat.ast.Text;
 
 /**
- * Parser
+ * DLRD (Double Layer Recursive Descent) Parser
  */
 public class Parser {
 	
@@ -106,6 +106,12 @@ public class Parser {
 				env.addFunction((Define)stat);
 				continue ;
 			}
+			
+			// 过滤内容为空的 Text 节点，通常是处于两个指令之间的空白字符被移除以后的结果，详见 TextToken.deleteBlankTails()
+			if (stat instanceof Text && ((Text)stat).isEmpty()) {
+				continue ;
+			}
+			
 			statList.add(stat);
 		}
 		return new StatList(statList);

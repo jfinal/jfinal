@@ -183,6 +183,18 @@ public class Scope {
 	public Ctrl getCtrl() {
 		return ctrl;
 	}
+	
+	public Map getData() {
+		return data;
+	}
+	
+	public Map getRootData() {
+		for (Scope cur=this; true; cur=cur.parent) {
+			if (cur.parent == null) {
+				return cur.data;
+			}
+		}
+	}
 }
 
 
