@@ -81,7 +81,7 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
-			<version>1.0.5</version>
+			<version>1.0.29</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -155,7 +155,7 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>1.2.29</version>
+			<version>1.2.31</version>
 			<scope>provided</scope>
 		</dependency>
 		
