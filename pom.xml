@@ -81,7 +81,13 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
-			<version>1.0.5</version>
+			<version>1.0.29</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.31</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -153,13 +159,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>1.2.29</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<dependency>
 			<groupId>it.sauronsoftware.cron4j</groupId>
 			<artifactId>cron4j</artifactId>
 			<version>2.2.5</version>
@@ -187,7 +186,7 @@
 			</plugin>
 
 <!-- 安装源码到本地仓库 -->
-<!-- plugin>
+<plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-source-plugin</artifactId>
 	<version>2.1.2</version>
@@ -200,7 +199,7 @@
 			</goals>
 		</execution>
 	</executions>
-</plugin -->
+</plugin>
 
 			<!-- plugin>
 				<groupId>org.apache.maven.plugins</groupId>
