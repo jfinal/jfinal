@@ -32,6 +32,7 @@ import com.jfinal.plugin.activerecord.dialect.Dialect;
  */
 public class Generator {
 	
+	protected Dialect dialect = null;
 	protected MetaBuilder metaBuilder;
 	protected BaseModelGenerator baseModelGenerator;
 	protected ModelGenerator modelGenerator;
@@ -133,7 +134,7 @@ public class Generator {
 	 * 设置数据库方言，默认为 MysqlDialect
 	 */
 	public void setDialect(Dialect dialect) {
-		metaBuilder.setDialect(dialect);
+		this.dialect = dialect;
 	}
 	
 	/**
@@ -195,6 +196,15 @@ public class Generator {
 	}
 	
 	/**
+	 * 设置 MappingKit 类名，默认值为: "_MappingKit"
+	 */
+	public void setMappingKitClassName(String mappingKitClassName) {
+		if (this.mappingKitGenerator != null) {
+			this.mappingKitGenerator.setMappingKitClassName(mappingKitClassName);
+		}
+	}
+	
+	/**
 	 * 设置数据字典 DataDictionary 文件输出目录，默认与 modelOutputDir 相同
 	 */
 	public void setDataDictionaryOutputDir(String dataDictionaryOutputDir) {
@@ -213,6 +223,10 @@ public class Generator {
 	}
 	
 	public void generate() {
+		if (dialect != null) {
+			metaBuilder.setDialect(dialect);
+		}
+		
 		long start = System.currentTimeMillis();
 		List<TableMeta> tableMetas = metaBuilder.build();
 		if (tableMetas.size() == 0) {

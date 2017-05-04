@@ -328,7 +328,7 @@ public class DbPro {
 		PreparedStatement pst = conn.prepareStatement(sql);
 		config.dialect.fillStatement(pst, paras);
 		ResultSet rs = pst.executeQuery();
-		List<Record> result = RecordBuilder.build(config, rs);
+		List<Record> result = config.dialect.buildRecordList(config, rs);	// RecordBuilder.build(config, rs);
 		DbKit.close(rs, pst);
 		return result;
 	}
@@ -482,19 +482,53 @@ public class DbPro {
 		return deleteById(tableName, defaultPrimaryKey, record.get(defaultPrimaryKey));
 	}
 	
-	Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
-		return doPaginate(config, conn, pageNumber, pageSize, null, select, sqlExceptSelect, paras);
+	/**
+	 * Paginate.
+	 * @param pageNumber the page number
+	 * @param pageSize the page size
+	 * @param select the select part of the sql statement
+	 * @param sqlExceptSelect the sql statement excluded select part
+	 * @param paras the parameters of sql
+	 * @return the Page object
+	 */
+	public Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+		return doPaginate(pageNumber, pageSize, null, select, sqlExceptSelect, paras);
 	}
 	
-	Page<Record> doPaginate(Config config, Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) throws SQLException {
+	/**
+	 * @see #paginate(String, int, int, String, String, Object...)
+	 */
+	public Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
+		return doPaginate(pageNumber, pageSize, null, select, sqlExceptSelect, NULL_PARA_ARRAY);
+	}
+	
+	public Page<Record> paginate(int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+		return doPaginate(pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
+	}
+	
+	private Page<Record> doPaginate(int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+		Connection conn = null;
+		try {
+			conn = config.getConnection();
+			String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
+			StringBuilder findSql = new StringBuilder();
+			findSql.append(select).append(" ").append(sqlExceptSelect);
+			return doPaginateByFullSql(config, conn, pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			config.close(conn);
+		}
+	}
+	
+	private Page<Record> doPaginateByFullSql(Config config, Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, StringBuilder findSql, Object... paras) throws SQLException {
 		if (pageNumber < 1 || pageSize < 1) {
 			throw new ActiveRecordException("pageNumber and pageSize must more than 0");
 		}
 		if (config.dialect.isTakeOverDbPaginate()) {
-			return config.dialect.takeOverDbPaginate(conn, pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
+			return config.dialect.takeOverDbPaginate(conn, pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
 		}
 		
-		String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
 		List result = query(config, conn, totalRowSql, paras);
 		int size = result.size();
 		if (isGroupBySql == null) {
@@ -521,25 +555,24 @@ public class DbPro {
 		}
 		
 		// --------
-		String sql = config.dialect.forPaginate(pageNumber, pageSize, select, sqlExceptSelect);
+		String sql = config.dialect.forPaginate(pageNumber, pageSize, findSql);
 		List<Record> list = find(config, conn, sql, paras);
 		return new Page<Record>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
-	/**
-	 * Paginate.
-	 * @param pageNumber the page number
-	 * @param pageSize the page size
-	 * @param select the select part of the sql statement
-	 * @param sqlExceptSelect the sql statement excluded select part
-	 * @param paras the parameters of sql
-	 * @return the Page object
-	 */
-	public Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
+	Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
+		String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
+		StringBuilder findSql = new StringBuilder();
+		findSql.append(select).append(" ").append(sqlExceptSelect);
+		return doPaginateByFullSql(config, conn, pageNumber, pageSize, null, totalRowSql, findSql, paras);
+	}
+	
+	private Page<Record> doPaginateByFullSql(int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, String findSql, Object... paras) {
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
-			return paginate(config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
+			StringBuilder findSqlBuf = new StringBuilder().append(findSql);
+			return doPaginateByFullSql(config, conn, pageNumber, pageSize, isGroupBySql, totalRowSql, findSqlBuf, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
@@ -547,23 +580,12 @@ public class DbPro {
 		}
 	}
 	
-	public Page<Record> paginate(int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
-		Connection conn = null;
-		try {
-			conn = config.getConnection();
-			return doPaginate(config, conn, pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			config.close(conn);
-		}
+	public Page<Record> paginateByFullSql(int pageNumber, int pageSize, String totalRowSql, String findSql, Object... paras) {
+		return doPaginateByFullSql(pageNumber, pageSize, null, totalRowSql, findSql, paras);
 	}
 	
-	/**
-	 * @see #paginate(String, int, int, String, String, Object...)
-	 */
-	public Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		return paginate(pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
+	public Page<Record> paginateByFullSql(int pageNumber, int pageSize, boolean isGroupBySql, String totalRowSql, String findSql, Object... paras) {
+		return doPaginateByFullSql(pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
 	}
 	
 	boolean save(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
@@ -834,30 +856,28 @@ public class DbPro {
 	 * @return Page
 	 */
 	public Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
-		ICache cache = config.getCache();
-		Page<Record> result = cache.get(cacheName, key);
-		if (result == null) {
-			result = paginate(pageNumber, pageSize, select, sqlExceptSelect, paras);
-			cache.put(cacheName, key, result);
-		}
-		return result;
-	}
-	
-	public Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
-		ICache cache = config.getCache();
-		Page<Record> result = cache.get(cacheName, key);
-		if (result == null) {
-			result = paginate(pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
-			cache.put(cacheName, key, result);
-		}
-		return result;
+		return doPaginateByCache(cacheName, key, pageNumber, pageSize, null, select, sqlExceptSelect, paras);
 	}
 	
 	/**
 	 * @see #paginateByCache(String, Object, int, int, String, String, Object...)
 	 */
 	public Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		return paginateByCache(cacheName, key, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
+		return doPaginateByCache(cacheName, key, pageNumber, pageSize, null, select, sqlExceptSelect, NULL_PARA_ARRAY);
+	}
+	
+	public Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+		return doPaginateByCache(cacheName, key, pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
+	}
+	
+	private Page<Record> doPaginateByCache(String cacheName, Object key, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+		ICache cache = config.getCache();
+		Page<Record> result = cache.get(cacheName, key);
+		if (result == null) {
+			result = doPaginate(pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
+			cache.put(cacheName, key, result);
+		}
+		return result;
 	}
 	
 	private int[] batch(Config config, Connection conn, String sql, Object[][] paras, int batchSize) throws SQLException {
@@ -1085,17 +1105,27 @@ public class DbPro {
     	
     	Model model = modelList.get(0);
     	Map<String, Object> attrs = model.getAttrs();
-    	String[] attrNames = new String[attrs.entrySet().size()];
     	int index = 0;
+    	StringBuilder columns = new StringBuilder();
     	// the same as the iterator in Dialect.forModelSave() to ensure the order of the attrs
-    	for (Entry<String, Object> e: attrs.entrySet())
-    		attrNames[index++] = e.getKey();
-    	String columns = StrKit.join(attrNames, ",");
+		for (Entry<String, Object> e : attrs.entrySet()) {
+			if (config.dialect.isOracle()) {	// 支持 oracle 自增主键
+				Object value = e.getValue();
+				if (value instanceof String && ((String)value).endsWith(".nextval")) {
+					continue ;
+				}
+			}
+			
+			if (index++ > 0) {
+				columns.append(",");
+			}
+			columns.append(e.getKey());
+		}
     	
     	StringBuilder sql = new StringBuilder();
     	List<Object> parasNoUse = new ArrayList<Object>();
     	config.dialect.forModelSave(TableMapping.me().getTable(model.getClass()), attrs, sql, parasNoUse);
-    	return batch(sql.toString(), columns, modelList, batchSize);
+    	return batch(sql.toString(), columns.toString(), modelList, batchSize);
     }
     
     /**
@@ -1109,18 +1139,28 @@ public class DbPro {
     	
     	Record record = recordList.get(0);
     	Map<String, Object> cols = record.getColumns();
-    	String[] colNames = new String[cols.entrySet().size()];
     	int index = 0;
+    	StringBuilder columns = new StringBuilder();
     	// the same as the iterator in Dialect.forDbSave() to ensure the order of the columns
-    	for (Entry<String, Object> e : cols.entrySet())
-    		colNames[index++] = e.getKey();
-    	String columns = StrKit.join(colNames, ",");
+		for (Entry<String, Object> e : cols.entrySet()) {
+			if (config.dialect.isOracle()) {	// 支持 oracle 自增主键
+				Object value = e.getValue();
+				if (value instanceof String && ((String)value).endsWith(".nextval")) {
+					continue ;
+				}
+			}
+			
+			if (index++ > 0) {
+				columns.append(",");
+			}
+			columns.append(e.getKey());
+		}
     	
     	String[] pKeysNoUse = new String[0];
     	StringBuilder sql = new StringBuilder();
     	List<Object> parasNoUse = new ArrayList<Object>();
     	config.dialect.forDbSave(tableName, pKeysNoUse, record, sql, parasNoUse);
-    	return batch(sql.toString(), columns, recordList, batchSize);
+    	return batch(sql.toString(), columns.toString(), recordList, batchSize);
     }
     
     /**
@@ -1197,16 +1237,8 @@ public class DbPro {
     	return batchUpdate(tableName, config.dialect.getDefaultPrimaryKey(),recordList, batchSize);
     }
     
-    public String getSql(String key, Record record) {
-    	return getSql(key, record.getColumns());
-    }
-    
-    public String getSql(String key, Model model) {
-    	return getSql(key, model.getAttrs());
-    }
-    
-    public String getSql(String key, Map data) {
-    	return config.getSqlKit().getSql(key, data);
+    public String getSql(String key) {
+    	return config.getSqlKit().getSql(key);
     }
     
     public SqlPara getSqlPara(String key, Record record) {
@@ -1221,12 +1253,21 @@ public class DbPro {
     	return config.getSqlKit().getSqlPara(key, data);
     }
     
+    public SqlPara getSqlPara(String key, Object... paras) {
+    	return config.getSqlKit().getSqlPara(key, paras);
+    }
+    
     public List<Record> find(SqlPara sqlPara) {
     	return find(sqlPara.getSql(), sqlPara.getPara());
     }
     
     public Record findFirst(SqlPara sqlPara) {
     	return findFirst(sqlPara.getSql(), sqlPara.getPara());
+    }
+    
+    public Page<Record> paginate(int pageNumber, int pageSize, SqlPara sqlPara) {
+    	String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
+    	return doPaginate(pageNumber, pageSize, null, sqls[0], sqls[1], sqlPara.getPara());
     }
 }
 

@@ -29,8 +29,10 @@ import java.util.Map;
  */
 public class RecordBuilder {
 	
+	public static final RecordBuilder me = new RecordBuilder();
+	
 	@SuppressWarnings("unchecked")
-	public static final List<Record> build(Config config, ResultSet rs) throws SQLException {
+	public List<Record> build(Config config, ResultSet rs) throws SQLException {
 		List<Record> result = new ArrayList<Record>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
@@ -46,11 +48,11 @@ public class RecordBuilder {
 				if (types[i] < Types.BLOB)
 					value = rs.getObject(i);
 				else if (types[i] == Types.CLOB)
-					value = ModelBuilder.handleClob(rs.getClob(i));
+					value = ModelBuilder.me.handleClob(rs.getClob(i));
 				else if (types[i] == Types.NCLOB)
-					value = ModelBuilder.handleClob(rs.getNClob(i));
+					value = ModelBuilder.me.handleClob(rs.getNClob(i));
 				else if (types[i] == Types.BLOB)
-					value = ModelBuilder.handleBlob(rs.getBlob(i));
+					value = ModelBuilder.me.handleBlob(rs.getBlob(i));
 				else
 					value = rs.getObject(i);
 				
@@ -61,7 +63,7 @@ public class RecordBuilder {
 		return result;
 	}
 	
-	private static final void buildLabelNamesAndTypes(ResultSetMetaData rsmd, String[] labelNames, int[] types) throws SQLException {
+	public void buildLabelNamesAndTypes(ResultSetMetaData rsmd, String[] labelNames, int[] types) throws SQLException {
 		for (int i=1; i<labelNames.length; i++) {
 			labelNames[i] = rsmd.getColumnLabel(i);
 			types[i] = rsmd.getColumnType(i);

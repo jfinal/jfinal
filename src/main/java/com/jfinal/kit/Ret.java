@@ -32,6 +32,18 @@ public class Ret extends HashMap {
 	public Ret() {
 	}
 	
+	public static Ret by(Object key, Object value) {
+		return new Ret().set(key, value);
+	}
+	
+	public static Ret create(Object key, Object value) {
+		return new Ret().set(key, value);
+	}
+	
+	public static Ret create() {
+		return new Ret();
+	}
+	
 	public static Ret ok() {
 		return new Ret().setOk();
 	}
@@ -46,14 +58,6 @@ public class Ret extends HashMap {
 	
 	public static Ret fail(Object key, Object value) {
 		return fail().set(key, value);
-	}
-	
-	public static Ret create() {
-		return new Ret();
-	}
-	
-	public static Ret create(Object key, Object value) {
-		return new Ret().set(key, value);
 	}
 	
 	public Ret setOk() {

@@ -45,6 +45,8 @@ public class StaticMethod extends Expr {
 	private void init(String className, String methodName, ExprList exprList, Location location) {
 		try {
 			this.clazz = Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			throw new ParseException("Class not found: " + className, location, e);
 		} catch (Exception e) {
 			throw new ParseException(e.getMessage(), location, e);
 		}
@@ -64,10 +66,10 @@ public class StaticMethod extends Expr {
 		
 		// StaticMethod 是固定的存在，不支持 null safe，null safe 只支持具有动态特征的用法
 		if (methodInfo == null) {
-			throw new TemplateException("Can not found public static method with name " + methodName + " in class " + clazz.getName(), location);
+			throw new TemplateException(Method.buildMethodNotFoundSignature("public static method not found: " + clazz.getName() + "::", methodName, argValues), location);
 		}
 		if (!methodInfo.isStatic()) {
-			throw new TemplateException(clazz.getName() + "." + methodName + " is not public static method", location);
+			throw new TemplateException(Method.buildMethodNotFoundSignature("Not public static method: " + clazz.getName() + "::", methodName, argValues), location);
 		}
 		
 		try {

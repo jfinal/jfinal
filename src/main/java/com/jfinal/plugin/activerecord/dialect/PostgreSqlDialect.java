@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.Table;
 
@@ -193,7 +192,13 @@ public class PostgreSqlDialect extends Dialect {
 			paras.add(ids[i]);
 		}
 	}
-
+	
+	public String forPaginate(int pageNumber, int pageSize, StringBuilder findSql) {
+		int offset = pageSize * (pageNumber - 1);
+		findSql.append(" limit ").append(pageSize).append(" offset ").append(offset);
+		return findSql.toString();
+	}
+	
 	public void fillStatement(PreparedStatement pst, List<Object> paras) throws SQLException {
 		for (int i=0, size=paras.size(); i<size; i++) {
 			Object value = paras.get(i);
@@ -206,7 +211,7 @@ public class PostgreSqlDialect extends Dialect {
 			}
 		}
 	}
-
+	
 	public void fillStatement(PreparedStatement pst, Object... paras) throws SQLException {
 		for (int i=0; i<paras.length; i++) {
 			Object value = paras[i];
@@ -218,13 +223,5 @@ public class PostgreSqlDialect extends Dialect {
 				pst.setObject(i + 1, value);
 			}
 		}
-	}
-
-	public String forPaginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		int offset = pageSize * (pageNumber - 1);
-		StringBuilder ret = new StringBuilder();
-		ret.append(select).append(" ").append(sqlExceptSelect);
-		ret.append(" limit ").append(pageSize).append(" offset ").append(offset);
-		return ret.toString();
 	}
 }

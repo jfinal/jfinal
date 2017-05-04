@@ -57,6 +57,10 @@ public class Field extends Expr {
 			if (scope.getCtrl().isNullSafe()) {
 				return null;
 			}
+			if (expr instanceof Id) {
+				String id = ((Id)expr).getId();
+				throw new TemplateException("\"" + id + "\" can not be null for accessed by \"" + id + "." + fieldName + "\"", location);
+			}
 			throw new TemplateException("Can not accessed by \"" + fieldName + "\" field from null target", location);
 		}
 		
@@ -101,11 +105,12 @@ public class Field extends Expr {
 		if (scope.getCtrl().isNullSafe()) {
 			return null;
 		}
-		throw new TemplateException(
-			"In the class " + targetClass.getName() + " can not find " +
-			getterName + "() method, also can not find \"" + fieldName + "\" field",
-			location
-		);
+		
+		if (expr instanceof Id) {
+			String id = ((Id)expr).getId();
+			throw new TemplateException("Field not found: \"" + id + "." + fieldName + "\" and getter method not found: \"" + id + "." + getterName + "()\"", location);
+		}
+		throw new TemplateException("Field not found: \"" + fieldName + "\" and getter method not found: \"" + getterName + "()\"", location);
 	}
 }
 

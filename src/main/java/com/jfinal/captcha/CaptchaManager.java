@@ -38,14 +38,17 @@ public class CaptchaManager {
 	}
 	
 	public ICaptchaCache getCaptchaCache() {
-		if (captchaCache == null) {
-			synchronized (me) {
-				if (captchaCache == null) {
-					captchaCache = new CaptchaCache();
+		ICaptchaCache cache = captchaCache;
+		if (cache == null) {
+			synchronized (this) {
+				cache = captchaCache;
+				if (cache == null) {
+					cache = new CaptchaCache();
+					captchaCache = cache;
 				}
 			}
 		}
-		return captchaCache;
+		return cache;
 	}
 }
 

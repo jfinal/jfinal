@@ -17,6 +17,7 @@
 package com.jfinal.template.expr.ast;
 
 import java.util.List;
+import com.jfinal.template.TemplateException;
 import com.jfinal.template.stat.Scope;
 
 /**
@@ -44,6 +45,13 @@ public class ExprList extends Expr {
 	
 	public Expr[] getExprArray() {
 		return exprArray;
+	}
+	
+	public Expr getExpr(int index) {
+		if (index < 0 || index >= exprArray.length) {
+			throw new TemplateException("Index out of bounds: index = " + index + ", length = " + exprArray.length, location);
+		}
+		return exprArray[index];
 	}
 	
 	public int length() {

@@ -32,6 +32,11 @@ class TableBuilder {
 	private JavaType javaType = new JavaType();
 	
 	void build(List<Table> tableList, Config config) {
+		// 支持 useAsDataTransfer(...) 中的 arp.start() 正常运作
+		if (config.dataSource instanceof NullDataSource) {
+			return ;
+		}
+		
 		Table temp = null;
 		Connection conn = null;
 		try {

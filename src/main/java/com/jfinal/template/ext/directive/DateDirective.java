@@ -35,7 +35,7 @@ import com.jfinal.template.stat.Scope;
  * 无第二个参数时按默认 patter 输出，第二个参数为 expr 表达式，表示 pattern
  * 第二个为 date 时，表示当第一个为 null 时的默认值
  */
-public class Date extends Directive {
+public class DateDirective extends Directive {
 	
 	private Expr valueExpr;
 	private Expr datePatternExpr;

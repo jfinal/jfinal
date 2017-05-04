@@ -26,7 +26,7 @@ import java.util.List;
 public class SqlPara {
 	
 	String sql;
-	List<Object> paraList = new ArrayList<Object>();
+	List<Object> paraList;
 	
 	public SqlPara setSql(String sql) {
 		this.sql = sql;
@@ -34,6 +34,9 @@ public class SqlPara {
 	}
 	
 	public SqlPara addPara(Object para) {
+		if (paraList == null) {
+			paraList = new ArrayList<Object>();
+		}
 		paraList.add(para);
 		return this;
 	}
@@ -43,7 +46,7 @@ public class SqlPara {
 	}
 	
 	public Object[] getPara() {
-		if (paraList.size() == 0) {
+		if (paraList == null || paraList.size() == 0) {
 			return DbKit.NULL_PARA_ARRAY;
 		} else {
 			return paraList.toArray(new Object[paraList.size()]);
@@ -52,11 +55,13 @@ public class SqlPara {
 	
 	public SqlPara clear() {
 		sql = null;
-		paraList.clear();
+		if (paraList != null) {
+			paraList.clear();
+		}
 		return this;
 	}
 	
 	public String toString() {
-		return "Sql: " + sql + "\nPara: " + paraList.toString();
+		return "Sql: " + sql + "\nPara: " + paraList;
 	}
 }

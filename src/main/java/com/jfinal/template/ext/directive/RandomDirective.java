@@ -24,7 +24,7 @@ import com.jfinal.template.stat.Scope;
 /**
  * 输出随机数
  */
-public class Random extends Directive {
+public class RandomDirective extends Directive {
 	
 	private java.util.Random random = new java.util.Random();
 	

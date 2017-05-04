@@ -38,7 +38,7 @@ import com.jfinal.template.stat.Scope;
  * 使用：
  * #(name)
  */
-public class Str extends Directive {
+public class StringDirective extends Directive {
 	
 	private String name;
 	private boolean isLocalAssignment = false;

@@ -35,11 +35,10 @@ public class Scope {
 	
 	/**
 	 * 构建顶层 Scope， parent 为 null 是顶层 Scope 的标志
+	 * @param data 用于在模板中使用的数据，data 支持 null 值
+	 * @param sharedObjectMap 共享对象
 	 */
 	public Scope(Map data, Map<String, Object> sharedObjectMap) {
-		if (data == null) {
-			throw new IllegalArgumentException("data can not be null.");
-		}
 		this.parent = null;
 		this.ctrl = new Ctrl();
 		this.data = data;
@@ -55,7 +54,12 @@ public class Scope {
 		}
 		this.parent = parent;
 		this.ctrl = parent.ctrl;
+		this.data = null;
 		this.sharedObjectMap = parent.sharedObjectMap;
+	}
+	
+	public Ctrl getCtrl() {
+		return ctrl;
 	}
 	
 	/**
@@ -71,6 +75,9 @@ public class Scope {
 			}
 			
 			if (cur.parent == null) {
+				if (cur.data == null) {			// 支持顶层 data 为 null 值
+					cur.data = new HashMap();
+				}
 				cur.data.put(key, value);
 				return ;
 			}
@@ -169,7 +176,7 @@ public class Scope {
 	}
 	
 	/**
-	 * 获取变量所在的 Map，主要用于 IncDec
+	 * 自内向外在作用域栈中查找变量，获取变量所在的 Map，主要用于 IncDec
 	 */
 	public Map getMapOfValue(Object key) {
 		for (Scope cur=this; cur!=null; cur=cur.parent) {
@@ -180,18 +187,45 @@ public class Scope {
 		return null;
 	}
 	
-	public Ctrl getCtrl() {
-		return ctrl;
-	}
-	
+	/**
+	 * 获取本层作用域 data，可能为 null 值
+	 */
 	public Map getData() {
 		return data;
 	}
 	
+	/**
+	 * 设置/替换本层作用域 data，通常用于在扩展指令中使用现成可用的 Map 来存放数据，
+	 * 从而避免 Scope 内部创建 data，节省时空
+	 * 
+	 * 注意：本方法会替换掉已经存在的 data 对象
+	 */
+	public void setData(Map data) {
+		this.data = data;
+	}
+	
+	/**
+	 * 获取顶层作用域 data，可能为 null 值
+	 */
 	public Map getRootData() {
 		for (Scope cur=this; true; cur=cur.parent) {
 			if (cur.parent == null) {
 				return cur.data;
+			}
+		}
+	}
+	
+	/**
+	 * 设置/替换顶层作用域 data，可以在扩展指令之中通过此方法切换掉顶层作用域
+	 * 实现作用域完全隔离的功能
+	 * 
+	 * 注意：本方法会替换掉顶层已经存在的 data 对象
+	 */
+	public void setRootData(Map data) {
+		for (Scope cur=this; true; cur=cur.parent) {
+			if (cur.parent == null) {
+				cur.data = data;
+				return ;
 			}
 		}
 	}

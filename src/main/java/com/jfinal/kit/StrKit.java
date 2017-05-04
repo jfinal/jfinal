@@ -151,6 +151,10 @@ public class StrKit {
 		return HashKit.slowEquals(aBytes, bBytes);
 	}
 	
+	public static boolean equals(String a, String b) {
+		return a == null ? b == null : a.equals(b);
+	}
+	
 	public static String getRandomUUID() {
 		return java.util.UUID.randomUUID().toString().replace("-", "");
 	}

@@ -131,8 +131,16 @@ public class RenderFactory implements IRenderFactory {
 		return new FileRender(fileName);
 	}
 	
+	public Render getFileRender(String fileName, String downloadFileName) {
+		return new FileRender(fileName, downloadFileName);
+	}
+	
 	public Render getFileRender(File file) {
 		return new FileRender(file);
+	}
+	
+	public Render getFileRender(File file, String downloadFileName) {
+		return new FileRender(file, downloadFileName);
 	}
 	
 	public Render getRedirectRender(String url) {

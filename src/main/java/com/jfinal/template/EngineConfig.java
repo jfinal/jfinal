@@ -16,7 +16,6 @@
 
 package com.jfinal.template;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +26,8 @@ import com.jfinal.core.Const;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.SharedMethodKit;
+import com.jfinal.template.ext.directive.*;
+import com.jfinal.template.ext.sharedmethod.Json;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Define;
@@ -39,8 +40,7 @@ import com.jfinal.template.stat.ast.Stat;
 public class EngineConfig {
 	
 	private Map<String, Define> sharedFunctionMap = new HashMap<String, Define>();
-	private List<SharedFunctionFile> sharedFunctionFiles = new ArrayList<SharedFunctionFile>();	// for devMode only
-	private Map<String, Define> sharedFunctionByString = new HashMap<String, Define>();			// for devMode only
+	private List<IStringSource> sharedFunctionSourceList = new ArrayList<IStringSource>();		// for devMode only
 	
 	Map<String, Object> sharedObjectMap = null;
 	
@@ -56,26 +56,31 @@ public class EngineConfig {
 	
 	public EngineConfig() {
 		// Add official directive of Template Engine
-		addDirective("escape", new com.jfinal.template.ext.directive.Escape());
-		addDirective("date", new com.jfinal.template.ext.directive.Date());
-		addDirective("string", new com.jfinal.template.ext.directive.Str());
-		addDirective("random", new com.jfinal.template.ext.directive.Random());
+		addDirective("render", new RenderDirective());
+		addDirective("date", new DateDirective());
+		addDirective("escape", new EscapeDirective());
+		addDirective("string", new StringDirective());
+		addDirective("random", new RandomDirective());
 		
 		// Add official shared method of Template Engine
-		addSharedMethod(new com.jfinal.template.ext.sharedmethod.Json());
+		addSharedMethod(new Json());
 	}
 	
 	/**
 	 * Add shared function with file
 	 */
-	public synchronized void addSharedFunction(String fileName) {
+	public void addSharedFunction(String fileName) {
 		FileStringSource fileStringSource = new FileStringSource(baseTemplatePath, fileName, encoding);
+		doAddSharedFunction(fileStringSource, fileName);
+	}
+	
+	private synchronized void doAddSharedFunction(IStringSource stringSource, String fileName) {
 		Env env = new Env(this);
-		new Parser(env, fileStringSource.getContent(), fileName).parse();
+		new Parser(env, stringSource.getContent(), fileName).parse();
 		addToSharedFunctionMap(sharedFunctionMap, env);
 		if (devMode) {
-			SharedFunctionFile sff = new SharedFunctionFile(fileName, fileStringSource.getFinalFileName());
-			sharedFunctionFiles.add(sff);
+			sharedFunctionSourceList.add(stringSource);
+			env.addStringSource(stringSource);
 		}
 	}
 	
@@ -91,16 +96,17 @@ public class EngineConfig {
 	/**
 	 * Add shared function by string content
 	 */
-	public synchronized void addSharedFunctionByString(String content) {
+	public void addSharedFunctionByString(String content) {
 		MemoryStringSource memoryStringSource = new MemoryStringSource(content);
-		Env env = new Env(this);
-		new Parser(env, memoryStringSource.getContent(), null).parse();
-		addToSharedFunctionMap(sharedFunctionMap, env);
-		if (devMode) {
-			for (Entry<String, Define> e : env.getFunctionMap().entrySet()) {
-				sharedFunctionByString.put(e.getKey(), e.getValue());
-			}
-		}
+		doAddSharedFunction(memoryStringSource, null);
+	}
+	
+	/**
+	 * Add shared function by IStringSource
+	 */
+	public void addSharedFunction(IStringSource stringSource) {
+		String fileName = stringSource instanceof FileStringSource ? ((FileStringSource)stringSource).getFileName() : null;
+		doAddSharedFunction(stringSource, fileName);
 	}
 	
 	private void addToSharedFunctionMap(Map<String, Define> sharedFunctionMap, Env env) {
@@ -109,7 +115,11 @@ public class EngineConfig {
 			if (sharedFunctionMap.containsKey(e.getKey())) {
 				throw new IllegalArgumentException("Template function already exists : " + e.getKey());
 			}
-			sharedFunctionMap.put(e.getKey(), e.getValue());
+			Define func = e.getValue();
+			if (devMode) {
+				func.setEnvForDevMode(env);
+			}
+			sharedFunctionMap.put(e.getKey(), func);
 		}
 	}
 	
@@ -117,46 +127,56 @@ public class EngineConfig {
 	 * Get shared function by Env
 	 */
 	Define getSharedFunction(String functionName) {
+		Define func = sharedFunctionMap.get(functionName);
+		if (func == null) {
+			/**
+			 * 如果 func 最初未定义，但后续在共享模板文件中又被添加进来
+			 * 此时在本 if 分支中无法被感知，仍然返回了 null
+			 * 
+			 * 但共享模板文件会在后续其它的 func 调用时被感知修改并 reload
+			 * 所以本 if 分支不考虑处理模板文件中追加 #define 的情况
+			 * 
+			 * 如果要处理，只能是每次在 func 为 null 时，判断 sharedFunctionSourceList
+			 * 中的模板是否被修改过，再重新加载，不优雅
+			 */
+			return null;
+		}
+		
 		if (devMode && reloadModifiedSharedFunctionInDevMode) {
-			if (isSharedFunctionFileModified()) {
+			if (func.isSourceModifiedForDevMode()) {
 				synchronized (this) {
-					if (isSharedFunctionFileModified()) {
-						reloadSharedFunctionFiles();
+					func = sharedFunctionMap.get(functionName);
+					if (func.isSourceModifiedForDevMode()) {
+						reloadSharedFunctionSourceList();
+						func = sharedFunctionMap.get(functionName);
 					}
 				}
 			}
 		}
-		return sharedFunctionMap.get(functionName);
-	}
-	
-	private boolean isSharedFunctionFileModified() {
-		for (int i=0, size=sharedFunctionFiles.size(); i<size; i++) {
-			if (sharedFunctionFiles.get(i).isModified()) {
-				return true;
-			}
-		}
-		return false;
+		return func;
 	}
 	
 	/**
-	 * Reload shared function file if modified
+	 * Reload shared function source list
 	 * 
 	 * devMode 要照顾到 sharedFunctionFiles，所以暂不提供
 	 * removeSharedFunction(String functionName) 功能
 	 * 开发者可直接使用模板注释功能将不需要的 function 直接注释掉
 	 */
-	private void reloadSharedFunctionFiles() {
+	private synchronized void reloadSharedFunctionSourceList() {
 		Map<String, Define> newMap = new HashMap<String, Define>();
-		newMap.putAll(sharedFunctionByString);
-		for (int i=0, size=sharedFunctionFiles.size(); i<size; i++) {
-			SharedFunctionFile sff = sharedFunctionFiles.get(i);
-			sff.updateLastModified();
-			FileStringSource fileStringSource = new FileStringSource(baseTemplatePath, sff.fileName, encoding);
+		for (int i = 0, size = sharedFunctionSourceList.size(); i < size; i++) {
+			IStringSource ss = sharedFunctionSourceList.get(i);
+			String fileName = ss instanceof FileStringSource ? ((FileStringSource)ss).getFileName() : null;
+			
 			Env env = new Env(this);
-			new Parser(env, fileStringSource.getContent(), sff.fileName).parse();
+			new Parser(env, ss.getContent(), fileName).parse();
 			addToSharedFunctionMap(newMap, env);
+			if (devMode) {
+				env.addStringSource(ss);
+			}
 		}
-		sharedFunctionMap = newMap;
+		this.sharedFunctionMap = newMap;
 	}
 	
 	public synchronized void addSharedObject(String name, Object object) {
@@ -298,30 +318,6 @@ public class EngineConfig {
 	
 	public SharedMethodKit getSharedMethodKit() {
 		return sharedMethodKit;
-	}
-	
-	private static class SharedFunctionFile {
-		private String fileName;
-		private String finalFileName;
-		private long lastModified;
-		
-		SharedFunctionFile(String fileName, String finalFileName) {
-			this.fileName = fileName;
-			this.finalFileName = finalFileName;
-			this.lastModified = new File(finalFileName).lastModified();
-		}
-		
-		boolean isModified() {
-			return lastModified != new File(finalFileName).lastModified();
-		}
-		
-		void updateLastModified() {
-			this.lastModified = new File(finalFileName).lastModified();
-		}
-		
-		public String toString() {
-			return "finalFileName : " + finalFileName + "\nlastModified : " + lastModified;
-		}
 	}
 }
 

@@ -370,6 +370,14 @@ public class Db {
 		return DbPro.MAIN.paginate(pageNumber, pageSize, select, sqlExceptSelect);
 	}
 	
+	public static Page<Record> paginateByFullSql(int pageNumber, int pageSize, String totalRowSql, String findSql, Object... paras) {
+		return DbPro.MAIN.paginateByFullSql(pageNumber, pageSize, totalRowSql, findSql, paras);
+	}
+	
+	public static Page<Record> paginateByFullSql(int pageNumber, int pageSize, boolean isGroupBySql, String totalRowSql, String findSql, Object... paras) {
+		return DbPro.MAIN.paginateByFullSql(pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
+	}
+	
 	static boolean save(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
 		return DbPro.MAIN.save(config, conn, tableName, primaryKey, record);
 	}
@@ -581,16 +589,8 @@ public class Db {
     	return DbPro.MAIN.batchUpdate(tableName, recordList, batchSize);
     }
     
-    public static String getSql(String key, Record record) {
-    	return DbPro.MAIN.getSql(key, record);
-    }
-    
-    public static String getSql(String key, Model model) {
-    	return DbPro.MAIN.getSql(key, model);
-    }
-    
-    public static String getSql(String key, Map data) {
-    	return DbPro.MAIN.getSql(key, data);
+    public static String getSql(String key) {
+    	return DbPro.MAIN.getSql(key);
     }
     
     public static SqlPara getSqlPara(String key, Record record) {
@@ -605,12 +605,20 @@ public class Db {
     	return DbPro.MAIN.getSqlPara(key, data);
     }
     
+    public static SqlPara getSqlPara(String key, Object... paras) {
+    	return DbPro.MAIN.getSqlPara(key, paras);
+    }
+    
     public static List<Record> find(SqlPara sqlPara) {
     	return DbPro.MAIN.find(sqlPara);
     }
     
     public static Record findFirst(SqlPara sqlPara) {
     	return DbPro.MAIN.findFirst(sqlPara);
+    }
+    
+    public static Page<Record> paginate(int pageNumber, int pageSize, SqlPara sqlPara) {
+    	return DbPro.MAIN.paginate(pageNumber, pageSize, sqlPara);
     }
 }
 

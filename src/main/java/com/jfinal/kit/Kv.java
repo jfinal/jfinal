@@ -21,66 +21,61 @@ import java.util.Map;
 import com.jfinal.json.Json;
 
 /**
- * 建议使用 Kv 代替 JMap，JMap 已被 Deprecated
+ * Kv ---> key value 
+ * Kv 用于取代 JMap，前者输入量少，且输入更顺滑
  * 
- * JMap ---> JFinal Map 
  * 参数或者返回值封装，常用于业务层传参与返回值
  * 
  * Example：
- * 1：JMap para = JMap.create("id", 123);
+ * 1：Kv para = Kv.by("id", 123);
  *    User user = user.findFirst(getSqlPara("find", para));
  * 
- * 2：return JMap.fail("msg", "用户名或密码错误");	// 登录失败返回
- *   return JMap.ok("loginUser", user);			// 登录成功返回
+ * 2：return Kv.fail("msg", "用户名或密码错误");	// 登录失败返回
+ *   return Kv.ok("loginUser", user);			// 登录成功返回
  * 
- * 3：JMap map = loginService.login(...);
- *   renderJson(map);
+ * 3：Kv kv = loginService.login(...);
+ *   renderJson(kv);
  */
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
-@Deprecated
-public class JMap extends HashMap {
+public class Kv extends HashMap {
 
 	private static final String STATUS_OK = "isOk";
 	private static final String STATUS_FAIL = "isFail";
 	
-	public JMap() {
+	public Kv() {
 	}
 	
-	public static JMap by(Object key, Object value) {
-		return new JMap().set(key, value);
+	public static Kv by(Object key, Object value) {
+		return new Kv().set(key, value);
 	}
 	
-	public static JMap create(Object key, Object value) {
-		return new JMap().set(key, value);
+	public static Kv create() {
+		return new Kv();
 	}
 	
-	public static JMap create() {
-		return new JMap();
+	public static Kv ok() {
+		return new Kv().setOk();
 	}
 	
-	public static JMap ok() {
-		return new JMap().setOk();
-	}
-	
-	public static JMap ok(Object key, Object value) {
+	public static Kv ok(Object key, Object value) {
 		return ok().set(key, value);
 	}
 	
-	public static JMap fail() {
-		return new JMap().setFail();
+	public static Kv fail() {
+		return new Kv().setFail();
 	}
 	
-	public static JMap fail(Object key, Object value) {
+	public static Kv fail(Object key, Object value) {
 		return fail().set(key, value);
 	}
 	
-	public JMap setOk() {
+	public Kv setOk() {
 		super.put(STATUS_OK, Boolean.TRUE);
 		super.put(STATUS_FAIL, Boolean.FALSE);
 		return this;
 	}
 	
-	public JMap setFail() {
+	public Kv setFail() {
 		super.put(STATUS_OK, Boolean.FALSE);
 		super.put(STATUS_FAIL, Boolean.TRUE);
 		return this;
@@ -96,22 +91,22 @@ public class JMap extends HashMap {
 		return isFail != null && isFail;
 	}
 	
-	public JMap set(Object key, Object value) {
+	public Kv set(Object key, Object value) {
 		super.put(key, value);
 		return this;
 	}
 	
-	public JMap set(Map map) {
+	public Kv set(Map map) {
 		super.putAll(map);
 		return this;
 	}
 	
-	public JMap set(JMap jMap) {
-		super.putAll(jMap);
+	public Kv set(Kv kv) {
+		super.putAll(kv);
 		return this;
 	}
 	
-	public JMap delete(Object key) {
+	public Kv delete(Object key) {
 		super.remove(key);
 		return this;
 	}
@@ -170,8 +165,8 @@ public class JMap extends HashMap {
 		return Json.getJson().toJson(this);
 	}
 	
-	public boolean equals(Object jMap) {
-		return jMap instanceof JMap && super.equals(jMap);
+	public boolean equals(Object kv) {
+		return kv instanceof Kv && super.equals(kv);
 	}
 }
 

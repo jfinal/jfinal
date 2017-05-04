@@ -52,7 +52,7 @@ public class SharedMethod extends Expr {
 		
 		// ShareMethod 相当于是固定的静态的方法，不支持 null safe，null safe 只支持具有动态特征的用法
 		if (sharedMethodInfo == null) {
-			throw new TemplateException("Shared method not found: " + methodName, location);
+			throw new TemplateException(Method.buildMethodNotFoundSignature("Shared method not found: ", methodName, argValues), location);
 		}
 		try {
 			return sharedMethodInfo.invoke(argValues);

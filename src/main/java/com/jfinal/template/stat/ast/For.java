@@ -120,6 +120,7 @@ public class For extends Stat {
 					ctrl.setJumpNone();
 					continue ;
 				} else {
+					ctrl.setWisdomAssignment();
 					return ;
 				}
 			}
