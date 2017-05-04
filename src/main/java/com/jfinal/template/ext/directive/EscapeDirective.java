@@ -26,7 +26,7 @@ import com.jfinal.template.stat.Scope;
  * 用法:
  * #escape(value)
  */
-public class Escape extends Directive {
+public class EscapeDirective extends Directive {
 	
 	public void exec(Env env, Scope scope, Writer writer) {
 		Object value = exprList.eval(scope);

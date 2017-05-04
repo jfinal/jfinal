@@ -29,7 +29,7 @@ import com.jfinal.template.stat.Scope;
  * 输出当前时间，默认考虑是输出时间，给 pattern 输出可能是 Date、DateTime、Timestamp
  * 带 String 参数，表示 pattern
  */
-public class Now extends Directive {
+public class NowDirective extends Directive {
 	
 	public void setExrpList(ExprList exprList) {
 		if (exprList.length() > 1) {

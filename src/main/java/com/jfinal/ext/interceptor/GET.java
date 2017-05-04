@@ -29,7 +29,7 @@ public class GET implements Interceptor {
 		if ("GET".equalsIgnoreCase(controller.getRequest().getMethod())) {
 			inv.invoke();
 		} else {
-			controller.renderError(404);
+			controller.renderError(405);
 		}
 	}
 }

@@ -1097,10 +1097,24 @@ public abstract class Controller {
 	}
 	
 	/**
+	 * Render with file, using the new file name to the client
+	 */
+	public void renderFile(String fileName, String downloadFileName) {
+		render = renderManager.getRenderFactory().getFileRender(fileName, downloadFileName);
+	}
+	
+	/**
 	 * Render with file
 	 */
 	public void renderFile(File file) {
 		render = renderManager.getRenderFactory().getFileRender(file);
+	}
+	
+	/**
+	 * Render with file, using the new file name to the client
+	 */
+	public void renderFile(File file, String downloadFileName) {
+		render = renderManager.getRenderFactory().getFileRender(file, downloadFileName);
 	}
 	
 	/**

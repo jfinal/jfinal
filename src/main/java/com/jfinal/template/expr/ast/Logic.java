@@ -98,7 +98,7 @@ public class Logic extends Expr {
 	 * 3：Map、Connection(List被包括在内) 返回 size() > 0
 	 * 4：数组，返回 length > 0
 	 * 5：String、StringBuilder、StringBuffer 等继承自 CharSequence 类的对象，返回 length > 0
-	 * 6：Number 类型，返回 intValue() != 0
+	 * 6：Number 类型，返回 value != 0
 	 * 7：Iterator 返回 hasNext() 值
 	 * 8：其它返回 true
 	 */
@@ -122,6 +122,12 @@ public class Logic extends Expr {
 			return ((CharSequence)v).length() > 0;
 		}
 		if (v instanceof Number) {
+			if (v instanceof Double) {
+				return ((Number)v).doubleValue() != 0;
+			}
+			if (v instanceof Float) {
+				return ((Number)v).floatValue() != 0;
+			}
 			return ((Number)v).intValue() != 0;
 		}
 		if (v instanceof Iterator) {

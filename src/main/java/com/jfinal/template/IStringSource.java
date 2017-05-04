@@ -22,6 +22,11 @@ package com.jfinal.template;
 public interface IStringSource {
 	
 	/**
+	 * reload template if modified on devMode
+	 */
+	boolean isModified();
+	
+	/**
 	 * key used to cache
 	 */
 	String getKey();

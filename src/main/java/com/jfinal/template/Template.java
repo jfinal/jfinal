@@ -50,6 +50,15 @@ public class Template {
 	}
 	
 	/**
+	 * 支持无 data 参数，渲染到 Writer 中去 <br>
+	 * 适用于数据在模板中通过表达式和语句直接计算得出等等应用场景<br>
+	 * 此外，其它所有 render 方法也支持传入 null 值 data 参数
+	 */
+	public void render(Writer writer) {
+		ast.exec(env, new Scope(null, env.engineConfig.sharedObjectMap), writer);
+	}
+	
+	/**
 	 * 渲染到 FastStringWriter 中去
 	 */
 	public void render(Map<?, ?> data, FastStringWriter fastStringWriter) {
@@ -72,8 +81,8 @@ public class Template {
 		return renderToStringBuilder(data).toString();
 	}
 	
-	boolean isModified() {
-		return env.isTemplateFileModified();
+	public boolean isModified() {
+		return env.isStringSourceListModified();
 	}
 }
 

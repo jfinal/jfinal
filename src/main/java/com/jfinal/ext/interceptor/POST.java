@@ -26,10 +26,10 @@ import com.jfinal.core.Controller;
 public class POST implements Interceptor {
 	public void intercept(Invocation inv) {
 		Controller controller = inv.getController();
-		if ("POST".equalsIgnoreCase(controller.getRequest().getMethod().toUpperCase())) {
+		if ("POST".equalsIgnoreCase(controller.getRequest().getMethod())) {
 			inv.invoke();
 		} else {
-			controller.renderError(404);
+			controller.renderError(405);
 		}
 	}
 }

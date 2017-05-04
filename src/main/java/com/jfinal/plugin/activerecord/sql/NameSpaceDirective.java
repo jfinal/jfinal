@@ -36,15 +36,19 @@ public class NameSpaceDirective extends Directive {
 	private String nameSpace;
 	
 	public void setExprList(ExprList exprList) {
-		Expr[] exprs = exprList.getExprArray();
-		if (exprs.length == 0 || exprs.length > 1) {
-			throw new ParseException("only one parameter allowed for #namespace directive", location);
+		if (exprList.length() == 0) {
+			throw new ParseException("The parameter of #namespace directive can not be blank", location);
 		}
-		if (!(exprs[0] instanceof Const) || !((Const)exprs[0]).isStr()) {
-			throw new ParseException("the parameter of #namespace directive must be String", location);
+		if (exprList.length() > 1) {
+			throw new ParseException("Only one parameter allowed for #namespace directive", location);
+		}
+		Expr expr = exprList.getExpr(0);
+		if (expr instanceof Const && ((Const)expr).isStr()) {
+		} else {
+			throw new ParseException("The parameter of #namespace directive must be String", location);
 		}
 		
-		this.nameSpace = ((Const)exprs[0]).getStr();
+		this.nameSpace = ((Const)expr).getStr();
 	}
 	
 	public void exec(Env env, Scope scope, Writer writer) {

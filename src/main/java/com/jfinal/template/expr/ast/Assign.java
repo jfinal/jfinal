@@ -101,7 +101,7 @@ public class Assign extends Expr {
 	Object assignElement(Scope scope) {
 		Object target = scope.get(id);
 		if (target == null) {
-			throw new TemplateException("The assigned target can not be null", location);
+			throw new TemplateException("The assigned targets \"" + id + "\" can not be null", location);
 		}
 		Object idx = index.eval(scope);
 		if (idx == null) {

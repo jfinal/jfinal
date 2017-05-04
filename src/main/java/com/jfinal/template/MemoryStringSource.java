@@ -44,6 +44,10 @@ public class MemoryStringSource implements IStringSource {
 		this.key = HashKit.md5(content.toString());
 	}
 	
+	public boolean isModified() {
+		return false;
+	}
+	
 	public String getKey() {
 		return key;
 	}
@@ -54,6 +58,13 @@ public class MemoryStringSource implements IStringSource {
 	
 	public String getEncoding() {
 		return Const.DEFAULT_ENCODING;
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Key : ").append(key).append("\n");
+		sb.append("Content : ").append(content).append("\n");
+		return sb.toString();
 	}
 }
 

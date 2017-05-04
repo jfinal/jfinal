@@ -544,12 +544,13 @@ public class ExprParser {
 		case COMMA:
 		case SEMICOLON:
 		case QUESTION:	// support "c ?? ? a : b"
-		case AND: case OR: case RPAREN: case EQUAL: case NOTEQUAL:	// support "a.b ?? && expr"
+		case AND: case OR: case EQUAL: case NOTEQUAL:	// support "a.b ?? && expr"
+		case RPAREN:	// support "(a.b ??)"
+		case RBRACK:	// support "[start .. end ??]"
+		case RBRACE:	// support "{key : value ??}"
+		case RANGE:		// support "[start ?? .. end]"
 		case EOF:
 			return null;
-		// case RPAREN:
-		case RBRACK:
-		case RBRACE:
 		default :
 			throw new ParseException("Expression error: can not match the symbol \"" + tok.value() + "\"", location);
 		}

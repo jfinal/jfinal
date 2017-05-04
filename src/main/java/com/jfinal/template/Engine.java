@@ -144,10 +144,10 @@ public class Engine {
 	private Template buildTemplateByFileStringSource(String fileName) {
 		FileStringSource fileStringSource = new FileStringSource(config.getBaseTemplatePath(), fileName, config.getEncoding());
 		Env env = new Env(config);
-		if (devMode) {
-			env.addTemplateFinalFileName(fileStringSource.getFinalFileName());
-		}
 		Parser parser = new Parser(env, fileStringSource.getContent(), fileName);
+		if (devMode) {
+			env.addStringSource(fileStringSource);
+		}
 		Stat stat = parser.parse();
 		Template template = new Template(env, stat);
 		return template;
@@ -157,15 +157,16 @@ public class Engine {
 	 * Get template by string content
 	 */
 	public Template getTemplateByString(String content) {
-		if (devMode) {
-			return buildTemplateByStringSource(new MemoryStringSource(content));
-		}
-		
 		String key = HashKit.md5(content);
 		Template template = templateCache.get(key);
 		if (template == null) {
 			template = buildTemplateByStringSource(new MemoryStringSource(content));
 			templateCache.put(key, template);
+		} else if (devMode) {
+			if (template.isModified()) {
+				template = buildTemplateByStringSource(new MemoryStringSource(content));
+				templateCache.put(key, template);
+			}
 		}
 		return template;
 	}
@@ -174,15 +175,16 @@ public class Engine {
 	 * Get template with implementation of IStringSource
 	 */
 	public Template getTemplate(IStringSource stringSource) {
-		if (devMode) {
-			return buildTemplateByStringSource(stringSource);
-		}
-		
 		String key = stringSource.getKey();
 		Template template = templateCache.get(key);
 		if (template == null) {
 			template = buildTemplateByStringSource(stringSource);
 			templateCache.put(key, template);
+		} else if (devMode) {
+			if (template.isModified()) {
+				template = buildTemplateByStringSource(stringSource);
+				templateCache.put(key, template);
+			}
 		}
 		return template;
 	}
@@ -190,6 +192,9 @@ public class Engine {
 	private Template buildTemplateByStringSource(IStringSource stringSource) {
 		Env env = new Env(config);
 		Parser parser = new Parser(env, stringSource.getContent(), null);
+		if (devMode) {
+			env.addStringSource(stringSource);
+		}
 		Stat stat = parser.parse();
 		Template template = new Template(env, stat);
 		return template;
@@ -200,6 +205,14 @@ public class Engine {
 	 */
 	public Engine addSharedFunction(String fileName) {
 		config.addSharedFunction(fileName);
+		return this;
+	}
+	
+	/**
+	 * Add shared function by IStringSource
+	 */
+	public Engine addSharedFunction(IStringSource stringSource) {
+		config.addSharedFunction(stringSource);
 		return this;
 	}
 	
@@ -359,6 +372,13 @@ public class Engine {
 		return config.getEncoding();
 	}
 	
+	/**
+	 * Engine 独立设置为 devMode 可以方便模板文件在修改后立即生效，
+	 * 但如果在 devMode 之下并不希望对 addSharedFunction(...)，
+	 * 添加的模板进行是否被修改的检测可以通过此方法设置 false 参进去
+	 * 
+	 * 注意：Engine 在生产环境下(devMode 为 false)，该参数无效
+	 */
 	public Engine setReloadModifiedSharedFunctionInDevMode(boolean reloadModifiedSharedFunctionInDevMode) {
 		config.setReloadModifiedSharedFunctionInDevMode(reloadModifiedSharedFunctionInDevMode);
 		return this;

@@ -193,7 +193,7 @@ public class AnsiSqlDialect extends Dialect {
 	/**
 	 * SELECT * FROM subject t1 WHERE (SELECT count(*) FROM subject t2 WHERE t2.id < t1.id AND t2.key = '123') > = 10 AND (SELECT count(*) FROM subject t2 WHERE t2.id < t1.id AND t2.key = '123') < 20 AND t1.key = '123'
 	 */
-	public String forPaginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
+	public String forPaginate(int pageNumber, int pageSize, StringBuilder findSql) {
 		throw new ActiveRecordException("Your should not invoke this method because takeOverDbPaginate(...) will take over it.");
 	}
 	
@@ -202,8 +202,8 @@ public class AnsiSqlDialect extends Dialect {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) throws SQLException {
-		String totalRowSql = "select count(*) " + replaceOrderBy(sqlExceptSelect);
+	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, StringBuilder findSql, Object... paras) throws SQLException {
+		// String totalRowSql = "select count(*) " + replaceOrderBy(sqlExceptSelect);
 		List result = CPI.query(conn, totalRowSql, paras);
 		int size = result.size();
 		if (isGroupBySql == null) {
@@ -228,9 +228,9 @@ public class AnsiSqlDialect extends Dialect {
 			return new Page<Record>(new ArrayList<Record>(0), pageNumber, pageSize, totalPage, (int)totalRow);
 		}
 		
-		StringBuilder sql = new StringBuilder();
-		sql.append(select).append(" ").append(sqlExceptSelect);
-		PreparedStatement pst = conn.prepareStatement(sql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+		// StringBuilder sql = new StringBuilder();
+		// sql.append(select).append(" ").append(sqlExceptSelect);
+		PreparedStatement pst = conn.prepareStatement(findSql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 		for (int i=0; i<paras.length; i++) {
 			pst.setObject(i + 1, paras[i]);
 		}
@@ -265,11 +265,11 @@ public class AnsiSqlDialect extends Dialect {
 				if (types[i] < Types.BLOB) {
 					value = rs.getObject(i);
 				} else if (types[i] == Types.CLOB) {
-					value = ModelBuilder.handleClob(rs.getClob(i));
+					value = ModelBuilder.me.handleClob(rs.getClob(i));
 				} else if (types[i] == Types.NCLOB) {
-					value = ModelBuilder.handleClob(rs.getNClob(i));
+					value = ModelBuilder.me.handleClob(rs.getNClob(i));
 				} else if (types[i] == Types.BLOB) {
-					value = ModelBuilder.handleBlob(rs.getBlob(i));
+					value = ModelBuilder.me.handleBlob(rs.getBlob(i));
 				} else {
 					value = rs.getObject(i);
 				}
@@ -292,8 +292,8 @@ public class AnsiSqlDialect extends Dialect {
 	}
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Page<? extends Model> takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) throws Exception {
-		String totalRowSql = "select count(*) " + replaceOrderBy(sqlExceptSelect);
+	public Page<? extends Model> takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, StringBuilder findSql, Object... paras) throws Exception {
+		// String totalRowSql = "select count(*) " + replaceOrderBy(sqlExceptSelect);
 		List result = CPI.query(conn, totalRowSql, paras);
 		int size = result.size();
 		if (isGroupBySql == null) {
@@ -319,9 +319,9 @@ public class AnsiSqlDialect extends Dialect {
 		}
 		
 		// --------
-		StringBuilder sql = new StringBuilder();
-		sql.append(select).append(" ").append(sqlExceptSelect);
-		PreparedStatement pst = conn.prepareStatement(sql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+		// StringBuilder sql = new StringBuilder();
+		// sql.append(select).append(" ").append(sqlExceptSelect);
+		PreparedStatement pst = conn.prepareStatement(findSql.toString(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 		for (int i=0; i<paras.length; i++) {
 			pst.setObject(i + 1, paras[i]);
 		}
@@ -357,11 +357,11 @@ public class AnsiSqlDialect extends Dialect {
 				if (types[i] < Types.BLOB) {
 					value = rs.getObject(i);
 				} else if (types[i] == Types.CLOB) {
-					value = ModelBuilder.handleClob(rs.getClob(i));
+					value = ModelBuilder.me.handleClob(rs.getClob(i));
 				} else if (types[i] == Types.NCLOB) {
-					value = ModelBuilder.handleClob(rs.getNClob(i));
+					value = ModelBuilder.me.handleClob(rs.getNClob(i));
 				} else if (types[i] == Types.BLOB) {
-					value = ModelBuilder.handleBlob(rs.getBlob(i));
+					value = ModelBuilder.me.handleBlob(rs.getBlob(i));
 				} else {
 					value = rs.getObject(i);
 				}

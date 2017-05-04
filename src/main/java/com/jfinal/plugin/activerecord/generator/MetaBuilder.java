@@ -196,7 +196,7 @@ public class MetaBuilder {
 			primaryKey += rs.getString("COLUMN_NAME");
 		}
 		if (StrKit.isBlank(primaryKey)) {
-			throw new RuntimeException("primaryKey required by active record pattern");
+			throw new RuntimeException("primaryKey of table \"" + tableMeta.name + "\" required by active record pattern");
 		}
 		tableMeta.primaryKey = primaryKey;
 		rs.close();

@@ -109,6 +109,11 @@ public class ActiveRecordPlugin implements IPlugin {
 		return this;
 	}
 	
+	public ActiveRecordPlugin addSqlTemplate(com.jfinal.template.IStringSource sqlTemplate) {
+		config.sqlKit.addSqlTemplate(sqlTemplate);
+		return this;
+	}
+	
 	public ActiveRecordPlugin setBaseSqlTemplatePath(String baseSqlTemplatePath) {
 		config.sqlKit.setBaseSqlTemplatePath(baseSqlTemplatePath);
 		return this;
@@ -116,6 +121,10 @@ public class ActiveRecordPlugin implements IPlugin {
 	
 	public SqlKit getSqlKit() {
 		return config.sqlKit;
+	}
+	
+	public com.jfinal.template.Engine getEngine() {
+		return getSqlKit().getEngine();
 	}
 	
 	/**
@@ -204,7 +213,7 @@ public class ActiveRecordPlugin implements IPlugin {
 			throw new RuntimeException("ActiveRecord start error: ActiveRecordPlugin need DataSource or DataSourceProvider");
 		}
 		
-		config.sqlKit.parseTemplate();
+		config.sqlKit.parseSqlTemplate();
 		
 		new TableBuilder().build(tableList, config);
 		DbKit.addConfig(config);

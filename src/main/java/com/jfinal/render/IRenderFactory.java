@@ -65,7 +65,11 @@ public interface IRenderFactory {
 	
 	public Render getFileRender(String fileName);
 	
+	public Render getFileRender(String fileName, String downloadFileName);
+	
 	public Render getFileRender(File file);
+	
+	public Render getFileRender(File file, String downloadFileName);
 	
 	public Render getRedirectRender(String url);
 	

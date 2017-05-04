@@ -53,7 +53,8 @@ public class Captcha {
 		}
 		this.key = key;
 		this.value = value;
-		this.expireAt = expireTime * 1000 + System.currentTimeMillis();
+		long et = expireTime;
+		this.expireAt = et * 1000 + System.currentTimeMillis();
 	}
 	
 	public Captcha(String key, String value) {

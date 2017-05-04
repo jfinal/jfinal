@@ -120,25 +120,28 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @throws ActiveRecordException if the attribute is not exists of the model
 	 */
 	public M set(String attr, Object value) {
-		Table table = getTable();
-		// 用于未启动 ActiveRecordPlugin 场景下使用 Model
-		if (table == null) {
-			attrs.put(attr, value);
-			getModifyFlag().add(attr);
-			return (M)this;
+		Table table = getTable();	// table 为 null 时用于未启动 ActiveRecordPlugin 的场景
+		if (table != null && !table.hasColumnLabel(attr)) {
+			throw new ActiveRecordException("The attribute name does not exist: \"" + attr + "\"");
 		}
-		if (table.hasColumnLabel(attr)) {
-			attrs.put(attr, value);
-			getModifyFlag().add(attr);	// Add modify flag, update() need this flag.
-			return (M)this;
-		}
-		throw new ActiveRecordException("The attribute name does not exist: " + attr);
+		
+		attrs.put(attr, value);
+		getModifyFlag().add(attr);	// Add modify flag, update() need this flag.
+		return (M)this;
 	}
 	
+	// public static transient boolean checkPutKey = true;
 	/**
 	 * Put key value pair to the model without check attribute name.
 	 */
 	public M put(String key, Object value) {
+		/*
+		if (checkPutKey) {
+			Table table = getTable();	// table 为 null 时用于未启动 ActiveRecordPlugin 的场景
+			if (table != null && table.hasColumnLabel(key)) {
+				throw new ActiveRecordException("The key can not be attribute name: \"" + key + "\", using set(String, Object) for attribute value");
+			}
+		}*/
 		attrs.put(key, value);
 		return (M)this;
 	}
@@ -290,16 +293,14 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return the Page object
 	 */
 	public Page<M> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
-		Config config = getConfig();
-		Connection conn = null;
-		try {
-			conn = config.getConnection();
-			return paginate(config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			config.close(conn);
-		}
+		return doPaginate(pageNumber, pageSize, null, select, sqlExceptSelect, paras);
+	}
+	
+	/**
+	 * @see #paginate(int, int, String, String, Object...)
+	 */
+	public Page<M> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
+		return doPaginate(pageNumber, pageSize, null, select, sqlExceptSelect, NULL_PARA_ARRAY);
 	}
 	
 	/**
@@ -310,11 +311,18 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * </pre>
 	 */
 	public Page<M> paginate(int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+		return doPaginate(pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
+	}
+	
+	private Page<M> doPaginate(int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
 		Config config = getConfig();
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
-			return doPaginate(config, conn, pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
+			String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
+			StringBuilder findSql = new StringBuilder();
+			findSql.append(select).append(" ").append(sqlExceptSelect);
+			return doPaginateByFullSql(config, conn, pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
@@ -322,19 +330,14 @@ public abstract class Model<M extends Model> implements Serializable {
 		}
 	}
 	
-	private Page<M> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws Exception {
-		return doPaginate(config, conn, pageNumber, pageSize, null, select, sqlExceptSelect, paras);
-	}
-	
-	private Page<M> doPaginate(Config config, Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) throws Exception {
+	private Page<M> doPaginateByFullSql(Config config, Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, StringBuilder findSql, Object... paras) throws Exception {
 		if (pageNumber < 1 || pageSize < 1) {
 			throw new ActiveRecordException("pageNumber and pageSize must more than 0");
 		}
 		if (config.dialect.isTakeOverModelPaginate()) {
-			return config.dialect.takeOverModelPaginate(conn, getUsefulClass(), pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
+			return config.dialect.takeOverModelPaginate(conn, getUsefulClass(), pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
 		}
 		
-		String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
 		List result = Db.query(config, conn, totalRowSql, paras);
 		int size = result.size();
 		if (isGroupBySql == null) {
@@ -361,16 +364,31 @@ public abstract class Model<M extends Model> implements Serializable {
 		}
 		
 		// --------
-		String sql = config.dialect.forPaginate(pageNumber, pageSize, select, sqlExceptSelect);
+		String sql = config.dialect.forPaginate(pageNumber, pageSize, findSql);
 		List<M> list = find(conn, sql, paras);
 		return new Page<M>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
-	/**
-	 * @see #paginate(int, int, String, String, Object...)
-	 */
-	public Page<M> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		return paginate(pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
+	private Page<M> doPaginateByFullSql(int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, String findSql, Object... paras) {
+		Config config = getConfig();
+		Connection conn = null;
+		try {
+			conn = config.getConnection();
+			StringBuilder findSqlBuf = new StringBuilder().append(findSql);
+			return doPaginateByFullSql(config, conn, pageNumber, pageSize, isGroupBySql, totalRowSql, findSqlBuf, paras);
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			config.close(conn);
+		}
+	}
+	
+	public Page<M> paginateByFullSql(int pageNumber, int pageSize, String totalRowSql, String findSql, Object... paras) {
+		return doPaginateByFullSql(pageNumber, pageSize, null, totalRowSql, findSql, paras);
+	}
+	
+	public Page<M> paginateByFullSql(int pageNumber, int pageSize, boolean isGroupBySql, String totalRowSql, String findSql, Object... paras) {
+		return doPaginateByFullSql(pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
 	}
 	
 	/**
@@ -551,14 +569,10 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	private List<M> find(Connection conn, String sql, Object... paras) throws Exception {
 		Config config = getConfig();
-		Class<? extends Model> modelClass = getUsefulClass();
-		if (config.devMode)
-			checkTableName(modelClass, sql);
-		
 		PreparedStatement pst = conn.prepareStatement(sql);
 		config.dialect.fillStatement(pst, paras);
 		ResultSet rs = pst.executeQuery();
-		List<M> result = ModelBuilder.build(rs, modelClass);
+		List<M> result = config.dialect.buildModelList(rs, getUsefulClass());	// ModelBuilder.build(rs, getUsefulClass());
 		DbKit.close(rs, pst);
 		return result;
 	}
@@ -580,15 +594,6 @@ public abstract class Model<M extends Model> implements Serializable {
 		} finally {
 			config.close(conn);
 		}
-	}
-	
-	/**
-	 * Check the table name. The table name must in sql.
-	 */
-	private void checkTableName(Class<? extends Model> modelClass, String sql) {
-		Table table = TableMapping.me().getTable(modelClass);
-		if (! sql.toLowerCase().contains(table.getName().toLowerCase()))
-			throw new ActiveRecordException("The table name: " + table.getName() + " not in your sql.");
 	}
 	
 	/**
@@ -881,30 +886,28 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return Page
 	 */
 	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
-		ICache cache = getConfig().getCache();
-		Page<M> result = cache.get(cacheName, key);
-		if (result == null) {
-			result = paginate(pageNumber, pageSize, select, sqlExceptSelect, paras);
-			cache.put(cacheName, key, result);
-		}
-		return result;
-	}
-	
-	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
-		ICache cache = getConfig().getCache();
-		Page<M> result = cache.get(cacheName, key);
-		if (result == null) {
-			result = paginate(pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
-			cache.put(cacheName, key, result);
-		}
-		return result;
+		return doPaginateByCache(cacheName, key, pageNumber, pageSize, null, select, sqlExceptSelect, paras);
 	}
 	
 	/**
 	 * @see #paginateByCache(String, Object, int, int, String, String, Object...)
 	 */
 	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
-		return paginateByCache(cacheName, key, pageNumber, pageSize, select, sqlExceptSelect, NULL_PARA_ARRAY);
+		return doPaginateByCache(cacheName, key, pageNumber, pageSize, null, select, sqlExceptSelect, NULL_PARA_ARRAY);
+	}
+	
+	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+		return doPaginateByCache(cacheName, key, pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
+	}
+	
+	private Page<M> doPaginateByCache(String cacheName, Object key, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+		ICache cache = getConfig().getCache();
+		Page<M> result = cache.get(cacheName, key);
+		if (result == null) {
+			result = doPaginate(pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
+			cache.put(cacheName, key, result);
+		}
+		return result;
 	}
 	
 	/**
@@ -943,25 +946,20 @@ public abstract class Model<M extends Model> implements Serializable {
 		
 	}
 	
-	/**
-	 * 可以在模板中利用自身的 属性/字段 参与动态生成 sql，例如：
-	 * select * from user where nickName = #(nickName)
-	 */
 	public String getSql(String key) {
-		return getSql(key, this.attrs);
+		return getConfig().getSqlKit().getSql(key);
 	}
 	
-	public String getSql(String key, Model model) {
-		return getSql(key, model.attrs);
-	}
-	
-	public String getSql(String key, Map data) {
-		return getConfig().getSqlKit().getSql(key, data);
-	}
+	/**
+	 * 可以在模板中利用 Model 自身的属性参与动态生成 sql，例如：
+	 * select * from user where nickName = #(nickName)
+	 * new Account().setNickName("James").getSqlPara(...)
+	 * 
+	 * 注意：由于 dao 对象上的 attrs 不允许读写，不要调用其 getSqlPara(String) 方法
 	
 	public SqlPara getSqlPara(String key) {
 		return getSqlPara(key, this.attrs);
-	}
+	} */
 	
 	public SqlPara getSqlPara(String key, Model model) {
 		return getSqlPara(key, model.attrs);
@@ -971,12 +969,21 @@ public abstract class Model<M extends Model> implements Serializable {
 		return getConfig().getSqlKit().getSqlPara(key, data);
 	}
 	
+	public SqlPara getSqlPara(String key, Object... paras) {
+		return getConfig().getSqlKit().getSqlPara(key, paras);
+	}
+	
 	public List<M> find(SqlPara sqlPara) {
 		return find(sqlPara.getSql(), sqlPara.getPara());
 	}
 	
 	public M findFirst(SqlPara sqlPara) {
 		return findFirst(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public Page<M> paginate(int pageNumber, int pageSize, SqlPara sqlPara) {
+		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
+		return doPaginate(pageNumber, pageSize, null, sqls[0], sqls[1], sqlPara.getPara());
 	}
 }
 

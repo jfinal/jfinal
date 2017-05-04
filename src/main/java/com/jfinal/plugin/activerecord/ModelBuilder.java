@@ -34,8 +34,10 @@ import java.util.Map;
  */
 public class ModelBuilder {
 	
+	public static final ModelBuilder me = new ModelBuilder();
+	
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public static final <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, InstantiationException, IllegalAccessException {
+	public <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, InstantiationException, IllegalAccessException {
 		List<T> result = new ArrayList<T>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
@@ -65,14 +67,14 @@ public class ModelBuilder {
 		return result;
 	}
 	
-	private static final void buildLabelNamesAndTypes(ResultSetMetaData rsmd, String[] labelNames, int[] types) throws SQLException {
+	public void buildLabelNamesAndTypes(ResultSetMetaData rsmd, String[] labelNames, int[] types) throws SQLException {
 		for (int i=1; i<labelNames.length; i++) {
 			labelNames[i] = rsmd.getColumnLabel(i);
 			types[i] = rsmd.getColumnType(i);
 		}
 	}
 	
-	public static byte[] handleBlob(Blob blob) throws SQLException {
+	public byte[] handleBlob(Blob blob) throws SQLException {
 		if (blob == null)
 			return null;
 		
@@ -95,7 +97,7 @@ public class ModelBuilder {
 		}
 	}
 	
-	public static String handleClob(Clob clob) throws SQLException {
+	public String handleClob(Clob clob) throws SQLException {
 		if (clob == null)
 			return null;
 		

@@ -74,7 +74,7 @@ public class Method extends Expr {
 			if (scope.getCtrl().isNullSafe()) {
 				return null;
 			}
-			throw new TemplateException("Method not found \"" + methodName + "\" in class " + target.getClass().getName() + ", or the parameter number and types not matched", location);
+			throw new TemplateException(buildMethodNotFoundSignature("Method not found: " + target.getClass().getName() + ".", methodName, argValues), location);
 		}
 		
 		try {
@@ -82,6 +82,19 @@ public class Method extends Expr {
 		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}
+	}
+	
+	static String buildMethodNotFoundSignature(String preMsg, String methodName, Object[] argValues) {
+		StringBuilder ret = new StringBuilder().append(preMsg).append(methodName).append("(");
+		if (argValues != null) {
+			for (int i = 0; i < argValues.length; i++) {
+				if (i > 0) {
+					ret.append(", ");
+				}
+				ret.append(argValues[i] != null ? argValues[i].getClass().getName() : "null");
+			}
+		}
+		return ret.append(")").toString();
 	}
 	
 	/*

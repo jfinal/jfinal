@@ -19,6 +19,7 @@ package com.jfinal.template.stat.ast;
 import java.io.Writer;
 import java.util.List;
 import com.jfinal.template.Env;
+import com.jfinal.template.TemplateException;
 import com.jfinal.template.stat.Ctrl;
 import com.jfinal.template.stat.Scope;
 
@@ -46,6 +47,17 @@ public class StatList extends Stat {
 			}
 			stat.exec(env, scope, writer);	
 		}
+	}
+	
+	public int length() {
+		return statArray.length;
+	}
+	
+	public Stat getStat(int index) {
+		if (index < 0 || index >= statArray.length) {
+			throw new TemplateException("Index out of bounds: index = " + index + ", length = " + statArray.length, location);
+		}
+		return statArray[index];
 	}
 }
 

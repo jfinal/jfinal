@@ -18,14 +18,18 @@ package com.jfinal.plugin.activerecord.dialect;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-// import java.util.regex.Pattern;
+import java.util.regex.Pattern;
+import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.Model;
+import com.jfinal.plugin.activerecord.ModelBuilder;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
+import com.jfinal.plugin.activerecord.RecordBuilder;
 import com.jfinal.plugin.activerecord.Table;
 
 /**
@@ -35,7 +39,7 @@ public abstract class Dialect {
 	
 	// Methods for common
 	public abstract String forTableBuilderDoBuild(String tableName);
-	public abstract String forPaginate(int pageNumber, int pageSize, String select, String sqlExceptSelect);
+	public abstract String forPaginate(int pageNumber, int pageSize, StringBuilder findSql);
 	
 	// Methods for Model
 	public abstract String forModelFindById(Table table, String columns);
@@ -49,6 +53,29 @@ public abstract class Dialect {
 	public abstract void forDbSave(String tableName, String[] pKeys, Record record, StringBuilder sql, List<Object> paras);
 	public abstract void forDbUpdate(String tableName, String[] pKeys, Object[] ids, Record record, StringBuilder sql, List<Object> paras);
 	
+	/**
+	 * 覆盖此方法，可以对 JDBC 到 java 数据类型进行定制化转换
+	 * 不同数据库从 JDBC 到 java 数据类型的映射关系有所不同
+	 * 
+	 * 此外，还可以通过改变 ModelBuilder.buildLabelNamesAndTypes()
+	 * 方法逻辑，实现下划线字段名转驼峰变量名的功能
+	 */
+	@SuppressWarnings("rawtypes")
+	public <T> List<T> buildModelList(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, InstantiationException, IllegalAccessException {
+		return ModelBuilder.me.build(rs, modelClass);
+	}
+	
+	/**
+	 * 覆盖此方法，可以对 JDBC 到 java 数据类型进行定制化转换
+	 * 不同数据库从 JDBC 到 java 数据类型的映射关系有所不同
+	 * 
+	 * 此外，还可以通过改变 RecordBuilder.buildLabelNamesAndTypes()
+	 * 方法逻辑，实现下划线字段名转驼峰变量名的功能
+	 */
+	public List<Record> buildRecordList(Config config, ResultSet rs) throws SQLException {
+		return RecordBuilder.me.build(config, rs);
+	}
+	
 	public boolean isOracle() {
 		return false;
 	}
@@ -57,7 +84,7 @@ public abstract class Dialect {
 		return false;
 	}
 	
-	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) throws SQLException {
+	public Page<Record> takeOverDbPaginate(Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, StringBuilder findSql, Object... paras) throws SQLException {
 		throw new RuntimeException("You should implements this method in " + getClass().getName());
 	}
 	
@@ -66,7 +93,7 @@ public abstract class Dialect {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public Page takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) throws Exception {
+	public Page takeOverModelPaginate(Connection conn, Class<? extends Model> modelClass, int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, StringBuilder findSql, Object... paras) throws Exception {
 		throw new RuntimeException("You should implements this method in " + getClass().getName());
 	}
 	
@@ -110,17 +137,15 @@ public abstract class Dialect {
 		}
 	}
 	
-	/*
 	protected static class Holder {
 		// "order\\s+by\\s+[^,\\s]+(\\s+asc|\\s+desc)?(\\s*,\\s*[^,\\s]+(\\s+asc|\\s+desc)?)*";
 		private static final Pattern ORDER_BY_PATTERN = Pattern.compile(
 			"order\\s+by\\s+[^,\\s]+(\\s+asc|\\s+desc)?(\\s*,\\s*[^,\\s]+(\\s+asc|\\s+desc)?)*",
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
-	}*/
+	}
 	
 	public String replaceOrderBy(String sql) {
-		// return Holder.ORDER_BY_PATTERN.matcher(sql).replaceAll("");
-		return sql;
+		return Holder.ORDER_BY_PATTERN.matcher(sql).replaceAll("");
 	}
 }
 

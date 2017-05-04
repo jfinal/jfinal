@@ -57,6 +57,16 @@ public class Arith extends Expr {
 	}
 	
 	public Object eval(Scope scope) {
+		try {
+			return doEval(scope);
+		} catch (TemplateException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new TemplateException(e.getMessage(), location, e);
+		}
+	}
+	
+	private Object doEval(Scope scope) {
 		Object leftValue = left.eval(scope);
 		Object rightValue = right.eval(scope);
 		

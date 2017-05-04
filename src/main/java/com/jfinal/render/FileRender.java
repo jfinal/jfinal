@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
@@ -38,12 +40,22 @@ public class FileRender extends Render {
 	private File file;
 	private static String baseDownloadPath;
 	private static ServletContext servletContext;
+	private String downloadFileName = null;
 	
 	public FileRender(File file) {
 		if (file == null) {
 			throw new IllegalArgumentException("file can not be null.");
 		}
 		this.file = file;
+	}
+	
+	public FileRender(File file, String downloadFileName) {
+		this(file);
+		
+		if (StrKit.isBlank(downloadFileName)) {
+			throw new IllegalArgumentException("downloadFileName can not be blank.");
+		}
+		this.downloadFileName = downloadFileName;
 	}
 	
 	public FileRender(String fileName) {
@@ -66,6 +78,15 @@ public class FileRender extends Render {
 		this.file = new File(fullFileName);
 	}
 	
+	public FileRender(String fileName, String downloadFileName) {
+		this(fileName);
+		
+		if (StrKit.isBlank(downloadFileName)) {
+			throw new IllegalArgumentException("downloadFileName can not be blank.");
+		}
+		this.downloadFileName = downloadFileName;
+	}
+	
 	static void init(String baseDownloadPath, ServletContext servletContext) {
 		FileRender.baseDownloadPath = baseDownloadPath;
 		FileRender.servletContext = servletContext;
@@ -79,15 +100,17 @@ public class FileRender extends Render {
 		
 		// ---------
 		response.setHeader("Accept-Ranges", "bytes");
-		response.setHeader("Content-disposition", "attachment; filename=" + encodeFileName(file.getName()));
+		String fn = downloadFileName == null ? file.getName() : downloadFileName;
+		response.setHeader("Content-disposition", "attachment; " + encodeFileName(request, fn));
         String contentType = servletContext.getMimeType(file.getName());
         response.setContentType(contentType != null ? contentType : DEFAULT_CONTENT_TYPE);
         
         // ---------
-        if (StrKit.isBlank(request.getHeader("Range")))
+        if (StrKit.isBlank(request.getHeader("Range"))) {
         	normalRender();
-        else
+        } else {
         	rangeRender();
+        }
 	}
 	
 	protected String encodeFileName(String fileName) {
@@ -96,6 +119,45 @@ public class FileRender extends Render {
 			return new String(fileName.getBytes(getEncoding()), "ISO8859-1");
 		} catch (UnsupportedEncodingException e) {
 			return fileName;
+		}
+	}
+	
+	/**
+	 * 依据浏览器判断编码规则
+	 */
+	public String encodeFileName(HttpServletRequest request, String fileName) {
+		String userAgent = request.getHeader("User-Agent");
+		try {
+			String encodedFileName = URLEncoder.encode(fileName, "UTF8");
+			// 如果没有UA，则默认使用IE的方式进行编码
+			if (userAgent == null) {
+				return "filename=\"" + encodedFileName + "\"";
+			}
+			
+			userAgent = userAgent.toLowerCase();
+			// IE浏览器，只能采用URLEncoder编码
+			if (userAgent.indexOf("msie") != -1) {
+				return "filename=\"" + encodedFileName + "\"";
+			}
+			
+			// Opera浏览器只能采用filename*
+			if (userAgent.indexOf("opera") != -1) {
+				return "filename*=UTF-8''" + encodedFileName;
+			}
+			
+			// Safari浏览器，只能采用ISO编码的中文输出,Chrome浏览器，只能采用MimeUtility编码或ISO编码的中文输出
+			if (userAgent.indexOf("safari") != -1 || userAgent.indexOf("applewebkit") != -1 || userAgent.indexOf("chrome") != -1) {
+				return "filename=\"" + new String(fileName.getBytes("UTF-8"), "ISO8859-1") + "\"";
+			}
+			
+			// FireFox浏览器，可以使用MimeUtility或filename*或ISO编码的中文输出
+			if (userAgent.indexOf("mozilla") != -1) {
+				return "filename*=UTF-8''" + encodedFileName;
+			}
+			
+			return "filename=\"" + encodedFileName + "\"";
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
 		}
 	}
 	

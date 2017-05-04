@@ -16,8 +16,9 @@
 
 package com.jfinal.template;
 
-import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ParseException;
@@ -32,9 +33,11 @@ import com.jfinal.template.stat.ast.Define;
  */
 public class Env {
 	
-	EngineConfig engineConfig;
-	private Map<String, Define> functionMap = new HashMap<String, Define>();
-	private Map<String, TemplateFile> templateFileMap = null;
+	protected EngineConfig engineConfig;
+	protected Map<String, Define> functionMap = new HashMap<String, Define>();
+	
+	// 代替 Template 持有该属性，便于在 #include 指令中调用 Env.addStringSource()
+	protected List<IStringSource> stringSourceList = null;
 	
 	public Env(EngineConfig engineConfig) {
 		this.engineConfig = engineConfig;
@@ -85,53 +88,33 @@ public class Env {
 		return functionMap;
 	}
 	
-	boolean isTemplateFileModified() {
-		if (templateFileMap == null) {
-			return false;
-		}
-		for (TemplateFile fi : templateFileMap.values()) {
-			if (fi.isModified()) {
-				return true;
+	/**
+	 * 本方法用于在 devMode 之下，判断当前 Template 以及其下 #include 指令
+	 * 所涉及的所有 IStringSource 对象是否被修改，以便于在 devMode 下重新加载
+	 * 
+	 * stringSourceList 属性用于存放主模板以及 #include 进来的模板所对应的
+	 * IStringSource 对象
+	 */
+	public boolean isStringSourceListModified() {
+		if (stringSourceList != null) {
+			for (int i = 0, size = stringSourceList.size(); i < size; i++) {
+				if (stringSourceList.get(i).isModified()) {
+					return true;
+				}
 			}
 		}
 		return false;
 	}
 	
-	// For Engine only
-	void addTemplateFinalFileName(String finalFileName) {
-		if (templateFileMap == null) {
-			templateFileMap = new HashMap<String, TemplateFile>();
+	/**
+	 * 添加本 Template 的 IStringSource，以及该 Template 使用 include 包含进来的所有 IStringSource
+	 * 以便于在 devMode 之下判断该 Template 是否被 modified，进而 reload 该 Template
+	 */
+	public void addStringSource(IStringSource stringSource) {
+		if (stringSourceList == null) {
+			stringSourceList = new ArrayList<IStringSource>();
 		}
-		templateFileMap.put(finalFileName, new TemplateFile(finalFileName));
-	}
-	
-	// For Include only
-	public void addTemplateFinalFileName(String finalFileName, String fileName, Location location) {
-		if (templateFileMap == null) {
-			templateFileMap = new HashMap<String, TemplateFile>();
-		} else if (templateFileMap.containsKey(finalFileName)) {
-			// 解决同一文件被同一模板多次 include 以及无限递归 include 问题
-			throw new ParseException("Template file already included: " + fileName, location);
-		}
-		templateFileMap.put(finalFileName, new TemplateFile(finalFileName));
-	}
-	
-	private static class TemplateFile {
-		String finalFileName;
-		long lastModified;
-		
-		TemplateFile(String finalFileName) {
-			this.finalFileName = finalFileName;
-			this.lastModified = new File(finalFileName).lastModified();
-		}
-		
-		boolean isModified() {
-			File file = new File(finalFileName);
-			if (!file.exists()) {
-				return true;		// 文件可能被删和改名
-			}
-			return lastModified != file.lastModified();
-		}
+		stringSourceList.add(stringSource);
 	}
 }
 

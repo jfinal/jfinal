@@ -30,11 +30,14 @@ import com.jfinal.plugin.activerecord.IDataSourceProvider;
  * DruidPlugin.
  */
 public class DruidPlugin implements IPlugin, IDataSourceProvider {
+	//连接池的名称
+	private String name = null;
 	
 	// 基本属性 url、user、password
 	private String url;
 	private String username;
 	private String password;
+	private String publicKey;
 	private String driverClass = null;	// 由 "com.mysql.jdbc.Driver" 改为 null 让 druid 自动探测 driverClass 值
 	
 	// 初始连接池大小、最小空闲连接数、最大活跃连接数
@@ -59,6 +62,8 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	 * mysql - "select 1"
 	 */
 	private String validationQuery = "select 1";
+	private String  connectionInitSql = null;
+	private String connectionProperties = null;
 	private boolean testWhileIdle = true;
 	private boolean testOnBorrow = false;
 	private boolean testOnReturn = false;
@@ -87,6 +92,7 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		this.url = url;
 		this.username = username;
 		this.password = password;
+		this.validationQuery = autoCheckValidationQuery(url);
 	}
 	
 	public DruidPlugin(String url, String username, String password, String driverClass) {
@@ -94,6 +100,7 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		this.username = username;
 		this.password = password;
 		this.driverClass = driverClass;
+		this.validationQuery = autoCheckValidationQuery(url);
 	}
 	
 	public DruidPlugin(String url, String username, String password, String driverClass, String filters) {
@@ -102,8 +109,50 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		this.password = password;
 		this.driverClass = driverClass;
 		this.filters = filters;
+		this.validationQuery = autoCheckValidationQuery(url);
 	}
 	
+	/**
+	 * @Title: autoCheckValidationQuery  
+	 * @Description: 自动设定探测sql 
+	 * @param url
+	 * @return 
+	 * @since V1.0.0
+	 */
+	private static String  autoCheckValidationQuery(String url){
+		if(url.startsWith("jdbc:oracle")){
+			return "select 1 from dual";
+		}else if(url.startsWith("jdbc:db2")){
+			return "select 1 from sysibm.sysdummy1";
+		}else if(url.startsWith("jdbc:hsqldb")){
+			return "select 1 from INFORMATION_SCHEMA.SYSTEM_USERS";
+		}else if(url.startsWith("jdbc:derby")){
+			return "select 1 from INFORMATION_SCHEMA.SYSTEM_USERS";
+		}
+		return "select 1";
+	}
+	
+	/**
+	 * 添加连接时的初始化sql。可以添加多次，在初次连接时使用，比如指定编码或者默认scheme等
+	 * @param sql
+	 */
+	public void setConnectionInitSql(String sql){
+		this.connectionInitSql = sql;
+	}
+	
+	public final String getName() {
+		return name;
+	}
+
+	/**
+	 * 连接池名称
+	 *
+	 * @param name
+	 */
+	public final void setName(String name) {
+		this.name = name;
+	}
+
 	/**
 	 * 设置过滤器，如果要开启监控统计需要使用此方法或在构造方法中进行设置
 	 * <p>
@@ -129,7 +178,9 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 			return true;
 		
 		ds = new DruidDataSource();
-		
+		if(this.name != null){
+			ds.setName(this.name);
+		}
 		ds.setUrl(url);
 		ds.setUsername(username);
 		ds.setPassword(password);
@@ -144,6 +195,11 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		ds.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
 		
 		ds.setValidationQuery(validationQuery);
+		if(StrKit.notBlank(connectionInitSql)){
+			List<String> connectionInitSqls = new ArrayList<String>();
+			connectionInitSqls.add(this.connectionInitSql);
+			ds.setConnectionInitSqls(connectionInitSqls);
+		}
 		ds.setTestWhileIdle(testWhileIdle);
 		ds.setTestOnBorrow(testOnBorrow);
 		ds.setTestOnReturn(testOnReturn);
@@ -155,9 +211,32 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		//只要maxPoolPreparedStatementPerConnectionSize>0,poolPreparedStatements就会被自动设定为true，参照druid的源码
 		ds.setMaxPoolPreparedStatementPerConnectionSize(maxPoolPreparedStatementPerConnectionSize);
 		
-		if (StrKit.notBlank(filters))
-			try {ds.setFilters(filters);} catch (SQLException e) {throw new RuntimeException(e);}
-		
+		boolean hasSetConnectionProperties = false;
+		if (StrKit.notBlank(filters)){
+			try {
+				ds.setFilters(filters);
+				//支持加解密数据库
+				if(filters.contains("config")){
+					//判断是否设定了公钥
+					if(StrKit.isBlank(this.publicKey)){
+						throw new RuntimeException("Druid连接池的filter设定了config时，必须设定publicKey");
+					}
+					String decryptStr = "config.decrypt=true;config.decrypt.key="+this.publicKey;
+					String cp = this.connectionProperties;
+					if(StrKit.isBlank(cp)){
+						cp = decryptStr;
+					}else{
+						cp = cp + ";" + decryptStr;
+					}
+					ds.setConnectionProperties(cp);
+					hasSetConnectionProperties = true;
+				}
+			} catch (SQLException e) {throw new RuntimeException(e);}
+		}
+		//确保setConnectionProperties被调用过一次
+		if(!hasSetConnectionProperties && StrKit.notBlank(this.connectionProperties)){
+			ds.setConnectionProperties(this.connectionProperties);
+		}
 		addFilterList(ds);
 		
 		isStarted = true;
@@ -267,19 +346,33 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		return this;
 	}
 	
-	public final void setTimeBetweenConnectErrorMillis(long timeBetweenConnectErrorMillis) {
+	public final DruidPlugin setTimeBetweenConnectErrorMillis(long timeBetweenConnectErrorMillis) {
 		this.timeBetweenConnectErrorMillis = timeBetweenConnectErrorMillis;
+		return this;
 	}
 	
-	public final void setRemoveAbandoned(boolean removeAbandoned) {
+	public final DruidPlugin setRemoveAbandoned(boolean removeAbandoned) {
 		this.removeAbandoned = removeAbandoned;
+		return this;
 	}
 	
-	public final void setRemoveAbandonedTimeoutMillis(long removeAbandonedTimeoutMillis) {
+	public final DruidPlugin setRemoveAbandonedTimeoutMillis(long removeAbandonedTimeoutMillis) {
 		this.removeAbandonedTimeoutMillis = removeAbandonedTimeoutMillis;
+		return this;
 	}
 	
-	public final void setLogAbandoned(boolean logAbandoned) {
+	public final DruidPlugin setLogAbandoned(boolean logAbandoned) {
 		this.logAbandoned = logAbandoned;
+		return this;
+	}
+
+	public final DruidPlugin setConnectionProperties(String connectionProperties) {
+		this.connectionProperties = connectionProperties;
+		return this;
+	}
+
+	public final DruidPlugin setPublicKey(String publicKey) {
+		this.publicKey = publicKey;
+		return this;
 	}
 }

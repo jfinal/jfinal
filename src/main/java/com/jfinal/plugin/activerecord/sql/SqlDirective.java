@@ -17,6 +17,7 @@
 package com.jfinal.plugin.activerecord.sql;
 
 import java.io.Writer;
+import java.util.Map;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
@@ -35,39 +36,37 @@ public class SqlDirective extends Directive {
 	private String id;
 	
 	public void setExprList(ExprList exprList) {
-		Expr[] exprs = exprList.getExprArray();
-		if (exprs.length == 0 || exprs.length > 1) {
-			throw new ParseException("only one parameter allowed for #sql directive", location);
+		if (exprList.length() == 0) {
+			throw new ParseException("The parameter of #sql directive can not be blank", location);
 		}
-		if (!(exprs[0] instanceof Const) || !((Const)exprs[0]).isStr()) {
-			throw new ParseException("the parameter of #sql directive must be String", location);
+		if (exprList.length() > 1) {
+			throw new ParseException("Only one parameter allowed for #sql directive", location);
+		}
+		Expr expr = exprList.getExpr(0);
+		if (expr instanceof Const && ((Const)expr).isStr()) {
+		} else {
+			throw new ParseException("The parameter of #sql directive must be String", location);
 		}
 		
-		this.id = ((Const)exprs[0]).getStr();
+		this.id = ((Const)expr).getStr();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void exec(Env env, Scope scope, Writer writer) {
 		String nameSpace = (String)scope.get(NameSpaceDirective.NAME_SPACE_KEY);
-		String key = StrKit.notBlank(nameSpace) ? nameSpace + "." + id : id;
-		SqlKit sqlKit = (SqlKit)scope.get(SqlKit.SQL_KIT_KEY);
-		try {
-			sqlKit.put(key, new Template(env, stat));
-		} catch (Exception e) {
-			throw new ParseException(e.getMessage(), location);
+		String key = StrKit.isBlank(nameSpace) ? id : nameSpace + "." + id;
+		Map<String, Template> sqlTemplateMap = (Map<String, Template>)scope.get(SqlKit.SQL_TEMPLATE_MAP_KEY);
+		if (sqlTemplateMap.containsKey(key)) {
+			throw new ParseException("Sql already exists with key : " + key, location);
 		}
+		
+		sqlTemplateMap.put(key, new Template(env, stat));
 	}
 	
 	public boolean hasEnd() {
 		return true;
 	}
 }
-
-
-
-
-
-
-
 
 
 

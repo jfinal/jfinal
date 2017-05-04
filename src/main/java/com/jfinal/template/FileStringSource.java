@@ -32,6 +32,8 @@ public class FileStringSource implements IStringSource {
 	private String fileName;
 	private String encoding;
 	
+	private long lastModified;
+	
 	public FileStringSource(String baseTemplatePath, String fileName, String encoding) {
 		this.finalFileName = buildFinalFileName(baseTemplatePath, fileName);
 		this.fileName = fileName;
@@ -42,12 +44,12 @@ public class FileStringSource implements IStringSource {
 		this(baseTemplatePath, fileName, Const.DEFAULT_ENCODING);
 	}
 	
-	public String getKey() {
-		return fileName;
+	public boolean isModified() {
+		return lastModified != new File(finalFileName).lastModified();
 	}
 	
-	public StringBuilder getContent() {
-		return loadFile(finalFileName, encoding);
+	public String getKey() {
+		return fileName;
 	}
 	
 	public String getEncoding() {
@@ -56,6 +58,22 @@ public class FileStringSource implements IStringSource {
 	
 	public String getFinalFileName() {
 		return finalFileName;
+	}
+	
+	public String getFileName() {
+		return fileName;
+	}
+	
+	public StringBuilder getContent() {
+		File file = new File(finalFileName);
+		if (!file.exists()) {
+			throw new RuntimeException("File not found : " + finalFileName);
+		}
+		
+		// 极为重要，否则在模板文件被修改后会不断 reload 模板文件
+		this.lastModified = file.lastModified();
+		
+		return loadFile(file, encoding);
 	}
 	
 	private String buildFinalFileName(String baseTemplatePath, String fileName) {
@@ -69,12 +87,7 @@ public class FileStringSource implements IStringSource {
 		return finalFileName;
 	}
 	
-	public static StringBuilder loadFile(String fileName, String encoding) {
-		File file = new File(fileName);
-		if (!file.exists()) {
-			throw new RuntimeException("File not found : " + fileName);
-		}
-		
+	public static StringBuilder loadFile(File file, String encoding) {
 		StringBuilder ret = new StringBuilder((int)file.length() + 3);
 		BufferedReader br = null;
 		try {
@@ -103,6 +116,14 @@ public class FileStringSource implements IStringSource {
 				}
 			}
 		}
+	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("File name: ").append(fileName).append("\n");
+		sb.append("Final file name: ").append(finalFileName).append("\n");
+		sb.append("Last modified: ").append(lastModified).append("\n");
+		return sb.toString();
 	}
 }
 
