@@ -1,16 +1,17 @@
 /**
- * Copyright (C) 2015 wellbole
- * @Package com.jfinal.plugin.hikaricp  
- * @Title: HikaricpPlugin.java  
- * @Description: Hikaricp(A high-performance JDBC connection pool) JFinal plugin.
- * @author 李飞 (lifei@wellbole.com)    
- * @date 2015年8月9日  上午10:04:06  
- * @since V1.0.0 
+ * Copyright (c) 2011-2017, myaniu 玛雅牛 (myaniu@gmail.com).
  *
- * Modification History:
- * Date         Author      Version     Description
- * -------------------------------------------------------------
- * 2015年8月9日      李飞                       V1.0.0        新建文件   
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.jfinal.plugin.hikaricp;
 
@@ -22,96 +23,129 @@ import com.jfinal.plugin.activerecord.IDataSourceProvider;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-/**  
+/** 
+ * Fast, simple, reliable. HikariCP is a "zero-overhead" production ready JDBC connection pool. 
+ * At roughly 130Kb, the library is very light 
  * @ClassName: HikaricpPlugin  
- * @Description:Hikaricp(A high-performance JDBC connection pool) JFinal plugin. 
- * @author 李飞 (lifei@wellbole.com)   
- * @date 2015年8月9日 上午10:04:06
- * @since V1.0.0  
  */
 public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	/**
-	 * 驱动类名
-	 */
-	private String driverClass;
-	
-	/**
 	 * jdbc Url
 	 */
-	private String url;
+	private String jdbcUrl;
 	
 	/**
-	 * 用户名
+	 * username
 	 */
 	private String username;
 	
 	/**
-	 * 密码
+	 * password
 	 */
 	private String password;
 	
 	/**
-	 * 控制自动提交行为，默认：true
+	 * default auto-commit behavior of connections returned from the pool
+	 * Default：true
 	 */
 	private boolean autoCommit = true;
 	
 	/**
-	 * 只读连接，默认：false
-	 */
-	private boolean readOnly = false;
-	
-	/**
-	 * 连接超时时间(单位毫秒) 默认：30秒
+	 * the maximum number of milliseconds that a client (that's you) 
+	 * will wait for a connection from the pool 
+	 * Default: 30000 (30 seconds)
 	 */
 	private long connectionTimeout = 30000;
 	
 	/**
-	 * 空闲超时时间(单位毫秒) 默认：10分钟
+	 * the maximum amount of time that a connection is allowed to sit idle in the pool
+	 * Default: 600000 (10 minutes)
 	 */
 	private long idleTimeout = 600000;
 	
 	/**
-	 * 一个连接的最大生命周期/最大存活时间(单位毫秒)，强烈建议设定此值 默认：30分钟
+	 * the maximum lifetime of a connection in the pool
+	 * Default: 1800000 (30 minutes)
 	 */
 	private long maxLifetime = 1800000;
 	
 	/**
-	 * 连接池最大连接数
-	 */
-	private int maximumPoolSize = 10;
-	
-	/**
-	 * 连接池名，未指定时自动生成
-	 */
-	private String poolName = null;
-	
-	/**
-	 * 新连接生成后，添加到连接池前执行的初始化sql
-	 */
-	private String connectionInitSql = null;
-	
-	/**
-	 * 老版本的连接池需要设定这个参数
+	 * If your driver supports JDBC4 we strongly recommend not setting this property. 
+	 * This is for "legacy" databases that do not support the JDBC4 Connection.isValid() API
+	 * Default: none
 	 */
 	private String connectionTestQuery = null;
 	
 	/**
-	 * Hikari DataSourc 实现
+	 * the maximum size that the pool is allowed to reach, including both idle and in-use connections
+	 * Default: 10
+	 */
+	private int maximumPoolSize = 10;
+	
+	/**
+	 * user-defined name for the connection pool and appears mainly in logging
+	 * Default: auto-generated
+	 */
+	private String poolName = null;
+	
+	/**
+	 * This property controls whether Connections obtained from the pool are in read-only mode by default.
+	 * Default: false
+	 */
+	private boolean readOnly = false;
+	
+	/**
+	 * the default catalog for databases that support the concept of catalogs.
+	 * Default: driver default
+	 */
+	private String catalog = null;
+	
+	/**
+	 * a SQL statement that will be executed after every new connection creation before adding it to the pool
+	 * Default: none
+	 */
+	private String connectionInitSql = null;
+	
+	/**
+	 * HikariCP will attempt to resolve a driver through the DriverManager based solely on the jdbcUrl,
+	 * but for some older drivers the driverClassName must also be specified
+	 * Default: none
+	 */
+	private String driverClass = null;
+	
+	/**
+	 * the default transaction isolation level of connections returned from the pool.
+	 * Default: driver default
+	 */
+	private String transactionIsolation = null;
+	
+	/**
+	 * the maximum amount of time that a connection will be tested for aliveness. 
+	 * This value must be less than the connectionTimeout. Lowest acceptable validation timeout is 250 ms. 
+	 * Default: 5000(5 seconds)
+	 */
+	private long validationTimeout = 5000;
+	
+	/**
+	 * the amount of time that a connection can be out of the pool before a message is logged indicating a possible connection leak.
+	 * A value of 0 means leak detection is disabled. Lowest acceptable value for enabling leak detection is 2000 (2 seconds).
+	 * Default: 0
+	 */
+	private long leakDetectionThreshold = 0;
+	
+	/**
+	 * Hikari DataSource
 	 */
 	private HikariDataSource ds;
 	
+	public HikariCpPlugin(String jdbcUrl, String username, String password) {
+		this.jdbcUrl = jdbcUrl;
+		this.username = username;
+		this.password = password;
+	}
 	
-	/**
-	 * <p>Title: HikaricpPlugin</p>  
-	 * <p>Description: 构造函数</p>  
-	 * @param url jdbcUrl串
-	 * @param username 用户名
-	 * @param password 密码
-	 * @param driverClass 驱动类名
-	 * @since V1.0.0
-	 */
-	public HikariCpPlugin(String url, String username, String password, String driverClass) {
-		this.url = url;
+	public HikariCpPlugin(String jdbcUrl, String username, String password, String driverClass) {
+		this.jdbcUrl = jdbcUrl;
 		this.username = username;
 		this.password = password;
 		this.driverClass = driverClass;
@@ -127,8 +161,7 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	public boolean start() {
 		HikariConfig config = new HikariConfig();
 		//设定基本参数
-		config.setDriverClassName(driverClass);
-		config.setJdbcUrl(url);
+		config.setJdbcUrl(jdbcUrl);
 		config.setUsername(username);
 		config.setPassword(password);
 		
@@ -140,38 +173,47 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 		config.setIdleTimeout(idleTimeout);
 		config.setMaxLifetime(maxLifetime);
 		config.setMaximumPoolSize(maximumPoolSize);
+		config.setValidationTimeout(validationTimeout);
 		
-		//老版本的jdbc驱动需要设定此参数。
+		if(StrKit.notBlank(driverClass)){
+			config.setDriverClassName(driverClass);
+		}
+		
+		if(StrKit.notBlank(transactionIsolation)){
+			config.setTransactionIsolation(transactionIsolation);
+		}
+
+		if(this.leakDetectionThreshold != 0){
+			config.setLeakDetectionThreshold(leakDetectionThreshold);
+		}
+		
+		if(StrKit.notBlank(catalog)){
+			config.setCatalog(catalog);
+		}
+		
 		if(StrKit.notBlank(connectionTestQuery)){
 			config.setConnectionTestQuery(connectionTestQuery);
 		}
 		
-		//指定连接池名称，方便多数据库时区分。
 		if(StrKit.notBlank(poolName)){
 			config.setPoolName(poolName);
 		}
 		
-		//指定 新连接生成后，添加到连接池前执行的初始化sql
 		if(StrKit.notBlank(connectionInitSql)){
 			config.setConnectionInitSql(connectionInitSql);
 		}
 		
-		//探测是否是mysql
-		if(url.toLowerCase().contains(":mysql:")){
-			//性能优化。
+		if(jdbcUrl.toLowerCase().contains(":mysql:")){
 			config.addDataSourceProperty("cachePrepStmts", "true");
 			config.addDataSourceProperty("useServerPrepStmts", "true");
 			config.addDataSourceProperty("prepStmtCacheSize", "256");
 			config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 		}
-		//探测是否是postgres驱动
-		if(url.toLowerCase().contains(":postgresql:")){
+		if(jdbcUrl.toLowerCase().contains(":postgresql:")){
 			if(this.readOnly){
 				config.addDataSourceProperty("readOnly", "true");
 			}
-			//postgresql不支持这个
 			config.setConnectionTimeout(0);
-			//性能优化。
 			config.addDataSourceProperty("prepareThreshold", "3");
 			config.addDataSourceProperty("preparedStatementCacheQueries", "128");
 			config.addDataSourceProperty("preparedStatementCacheSizeMiB", "4");
@@ -189,7 +231,8 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	}
 
 	/**  
-	 * @param driverClass  驱动类名  
+	 * 驱动类名
+	 * @param driverClass  
 	 * @since V1.0.0
 	 */
 	public final void setDriverClass(String driverClass) {
@@ -197,15 +240,8 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	}
 
 	/**  
-	 * @param url  jdbc Url  
-	 * @since V1.0.0
-	 */
-	public final void setUrl(String url) {
-		this.url = url;
-	}
-
-	/**  
-	 * @param username  用户名  
+	 * 数据库类型
+	 * @param username  
 	 * @since V1.0.0
 	 */
 	public final void setUsername(String username) {
@@ -213,7 +249,8 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	}
 
 	/**  
-	 * @param password  密码  
+	 * 数据库密码
+	 * @param password    
 	 * @since V1.0.0
 	 */
 	public final void setPassword(String password) {
@@ -221,7 +258,8 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	}
 
 	/**  
-	 * @param autoCommit  是否自动提交  
+	 * 是否自动提交
+	 * @param autoCommit  
 	 * @since V1.0.0
 	 */
 	public final void setAutoCommit(boolean autoCommit) {
@@ -229,7 +267,8 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	}
 
 	/**  
-	 * @param readOnly  是否是只读连接  
+	 * 是否是只读连接 ，是否有效取决于相应的数据库是否支持
+	 * @param readOnly 
 	 * @since V1.0.0
 	 */
 	public final void setReadOnly(boolean readOnly) {
@@ -245,23 +284,26 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	}
 
 	/**  
-	 * @param idleTimeoutMs  空闲超时时间(单位：毫秒)    
+	 * 空闲超时时间(单位：毫秒)，默认600000 (10 分钟)
+	 * @param idleTimeoutMs    
 	 * @since V1.0.0
 	 */
 	public final void setIdleTimeout(long idleTimeoutMs) {
 		this.idleTimeout = idleTimeoutMs;
 	}
 
-	/**  
-	 * @param maxLifetime  最大生命周期/最大存活时间(单位：毫秒)  
+	/** 
+	 * 最大生命周期/最大存活时间(单位：毫秒) ，默认1800000 (30 分钟)
+	 * @param maxLifetime   
 	 * @since V1.0.0
 	 */
-	public final void setMaxLifetime(long maxLifetime) {
-		this.maxLifetime = maxLifetime;
+	public final void setMaxLifetime(long maxLifetimeMs) {
+		this.maxLifetime = maxLifetimeMs;
 	}
 
 	/**  
-	 * @param maximumPoolSize  连接池最大连接数  
+	 * 连接池最大连接数 默认10
+	 * @param maximumPoolSize 
 	 * @since V1.0.0
 	 */
 	public final void setMaximumPoolSize(int maximumPoolSize) {
@@ -269,7 +311,8 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	}
 
 	/**  
-	 * @param poolName  连接池名  
+	 * 用户指定的连接池名
+	 * @param poolName  
 	 * @since V1.0.0
 	 */
 	public final void setPoolName(String poolName) {
@@ -277,7 +320,8 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	}
 
 	/**  
-	 * @param connectionInitSql  新连接生成后，添加到连接池前执行的初始化sql  
+	 * 新连接生成后，添加到连接池前执行的初始化sql
+	 * @param connectionInitSql    
 	 * @since V1.0.0
 	 */
 	public final void setConnectionInitSql(String connectionInitSql) {
@@ -294,4 +338,44 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 		this.connectionTestQuery = connectionTestQuery;
 	}
 
+	/**
+	 * jdbc连接url
+	 * @param jdbcUrl
+	 */
+	public final void setJdbcUrl(String jdbcUrl) {
+		this.jdbcUrl = jdbcUrl;
+	}
+
+	/**
+	 * 支持 catalog 概念的数据库可以设定该参数
+	 * @param catalog
+	 */
+	public final void setCatalog(String catalog) {
+		this.catalog = catalog;
+	}
+
+	/**
+	 * 事物等级
+	 * @param isolationLevel
+	 */
+	public final void setTransactionIsolation(String isolationLevel) {
+		this.transactionIsolation = isolationLevel;
+	}
+
+	/**
+	 * 连接是否存活测试周期，默认5000（5秒）
+	 * @param validationTimeoutMs
+	 */
+	public final void setValidationTimeout(long validationTimeoutMs) {
+		this.validationTimeout = validationTimeoutMs;
+	}
+
+	/**
+	 * 内存泄露侦测周期，最小为2000（2秒）
+	 * @param leakDetectionThresholdMs
+	 */
+	public final void setLeakDetectionThreshold(long leakDetectionThresholdMs) {
+		this.leakDetectionThreshold = leakDetectionThresholdMs;
+	}
 }
+
