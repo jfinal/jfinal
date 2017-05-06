@@ -68,7 +68,12 @@ public class PageSqlKit {
 		LinkedList<String> stack = null;
 		char c;
 		for (int i = start, end = sql.length() - 5; i < end; i++) {
-			c = charTable[sql.charAt(i)];
+			c = sql.charAt(i);
+			if (c >= SIZE) {
+				continue ;
+			}
+			
+			c = charTable[c];
 			if (c == NULL) {
 				continue ;
 			}
