@@ -32,9 +32,8 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:git:git@git.oschina.net:jfinal/jfinal.git</connection>
-		<developerConnection>scm:git:git@git.oschina.net:jfinal/jfinal.git</developerConnection>
 		<url>git@git.oschina.net:jfinal/jfinal.git</url>
+		<connection>scm:git@git.oschina.net:jfinal/jfinal.git</connection>
 	</scm>
 	
 	<parent>
