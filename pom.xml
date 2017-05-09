@@ -32,9 +32,8 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:git:git@github.com:jfinal/jfinal.git</connection>
-		<developerConnection>scm:git:git@github.com:jfinal/jfinal.git</developerConnection>
 		<url>git@github.com:jfinal/jfinal.git</url>
+		<connection>scm:git@github.com:jfinal/jfinal.git</connection>
 	</scm>
 	
 	<parent>
