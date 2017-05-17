@@ -130,6 +130,9 @@ public class Define extends Stat {
 	}
 	
 	public boolean isSourceModifiedForDevMode() {
+		if (envForDevMode == null) {
+			throw new IllegalStateException("Check engine config: setDevMode(...) must be invoked before addSharedFunction(...)");
+		}
 		return envForDevMode.isStringSourceListModified();
 	}
 }
