@@ -32,8 +32,9 @@
 		</developer>
 	</developers>
 	<scm>
+		<connection>scm:git:git@github.com:jfinal/jfinal.git</connection>
+		<developerConnection>scm:git:git@github.com:jfinal/jfinal.git</developerConnection>
 		<url>git@github.com:jfinal/jfinal.git</url>
-		<connection>scm:git@github.com:jfinal/jfinal.git</connection>
 	</scm>
 	
 	<parent>
@@ -192,7 +193,7 @@
 			</plugin>
 
 <!-- 安装源码到本地仓库 -->
-<!-- plugin>
+<plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-source-plugin</artifactId>
 	<version>2.1.2</version>
@@ -205,7 +206,7 @@
 			</goals>
 		</execution>
 	</executions>
-</plugin -->
+</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
