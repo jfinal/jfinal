@@ -129,7 +129,7 @@
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>cos</artifactId>
-			<version>26Dec2008</version>
+			<version>2017.5</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
