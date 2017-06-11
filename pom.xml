@@ -184,6 +184,7 @@
 			<version>4.3.8.RELEASE</version>
 			<scope>provided</scope>
 		</dependency>
+		
 	</dependencies>
 	
 	<build>
