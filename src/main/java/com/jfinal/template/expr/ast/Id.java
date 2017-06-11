@@ -37,6 +37,9 @@ public class Id extends Expr {
 		return scope.get(id);
 	}
 	
+	/**
+	 * Id.toString() 后续版本不能变动，已有部分第三方依赖此方法
+	 */
 	public String toString() {
 		return id;
 	}

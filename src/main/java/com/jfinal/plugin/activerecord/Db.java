@@ -617,6 +617,10 @@ public class Db {
     	return DbPro.MAIN.findFirst(sqlPara);
     }
     
+    public static int update(SqlPara sqlPara) {
+    	return DbPro.MAIN.update(sqlPara);
+    }
+    
     public static Page<Record> paginate(int pageNumber, int pageSize, SqlPara sqlPara) {
     	return DbPro.MAIN.paginate(pageNumber, pageSize, sqlPara);
     }

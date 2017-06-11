@@ -17,7 +17,6 @@
 package com.jfinal.template.stat;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,7 +36,6 @@ class Lexer {
 	TextToken previousTextToken = null;
 	
 	List<Token> tokens = new ArrayList<Token>();
-	LinkedList<String> stack = new LinkedList<String>();
 	String fileName;
 	
 	public Lexer(StringBuilder content, String fileName) {
@@ -216,10 +214,9 @@ class Lexer {
 	 * 扫描指令参数，成功则返回，否则抛出词法分析异常
 	 */
 	StringBuilder scanPara(String id) {
-		stack.clear();
 		char quotes = '"';
 		int localState = 0;
-		stack.push("(");
+		int parenDepth = 1;	// 指令后面参数的第一个 '(' 深度为 1
 		next();
 		int paraStart = forward;
 		while (true) {
@@ -227,8 +224,8 @@ class Lexer {
 			case 0:
 				for (char c=peek(); true; c=next()) {
 					if (c == ')') {
-						stack.pop();
-						if (stack.size() == 0) {
+						parenDepth--;
+						if (parenDepth == 0) {	// parenDepth 不可能小于0，因为初始值为 1
 							next();
 							return subBuf(paraStart, forward - 2);
 						}
@@ -236,7 +233,7 @@ class Lexer {
 					}
 					
 					if (c == '(') {
-						stack.push("(");
+						parenDepth++;
 						continue ;
 					}
 					

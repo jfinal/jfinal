@@ -342,7 +342,7 @@ public class JFinalJson extends Json {
 	public <T> T parse(String jsonString, Class<T> type) {
 		throw new RuntimeException("jfinal " + com.jfinal.core.Const.JFINAL_VERSION + 
 		"默认 json 实现暂不支持 json 到 object 的转换,建议使用 active recrord 的 Generator 生成 base model，" +
-		"再通过 me.setJsonFactory(new JacksonFactory()) 来支持");
+		"再通过 me.setJsonFactory(new MixedJsonFactory()) 来支持");
 	}
 }
 

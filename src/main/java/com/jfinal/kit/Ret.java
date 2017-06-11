@@ -16,7 +16,7 @@
 
 package com.jfinal.kit;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import com.jfinal.json.Json;
 
@@ -24,7 +24,7 @@ import com.jfinal.json.Json;
  * 返回值封装，常用于业务层需要多个返回值
  */
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
-public class Ret extends HashMap {
+public class Ret extends LinkedHashMap {
 
 	private static final String STATUS_OK = "isOk";
 	private static final String STATUS_FAIL = "isFail";

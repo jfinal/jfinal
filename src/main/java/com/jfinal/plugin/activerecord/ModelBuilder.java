@@ -46,7 +46,7 @@ public class ModelBuilder {
 		buildLabelNamesAndTypes(rsmd, labelNames, types);
 		while (rs.next()) {
 			Model<?> ar = modelClass.newInstance();
-			Map<String, Object> attrs = ar.getAttrs();
+			Map<String, Object> attrs = ar._getAttrs();
 			for (int i=1; i<=columnCount; i++) {
 				Object value;
 				if (types[i] < Types.BLOB)

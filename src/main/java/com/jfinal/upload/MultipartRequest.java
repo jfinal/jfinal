@@ -120,6 +120,8 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 					}
 				}
 			}
+		} catch (com.oreilly.servlet.multipart.ExceededSizeException e) {
+			throw new ExceededSizeException(e);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

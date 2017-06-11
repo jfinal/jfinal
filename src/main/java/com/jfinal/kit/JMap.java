@@ -16,7 +16,7 @@
 
 package com.jfinal.kit;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import com.jfinal.json.Json;
 
@@ -38,7 +38,7 @@ import com.jfinal.json.Json;
  */
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
 @Deprecated
-public class JMap extends HashMap {
+public class JMap extends LinkedHashMap {
 
 	private static final String STATUS_OK = "isOk";
 	private static final String STATUS_FAIL = "isFail";

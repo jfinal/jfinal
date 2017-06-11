@@ -16,6 +16,8 @@
 
 package com.jfinal.ext.kit;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import com.jfinal.kit.StrKit;
 
@@ -42,7 +44,35 @@ public class DateKit {
 	}
 	
 	public static Date toDate(String dateStr) {
-		throw new RuntimeException("Not finish!!!");
+		if (dateStr == null || "".equals(dateStr.trim())) {
+			return null;
+		}
+		int length = dateStr.length();
+		try {
+			if (length == timeFormat.length()) {
+				SimpleDateFormat sdfDate = new SimpleDateFormat(timeFormat);
+				try {
+					return sdfDate.parse(dateStr);
+				} catch (ParseException e) {
+					dateStr = dateStr.replace(".", "-");
+					dateStr = dateStr.replace("/", "-");
+					return sdfDate.parse(dateStr);
+				}
+			} else if (length == dateFormat.length()) {
+				SimpleDateFormat sdfDate = new SimpleDateFormat(dateFormat);
+				try {
+					return sdfDate.parse(dateStr);
+				} catch (ParseException e) {
+					dateStr = dateStr.replace(".", "-");
+					dateStr = dateStr.replace("/", "-");
+					return sdfDate.parse(dateStr);
+				}
+			} else {
+				throw new IllegalArgumentException("The date format is not supported for the time being.");
+			}
+		} catch (ParseException e) {
+			throw new IllegalArgumentException("The date format is not supported for the time being.");
+		}
 	}
 	
 	public static String toStr(Date date) {
@@ -50,6 +80,7 @@ public class DateKit {
 	}
 	
 	public static String toStr(Date date, String format) {
-		throw new RuntimeException("Not finish!!!");
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return sdf.format(date);
 	}
 }
