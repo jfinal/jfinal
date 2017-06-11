@@ -88,6 +88,28 @@ public class DbPro {
 		return MAIN;
 	}
 	
+	/**
+	 * 用于添加自定义扩展 DbPro 实现类，实现定制化功能
+	 * 1：创建 DbPro 继承类： public class MyDbPro extends DbPro
+	 * 2：DbPro.addDbPro(new MyDbPro(...));
+	 * 
+	 * 注意：如果 configName 已经存在，则对应的 DbPro 对象会被替换掉
+	 */
+	public static void addDbPro(DbPro dbPro) {
+		if (dbPro == null) {
+			throw new IllegalArgumentException("dbPro can not be null");
+		}
+		
+		map.put(dbPro.config.getName(), dbPro);
+		if (MAIN != null && MAIN.config.getName().equals(dbPro.config.getName())) {
+			MAIN = dbPro;	// 替换 MAIN 对象，该dbPro 对象将接管 Db 中的功能
+		}
+	}
+	
+	public Config getConfig() {
+		return config;
+	}
+	
 	<T> List<T> query(Config config, Connection conn, String sql, Object... paras) throws SQLException {
 		List result = new ArrayList();
 		PreparedStatement pst = conn.prepareStatement(sql);
@@ -973,7 +995,7 @@ public class DbPro {
 		int[] result = new int[size];
 		PreparedStatement pst = conn.prepareStatement(sql);
 		for (int i=0; i<size; i++) {
-			Map map = isModel ? ((Model)list.get(i)).getAttrs() : ((Record)list.get(i)).getColumns();
+			Map map = isModel ? ((Model)list.get(i))._getAttrs() : ((Record)list.get(i)).getColumns();
 			for (int j=0; j<columnArray.length; j++) {
 				Object value = map.get(columnArray[j]);
 				if (config.dialect.isOracle()) {
@@ -1104,7 +1126,7 @@ public class DbPro {
     		return new int[0];
     	
     	Model model = modelList.get(0);
-    	Map<String, Object> attrs = model.getAttrs();
+    	Map<String, Object> attrs = model._getAttrs();
     	int index = 0;
     	StringBuilder columns = new StringBuilder();
     	// the same as the iterator in Dialect.forModelSave() to ensure the order of the attrs
@@ -1174,7 +1196,7 @@ public class DbPro {
     	Model model = modelList.get(0);
     	Table table = TableMapping.me().getTable(model.getClass());
     	String[] pKeys = table.getPrimaryKey();
-    	Map<String, Object> attrs = model.getAttrs();
+    	Map<String, Object> attrs = model._getAttrs();
     	List<String> attrNames = new ArrayList<String>();
     	// the same as the iterator in Dialect.forModelSave() to ensure the order of the attrs
     	for (Entry<String, Object> e : attrs.entrySet()) {
@@ -1246,7 +1268,7 @@ public class DbPro {
     }
     
     public SqlPara getSqlPara(String key, Model model) {
-    	return getSqlPara(key, model.getAttrs());
+    	return getSqlPara(key, model._getAttrs());
     }
     
     public SqlPara getSqlPara(String key, Map data) {
@@ -1263,6 +1285,10 @@ public class DbPro {
     
     public Record findFirst(SqlPara sqlPara) {
     	return findFirst(sqlPara.getSql(), sqlPara.getPara());
+    }
+    
+    public int update(SqlPara sqlPara) {
+    	return update(sqlPara.getSql(), sqlPara.getPara());
     }
     
     public Page<Record> paginate(int pageNumber, int pageSize, SqlPara sqlPara) {

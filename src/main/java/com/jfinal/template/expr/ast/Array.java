@@ -26,8 +26,8 @@ import com.jfinal.template.stat.Scope;
  * Array
  * 
  * 用法：
- * 1：[1, 2, 3]  或者  ["a", 1, "b", 2, false, 3.14]
- * 2：[1..3] 或者 [3..1]
+ * 1：[1, 2, 3]
+ * 2：["a", 1, "b", 2, false, 3.14]
  */
 public class Array extends Expr {
 	
@@ -41,18 +41,28 @@ public class Array extends Expr {
 	}
 	
 	public Object eval(Scope scope) {
-		List<Object> array = new ArrayList<Object>(exprList.length + 3);
+		List<Object> array = new ArrayListExt(exprList.length);
 		for (Expr expr : exprList) {
 			array.add(expr.eval(scope));
 		}
 		return array;
 	}
+	
+	/**
+	 * 支持 array.length 表达式
+	 */
+	@SuppressWarnings("serial")
+	public static class ArrayListExt extends ArrayList<Object> {
+		
+		public ArrayListExt(int initialCapacity) {
+			super(initialCapacity);
+		}
+		
+		public Integer getLength() {
+			return size();
+		}
+	}
 }
-
-
-
-
-
 
 
 

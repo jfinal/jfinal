@@ -32,18 +32,18 @@ import com.jfinal.plugin.redis.serializer.ISerializer;
  */
 public class RedisPlugin implements IPlugin {
 	
-	private String cacheName;
+	protected String cacheName;
 	
-	private String host;
-	private Integer port = null;
-	private Integer timeout = null;
-	private String password = null;
-	private Integer database = null;
-	private String clientName = null;
+	protected String host;
+	protected Integer port = null;
+	protected Integer timeout = null;
+	protected String password = null;
+	protected Integer database = null;
+	protected String clientName = null;
 	
-	private ISerializer serializer = null;
-	private IKeyNamingPolicy keyNamingPolicy = null;
-	private JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+	protected ISerializer serializer = null;
+	protected IKeyNamingPolicy keyNamingPolicy = null;
+	protected JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 	
 	public RedisPlugin(String cacheName, String host) {
 		if (StrKit.isBlank(cacheName))

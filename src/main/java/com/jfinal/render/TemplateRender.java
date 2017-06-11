@@ -16,7 +16,6 @@
 
 package com.jfinal.render;
 
-import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,17 +54,10 @@ public class TemplateRender extends Render {
 			data.put(attrName, request.getAttribute(attrName));
 		}
 		
-		PrintWriter writer = null;
         try {
-        	writer = response.getWriter();
-        	engine.getTemplate(view).render(data, writer);
+        	engine.getTemplate(view).render(data, response.getWriter());
 		} catch (Exception e) {
 			throw new RenderException(e);
-		}
-		finally {
-			if (writer != null) {
-				writer.close();
-			}
 		}
 	}
 	

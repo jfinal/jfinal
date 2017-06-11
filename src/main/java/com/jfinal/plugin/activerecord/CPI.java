@@ -34,7 +34,7 @@ public abstract class CPI {
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static final Map<String, Object> getAttrs(Model model) {
-		return model.getAttrs();
+		return model._getAttrs();
 	}
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})

@@ -98,7 +98,7 @@ public class Record implements Serializable {
 	 * @param model the Model object
 	 */
 	public Record setColumns(Model<?> model) {
-		getColumns().putAll(model.getAttrs());
+		getColumns().putAll(model._getAttrs());
 		return this;
 	}
 	
