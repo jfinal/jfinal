@@ -18,6 +18,8 @@ package com.jfinal.core;
 
 import java.lang.reflect.Method;
 import com.jfinal.aop.Interceptor;
+import com.jfinal.core.param.ParameterGetterBuilder;
+import com.jfinal.core.param.ParameterGetterProcessor;
 
 /**
  * Action
@@ -31,6 +33,7 @@ public class Action {
 	private final String methodName;
 	private final Interceptor[] interceptors;
 	private final String viewPath;
+	private final ParameterGetterProcessor parameterGetter;
 	
 	public Action(String controllerKey, String actionKey, Class<? extends Controller> controllerClass, Method method, String methodName, Interceptor[] interceptors, String viewPath) {
 		this.controllerKey = controllerKey;
@@ -40,6 +43,7 @@ public class Action {
 		this.methodName = methodName;
 		this.interceptors = interceptors;
 		this.viewPath = viewPath;
+		this.parameterGetter = ParameterGetterBuilder.me().build(controllerClass, method);
 	}
 	
 	public Class<? extends Controller> getControllerClass() {
@@ -68,6 +72,10 @@ public class Action {
 	
 	public String getMethodName() {
 		return methodName;
+	}
+	
+	public ParameterGetterProcessor getParameterGetter() {
+		return parameterGetter;
 	}
 }
 
