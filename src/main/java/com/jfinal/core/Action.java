@@ -18,8 +18,8 @@ package com.jfinal.core;
 
 import java.lang.reflect.Method;
 import com.jfinal.aop.Interceptor;
-import com.jfinal.core.param.ParameterGetterBuilder;
-import com.jfinal.core.param.ParameterGetterProcessor;
+import com.jfinal.core.paragetter.ParameterGetterBuilder;
+import com.jfinal.core.paragetter.ParameterGetterProcessor;
 
 /**
  * Action
