@@ -63,7 +63,7 @@ public class ParameterGetterBuilder {
 			if(defaultValue != null){
 				return new StringParameterGetter(parameterName, defaultValue);
 			}else{
-				return new StringParameterGetter(parameterName);
+				return new StringParameterGetter(parameterName, null);
 			}
 		}else if(type.equals("int") || type.equals("java.lang.Integer")){
 			if(defaultValue != null){

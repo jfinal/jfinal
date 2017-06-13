@@ -18,11 +18,7 @@ package com.jfinal.core.paragetter;
 import com.jfinal.core.Controller;
 
 public class StringParameterGetter extends ParameterGetter<String> {
-	
-	public StringParameterGetter(String parameterName){
-		super(parameterName, "");
-	}
-	
+
 	public StringParameterGetter(String parameterName, String defaultValue){
 		super(parameterName, defaultValue);
 	}
