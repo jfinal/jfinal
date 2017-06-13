@@ -97,7 +97,7 @@ public class PathKit {
 	}
 	
 	public static boolean isAbsolutelyPath(String path) {
-		return path.startsWith("/") || path.indexOf(":") == 1;
+		return path.startsWith("/") || path.indexOf(':') == 1;
 	}
 	
 	/*

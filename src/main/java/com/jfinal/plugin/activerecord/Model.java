@@ -321,7 +321,7 @@ public abstract class Model<M extends Model> implements Serializable {
 			conn = config.getConnection();
 			String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
 			StringBuilder findSql = new StringBuilder();
-			findSql.append(select).append(" ").append(sqlExceptSelect);
+			findSql.append(select).append(' ').append(sqlExceptSelect);
 			return doPaginateByFullSql(config, conn, pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
@@ -798,7 +798,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("{");
+		sb.append('{');
 		boolean first = true;
 		for (Entry<String, Object> e : attrs.entrySet()) {
 			if (first)
@@ -809,9 +809,9 @@ public abstract class Model<M extends Model> implements Serializable {
 			Object value = e.getValue();
 			if (value != null)
 				value = value.toString();
-			sb.append(e.getKey()).append(":").append(value);
+			sb.append(e.getKey()).append(':').append(value);
 		}
-		sb.append("}");
+		sb.append('}');
 		return sb.toString();
 	}
 	

@@ -101,7 +101,7 @@ public class FileStringSource implements IStringSource {
 			}
 			
 			while ((line=br.readLine()) != null) {
-				ret.append("\n").append(line);
+				ret.append('\n').append(line);
 			}
 			return ret;
 		} catch (Exception e) {
