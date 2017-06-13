@@ -288,6 +288,10 @@ public class ActiveRecordPlugin implements IPlugin {
 	public static void useAsDataTransfer() {
 		useAsDataTransfer(new com.jfinal.plugin.activerecord.dialect.MysqlDialect(), IContainerFactory.defaultContainerFactory, new com.jfinal.plugin.activerecord.cache.EhCache());
 	}
+	
+	public Config getConfig() {
+		return config;
+	}
 }
 
 
