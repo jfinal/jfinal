@@ -73,7 +73,7 @@ public class TokenManager {
 	 */
 	private static void createTokenHiddenField(Controller controller, String tokenName, String tokenId) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("<input type='hidden' name='").append(tokenName).append("' value='" + tokenId).append("' />");
+		sb.append("<input type='hidden' name='").append(tokenName).append("' id='").append(tokenName).append("' value='" + tokenId).append("' />");
 		controller.setAttr("token", sb.toString());
 	}
 	
