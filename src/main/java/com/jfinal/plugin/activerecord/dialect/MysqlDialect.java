@@ -42,12 +42,12 @@ public class MysqlDialect extends Dialect {
 					sql.append(", ");
 					temp.append(", ");
 				}
-				sql.append("`").append(colName).append("`");
-				temp.append("?");
+				sql.append('`').append(colName).append('`');
+				temp.append('?');
 				paras.add(e.getValue());
 			}
 		}
-		sql.append(temp.toString()).append(")");
+		sql.append(temp.toString()).append(')');
 	}
 	
 	public String forModelDeleteById(Table table) {
@@ -60,7 +60,7 @@ public class MysqlDialect extends Dialect {
 			if (i > 0) {
 				sql.append(" and ");
 			}
-			sql.append("`").append(pKeys[i]).append("` = ?");
+			sql.append('`').append(pKeys[i]).append("` = ?");
 		}
 		return sql.toString();
 	}
@@ -74,7 +74,7 @@ public class MysqlDialect extends Dialect {
 				if (paras.size() > 0) {
 					sql.append(", ");
 				}
-				sql.append("`").append(colName).append("` = ? ");
+				sql.append('`').append(colName).append("` = ? ");
 				paras.add(e.getValue());
 			}
 		}
@@ -83,7 +83,7 @@ public class MysqlDialect extends Dialect {
 			if (i > 0) {
 				sql.append(" and ");
 			}
-			sql.append("`").append(pKeys[i]).append("` = ?");
+			sql.append('`').append(pKeys[i]).append("` = ?");
 			paras.add(attrs.get(pKeys[i]));
 		}
 	}
@@ -92,15 +92,15 @@ public class MysqlDialect extends Dialect {
 		StringBuilder sql = new StringBuilder("select ");
 		columns = columns.trim();
 		if ("*".equals(columns)) {
-			sql.append("*");
+			sql.append('*');
 		}
 		else {
 			String[] arr = columns.split(",");
 			for (int i=0; i<arr.length; i++) {
 				if (i > 0) {
-					sql.append(",");
+					sql.append(',');
 				}
-				sql.append("`").append(arr[i].trim()).append("`");
+				sql.append('`').append(arr[i].trim()).append('`');
 			}
 		}
 		
@@ -112,7 +112,7 @@ public class MysqlDialect extends Dialect {
 			if (i > 0) {
 				sql.append(" and ");
 			}
-			sql.append("`").append(pKeys[i]).append("` = ?");
+			sql.append('`').append(pKeys[i]).append("` = ?");
 		}
 		return sql.toString();
 	}
@@ -126,7 +126,7 @@ public class MysqlDialect extends Dialect {
 			if (i > 0) {
 				sql.append(" and ");
 			}
-			sql.append("`").append(pKeys[i]).append("` = ?");
+			sql.append('`').append(pKeys[i]).append("` = ?");
 		}
 		return sql.toString();
 	}
@@ -140,7 +140,7 @@ public class MysqlDialect extends Dialect {
 			if (i > 0) {
 				sql.append(" and ");
 			}
-			sql.append("`").append(pKeys[i]).append("` = ?");
+			sql.append('`').append(pKeys[i]).append("` = ?");
 		}
 		return sql.toString();
 	}
@@ -162,11 +162,11 @@ public class MysqlDialect extends Dialect {
 				sql.append(", ");
 				temp.append(", ");
 			}
-			sql.append("`").append(e.getKey()).append("`");
-			temp.append("?");
+			sql.append('`').append(e.getKey()).append('`');
+			temp.append('?');
 			paras.add(e.getValue());
 		}
-		sql.append(temp.toString()).append(")");
+		sql.append(temp.toString()).append(')');
 	}
 	
 	public void forDbUpdate(String tableName, String[] pKeys, Object[] ids, Record record, StringBuilder sql, List<Object> paras) {
@@ -180,7 +180,7 @@ public class MysqlDialect extends Dialect {
 				if (paras.size() > 0) {
 					sql.append(", ");
 				}
-				sql.append("`").append(colName).append("` = ? ");
+				sql.append('`').append(colName).append("` = ? ");
 				paras.add(e.getValue());
 			}
 		}
@@ -189,7 +189,7 @@ public class MysqlDialect extends Dialect {
 			if (i > 0) {
 				sql.append(" and ");
 			}
-			sql.append("`").append(pKeys[i]).append("` = ?");
+			sql.append('`').append(pKeys[i]).append("` = ?");
 			paras.add(ids[i]);
 		}
 	}
