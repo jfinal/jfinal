@@ -17,15 +17,7 @@ package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
 
-public class IntParameterGetter extends AbstractParameterGetter<Integer> {
-
-	public IntParameterGetter(String parameterName) {
-		super(parameterName, 0);
-	}
-	
-	public IntParameterGetter(String parameterName, String defaultValue) {
-		super(parameterName,Integer.parseInt(defaultValue));
-	}
+public class IntParameterGetter extends ParameterGetter<Integer> {
 	
 	public IntParameterGetter(String parameterName, Integer defaultValue) {
 		super(parameterName,defaultValue);

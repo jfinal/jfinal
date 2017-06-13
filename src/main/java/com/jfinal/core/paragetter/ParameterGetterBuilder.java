@@ -17,13 +17,12 @@ package com.jfinal.core.paragetter;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import com.jfinal.core.Controller;
-import com.jfinal.log.Log;
 
 public class ParameterGetterBuilder {
-	
-	private static final Log LOG = Log.getLog("core");
 	
 	private static ParameterGetterBuilder me = new ParameterGetterBuilder();
 	
@@ -38,7 +37,7 @@ public class ParameterGetterBuilder {
 			return opag;
 		}
 		for(Parameter p : method.getParameters()){
-			ParameterGetter<?> pg = createParameterGetter(controllerClass, method, p);
+			IParameterGetter<?> pg = createParameterGetter(controllerClass, method, p);
 			if(pg instanceof FileParameterGetter || pg instanceof FileArrayParameterGetter){
 				opag.addParameterGetterToHeader(pg);
 			}else{
@@ -48,7 +47,7 @@ public class ParameterGetterBuilder {
 		return opag;
 	}
 	
-	private ParameterGetter<?> createParameterGetter(Class<? extends Controller> controllerClass, Method method, Parameter p){
+	private IParameterGetter<?> createParameterGetter(Class<? extends Controller> controllerClass, Method method, Parameter p){
 		String parameterName = p.getName();
 		String defaultValue  = null;
 		String type          = p.getParameterizedType().getTypeName();
@@ -68,27 +67,75 @@ public class ParameterGetterBuilder {
 			}
 		}else if(type.equals("int") || type.equals("java.lang.Integer")){
 			if(defaultValue != null){
-				return new IntParameterGetter(parameterName, defaultValue);
+				return new IntParameterGetter(parameterName, Integer.parseInt(defaultValue));
+			}
+			if(type.equals("int")){
+				return new IntParameterGetter(parameterName,0);
 			}else{
-				return new IntParameterGetter(parameterName);
+				return new IntParameterGetter(parameterName,null);
 			}
 		}else if(type.equals("long") || type.equals("java.lang.Long")){
 			if(defaultValue != null){
-				return new LongParameterGetter(parameterName, defaultValue);
+				return new LongParameterGetter(parameterName, Long.parseLong(defaultValue));
+			}
+			if(type.equals("long")){
+				return new LongParameterGetter(parameterName,0L);
 			}else{
-				return new LongParameterGetter(parameterName);
+				return new LongParameterGetter(parameterName,null);
+			}
+		}else if(type.equals("short") || type.equals("java.lang.Short")){
+			if(defaultValue != null){
+				return new ShortParameterGetter(parameterName, Short.parseShort(defaultValue));
+			}
+			if(type.equals("short")){
+				return new ShortParameterGetter(parameterName,(short)0);
+			}else{
+				return new ShortParameterGetter(parameterName,null);
+			}
+		}else if(type.equals("float") || type.equals("java.lang.Float")){
+			if(defaultValue != null){
+				return new FloatParameterGetter(parameterName, Float.parseFloat(defaultValue));
+			}
+			if(type.equals("float")){
+				return new FloatParameterGetter(parameterName,0.0f);
+			}else{
+				return new FloatParameterGetter(parameterName,null);
+			}
+		}else if(type.equals("double") || type.equals("java.lang.Double")){
+			if(defaultValue != null){
+				return new DoubleParameterGetter(parameterName, Double.parseDouble(defaultValue));
+			}
+			if(type.equals("double")){
+				return new DoubleParameterGetter(parameterName,0.0);
+			}else{
+				return new DoubleParameterGetter(parameterName,null);
 			}
 		}else if(type.equals("boolean") || type.equals("java.lang.Boolean")){
 			if(defaultValue != null){
-				return new BooleanParameterGetter(parameterName, defaultValue);
+				return new BooleanParameterGetter(parameterName, Boolean.parseBoolean(defaultValue));
+			}
+			if(type.equals("boolean")){
+				return new BooleanParameterGetter(parameterName,Boolean.FALSE);
 			}else{
-				return new BooleanParameterGetter(parameterName);
+				return new BooleanParameterGetter(parameterName,null);
 			}
 		}else if(type.equals("java.util.Date")){
 			if(defaultValue != null){
 				return new DateParameterGetter(parameterName, defaultValue);
 			}else{
-				return new DateParameterGetter(parameterName);
+				return new DateParameterGetter(parameterName, null);
+			}
+		}else if(type.equals("java.math.BigDecimal")){
+			if(defaultValue != null){
+				return new BigDecimalParameterGetter(parameterName, BigDecimal.valueOf(Double.parseDouble(defaultValue)));
+			}else{
+				return new BigDecimalParameterGetter(parameterName, null);
+			}
+		}else if(type.equals("java.math.BigInteger")){
+			if(defaultValue != null){
+				return new BigIntegerParameterGetter(parameterName, BigInteger.valueOf(Long.parseLong(defaultValue)));
+			}else{
+				return new BigIntegerParameterGetter(parameterName, null);
 			}
 		}else if(type.equals("com.jfinal.upload.UploadFile")){
 			return new FileParameterGetter(parameterName);
@@ -105,9 +152,7 @@ public class ParameterGetterBuilder {
 			if(isSubClassOf(p.getType(), com.jfinal.plugin.activerecord.Model.class)){
 				return new ModelParameterGetter<>(p.getType(), parameterName);
 			}else{
-				String msg = "can not create ParameterGetter:"+ controllerClass.getName() + "." + method.getName()  +" " + type + " " + parameterName;
-				LOG.warn(msg);
-				return new NullParameterGetter(parameterName);
+				return new BeanParameterGetter<>(p.getType(), parameterName);
 			}
 		}
 	}

@@ -15,17 +15,28 @@
  */
 package com.jfinal.core.paragetter;
 
+import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
+import com.jfinal.kit.StrKit;
+import com.jfinal.render.RenderManager;
 
-public class BooleanParameterGetter extends ParameterGetter<Boolean> {
-	
-	public BooleanParameterGetter(String parameterName, Boolean defaultValue) {
-		super(parameterName,defaultValue);
+public class FloatParameterGetter extends ParameterGetter<Float> {
+
+	public FloatParameterGetter(String parameterName, Float defaultValue) {
+		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Boolean get(Controller c) {
-		return c.getParaToBoolean(getParameterName(),getDefaultValue());
+	public Float get(Controller c) {
+		String value = c.getPara(this.getParameterName());
+		try {
+			if (StrKit.isBlank(value))
+				return this.getDefaultValue();
+			value = value.trim();
+			return Float.parseFloat(value);
+		} catch (Exception e) {
+			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
+					"Can not parse the parameter \"" + value + "\" to Float value.");
+		}
 	}
-
 }

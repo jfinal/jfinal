@@ -18,10 +18,10 @@ package com.jfinal.core.paragetter;
 import com.jfinal.core.Controller;
 import com.jfinal.upload.UploadFile;
 
-public class FileParameterGetter extends AbstractParameterGetter<UploadFile> {
+public class FileParameterGetter extends ParameterGetter<UploadFile> {
 
 	public FileParameterGetter(String parameterName) {
-		super(parameterName);
+		super(parameterName,null);
 	}
 
 	@Override

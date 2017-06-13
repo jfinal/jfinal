@@ -20,10 +20,10 @@ import java.util.List;
 import com.jfinal.core.Controller;
 import com.jfinal.upload.UploadFile;
 
-public class FileArrayParameterGetter extends AbstractParameterGetter<List<UploadFile>> {
+public class FileArrayParameterGetter extends ParameterGetter<List<UploadFile>> {
 
 	public FileArrayParameterGetter() {
-		super("");
+		super("",null);
 	}
 
 	@Override

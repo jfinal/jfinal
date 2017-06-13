@@ -15,20 +15,31 @@
  */
 package com.jfinal.core.paragetter;
 
-import com.jfinal.core.Controller;
+import java.math.BigInteger;
 
-public class StringParameterGetter extends ParameterGetter<String> {
-	
-	public StringParameterGetter(String parameterName){
-		super(parameterName, "");
-	}
-	
-	public StringParameterGetter(String parameterName, String defaultValue){
+import com.jfinal.core.ActionException;
+import com.jfinal.core.Controller;
+import com.jfinal.kit.StrKit;
+import com.jfinal.render.RenderManager;
+
+public class BigIntegerParameterGetter extends ParameterGetter<BigInteger> {
+
+	public BigIntegerParameterGetter(String parameterName, BigInteger defaultValue) {
 		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public String get(Controller c) {
-		return c.getPara(getParameterName(), getDefaultValue());
+	public BigInteger get(Controller c) {
+		String value = c.getPara(this.getParameterName());
+		try {
+			if (StrKit.isBlank(value))
+				return this.getDefaultValue();
+			value = value.trim();
+			return BigInteger.valueOf(Long.parseLong(value));
+		} catch (Exception e) {
+			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
+					"Can not parse the parameter \"" + value + "\" to BigInteger value.");
+		}
 	}
+
 }

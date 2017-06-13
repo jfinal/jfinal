@@ -15,8 +15,20 @@
  */
 package com.jfinal.core.paragetter;
 
-import com.jfinal.core.Controller;
-
-public interface ParameterGetter<T> {
-	public T get(Controller c);
+public abstract class ParameterGetter<T> implements IParameterGetter<T> {
+	private final String parameterName;
+	private final T defaultValue;
+	
+	protected final String getParameterName() {
+		return parameterName;
+	}
+	
+	protected final T getDefaultValue() {
+		return defaultValue;
+	}
+	
+	public ParameterGetter(String parameterName, T defaultValue){
+		this.parameterName = parameterName;
+		this.defaultValue = defaultValue;
+	}
 }

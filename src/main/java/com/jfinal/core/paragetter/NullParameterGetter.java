@@ -17,10 +17,10 @@ package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
 
-public class NullParameterGetter extends AbstractParameterGetter<Object> {
+public class NullParameterGetter extends ParameterGetter<Object> {
 
 	public NullParameterGetter(String parameterName) {
-		super(parameterName);
+		super(parameterName,null);
 	}
 
 	@Override

@@ -17,10 +17,10 @@ package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
 
-public class IntArrayParameterGetter extends AbstractParameterGetter<Integer[]> {
+public class IntArrayParameterGetter extends ParameterGetter<Integer[]> {
 	
 	public IntArrayParameterGetter(String parameterName) {
-		super(parameterName);
+		super(parameterName,null);
 	}
 
 	@Override

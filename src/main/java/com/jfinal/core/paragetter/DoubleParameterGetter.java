@@ -15,17 +15,28 @@
  */
 package com.jfinal.core.paragetter;
 
+import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
+import com.jfinal.kit.StrKit;
+import com.jfinal.render.RenderManager;
 
-public class BooleanParameterGetter extends ParameterGetter<Boolean> {
+public class DoubleParameterGetter extends ParameterGetter<Double> {
 	
-	public BooleanParameterGetter(String parameterName, Boolean defaultValue) {
+	public DoubleParameterGetter(String parameterName, Double defaultValue) {
 		super(parameterName,defaultValue);
 	}
 
 	@Override
-	public Boolean get(Controller c) {
-		return c.getParaToBoolean(getParameterName(),getDefaultValue());
+	public Double get(Controller c) {
+		String value = c.getPara(this.getParameterName());
+		try {
+			if (StrKit.isBlank(value))
+				return this.getDefaultValue();
+			value = value.trim();
+			return Double.parseDouble(value);
+		} catch (Exception e) {
+			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
+					"Can not parse the parameter \"" + value + "\" to Double value.");
+		}
 	}
-
 }

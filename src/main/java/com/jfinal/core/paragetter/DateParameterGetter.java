@@ -20,18 +20,10 @@ import java.util.Date;
 
 import com.jfinal.core.Controller;
 
-public class DateParameterGetter extends AbstractParameterGetter<Date> {
-	
-	public DateParameterGetter(String parameterName) {
-		super(parameterName, null);
-	}
+public class DateParameterGetter extends ParameterGetter<Date> {
 	
 	public DateParameterGetter(String parameterName, String defaultValue) {
 		super(parameterName, toDate(defaultValue));
-	}
-
-	public DateParameterGetter(String parameterName, Date defaultValue) {
-		super(parameterName, defaultValue);
 	}
 
 	@Override

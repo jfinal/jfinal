@@ -15,25 +15,16 @@
  */
 package com.jfinal.core.paragetter;
 
-public abstract class AbstractParameterGetter<T> implements ParameterGetter<T> {
-	private final String parameterName;
-	private final T defaultValue;
-	
-	protected final String getParameterName() {
-		return parameterName;
+import com.jfinal.core.Controller;
+
+public class BeanParameterGetter<T> extends ParameterGetter<T> {
+	private final Class<T> modelClass;
+	public BeanParameterGetter(Class<T> modelClass, String parameterName) {
+		super(parameterName, null);
+		this.modelClass = modelClass;
 	}
-	
-	protected final T getDefaultValue() {
-		return defaultValue;
-	}
-	
-	public AbstractParameterGetter(String parameterName){
-		this.parameterName = parameterName;
-		this.defaultValue = null;
-	}
-	
-	public AbstractParameterGetter(String parameterName, T defaultValue){
-		this.parameterName = parameterName;
-		this.defaultValue = defaultValue;
+	@Override
+	public T get(Controller c) {
+		return c.getBean(modelClass, this.getParameterName(),true);
 	}
 }
