@@ -922,16 +922,14 @@ public abstract class Controller {
 	 * Return true if the para value is blank otherwise return false
 	 */
 	public boolean isParaBlank(String paraName) {
-		String value = request.getParameter(paraName);
-		return value == null || value.trim().length() == 0;
+		return StrKit.isBlank(request.getParameter(paraName));
 	}
 	
 	/**
 	 * Return true if the urlPara value is blank otherwise return false
 	 */
 	public boolean isParaBlank(int index) {
-		String value = getPara(index);
-		return value == null || value.trim().length() == 0;
+		return StrKit.isBlank(getPara(index));
 	}
 	
 	/**

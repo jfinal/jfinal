@@ -86,11 +86,11 @@ public class CacheInterceptor implements Interceptor {
 		StringBuilder sb = new StringBuilder(inv.getActionKey());
 		String urlPara = controller.getPara();
 		if (urlPara != null)
-			sb.append("/").append(urlPara);
+			sb.append('/').append(urlPara);
 		
 		String queryString = controller.getRequest().getQueryString();
 		if (queryString != null)
-			sb.append("?").append(queryString);
+			sb.append('?').append(queryString);
 		return sb.toString();
 	}
 	

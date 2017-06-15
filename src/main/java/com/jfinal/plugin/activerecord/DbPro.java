@@ -534,7 +534,7 @@ public class DbPro {
 			conn = config.getConnection();
 			String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
 			StringBuilder findSql = new StringBuilder();
-			findSql.append(select).append(" ").append(sqlExceptSelect);
+			findSql.append(select).append(' ').append(sqlExceptSelect);
 			return doPaginateByFullSql(config, conn, pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
@@ -585,7 +585,7 @@ public class DbPro {
 	Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
 		String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
 		StringBuilder findSql = new StringBuilder();
-		findSql.append(select).append(" ").append(sqlExceptSelect);
+		findSql.append(select).append(' ').append(sqlExceptSelect);
 		return doPaginateByFullSql(config, conn, pageNumber, pageSize, null, totalRowSql, findSql, paras);
 	}
 	
@@ -1139,7 +1139,7 @@ public class DbPro {
 			}
 			
 			if (index++ > 0) {
-				columns.append(",");
+				columns.append(',');
 			}
 			columns.append(e.getKey());
 		}
@@ -1173,7 +1173,7 @@ public class DbPro {
 			}
 			
 			if (index++ > 0) {
-				columns.append(",");
+				columns.append(',');
 			}
 			columns.append(e.getKey());
 		}

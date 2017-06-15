@@ -195,7 +195,7 @@ public class HttpKit {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, CHARSET));
 			String line = null;
 			while ((line = reader.readLine()) != null){
-				sb.append(line).append("\n");
+				sb.append(line).append('\n');
 			}
 			return sb.toString();
 		}
@@ -222,9 +222,9 @@ public class HttpKit {
 		
 		StringBuilder sb = new StringBuilder(url);
 		boolean isFirst;
-		if (!url.contains("?")) {
+		if (url.indexOf('?') == -1) {
 			isFirst = true;
-			sb.append("?");
+			sb.append('?');
 		}
 		else {
 			isFirst = false;
@@ -232,13 +232,13 @@ public class HttpKit {
 		
 		for (Entry<String, String> entry : queryParas.entrySet()) {
 			if (isFirst) isFirst = false;	
-			else sb.append("&");
+			else sb.append('&');
 			
 			String key = entry.getKey();
 			String value = entry.getValue();
 			if (StrKit.notBlank(value))
 				try {value = URLEncoder.encode(value, CHARSET);} catch (UnsupportedEncodingException e) {throw new RuntimeException(e);}
-			sb.append(key).append("=").append(value);
+			sb.append(key).append('=').append(value);
 		}
 		return sb.toString();
 	}
@@ -250,7 +250,7 @@ public class HttpKit {
 			br = request.getReader();
 			for (String line; (line=br.readLine())!=null;) {
 				if (result.length() > 0) {
-					result.append("\n");
+					result.append('\n');
 				}
 				result.append(line);
 			}
