@@ -22,7 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,28 +37,23 @@ import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class DbPro {
 	
-	private final Config config;
-	
-	static DbPro MAIN = null;
-	private static final Map<String, DbPro> map = new HashMap<String, DbPro>();
+	protected final Config config;
 	
 	/**
-	 * for DbKit.addConfig(configName)
+	 * 建议用 Db.use(configName) 代替，未来版本会去除该方法
 	 */
-	static void init(String configName) {
-		MAIN = DbKit.getConfig(configName).dbProFactory.getDbPro(configName); // new DbPro(configName);
-		map.put(configName, MAIN);
+	@Deprecated
+	public static DbPro use(String configName) {
+		return Db.use(configName);
 	}
 	
-    /**
-     * for DbKit.removeConfig(configName)
-     */
-    static void removeDbProWithConfig(String configName) {
-    	if (MAIN != null && MAIN.config.getName().equals(configName)) {
-    		MAIN = null;
-    	}
-    	map.remove(configName);
-    }
+	/**
+	 * 建议用 Db.use() 代替，未来版本会去除该方法
+	 */
+	@Deprecated
+	public static DbPro use() {
+		return Db.use();
+	}
 	
 	public DbPro() {
 		if (DbKit.config == null) {
@@ -73,23 +67,6 @@ public class DbPro {
 		if (this.config == null) {
 			throw new IllegalArgumentException("Config not found by configName: " + configName);
 		}
-	}
-	
-	public static DbPro use(String configName) {
-		DbPro result = map.get(configName);
-		if (result == null) {
-			Config config = DbKit.getConfig(configName);
-			if (config == null) {
-				throw new IllegalArgumentException("Config not found by configName: " + configName);
-			}
-			result = config.dbProFactory.getDbPro(configName);	// new DbPro(configName);
-			map.put(configName, result);
-		}
-		return result;
-	}
-	
-	public static DbPro use() {
-		return MAIN;
 	}
 	
 	public Config getConfig() {

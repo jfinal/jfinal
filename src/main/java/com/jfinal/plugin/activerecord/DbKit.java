@@ -70,7 +70,7 @@ public final class DbKit {
 		 */
 		if (MAIN_CONFIG_NAME.equals(config.getName())) {
 			DbKit.config = config;
-			DbPro.init(DbKit.config.getName());
+			Db.init(DbKit.config.getName());
 		}
 		
 		/**
@@ -79,7 +79,7 @@ public final class DbKit {
 		 */
 		if (DbKit.config == null) {
 			DbKit.config = config;
-			DbPro.init(DbKit.config.getName());
+			Db.init(DbKit.config.getName());
 		}
 	}
 	
@@ -89,7 +89,7 @@ public final class DbKit {
 			DbKit.config = null;
 		}
 		
-		DbPro.removeDbProWithConfig(configName);
+		Db.removeDbProWithConfig(configName);
 		return configNameToConfig.remove(configName);
 	}
 	
