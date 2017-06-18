@@ -37,16 +37,23 @@ public class PostgreSqlDialect extends Dialect {
 	public void forModelSave(Table table, Map<String, Object> attrs, StringBuilder sql, List<Object> paras) {
 		sql.append("insert into \"").append(table.getName()).append("\"(");
 		StringBuilder temp = new StringBuilder(") values(");
+        String pKey = table.getPrimaryKey();
 		for (Entry<String, Object> e: attrs.entrySet()) {
 			String colName = e.getKey();
-			if (table.hasColumnLabel(colName)) {
+			if (table.hasColumnLabel(colName) && !colName.equalsIgnoreCase(pKey)) {
 				if (paras.size() > 0) {
 					sql.append(", ");
 					temp.append(", ");
 				}
-				sql.append('\"').append(colName).append('\"');
-				temp.append('?');
-				paras.add(e.getValue());
+                if (colName.equalsIgnoreCase(pKey))
+				{
+					continue;
+				} else {
+
+                    sql.append('\"').append(colName).append('\"');
+                    temp.append('?');
+                    paras.add(e.getValue());
+                }
 			}
 		}
 		sql.append(temp.toString()).append(')');
