@@ -47,7 +47,7 @@ public class DbPro {
 	 * for DbKit.addConfig(configName)
 	 */
 	static void init(String configName) {
-		MAIN = new DbPro(configName);
+		MAIN = DbKit.getConfig(configName).dbProFactory.getDbPro(configName); // new DbPro(configName);
 		map.put(configName, MAIN);
 	}
 	
@@ -78,7 +78,11 @@ public class DbPro {
 	public static DbPro use(String configName) {
 		DbPro result = map.get(configName);
 		if (result == null) {
-			result = new DbPro(configName);
+			Config config = DbKit.getConfig(configName);
+			if (config == null) {
+				throw new IllegalArgumentException("Config not found by configName: " + configName);
+			}
+			result = config.dbProFactory.getDbPro(configName);	// new DbPro(configName);
 			map.put(configName, result);
 		}
 		return result;
@@ -86,24 +90,6 @@ public class DbPro {
 	
 	public static DbPro use() {
 		return MAIN;
-	}
-	
-	/**
-	 * 用于添加自定义扩展 DbPro 实现类，实现定制化功能
-	 * 1：创建 DbPro 继承类： public class MyDbPro extends DbPro
-	 * 2：DbPro.addDbPro(new MyDbPro(...));
-	 * 
-	 * 注意：如果 configName 已经存在，则对应的 DbPro 对象会被替换掉
-	 */
-	public static void addDbPro(DbPro dbPro) {
-		if (dbPro == null) {
-			throw new IllegalArgumentException("dbPro can not be null");
-		}
-		
-		map.put(dbPro.config.getName(), dbPro);
-		if (MAIN != null && MAIN.config.getName().equals(dbPro.config.getName())) {
-			MAIN = dbPro;	// 替换 MAIN 对象，该dbPro 对象将接管 Db 中的功能
-		}
 	}
 	
 	public Config getConfig() {
