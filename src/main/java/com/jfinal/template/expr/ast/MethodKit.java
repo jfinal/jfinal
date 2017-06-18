@@ -229,6 +229,115 @@ public class MethodKit {
         }
 		key.append(HashKit.md5(argTypesDigest.toString()));
 	}
+	
+	// 添加 jfinal 官方扩展方法 extension method
+	static {
+		addExtensionMethod(String.class, new com.jfinal.template.ext.extensionmethod.StringExt());
+		addExtensionMethod(Integer.class, new com.jfinal.template.ext.extensionmethod.IntExt());
+		addExtensionMethod(Long.class, new com.jfinal.template.ext.extensionmethod.LongExt());
+		addExtensionMethod(Float.class, new com.jfinal.template.ext.extensionmethod.FloatExt());
+		addExtensionMethod(Double.class, new com.jfinal.template.ext.extensionmethod.DoubleExt());
+	}
+	
+	public synchronized static void addExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
+		Class<?> extensionClass = objectOfExtensionClass.getClass();
+		java.lang.reflect.Method[] methodArray = extensionClass.getMethods();
+		for (java.lang.reflect.Method method : methodArray) {
+			Class<?> decClass = method.getDeclaringClass();	
+			if (decClass == Object.class) {		// 考虑用于优化路由生成那段代码
+				continue ;
+			}
+			
+			Class<?>[] extensionMethodParaTypes = method.getParameterTypes();
+			String methodName = method.getName();
+			if (extensionMethodParaTypes.length == 0) {
+				throw new RuntimeException(buildMethodSignatureForException("Extension method requires at least one argument: " + extensionClass.getName() + ".", methodName, extensionMethodParaTypes));
+			}
+			
+			// Extension method 第一个参数必须与当前对象的类型一致，在调用时会将当前对象自身传给扩展方法的第一个参数
+			if (targetClass != extensionMethodParaTypes[0]) {
+				throw new RuntimeException(buildMethodSignatureForException("The first argument type of : " + extensionClass.getName() + ".", methodName, extensionMethodParaTypes) + " must be: " + targetClass.getName());
+			}
+			
+			Class<?>[] targetParaTypes = new Class<?>[extensionMethodParaTypes.length - 1];
+			try {
+				if (targetParaTypes.length > 0) {
+					System.arraycopy(extensionMethodParaTypes, 1, targetParaTypes, 0, targetParaTypes.length);
+				}
+				Method error = targetClass.getMethod(methodName, targetParaTypes);
+				if (error != null) {
+					throw new RuntimeException("Extension method \"" + methodName + "\" is already exists in class \"" + targetClass.getName() + "\"");
+				}
+			} catch (Exception e) {		// Method 找不到才能添加该扩展方法
+				String key = MethodKit.getMethodKey(targetClass, methodName, targetParaTypes);
+				if (methodCache.containsKey(key)) {
+					throw new RuntimeException(buildMethodSignatureForException("The extension method is already exists: " + extensionClass.getName() + ".", methodName, targetParaTypes));
+				}
+				
+				MethodInfoExt mie = new MethodInfoExt(objectOfExtensionClass, key, extensionClass/* targetClass */, method);
+				methodCache.put(key, mie);
+			}
+		}
+	}
+	
+	public static void addExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {
+		try {
+			addExtensionMethod(targetClass, extensionClass.newInstance());
+		}
+		catch (RuntimeException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public static void removeExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
+		Class<?> extensionClass = objectOfExtensionClass.getClass();
+		java.lang.reflect.Method[] methodArray = extensionClass.getMethods();
+		for (java.lang.reflect.Method method : methodArray) {
+			Class<?> decClass = method.getDeclaringClass();	
+			if (decClass == Object.class) {		// 考虑用于优化路由生成那段代码
+				continue ;
+			}
+			
+			Class<?>[] extensionMethodParaTypes = method.getParameterTypes();
+			String methodName = method.getName();
+			Class<?>[] targetParaTypes = new Class<?>[extensionMethodParaTypes.length - 1];
+			
+			if (targetParaTypes.length > 0) {
+				System.arraycopy(extensionMethodParaTypes, 1, targetParaTypes, 0, targetParaTypes.length);
+			}
+			
+			String key = MethodKit.getMethodKey(targetClass, methodName, targetParaTypes);
+			methodCache.remove(key);
+		}
+	}
+	
+	public static void removeExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {
+		try {
+			removeExtensionMethod(targetClass, extensionClass.newInstance());
+		}
+		catch (RuntimeException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private static String buildMethodSignatureForException(String preMsg, String methodName, Class<?>[] argTypes) {
+		StringBuilder ret = new StringBuilder().append(preMsg).append(methodName).append("(");
+		if (argTypes != null) {
+			for (int i = 0; i < argTypes.length; i++) {
+				if (i > 0) {
+					ret.append(", ");
+				}
+				ret.append(argTypes[i] != null ? argTypes[i].getName() : "null");
+			}
+		}
+		return ret.append(")").toString();
+	}
 }
 
 
