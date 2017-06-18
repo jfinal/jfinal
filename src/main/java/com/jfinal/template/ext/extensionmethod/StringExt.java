@@ -17,30 +17,6 @@
 package com.jfinal.template.ext.extensionmethod;
 
 /**
- * 最新认知，在对 keepPara() 这个场景进行处理时，由于表达式类型在
- * keepPara() 之前是 Integer 型，在 keepPara() 之后变成了 String 型
- * 所以表达式中的变量一会是 Integer 一会是 String，因此在 addMixedMethod
- * 时要针对 String Integer Long Float Double 等类型同时进行处理
- * 
- * 
- * ----------------------------------------------------------
- * 
- * 用法：
- * engine.addMixedMethod(Class targetClass, Class mixedClass)
- * 
- * 最终是调用的 engineConfig.methodKit.addMixedMethod(...)
- * 
- * 
- * 在 methodKit.addMixed(...) 时，要对里头所有方法的第一个参数进行类型判断
- * 
- * 例如在对 String 类进行 mixed 时，要判断第一个参数是否为 String
- * 
- * if (targetValue.getClass() instanceof mixedClass)
- *    // 判断成功
- * 以上的 mixedClass 是被 mixed 的 class，在本例中值为： String.class
- * 
- */
-/**
  * 针对 java.lang.String 的扩展方法
  * 
  * 重要用途：
@@ -79,8 +55,6 @@ public class StringExt {
 		return self.equals("true") || self.equals("1");	// 未来考虑 "t"、"on"
 	}
 	
-	// TODO 这里要测试当参数为被扩展的子类时的情况
-	// 还要测试方法已经在 targetClass 已经存在的情况
 	public Integer toInt(String self) {
 		return self != null ? Integer.parseInt(self) : null;
 	}
