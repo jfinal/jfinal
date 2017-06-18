@@ -40,6 +40,7 @@ public class Config {
 	boolean devMode;
 	int transactionLevel;
 	IContainerFactory containerFactory;
+	IDbProFactory dbProFactory = IDbProFactory.defaultDbProFactory;
 	ICache cache;
 	
 	SqlKit sqlKit;
@@ -165,6 +166,10 @@ public class Config {
 	
 	public IContainerFactory getContainerFactory() {
 		return containerFactory;
+	}
+	
+	public IDbProFactory getDbProFactory() {
+		return dbProFactory;
 	}
 	
 	public boolean isShowSql() {
