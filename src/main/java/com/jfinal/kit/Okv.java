@@ -23,6 +23,9 @@ import com.jfinal.json.Json;
 /**
  * Okv ---> Ordered Key Value 
  * 
+ * Okv 与 Kv 的唯一区别在于 Okv 继承自 LinkedHashMap，而 Kv 继承自 HashMap
+ * 所以对 Okv 中的数据进行迭代输出的次序与数据插入的先后次序一致
+ * 
  * 参数或者返回值封装，常用于业务层传参与返回值
  * 
  * Example：
