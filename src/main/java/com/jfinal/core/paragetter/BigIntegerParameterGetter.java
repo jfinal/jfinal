@@ -44,7 +44,7 @@ public class BigIntegerParameterGetter extends ParameterGetter<BigInteger> {
 	@Override
 	protected BigInteger to(String v) {
 		if(StrKit.notBlank(v)){
-			return BigInteger.valueOf(Long.parseLong(v));
+			return new BigInteger(v);
 		}
 		return null;
 	}

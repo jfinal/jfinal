@@ -44,7 +44,7 @@ public class BigDecimalParameterGetter extends ParameterGetter<BigDecimal> {
 	@Override
 	protected BigDecimal to(String v) {
 		if(StrKit.notBlank(v)){
-			return BigDecimal.valueOf(Double.parseDouble(v));
+			return new BigDecimal(v);
 		}
 		return null;
 	}
