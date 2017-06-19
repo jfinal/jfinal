@@ -20,10 +20,10 @@ public class BooleanConverter implements IConverter<Boolean> {
 	@Override
 	public Boolean convert(String s) {
 		String value = s.toLowerCase();
-		if ("1".equals(value) || "true".equals(value)) {
+		if ("1".equals(value) || "true".equals(value) || "yes".equals(value)|| "on".equals(value)) {
 			return Boolean.TRUE;
 		}
-		else if ("0".equals(value) || "false".equals(value)) {
+		else if ("0".equals(value) || "false".equals(value) || "no".equals(value)|| "off".equals(value)) {
 			return Boolean.FALSE;
 		}
 		else {
