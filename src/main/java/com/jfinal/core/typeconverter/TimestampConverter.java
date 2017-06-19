@@ -21,8 +21,12 @@ import java.text.SimpleDateFormat;
 public class TimestampConverter implements IConverter<java.sql.Timestamp> {
 	private static final String datePattern = "yyyy-MM-dd";
 	private static final int dateLen = datePattern.length();
+	private static final int timeStampWithoutSecPatternLen = "yyyy-MM-dd HH:mm".length();
 	@Override
 	public java.sql.Timestamp convert(String s) throws ParseException {
+		if(timeStampWithoutSecPatternLen == s.length()){
+			s = s + ":00";
+		}
 		if (s.length() > dateLen) {
 			return java.sql.Timestamp.valueOf(s);
 		}
