@@ -233,7 +233,7 @@ public class MethodKit {
 	// 添加 jfinal 官方扩展方法 extension method
 	static {
 		addExtensionMethod(String.class, new com.jfinal.template.ext.extensionmethod.StringExt());
-		addExtensionMethod(Integer.class, new com.jfinal.template.ext.extensionmethod.IntExt());
+		addExtensionMethod(Integer.class, new com.jfinal.template.ext.extensionmethod.IntegerExt());
 		addExtensionMethod(Long.class, new com.jfinal.template.ext.extensionmethod.LongExt());
 		addExtensionMethod(Float.class, new com.jfinal.template.ext.extensionmethod.FloatExt());
 		addExtensionMethod(Double.class, new com.jfinal.template.ext.extensionmethod.DoubleExt());
