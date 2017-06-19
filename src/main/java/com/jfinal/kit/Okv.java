@@ -16,71 +16,68 @@
 
 package com.jfinal.kit;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import com.jfinal.json.Json;
 
 /**
- * 建议使用 Kv 代替 JMap，JMap 已被 Deprecated
+ * Okv ---> Ordered Key Value 
  * 
- * JMap ---> JFinal Map 
+ * Okv 与 Kv 的唯一区别在于 Okv 继承自 LinkedHashMap，而 Kv 继承自 HashMap
+ * 所以对 Okv 中的数据进行迭代输出的次序与数据插入的先后次序一致
+ * 
  * 参数或者返回值封装，常用于业务层传参与返回值
  * 
  * Example：
- * 1：JMap para = JMap.create("id", 123);
+ * 1：Okv para = Okv.by("id", 123);
  *    User user = user.findFirst(getSqlPara("find", para));
  * 
- * 2：return JMap.fail("msg", "用户名或密码错误");	// 登录失败返回
- *   return JMap.ok("loginUser", user);			// 登录成功返回
+ * 2：return Okv.fail("msg", "用户名或密码错误");	// 登录失败返回
+ *   return Okv.ok("loginUser", user);			// 登录成功返回
  * 
- * 3：JMap map = loginService.login(...);
- *   renderJson(map);
+ * 3：Okv okv = loginService.login(...);
+ *   renderJson(okv);
  */
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
-@Deprecated
-public class JMap extends HashMap {
+public class Okv extends LinkedHashMap {
 
 	private static final String STATUS_OK = "isOk";
 	private static final String STATUS_FAIL = "isFail";
 	
-	public JMap() {
+	public Okv() {
 	}
 	
-	public static JMap by(Object key, Object value) {
-		return new JMap().set(key, value);
+	public static Okv by(Object key, Object value) {
+		return new Okv().set(key, value);
 	}
 	
-	public static JMap create(Object key, Object value) {
-		return new JMap().set(key, value);
+	public static Okv create() {
+		return new Okv();
 	}
 	
-	public static JMap create() {
-		return new JMap();
+	public static Okv ok() {
+		return new Okv().setOk();
 	}
 	
-	public static JMap ok() {
-		return new JMap().setOk();
-	}
-	
-	public static JMap ok(Object key, Object value) {
+	public static Okv ok(Object key, Object value) {
 		return ok().set(key, value);
 	}
 	
-	public static JMap fail() {
-		return new JMap().setFail();
+	public static Okv fail() {
+		return new Okv().setFail();
 	}
 	
-	public static JMap fail(Object key, Object value) {
+	public static Okv fail(Object key, Object value) {
 		return fail().set(key, value);
 	}
 	
-	public JMap setOk() {
+	public Okv setOk() {
 		super.put(STATUS_OK, Boolean.TRUE);
 		super.put(STATUS_FAIL, Boolean.FALSE);
 		return this;
 	}
 	
-	public JMap setFail() {
+	public Okv setFail() {
 		super.put(STATUS_OK, Boolean.FALSE);
 		super.put(STATUS_FAIL, Boolean.TRUE);
 		return this;
@@ -96,22 +93,22 @@ public class JMap extends HashMap {
 		return isFail != null && isFail;
 	}
 	
-	public JMap set(Object key, Object value) {
+	public Okv set(Object key, Object value) {
 		super.put(key, value);
 		return this;
 	}
 	
-	public JMap set(Map map) {
+	public Okv set(Map map) {
 		super.putAll(map);
 		return this;
 	}
 	
-	public JMap set(JMap jMap) {
-		super.putAll(jMap);
+	public Okv set(Okv okv) {
+		super.putAll(okv);
 		return this;
 	}
 	
-	public JMap delete(Object key) {
+	public Okv delete(Object key) {
 		super.remove(key);
 		return this;
 	}
@@ -170,8 +167,8 @@ public class JMap extends HashMap {
 		return Json.getJson().toJson(this);
 	}
 	
-	public boolean equals(Object jMap) {
-		return jMap instanceof JMap && super.equals(jMap);
+	public boolean equals(Object okv) {
+		return okv instanceof Okv && super.equals(okv);
 	}
 }
 

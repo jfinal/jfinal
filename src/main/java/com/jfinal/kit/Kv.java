@@ -16,12 +16,12 @@
 
 package com.jfinal.kit;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import com.jfinal.json.Json;
 
 /**
- * Kv ---> key value 
+ * Kv ---> Key Value 
  * Kv 用于取代 JMap，前者输入量少，且输入更顺滑
  * 
  * 参数或者返回值封装，常用于业务层传参与返回值
@@ -37,7 +37,7 @@ import com.jfinal.json.Json;
  *   renderJson(kv);
  */
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
-public class Kv extends LinkedHashMap {
+public class Kv extends HashMap {
 
 	private static final String STATUS_OK = "isOk";
 	private static final String STATUS_FAIL = "isFail";
