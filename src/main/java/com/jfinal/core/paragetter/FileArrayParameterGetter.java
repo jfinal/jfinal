@@ -22,13 +22,18 @@ import com.jfinal.upload.UploadFile;
 
 public class FileArrayParameterGetter extends ParameterGetter<List<UploadFile>> {
 
-	public FileArrayParameterGetter() {
-		super("",null);
+	public FileArrayParameterGetter(String parameterName, String defaultValue) {
+		super(null,null);
 	}
 
 	@Override
 	public List<UploadFile> get(Controller c) {
 		return c.getFiles();
+	}
+
+	@Override
+	protected List<UploadFile> to(String v) {
+		return null;
 	}
 
 }

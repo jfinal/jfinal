@@ -19,26 +19,29 @@ import java.text.ParseException;
 import java.util.Date;
 
 import com.jfinal.core.Controller;
+import com.jfinal.kit.StrKit;
 
 public class DateParameterGetter extends ParameterGetter<Date> {
 	
 	public DateParameterGetter(String parameterName, String defaultValue) {
-		super(parameterName, toDate(defaultValue));
+		super(parameterName, defaultValue);
 	}
 
 	@Override
 	public Date get(Controller c) {
 		return c.getParaToDate(getParameterName(), getDefaultValue());
 	}
-	
-	private static Date toDate(String value) {
-		if (value == null || "".equals(value.trim()))
-			return null;
-		try {
-			return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value);
-		} catch (ParseException e) {
-			return null;
+
+	@Override
+	protected Date to(String v) {
+		if(StrKit.notBlank(v)){
+			try {
+				return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(v);
+			} catch (ParseException e) {
+				return null;
+			}
 		}
+		return null;
 	}
 
 }

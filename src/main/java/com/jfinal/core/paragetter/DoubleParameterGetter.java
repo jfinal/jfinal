@@ -22,7 +22,7 @@ import com.jfinal.render.RenderManager;
 
 public class DoubleParameterGetter extends ParameterGetter<Double> {
 	
-	public DoubleParameterGetter(String parameterName, Double defaultValue) {
+	public DoubleParameterGetter(String parameterName, String defaultValue) {
 		super(parameterName,defaultValue);
 	}
 
@@ -33,10 +33,18 @@ public class DoubleParameterGetter extends ParameterGetter<Double> {
 			if (StrKit.isBlank(value))
 				return this.getDefaultValue();
 			value = value.trim();
-			return Double.parseDouble(value);
+			return to(value);
 		} catch (Exception e) {
 			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
 					"Can not parse the parameter \"" + value + "\" to Double value.");
 		}
+	}
+
+	@Override
+	protected Double to(String v) {
+		if(StrKit.notBlank(v)){
+			return Double.parseDouble(v);
+		}
+		return null;
 	}
 }

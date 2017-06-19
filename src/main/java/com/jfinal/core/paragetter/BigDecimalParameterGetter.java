@@ -23,9 +23,8 @@ import com.jfinal.kit.StrKit;
 import com.jfinal.render.RenderManager;
 
 public class BigDecimalParameterGetter extends ParameterGetter<BigDecimal> {
-	
 
-	public BigDecimalParameterGetter(String parameterName, BigDecimal defaultValue) {
+	public BigDecimalParameterGetter(String parameterName, String defaultValue) {
 		super(parameterName, defaultValue);
 	}
 
@@ -35,12 +34,19 @@ public class BigDecimalParameterGetter extends ParameterGetter<BigDecimal> {
 		try {
 			if (StrKit.isBlank(value))
 				return this.getDefaultValue();
-			value = value.trim();
-			return BigDecimal.valueOf(Double.parseDouble(value));
+			return to(value.trim());
 		} catch (Exception e) {
 			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
 					"Can not parse the parameter \"" + value + "\" to BigDecimal value.");
 		}
+	}
+
+	@Override
+	protected BigDecimal to(String v) {
+		if(StrKit.notBlank(v)){
+			return BigDecimal.valueOf(Double.parseDouble(v));
+		}
+		return null;
 	}
 
 }

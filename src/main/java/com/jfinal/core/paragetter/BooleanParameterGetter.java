@@ -16,16 +16,25 @@
 package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
+import com.jfinal.kit.StrKit;
 
 public class BooleanParameterGetter extends ParameterGetter<Boolean> {
 	
-	public BooleanParameterGetter(String parameterName, Boolean defaultValue) {
+	public BooleanParameterGetter(String parameterName, String defaultValue) {
 		super(parameterName,defaultValue);
 	}
 
 	@Override
 	public Boolean get(Controller c) {
 		return c.getParaToBoolean(getParameterName(),getDefaultValue());
+	}
+
+	@Override
+	protected Boolean to(String v) {
+		if(StrKit.notBlank(v)){
+			return Boolean.parseBoolean(v);
+		}
+		return null;
 	}
 
 }

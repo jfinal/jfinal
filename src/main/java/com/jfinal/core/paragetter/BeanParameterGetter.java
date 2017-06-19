@@ -27,4 +27,9 @@ public class BeanParameterGetter<T> extends ParameterGetter<T> {
 	public T get(Controller c) {
 		return c.getBean(modelClass, this.getParameterName(),true);
 	}
+	
+	@Override
+	protected T to(String v) {
+		return null;
+	}
 }

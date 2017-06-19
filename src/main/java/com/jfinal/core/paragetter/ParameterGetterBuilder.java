@@ -15,165 +15,122 @@
  */
 package com.jfinal.core.paragetter;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.jfinal.core.Controller;
 
 public class ParameterGetterBuilder {
-	
+
 	private static ParameterGetterBuilder me = new ParameterGetterBuilder();
-	
-	private ParameterGetterBuilder(){}
-	
-	public static ParameterGetterBuilder me(){return me;}
-	
-	public ParameterGetterProcessor build(Class<? extends Controller> controllerClass, Method method){
-		final int parameterCount = method.getParameterCount();
-		ParameterGetterProcessor opag = new ParameterGetterProcessor(parameterCount);
-		if( 0 == parameterCount){
-			return opag;
-		}
-		for(Parameter p : method.getParameters()){
-			IParameterGetter<?> pg = createParameterGetter(controllerClass, method, p);
-			if(pg instanceof FileParameterGetter || pg instanceof FileArrayParameterGetter){
-				opag.addParameterGetterToHeader(pg);
-			}else{
-				opag.addParameterGetter(pg);
-			}
-		}		
-		return opag;
+	private Map<String, Holder> typeMap = new HashMap<>();
+
+	private ParameterGetterBuilder() {
+		registType("short", ShortParameterGetter.class, "0");
+		registType("int", IntParameterGetter.class, "0");
+		registType("long", LongParameterGetter.class, "0");
+		registType("float", FloatParameterGetter.class, "0");
+		registType("double", DoubleParameterGetter.class, "0");
+		registType("boolean", BooleanParameterGetter.class, "false");
+		registType("java.lang.Short", ShortParameterGetter.class, null);
+		registType("java.lang.Integer", IntParameterGetter.class, null);
+		registType("java.lang.Long", LongParameterGetter.class, null);
+		registType("java.lang.Float", FloatParameterGetter.class, null);
+		registType("java.lang.Double", DoubleParameterGetter.class, null);
+		registType("java.lang.Boolean", BooleanParameterGetter.class, null);
+		registType("java.lang.String", StringParameterGetter.class, null);
+		registType("java.util.Date", DateParameterGetter.class, null);
+		registType("java.math.BigDecimal", BigDecimalParameterGetter.class, null);
+		registType("java.math.BigInteger", BigIntegerParameterGetter.class, null);
+		registType("com.jfinal.upload.UploadFile", FileParameterGetter.class, null);
+		registType("java.util.List<com.jfinal.upload.UploadFile>", FileArrayParameterGetter.class, null);
+		registType("java.lang.String[]", StringArrayParameterGetter.class, null);
+		registType("int[]", IntArrayParameterGetter.class, null);
+		registType("java.lang.Integer[]", IntArrayParameterGetter.class, null);
+		registType("long[]", LongArrayParameterGetter.class, null);
+		registType("java.lang.Long[]", LongArrayParameterGetter.class, null);
+	}
+
+	public static ParameterGetterBuilder me() {
+		return me;
 	}
 	
-	private IParameterGetter<?> createParameterGetter(Class<? extends Controller> controllerClass, Method method, Parameter p){
+	/**
+	 * 注册一个类型识别器
+	 * @param type 类型，例如 int, java.lang.Integer
+	 * @param clazz 参数获取器实现类，必须继承ParameterGetter
+	 * @param defaultValue，默认值，比如int的默认值为0， java.lang.Integer的默认值为null
+	 */
+	public void registType(String type, Class<? extends ParameterGetter<?>> clazz, String defaultValue){
+		this.typeMap.put(type, new Holder(clazz, defaultValue));
+	}
+
+	public ParameterGetterProcessor build(Class<? extends Controller> controllerClass, Method method) {
+		final int parameterCount = method.getParameterCount();
+		ParameterGetterProcessor opag = new ParameterGetterProcessor(parameterCount);
+		if (0 == parameterCount) {
+			return opag;
+		}
+		for (Parameter p : method.getParameters()) {
+			IParameterGetter<?> pg = createParameterGetter(controllerClass, method, p);
+			if (pg instanceof FileParameterGetter || pg instanceof FileArrayParameterGetter) {
+				opag.addParameterGetterToHeader(pg);
+			} else {
+				opag.addParameterGetter(pg);
+			}
+		}
+		return opag;
+	}
+
+	private IParameterGetter<?> createParameterGetter(Class<? extends Controller> controllerClass, Method method,
+			Parameter p) {
 		String parameterName = p.getName();
-		String defaultValue  = null;
-		String type          = p.getParameterizedType().getTypeName();
-		Para  ParaAnn      = p.getAnnotation(Para.class);
-		if(ParaAnn != null){
-			parameterName = ParaAnn.value().trim();
-			defaultValue  = ParaAnn.defaultValue().trim();
-			if(defaultValue.isEmpty()){
+		String defaultValue = null;
+		String type = p.getParameterizedType().getTypeName();
+		Para para = p.getAnnotation(Para.class);
+		if (para != null) {
+			parameterName = para.value().trim();
+			defaultValue = para.defaultValue().trim();
+			if (defaultValue.isEmpty()) {
 				defaultValue = null;
 			}
 		}
-		if(type.equals("java.lang.String")){
-			if(defaultValue != null){
-				return new StringParameterGetter(parameterName, defaultValue);
-			}else{
-				return new StringParameterGetter(parameterName, null);
+		Holder holder = typeMap.get(type);
+		if (holder != null) {
+			if (null == defaultValue) {
+				defaultValue = holder.getDefaultValue();
 			}
-		}else if(type.equals("int") || type.equals("java.lang.Integer")){
-			if(defaultValue != null){
-				return new IntParameterGetter(parameterName, Integer.parseInt(defaultValue));
+			try {
+				return holder.born(parameterName, defaultValue);
+			} catch (Exception e) {
+				throw new RuntimeException(e.getMessage(), e);
 			}
-			if(type.equals("int")){
-				return new IntParameterGetter(parameterName,0);
-			}else{
-				return new IntParameterGetter(parameterName,null);
-			}
-		}else if(type.equals("long") || type.equals("java.lang.Long")){
-			if(defaultValue != null){
-				return new LongParameterGetter(parameterName, Long.parseLong(defaultValue));
-			}
-			if(type.equals("long")){
-				return new LongParameterGetter(parameterName,0L);
-			}else{
-				return new LongParameterGetter(parameterName,null);
-			}
-		}else if(type.equals("short") || type.equals("java.lang.Short")){
-			if(defaultValue != null){
-				return new ShortParameterGetter(parameterName, Short.parseShort(defaultValue));
-			}
-			if(type.equals("short")){
-				return new ShortParameterGetter(parameterName,(short)0);
-			}else{
-				return new ShortParameterGetter(parameterName,null);
-			}
-		}else if(type.equals("float") || type.equals("java.lang.Float")){
-			if(defaultValue != null){
-				return new FloatParameterGetter(parameterName, Float.parseFloat(defaultValue));
-			}
-			if(type.equals("float")){
-				return new FloatParameterGetter(parameterName,0.0f);
-			}else{
-				return new FloatParameterGetter(parameterName,null);
-			}
-		}else if(type.equals("double") || type.equals("java.lang.Double")){
-			if(defaultValue != null){
-				return new DoubleParameterGetter(parameterName, Double.parseDouble(defaultValue));
-			}
-			if(type.equals("double")){
-				return new DoubleParameterGetter(parameterName,0.0);
-			}else{
-				return new DoubleParameterGetter(parameterName,null);
-			}
-		}else if(type.equals("boolean") || type.equals("java.lang.Boolean")){
-			if(defaultValue != null){
-				return new BooleanParameterGetter(parameterName, Boolean.parseBoolean(defaultValue));
-			}
-			if(type.equals("boolean")){
-				return new BooleanParameterGetter(parameterName,Boolean.FALSE);
-			}else{
-				return new BooleanParameterGetter(parameterName,null);
-			}
-		}else if(type.equals("java.util.Date")){
-			if(defaultValue != null){
-				return new DateParameterGetter(parameterName, defaultValue);
-			}else{
-				return new DateParameterGetter(parameterName, null);
-			}
-		}else if(type.equals("java.math.BigDecimal")){
-			if(defaultValue != null){
-				return new BigDecimalParameterGetter(parameterName, BigDecimal.valueOf(Double.parseDouble(defaultValue)));
-			}else{
-				return new BigDecimalParameterGetter(parameterName, null);
-			}
-		}else if(type.equals("java.math.BigInteger")){
-			if(defaultValue != null){
-				return new BigIntegerParameterGetter(parameterName, BigInteger.valueOf(Long.parseLong(defaultValue)));
-			}else{
-				return new BigIntegerParameterGetter(parameterName, null);
-			}
-		}else if(type.equals("com.jfinal.upload.UploadFile")){
-			return new FileParameterGetter(parameterName);
-		}else if(type.equals("java.util.List<com.jfinal.upload.UploadFile>")){
-			return new FileArrayParameterGetter();
-		}else if(type.equals("java.lang.String[]")){
-			return new StringArrayParameterGetter(parameterName);
-		}else if(type.equals("long[]") || type.equals("java.lang.Long[]")){
-			return new LongArrayParameterGetter(parameterName);
-		}else if(type.equals("int[]") || type.equals("java.lang.Integer[]")){
-			return new IntArrayParameterGetter(parameterName);
-		}else{
-			//判断是否是com.jfinal.plugin.activerecord.Model的子类
-			if(isSubClassOf(p.getType(), com.jfinal.plugin.activerecord.Model.class)){
-				return new ModelParameterGetter<>(p.getType(), parameterName);
-			}else{
-				return new BeanParameterGetter<>(p.getType(), parameterName);
-			}
+		}
+		// 判断是否是com.jfinal.plugin.activerecord.Model的子类
+		if (com.jfinal.plugin.activerecord.Model.class.isAssignableFrom(p.getType())) {
+			return new ModelParameterGetter<>(p.getType(), parameterName);
+		} else {
+			return new BeanParameterGetter<>(p.getType(), parameterName);
 		}
 	}
-	
-	private static  boolean isSubClassOf(Class<?> clazz ,Class<?> superClass){
-		Class<?> c = clazz;
-		boolean isSubClass = false;
-		int deep = 1;
-		int maxDeep = 5;
-		String superClassName = superClass.getName();
-		while(c != null && deep < maxDeep){
-			String typeName = c.getName();
-			if(superClassName.equals(typeName)){
-				isSubClass = true;
-				break;
-			}else if(typeName.startsWith("java.lang")){
-				break;
-			}
-			c = c.getSuperclass();
-			deep++;
+
+	private static class Holder {
+		private final String defaultValue;
+		private final Class<? extends ParameterGetter<?>> clazz;
+
+		Holder(Class<? extends ParameterGetter<?>> clazz, String defaultValue) {
+			this.clazz = clazz;
+			this.defaultValue = defaultValue;
 		}
-		return isSubClass;
+		final String getDefaultValue() {
+			return defaultValue;
+		}
+		ParameterGetter<?> born(String parameterName, String defaultValue) throws Exception {
+			Constructor<? extends ParameterGetter<?>> con = clazz.getConstructor(String.class, String.class);
+			return con.newInstance(parameterName, defaultValue);
+		}
 	}
 }

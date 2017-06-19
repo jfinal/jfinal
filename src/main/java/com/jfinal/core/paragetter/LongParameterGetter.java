@@ -16,15 +16,24 @@
 package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
+import com.jfinal.kit.StrKit;
 
 public class LongParameterGetter extends ParameterGetter<Long> {
 	
-	public LongParameterGetter(String parameterName, Long defaultValue) {
+	public LongParameterGetter(String parameterName, String defaultValue) {
 		super(parameterName,defaultValue);
 	}
 
 	@Override
 	public Long get(Controller c) {
 		return c.getParaToLong(getParameterName(),getDefaultValue());
+	}
+
+	@Override
+	protected Long to(String v) {
+		if(StrKit.notBlank(v)){
+			return Long.parseLong(v);
+		}
+		return null;
 	}
 }

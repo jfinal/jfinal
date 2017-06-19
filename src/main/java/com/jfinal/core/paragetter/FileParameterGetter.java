@@ -20,7 +20,7 @@ import com.jfinal.upload.UploadFile;
 
 public class FileParameterGetter extends ParameterGetter<UploadFile> {
 
-	public FileParameterGetter(String parameterName) {
+	public FileParameterGetter(String parameterName,String defaultValue) {
 		super(parameterName,null);
 	}
 
@@ -31,6 +31,11 @@ public class FileParameterGetter extends ParameterGetter<UploadFile> {
 			return c.getFile();
 		}
 		return c.getFile(parameterName);
+	}
+
+	@Override
+	protected UploadFile to(String v) {
+		return null;
 	}
 
 }

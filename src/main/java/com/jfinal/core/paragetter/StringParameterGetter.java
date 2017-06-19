@@ -27,4 +27,9 @@ public class StringParameterGetter extends ParameterGetter<String> {
 	public String get(Controller c) {
 		return c.getPara(getParameterName(), getDefaultValue());
 	}
+
+	@Override
+	protected String to(String v) {
+		return v;
+	}
 }

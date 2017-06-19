@@ -16,14 +16,26 @@
 package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
+import com.jfinal.kit.StrKit;
 
 public class StringArrayParameterGetter extends ParameterGetter<String[]> {
 	
-	public StringArrayParameterGetter(String parameterName) {
-		super(parameterName,null);
+	public StringArrayParameterGetter(String parameterName, String defaultValue) {
+		super(parameterName,defaultValue);
 	}
 	@Override
 	public String[] get(Controller c) {
-		return c.getParaValues(getParameterName());
+		String[] ret = c.getParaValues(getParameterName());
+		if( null == ret) {
+			ret =  this.getDefaultValue();
+		}
+		return ret;
+	}
+	@Override
+	protected String[] to(String v) {
+		if(StrKit.notBlank(v)){
+			return v.split(",");
+		}
+		return null;
 	}
 }

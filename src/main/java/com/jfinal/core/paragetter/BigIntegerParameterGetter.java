@@ -24,7 +24,7 @@ import com.jfinal.render.RenderManager;
 
 public class BigIntegerParameterGetter extends ParameterGetter<BigInteger> {
 
-	public BigIntegerParameterGetter(String parameterName, BigInteger defaultValue) {
+	public BigIntegerParameterGetter(String parameterName, String defaultValue) {
 		super(parameterName, defaultValue);
 	}
 
@@ -34,12 +34,19 @@ public class BigIntegerParameterGetter extends ParameterGetter<BigInteger> {
 		try {
 			if (StrKit.isBlank(value))
 				return this.getDefaultValue();
-			value = value.trim();
-			return BigInteger.valueOf(Long.parseLong(value));
+			return to(value.trim());
 		} catch (Exception e) {
 			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
 					"Can not parse the parameter \"" + value + "\" to BigInteger value.");
 		}
+	}
+
+	@Override
+	protected BigInteger to(String v) {
+		if(StrKit.notBlank(v)){
+			return BigInteger.valueOf(Long.parseLong(v));
+		}
+		return null;
 	}
 
 }

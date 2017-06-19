@@ -22,7 +22,7 @@ import com.jfinal.render.RenderManager;
 
 public class FloatParameterGetter extends ParameterGetter<Float> {
 
-	public FloatParameterGetter(String parameterName, Float defaultValue) {
+	public FloatParameterGetter(String parameterName, String defaultValue) {
 		super(parameterName, defaultValue);
 	}
 
@@ -32,11 +32,18 @@ public class FloatParameterGetter extends ParameterGetter<Float> {
 		try {
 			if (StrKit.isBlank(value))
 				return this.getDefaultValue();
-			value = value.trim();
-			return Float.parseFloat(value);
+			return to(value.trim());
 		} catch (Exception e) {
 			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
 					"Can not parse the parameter \"" + value + "\" to Float value.");
 		}
+	}
+
+	@Override
+	protected Float to(String v) {
+		if(StrKit.notBlank(v)){
+			return Float.parseFloat(v);
+		}
+		return null;
 	}
 }

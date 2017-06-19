@@ -16,11 +16,12 @@
 package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
+import com.jfinal.kit.StrKit;
 
 public class IntParameterGetter extends ParameterGetter<Integer> {
-	
-	public IntParameterGetter(String parameterName, Integer defaultValue) {
-		super(parameterName,defaultValue);
+
+	public IntParameterGetter(String parameterName, String defaultValue) {
+		super(parameterName, defaultValue);
 	}
 
 	@Override
@@ -28,4 +29,11 @@ public class IntParameterGetter extends ParameterGetter<Integer> {
 		return c.getParaToInt(getParameterName(),getDefaultValue());
 	}
 
+	@Override
+	protected Integer to(String v) {
+		if(StrKit.notBlank(v)){
+			return Integer.parseInt(v);
+		}
+		return null;
+	}
 }

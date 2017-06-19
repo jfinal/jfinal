@@ -28,4 +28,8 @@ public class ModelParameterGetter<T> extends ParameterGetter<T> {
 	public T get(Controller c) {
 		return c.getModel(modelClass, this.getParameterName(),true);
 	}
+	@Override
+	protected T to(String v) {
+		return null;
+	}
 }

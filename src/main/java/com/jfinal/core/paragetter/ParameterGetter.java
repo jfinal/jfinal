@@ -27,8 +27,10 @@ public abstract class ParameterGetter<T> implements IParameterGetter<T> {
 		return defaultValue;
 	}
 	
-	public ParameterGetter(String parameterName, T defaultValue){
+	public ParameterGetter(String parameterName, String defaultValue){
 		this.parameterName = parameterName;
-		this.defaultValue = defaultValue;
+		this.defaultValue = to(defaultValue);
 	}
+	
+	protected abstract T to(String v);
 }
