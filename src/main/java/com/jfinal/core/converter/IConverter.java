@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jfinal.core.typeconverter;
+package com.jfinal.core.converter;
 
-public class FloatConverter implements IConverter<Float> {
+import java.text.ParseException;
 
-	@Override
-	public Float convert(String s) {
-		return Float.parseFloat(s);
-	}
-	
+/**
+ * 将一个字符串转换成特定类型。
+ * @ClassName: IConverter  
+ * @since V1.0.0
+ */
+public interface IConverter<T> {
+	T convert(String s) throws ParseException;
 }

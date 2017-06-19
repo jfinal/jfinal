@@ -31,7 +31,7 @@ import javax.servlet.http.HttpSession;
 
 import com.jfinal.aop.Enhancer;
 import com.jfinal.aop.Interceptor;
-import com.jfinal.core.typeconverter.TypeConverter;
+import com.jfinal.core.converter.TypeConverter;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.ContentType;
 import com.jfinal.render.JsonRender;

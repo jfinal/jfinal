@@ -13,13 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jfinal.core.typeconverter;
+package com.jfinal.core.converter;
 
-public class DoubleConverter implements IConverter<Double> {
+public class BooleanConverter implements IConverter<Boolean> {
 
 	@Override
-	public Double convert(String s) {
-		return Double.parseDouble(s);
+	public Boolean convert(String s) {
+		String value = s.toLowerCase();
+		if ("1".equals(value) || "true".equals(value)) {
+			return Boolean.TRUE;
+		}
+		else if ("0".equals(value) || "false".equals(value)) {
+			return Boolean.FALSE;
+		}
+		else {
+			throw new RuntimeException("Can not parse to boolean type of value: " + s);
+		}
 	}
 	
 }

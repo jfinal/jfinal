@@ -13,13 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jfinal.core.typeconverter;
+package com.jfinal.core.converter;
 
-public class LongConverter implements IConverter<Long> {
+import java.text.ParseException;
 
+public class TimeConverter implements IConverter<java.sql.Time> {
+	private static final int timePatternLen = "hh:mm:ss".length();
+	private static final int timeWithoutSecPatternLen = "hh:mm".length();
 	@Override
-	public Long convert(String s) {
-		return Long.parseLong(s);
+	public java.sql.Time convert(String s) throws ParseException {
+		int len = s.length();
+		if(len == timeWithoutSecPatternLen){
+			s = s + ":00";
+		}
+		if(len > timePatternLen){
+			s = s.substring(0, timePatternLen);
+		}
+		return java.sql.Time.valueOf(s);
 	}
-	
 }

@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jfinal.core.typeconverter;
+package com.jfinal.core.converter;
 
-public class BooleanConverter implements IConverter<Boolean> {
-
+public class BigDecimalConverter implements IConverter<java.math.BigDecimal> {
 	@Override
-	public Boolean convert(String s) {
-		String value = s.toLowerCase();
-		if ("1".equals(value) || "true".equals(value)) {
-			return Boolean.TRUE;
-		}
-		else if ("0".equals(value) || "false".equals(value)) {
-			return Boolean.FALSE;
-		}
-		else {
-			throw new RuntimeException("Can not parse to boolean type of value: " + s);
-		}
+	public java.math.BigDecimal convert(String s) {
+		return new java.math.BigDecimal(s);
 	}
 	
 }

@@ -22,7 +22,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.jfinal.core.typeconverter.TypeConverter;
+import com.jfinal.core.converter.TypeConverter;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Model;
