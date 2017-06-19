@@ -29,29 +29,29 @@ public class ParameterGetterBuilder {
 	private Map<String, Holder> typeMap = new HashMap<>();
 
 	private ParameterGetterBuilder() {
-		registType("short", ShortParameterGetter.class, "0");
-		registType("int", IntParameterGetter.class, "0");
-		registType("long", LongParameterGetter.class, "0");
-		registType("float", FloatParameterGetter.class, "0");
-		registType("double", DoubleParameterGetter.class, "0");
-		registType("boolean", BooleanParameterGetter.class, "false");
-		registType("java.lang.Short", ShortParameterGetter.class, null);
-		registType("java.lang.Integer", IntParameterGetter.class, null);
-		registType("java.lang.Long", LongParameterGetter.class, null);
-		registType("java.lang.Float", FloatParameterGetter.class, null);
-		registType("java.lang.Double", DoubleParameterGetter.class, null);
-		registType("java.lang.Boolean", BooleanParameterGetter.class, null);
-		registType("java.lang.String", StringParameterGetter.class, null);
-		registType("java.util.Date", DateParameterGetter.class, null);
-		registType("java.math.BigDecimal", BigDecimalParameterGetter.class, null);
-		registType("java.math.BigInteger", BigIntegerParameterGetter.class, null);
-		registType("com.jfinal.upload.UploadFile", FileParameterGetter.class, null);
-		registType("java.util.List<com.jfinal.upload.UploadFile>", FileArrayParameterGetter.class, null);
-		registType("java.lang.String[]", StringArrayParameterGetter.class, null);
-		registType("int[]", IntArrayParameterGetter.class, null);
-		registType("java.lang.Integer[]", IntArrayParameterGetter.class, null);
-		registType("long[]", LongArrayParameterGetter.class, null);
-		registType("java.lang.Long[]", LongArrayParameterGetter.class, null);
+		regist("short", ShortParameterGetter.class, "0");
+		regist("int", IntParameterGetter.class, "0");
+		regist("long", LongParameterGetter.class, "0");
+		regist("float", FloatParameterGetter.class, "0");
+		regist("double", DoubleParameterGetter.class, "0");
+		regist("boolean", BooleanParameterGetter.class, "false");
+		regist("java.lang.Short", ShortParameterGetter.class, null);
+		regist("java.lang.Integer", IntParameterGetter.class, null);
+		regist("java.lang.Long", LongParameterGetter.class, null);
+		regist("java.lang.Float", FloatParameterGetter.class, null);
+		regist("java.lang.Double", DoubleParameterGetter.class, null);
+		regist("java.lang.Boolean", BooleanParameterGetter.class, null);
+		regist("java.lang.String", StringParameterGetter.class, null);
+		regist("java.util.Date", DateParameterGetter.class, null);
+		regist("java.math.BigDecimal", BigDecimalParameterGetter.class, null);
+		regist("java.math.BigInteger", BigIntegerParameterGetter.class, null);
+		regist("com.jfinal.upload.UploadFile", FileParameterGetter.class, null);
+		regist("java.util.List<com.jfinal.upload.UploadFile>", FileArrayParameterGetter.class, null);
+		regist("java.lang.String[]", StringArrayParameterGetter.class, null);
+		regist("int[]", IntArrayParameterGetter.class, null);
+		regist("java.lang.Integer[]", IntArrayParameterGetter.class, null);
+		regist("long[]", LongArrayParameterGetter.class, null);
+		regist("java.lang.Long[]", LongArrayParameterGetter.class, null);
 	}
 
 	public static ParameterGetterBuilder me() {
@@ -64,7 +64,7 @@ public class ParameterGetterBuilder {
 	 * @param clazz 参数获取器实现类，必须继承ParameterGetter
 	 * @param defaultValue，默认值，比如int的默认值为0， java.lang.Integer的默认值为null
 	 */
-	public void registType(String type, Class<? extends ParameterGetter<?>> clazz, String defaultValue){
+	public void regist(String type, Class<? extends ParameterGetter<?>> clazz, String defaultValue){
 		this.typeMap.put(type, new Holder(clazz, defaultValue));
 	}
 
