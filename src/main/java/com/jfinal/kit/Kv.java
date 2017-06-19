@@ -16,7 +16,7 @@
 
 package com.jfinal.kit;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 import com.jfinal.json.Json;
 
@@ -37,7 +37,7 @@ import com.jfinal.json.Json;
  *   renderJson(kv);
  */
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
-public class Kv extends LinkedHashMap {
+public class Kv extends HashMap {
 
 	private static final String STATUS_OK = "isOk";
 	private static final String STATUS_FAIL = "isFail";
