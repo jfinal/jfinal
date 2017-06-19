@@ -44,7 +44,7 @@ import com.jfinal.template.expr.ast.Logic;
  * 用法：
  * #if(age.toInt() > 18)
  */
-public class IntExt {
+public class IntegerExt {
 	
 	public Boolean toBoolean(Integer self) {
 		return Logic.isTrue(self);
