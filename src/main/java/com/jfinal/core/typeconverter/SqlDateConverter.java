@@ -22,8 +22,12 @@ public class SqlDateConverter implements IConverter<java.sql.Date> {
 	private static final String timeStampPattern = "yyyy-MM-dd HH:mm:ss";
 	private static final String datePattern = "yyyy-MM-dd";
 	private static final int dateLen = datePattern.length();
+	private static final int timeStampWithoutSecPatternLen = "yyyy-MM-dd HH:mm".length();
 	@Override
 	public java.sql.Date convert(String s) throws ParseException {
+		if(timeStampWithoutSecPatternLen == s.length()){
+			s = s + ":00";
+		}
 		if (s.length() > dateLen) {	// if (x < timeStampLen) 改用 datePattern 转换，更智能
 			// return new java.sql.Date(java.sql.Timestamp.valueOf(s).getTime());	// error under jdk 64bit(maybe)
 			return new java.sql.Date(new SimpleDateFormat(timeStampPattern).parse(s).getTime());

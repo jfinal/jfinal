@@ -21,8 +21,12 @@ public class DateConverter implements IConverter<java.util.Date> {
 	private static final String timeStampPattern = "yyyy-MM-dd HH:mm:ss";
 	private static final String datePattern = "yyyy-MM-dd";
 	private static final int dateLen = datePattern.length();
+	private static final int timeStampWithoutSecPatternLen = "yyyy-MM-dd HH:mm".length();
 	@Override
 	public java.util.Date convert(String s) throws ParseException {
+		if(timeStampWithoutSecPatternLen == s.length()){
+			s = s + ":00";
+		}
 		if (s.length() > dateLen) {	// if (x < timeStampLen) 改用 datePattern 转换，更智能
 			// Timestamp format must be yyyy-mm-dd hh:mm:ss[.fffffffff]
 			// return new java.util.Date(java.sql.Timestamp.valueOf(s).getTime());	// error under jdk 64bit(maybe)

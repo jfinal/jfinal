@@ -18,8 +18,17 @@ package com.jfinal.core.typeconverter;
 import java.text.ParseException;
 
 public class TimeConverter implements IConverter<java.sql.Time> {
+	private static final int timePatternLen = "hh:mm:ss".length();
+	private static final int timeWithoutSecPatternLen = "hh:mm".length();
 	@Override
 	public java.sql.Time convert(String s) throws ParseException {
+		int len = s.length();
+		if(len == timeWithoutSecPatternLen){
+			s = s + ":00";
+		}
+		if(len > timePatternLen){
+			s = s.substring(0, timePatternLen);
+		}
 		return java.sql.Time.valueOf(s);
 	}
 }
