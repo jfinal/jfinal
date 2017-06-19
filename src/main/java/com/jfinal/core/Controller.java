@@ -23,12 +23,15 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import com.jfinal.aop.Enhancer;
 import com.jfinal.aop.Interceptor;
+import com.jfinal.core.typeconverter.TypeConverter;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.ContentType;
 import com.jfinal.render.JsonRender;
@@ -828,7 +831,7 @@ public abstract class Controller {
 		String[] values = request.getParameterValues(name);
 		if (values != null) {
 			if (values.length == 1)
-				try {request.setAttribute(name, TypeConverter.convert(type, values[0]));} catch (ParseException e) {com.jfinal.kit.LogKit.logNothing(e);}
+				try {request.setAttribute(name, TypeConverter.me().convert(type, values[0]));} catch (ParseException e) {com.jfinal.kit.LogKit.logNothing(e);}
 			else
 				request.setAttribute(name, values);
 		}
