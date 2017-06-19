@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jfinal.core.typeconverter;
+package com.jfinal.core.converter;
 
-public class BigIntegerConverter implements IConverter<java.math.BigInteger> {
+public class ByteConverter implements IConverter<byte[]> {
+
 	@Override
-	public java.math.BigInteger convert(String s) {
-		return new java.math.BigInteger(s);
+	public byte[] convert(String s) {
+		return s.getBytes();
 	}
 	
 }

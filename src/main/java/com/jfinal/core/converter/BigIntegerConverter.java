@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jfinal.core.typeconverter;
+package com.jfinal.core.converter;
 
-import java.text.ParseException;
-
-/**
- * 将一个字符串转换成特定类型。
- * @ClassName: IConverter  
- * @since V1.0.0
- */
-public interface IConverter<T> {
-	T convert(String s) throws ParseException;
+public class BigIntegerConverter implements IConverter<java.math.BigInteger> {
+	@Override
+	public java.math.BigInteger convert(String s) {
+		return new java.math.BigInteger(s);
+	}
+	
 }

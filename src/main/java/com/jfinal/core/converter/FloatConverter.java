@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jfinal.core.typeconverter;
+package com.jfinal.core.converter;
 
-public class ByteConverter implements IConverter<byte[]> {
+public class FloatConverter implements IConverter<Float> {
 
 	@Override
-	public byte[] convert(String s) {
-		return s.getBytes();
+	public Float convert(String s) {
+		return Float.parseFloat(s);
 	}
 	
 }
