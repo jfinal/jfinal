@@ -15,33 +15,35 @@
  */
 package com.jfinal.core.paragetter;
 
-import java.text.ParseException;
-
 import com.jfinal.core.Controller;
-import com.jfinal.core.converter.DateConverter;
 import com.jfinal.kit.StrKit;
 
-public class DateParameterGetter extends ParameterGetter<java.util.Date> {
-	private static DateConverter converter = new DateConverter();
-	public DateParameterGetter(String parameterName, String defaultValue) {
+@SuppressWarnings({"unchecked", "rawtypes"})
+public class EnumParameterGetter<T extends Enum> extends ParameterGetter<T> {
+	private final Class<T> enumType;
+	public EnumParameterGetter(Class<T> enumType, String parameterName, String defaultValue) {
 		super(parameterName, defaultValue);
+		this.enumType = enumType;
 	}
 
 	@Override
-	public java.util.Date get(Controller c) {
-		return c.getParaToDate(getParameterName(), getDefaultValue());
+	public T get(Controller c) {
+		String value = c.getPara(this.getParameterName());
+		if(StrKit.notBlank(value)){
+			return to(value);
+		}
+		return this.getDefaultValue();
 	}
 
 	@Override
-	protected java.util.Date to(String v) {
-		if(StrKit.isBlank(v)){
-			return null;
+	protected T to(String v) {
+		if(StrKit.notBlank(v)){
+			try{
+				return (T) Enum.valueOf(this.enumType, v.trim());
+			}catch(Exception e){
+				return null;
+			}
 		}
-		try {
-			return converter.convert(v);
-		} catch (ParseException e) {
-			return null;
-		}
+		return null;
 	}
-
 }

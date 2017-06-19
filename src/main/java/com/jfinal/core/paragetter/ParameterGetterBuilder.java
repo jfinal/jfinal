@@ -25,33 +25,33 @@ import com.jfinal.core.Controller;
 
 public class ParameterGetterBuilder {
 
-	private static ParameterGetterBuilder me = new ParameterGetterBuilder();
-	private Map<String, Holder> typeMap = new HashMap<>();
+	private final static ParameterGetterBuilder me = new ParameterGetterBuilder();
+	private Map<Class<?>, Holder> typeMap = new HashMap<>();
 
 	private ParameterGetterBuilder() {
-		regist("short", ShortParameterGetter.class, "0");
-		regist("int", IntParameterGetter.class, "0");
-		regist("long", LongParameterGetter.class, "0");
-		regist("float", FloatParameterGetter.class, "0");
-		regist("double", DoubleParameterGetter.class, "0");
-		regist("boolean", BooleanParameterGetter.class, "false");
-		regist("java.lang.Short", ShortParameterGetter.class, null);
-		regist("java.lang.Integer", IntParameterGetter.class, null);
-		regist("java.lang.Long", LongParameterGetter.class, null);
-		regist("java.lang.Float", FloatParameterGetter.class, null);
-		regist("java.lang.Double", DoubleParameterGetter.class, null);
-		regist("java.lang.Boolean", BooleanParameterGetter.class, null);
-		regist("java.lang.String", StringParameterGetter.class, null);
-		regist("java.util.Date", DateParameterGetter.class, null);
-		regist("java.math.BigDecimal", BigDecimalParameterGetter.class, null);
-		regist("java.math.BigInteger", BigIntegerParameterGetter.class, null);
-		regist("com.jfinal.upload.UploadFile", FileParameterGetter.class, null);
-		regist("java.util.List<com.jfinal.upload.UploadFile>", FileArrayParameterGetter.class, null);
-		regist("java.lang.String[]", StringArrayParameterGetter.class, null);
-		regist("int[]", IntArrayParameterGetter.class, null);
-		regist("java.lang.Integer[]", IntArrayParameterGetter.class, null);
-		regist("long[]", LongArrayParameterGetter.class, null);
-		regist("java.lang.Long[]", LongArrayParameterGetter.class, null);
+		regist(short.class, ShortParameterGetter.class, "0");
+		regist(int.class, IntegerParameterGetter.class, "0");
+		regist(long.class, LongParameterGetter.class, "0");
+		regist(float.class, FloatParameterGetter.class, "0");
+		regist(double.class, DoubleParameterGetter.class, "0");
+		regist(boolean.class, BooleanParameterGetter.class, "false");
+		regist(java.lang.Short.class, ShortParameterGetter.class, null);
+		regist(java.lang.Integer.class, IntegerParameterGetter.class, null);
+		regist(java.lang.Long.class, LongParameterGetter.class, null);
+		regist(java.lang.Float.class, FloatParameterGetter.class, null);
+		regist(java.lang.Double.class, DoubleParameterGetter.class, null);
+		regist(java.lang.Boolean.class, BooleanParameterGetter.class, null);
+		regist(java.lang.String.class, StringParameterGetter.class, null);
+		regist(java.util.Date.class, DateParameterGetter.class, null);
+		regist(java.sql.Date.class, SqlDateParameterGetter.class, null);
+		regist(java.sql.Time.class, TimeParameterGetter.class, null);
+		regist(java.sql.Timestamp.class, TimestampParameterGetter.class, null);
+		regist(java.math.BigDecimal.class, BigDecimalParameterGetter.class, null);
+		regist(java.math.BigInteger.class, BigIntegerParameterGetter.class, null);
+		regist(com.jfinal.upload.UploadFile.class, FileParameterGetter.class, null);
+		regist(java.lang.String[].class, StringArrayParameterGetter.class, null);
+		regist(java.lang.Integer[].class, IntegerArrayParameterGetter.class, null);
+		regist(java.lang.Long[].class, LongArrayParameterGetter.class, null);
 	}
 
 	public static ParameterGetterBuilder me() {
@@ -59,13 +59,14 @@ public class ParameterGetterBuilder {
 	}
 	
 	/**
-	 * 注册一个类型识别器
-	 * @param type 类型，例如 int, java.lang.Integer
-	 * @param clazz 参数获取器实现类，必须继承ParameterGetter
+	 * 注册一个类型对应的参数获取器 
+	 * ParameterGetterBuilder.me().regist(java.lang.String.class, StringParameterGetter.class, null);
+	 * @param typeClass 类型，例如 java.lang.Integer.class
+	 * @param pgClass 参数获取器实现类，必须继承ParameterGetter
 	 * @param defaultValue，默认值，比如int的默认值为0， java.lang.Integer的默认值为null
 	 */
-	public void regist(String type, Class<? extends ParameterGetter<?>> clazz, String defaultValue){
-		this.typeMap.put(type, new Holder(clazz, defaultValue));
+	public <T> void regist(Class<T> typeClass, Class<? extends ParameterGetter<T>> pgClass, String defaultValue){
+		this.typeMap.put(typeClass, new Holder(pgClass, defaultValue));
 	}
 
 	public ParameterGetterProcessor build(Class<? extends Controller> controllerClass, Method method) {
@@ -76,7 +77,8 @@ public class ParameterGetterBuilder {
 		}
 		for (Parameter p : method.getParameters()) {
 			IParameterGetter<?> pg = createParameterGetter(controllerClass, method, p);
-			if (pg instanceof FileParameterGetter || pg instanceof FileArrayParameterGetter) {
+			//存在文件的情况下，文件需要优先获取才行
+			if (pg instanceof FileParameterGetter) {
 				opag.addParameterGetterToHeader(pg);
 			} else {
 				opag.addParameterGetter(pg);
@@ -85,11 +87,12 @@ public class ParameterGetterBuilder {
 		return opag;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private IParameterGetter<?> createParameterGetter(Class<? extends Controller> controllerClass, Method method,
 			Parameter p) {
 		String parameterName = p.getName();
 		String defaultValue = null;
-		String type = p.getParameterizedType().getTypeName();
+		Class<?> typeClass = p.getType();
 		Para para = p.getAnnotation(Para.class);
 		if (para != null) {
 			parameterName = para.value().trim();
@@ -98,7 +101,7 @@ public class ParameterGetterBuilder {
 				defaultValue = null;
 			}
 		}
-		Holder holder = typeMap.get(type);
+		Holder holder = typeMap.get(typeClass);
 		if (holder != null) {
 			if (null == defaultValue) {
 				defaultValue = holder.getDefaultValue();
@@ -109,11 +112,13 @@ public class ParameterGetterBuilder {
 				throw new RuntimeException(e.getMessage(), e);
 			}
 		}
-		// 判断是否是com.jfinal.plugin.activerecord.Model的子类
-		if (com.jfinal.plugin.activerecord.Model.class.isAssignableFrom(p.getType())) {
-			return new ModelParameterGetter<>(p.getType(), parameterName);
+		//枚举
+		if(Enum.class.isAssignableFrom(typeClass)){
+			return new EnumParameterGetter(typeClass,parameterName,defaultValue);
+		}else if (com.jfinal.plugin.activerecord.Model.class.isAssignableFrom(typeClass)) {
+			return new ModelParameterGetter<>(typeClass, parameterName);
 		} else {
-			return new BeanParameterGetter<>(p.getType(), parameterName);
+			return new BeanParameterGetter<>(typeClass, parameterName);
 		}
 	}
 

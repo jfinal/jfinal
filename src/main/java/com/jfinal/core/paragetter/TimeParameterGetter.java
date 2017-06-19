@@ -15,25 +15,37 @@
  */
 package com.jfinal.core.paragetter;
 
+import java.text.ParseException;
+
 import com.jfinal.core.Controller;
+import com.jfinal.core.converter.TimeConverter;
 import com.jfinal.kit.StrKit;
 
-public class IntParameterGetter extends ParameterGetter<Integer> {
-
-	public IntParameterGetter(String parameterName, String defaultValue) {
+public class TimeParameterGetter extends ParameterGetter<java.sql.Time> {
+	private static TimeConverter converter = new TimeConverter();
+	public TimeParameterGetter(String parameterName, String defaultValue) {
 		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Integer get(Controller c) {
-		return c.getParaToInt(getParameterName(),getDefaultValue());
+	public java.sql.Time get(Controller c) {
+		String value = c.getPara(this.getParameterName());
+		if(StrKit.notBlank(value)){
+			return to(value);
+		}
+		return this.getDefaultValue();
 	}
 
 	@Override
-	protected Integer to(String v) {
-		if(StrKit.notBlank(v)){
-			return Integer.parseInt(v);
+	protected java.sql.Time to(String v) {
+		if(StrKit.isBlank(v)){
+			return null;
 		}
-		return null;
+		try {
+			return converter.convert(v);
+		} catch (ParseException e) {
+			return null;
+		}
 	}
+
 }

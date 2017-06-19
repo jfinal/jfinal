@@ -18,22 +18,26 @@ package com.jfinal.core.paragetter;
 import java.text.ParseException;
 
 import com.jfinal.core.Controller;
-import com.jfinal.core.converter.DateConverter;
+import com.jfinal.core.converter.SqlDateConverter;
 import com.jfinal.kit.StrKit;
 
-public class DateParameterGetter extends ParameterGetter<java.util.Date> {
-	private static DateConverter converter = new DateConverter();
-	public DateParameterGetter(String parameterName, String defaultValue) {
+public class SqlDateParameterGetter extends ParameterGetter<java.sql.Date> {
+	private static SqlDateConverter converter = new SqlDateConverter();
+	public SqlDateParameterGetter(String parameterName, String defaultValue) {
 		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public java.util.Date get(Controller c) {
-		return c.getParaToDate(getParameterName(), getDefaultValue());
+	public java.sql.Date get(Controller c) {
+		String value = c.getPara(this.getParameterName());
+		if(StrKit.notBlank(value)){
+			return to(value);
+		}
+		return this.getDefaultValue();
 	}
 
 	@Override
-	protected java.util.Date to(String v) {
+	protected java.sql.Date to(String v) {
 		if(StrKit.isBlank(v)){
 			return null;
 		}
