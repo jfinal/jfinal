@@ -156,7 +156,8 @@ public class MetaBuilder {
 	 */
 	protected ResultSet getTablesResultSet() throws SQLException {
 		String schemaPattern = dialect instanceof OracleDialect ? dbMeta.getUserName() : null;
-		return dbMeta.getTables(conn.getCatalog(), schemaPattern, null, new String[]{"TABLE", "VIEW"});
+		// return dbMeta.getTables(conn.getCatalog(), schemaPattern, null, new String[]{"TABLE", "VIEW"});
+		return dbMeta.getTables(conn.getCatalog(), schemaPattern, null, new String[]{"TABLE"});	// 不支持 view 生成
 	}
 	
 	protected void buildTableNames(List<TableMeta> ret) throws SQLException {
