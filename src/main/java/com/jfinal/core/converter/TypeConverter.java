@@ -18,7 +18,6 @@ package com.jfinal.core.converter;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
-
 import com.jfinal.core.JFinal;
 import com.jfinal.core.converter.Converters.BigDecimalConverter;
 import com.jfinal.core.converter.Converters.BigIntegerConverter;
@@ -34,6 +33,10 @@ import com.jfinal.core.converter.Converters.TimeConverter;
 import com.jfinal.core.converter.Converters.TimestampConverter;
 
 /**
+ *  用户可以实现自己的类型转换器，并进行注册。
+ *  TypeConverter.me().regist(Integer.class, new IntegerConverter());
+ * 
+ * 
  * test for all types of mysql
  * 
  * 表单提交测试结果:
@@ -45,37 +48,38 @@ import com.jfinal.core.converter.Converters.TimestampConverter;
  * 注意: 1:当type参数不为String.class, 且参数s为空串blank的情况,
  *       此情况下转换结果为 null, 而不应该抛出异常
  *      2:调用者需要对被转换数据做 null 判断，参见 ModelInjector 的两处调用
- *  用户可以实现自己的类型转换器，并进行注册。
- *  TypeConverter.me().regist(Integer.class, new IntegerConverter());
  */
 public class TypeConverter {
-	private final Map<Class<?>, IConverter<?>> typeMap = new HashMap<Class<?>, IConverter<?>>();
+	
+	private final Map<Class<?>, IConverter<?>> converterMap = new HashMap<Class<?>, IConverter<?>>();
 	private static TypeConverter me = new TypeConverter();
+	
 	private TypeConverter(){
-		this.regist(Integer.class, new IntegerConverter());
-		this.regist(int.class, new IntegerConverter());
-		this.regist(Long.class, new LongConverter());
-		this.regist(long.class, new LongConverter());
-		this.regist(Double.class, new DoubleConverter());
-		this.regist(double.class, new DoubleConverter());
-		this.regist(Float.class, new FloatConverter());
-		this.regist(float.class, new FloatConverter());
-		this.regist(Boolean.class, new BooleanConverter());
-		this.regist(boolean.class, new BooleanConverter());
-		this.regist(java.util.Date.class, new DateConverter());
-		this.regist(java.sql.Date.class, new SqlDateConverter());
-		this.regist(java.sql.Time.class, new TimeConverter());
-		this.regist(java.sql.Timestamp.class, new TimestampConverter());
-		this.regist(java.math.BigDecimal.class, new BigDecimalConverter());
-		this.regist(java.math.BigInteger.class, new BigIntegerConverter());
-		this.regist(byte[].class, new ByteConverter());
+		regist(Integer.class, new IntegerConverter());
+		regist(int.class, new IntegerConverter());
+		regist(Long.class, new LongConverter());
+		regist(long.class, new LongConverter());
+		regist(Double.class, new DoubleConverter());
+		regist(double.class, new DoubleConverter());
+		regist(Float.class, new FloatConverter());
+		regist(float.class, new FloatConverter());
+		regist(Boolean.class, new BooleanConverter());
+		regist(boolean.class, new BooleanConverter());
+		regist(java.util.Date.class, new DateConverter());
+		regist(java.sql.Date.class, new SqlDateConverter());
+		regist(java.sql.Time.class, new TimeConverter());
+		regist(java.sql.Timestamp.class, new TimestampConverter());
+		regist(java.math.BigDecimal.class, new BigDecimalConverter());
+		regist(java.math.BigInteger.class, new BigIntegerConverter());
+		regist(byte[].class, new ByteConverter());
 	}
+	
 	public static TypeConverter me(){
-		return TypeConverter.me;
+		return me;
 	}
 	
 	public <T> void regist(Class<T> type, IConverter<T> converter){
-		this.typeMap.put(type, converter);
+		converterMap.put(type, converter);
 	}
 	
 	public final Object convert(Class<?> type, String s) throws ParseException {
@@ -88,9 +92,11 @@ public class TypeConverter {
 			return null;
 		}
 		// 以上两种情况无需转换,直接返回, 注意, 本方法不接受null为 s 参数(经测试永远不可能传来null, 因为无输入传来的也是"")
-		//String.class提前处理。
-		IConverter<?> converter = typeMap.get(type);
-		if(converter != null){
+		//String.class提前处理
+		
+		// --------
+		IConverter<?> converter = converterMap.get(type);
+		if (converter != null) {
 			return converter.convert(s);
 		}
 		if (JFinal.me().getConstants().getDevMode()) {
@@ -100,3 +106,10 @@ public class TypeConverter {
 		}
 	}
 }
+
+
+
+
+
+
+
