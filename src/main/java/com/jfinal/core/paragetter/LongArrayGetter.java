@@ -21,9 +21,9 @@ import java.util.List;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 
-public class LongArrayParameterGetter extends ParameterGetter<Long[]> {
+public class LongArrayGetter extends ParaGetter<Long[]> {
 
-	public LongArrayParameterGetter(String parameterName, String defaultValue) {
+	public LongArrayGetter(String parameterName, String defaultValue) {
 		super(parameterName,defaultValue);
 	}
 

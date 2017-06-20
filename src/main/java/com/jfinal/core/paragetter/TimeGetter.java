@@ -15,36 +15,37 @@
  */
 package com.jfinal.core.paragetter;
 
-import com.jfinal.core.ActionException;
+import java.text.ParseException;
+
 import com.jfinal.core.Controller;
+import com.jfinal.core.converter.Converters.TimeConverter;
 import com.jfinal.kit.StrKit;
-import com.jfinal.render.RenderManager;
 
-public class ShortParameterGetter extends ParameterGetter<Short> {
-	
-	public ShortParameterGetter(String parameterName, String defaultValue) {
-		super(parameterName,defaultValue);
+public class TimeGetter extends ParaGetter<java.sql.Time> {
+	private static TimeConverter converter = new TimeConverter();
+	public TimeGetter(String parameterName, String defaultValue) {
+		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Short get(Controller c) {
+	public java.sql.Time get(Controller c) {
 		String value = c.getPara(this.getParameterName());
-		try {
-			if (StrKit.isBlank(value))
-				return this.getDefaultValue();
-			return to(value.trim());
+		if(StrKit.notBlank(value)){
+			return to(value);
 		}
-		catch (Exception e) {
-			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),  "Can not parse the parameter \"" + value + "\" to Short value.");
-		}
+		return this.getDefaultValue();
 	}
 
 	@Override
-	protected Short to(String v) {
-		if(StrKit.notBlank(v)){
-			return Short.parseShort(v);
+	protected java.sql.Time to(String v) {
+		if(StrKit.isBlank(v)){
+			return null;
 		}
-		return null;
+		try {
+			return converter.convert(v);
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 
 }

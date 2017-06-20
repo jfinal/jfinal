@@ -18,21 +18,21 @@ package com.jfinal.core.paragetter;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 
-public class LongParameterGetter extends ParameterGetter<Long> {
-	
-	public LongParameterGetter(String parameterName, String defaultValue) {
-		super(parameterName,defaultValue);
+public class IntegerGetter extends ParaGetter<Integer> {
+
+	public IntegerGetter(String parameterName, String defaultValue) {
+		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Long get(Controller c) {
-		return c.getParaToLong(getParameterName(),getDefaultValue());
+	public Integer get(Controller c) {
+		return c.getParaToInt(getParameterName(),getDefaultValue());
 	}
 
 	@Override
-	protected Long to(String v) {
+	protected Integer to(String v) {
 		if(StrKit.notBlank(v)){
-			return Long.parseLong(v);
+			return Integer.parseInt(v);
 		}
 		return null;
 	}

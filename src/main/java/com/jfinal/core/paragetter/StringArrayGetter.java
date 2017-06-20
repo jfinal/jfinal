@@ -16,20 +16,26 @@
 package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
+import com.jfinal.kit.StrKit;
 
-public class BeanParameterGetter<T> extends ParameterGetter<T> {
-	private final Class<T> modelClass;
-	public BeanParameterGetter(Class<T> modelClass, String parameterName) {
-		super(parameterName, null);
-		this.modelClass = modelClass;
-	}
-	@Override
-	public T get(Controller c) {
-		return c.getBean(modelClass, this.getParameterName(),true);
-	}
+public class StringArrayGetter extends ParaGetter<String[]> {
 	
+	public StringArrayGetter(String parameterName, String defaultValue) {
+		super(parameterName,defaultValue);
+	}
 	@Override
-	protected T to(String v) {
+	public String[] get(Controller c) {
+		String[] ret = c.getParaValues(getParameterName());
+		if( null == ret) {
+			ret =  this.getDefaultValue();
+		}
+		return ret;
+	}
+	@Override
+	protected String[] to(String v) {
+		if(StrKit.notBlank(v)){
+			return v.split(",");
+		}
 		return null;
 	}
 }

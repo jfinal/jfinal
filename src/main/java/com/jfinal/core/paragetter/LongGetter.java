@@ -16,26 +16,24 @@
 package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
-import com.jfinal.upload.UploadFile;
+import com.jfinal.kit.StrKit;
 
-public class FileParameterGetter extends ParameterGetter<UploadFile> {
-
-	public FileParameterGetter(String parameterName,String defaultValue) {
-		super(parameterName,null);
+public class LongGetter extends ParaGetter<Long> {
+	
+	public LongGetter(String parameterName, String defaultValue) {
+		super(parameterName,defaultValue);
 	}
 
 	@Override
-	public UploadFile get(Controller c) {
-		String parameterName = this.getParameterName();
-		if(parameterName.isEmpty()){
-			return c.getFile();
+	public Long get(Controller c) {
+		return c.getParaToLong(getParameterName(),getDefaultValue());
+	}
+
+	@Override
+	protected Long to(String v) {
+		if(StrKit.notBlank(v)){
+			return Long.parseLong(v);
 		}
-		return c.getFile(parameterName);
-	}
-
-	@Override
-	protected UploadFile to(String v) {
 		return null;
 	}
-
 }

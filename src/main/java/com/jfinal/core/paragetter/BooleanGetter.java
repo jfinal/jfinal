@@ -18,24 +18,23 @@ package com.jfinal.core.paragetter;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 
-public class StringArrayParameterGetter extends ParameterGetter<String[]> {
+public class BooleanGetter extends ParaGetter<Boolean> {
 	
-	public StringArrayParameterGetter(String parameterName, String defaultValue) {
+	public BooleanGetter(String parameterName, String defaultValue) {
 		super(parameterName,defaultValue);
 	}
+
 	@Override
-	public String[] get(Controller c) {
-		String[] ret = c.getParaValues(getParameterName());
-		if( null == ret) {
-			ret =  this.getDefaultValue();
-		}
-		return ret;
+	public Boolean get(Controller c) {
+		return c.getParaToBoolean(getParameterName(),getDefaultValue());
 	}
+
 	@Override
-	protected String[] to(String v) {
+	protected Boolean to(String v) {
 		if(StrKit.notBlank(v)){
-			return v.split(",");
+			return Boolean.parseBoolean(v);
 		}
 		return null;
 	}
+
 }

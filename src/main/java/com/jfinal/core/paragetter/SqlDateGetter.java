@@ -15,39 +15,37 @@
  */
 package com.jfinal.core.paragetter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.text.ParseException;
 
 import com.jfinal.core.Controller;
+import com.jfinal.core.converter.Converters.SqlDateConverter;
 import com.jfinal.kit.StrKit;
 
-public class IntegerArrayParameterGetter extends ParameterGetter<Integer[]> {
-	
-	public IntegerArrayParameterGetter(String parameterName, String defaultValue) {
-		super(parameterName,defaultValue);
+public class SqlDateGetter extends ParaGetter<java.sql.Date> {
+	private static SqlDateConverter converter = new SqlDateConverter();
+	public SqlDateGetter(String parameterName, String defaultValue) {
+		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Integer[] get(Controller c) {
-		Integer[] ret = c.getParaValuesToInt(getParameterName());
-		if( null == ret) {
-			ret =  this.getDefaultValue();
+	public java.sql.Date get(Controller c) {
+		String value = c.getPara(this.getParameterName());
+		if(StrKit.notBlank(value)){
+			return to(value);
 		}
-		return ret;
+		return this.getDefaultValue();
 	}
 
 	@Override
-	protected Integer[] to(String v) {
-		if(StrKit.notBlank(v)){
-			String[] ss = v.split(",");
-			List<Integer> ls = new ArrayList<Integer>(ss.length);
-			for(String s : ss){
-				if(StrKit.notBlank(s)){
-					ls.add(Integer.parseInt(s.trim()));
-				}
-			}
-			return ls.toArray(new Integer[0]);
+	protected java.sql.Date to(String v) {
+		if(StrKit.isBlank(v)){
+			return null;
 		}
-		return null;
+		try {
+			return converter.convert(v);
+		} catch (ParseException e) {
+			return null;
+		}
 	}
+
 }

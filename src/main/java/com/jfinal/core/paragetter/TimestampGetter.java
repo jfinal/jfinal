@@ -15,35 +15,37 @@
  */
 package com.jfinal.core.paragetter;
 
-import com.jfinal.core.ActionException;
+import java.text.ParseException;
+
 import com.jfinal.core.Controller;
+import com.jfinal.core.converter.Converters.TimestampConverter;
 import com.jfinal.kit.StrKit;
-import com.jfinal.render.RenderManager;
 
-public class FloatParameterGetter extends ParameterGetter<Float> {
-
-	public FloatParameterGetter(String parameterName, String defaultValue) {
+public class TimestampGetter extends ParaGetter<java.sql.Timestamp> {
+	private static TimestampConverter converter = new TimestampConverter();
+	public TimestampGetter(String parameterName, String defaultValue) {
 		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Float get(Controller c) {
+	public java.sql.Timestamp get(Controller c) {
 		String value = c.getPara(this.getParameterName());
-		try {
-			if (StrKit.isBlank(value))
-				return this.getDefaultValue();
-			return to(value.trim());
-		} catch (Exception e) {
-			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
-					"Can not parse the parameter \"" + value + "\" to Float value.");
+		if(StrKit.notBlank(value)){
+			return to(value);
 		}
+		return this.getDefaultValue();
 	}
 
 	@Override
-	protected Float to(String v) {
-		if(StrKit.notBlank(v)){
-			return Float.parseFloat(v);
+	protected java.sql.Timestamp to(String v) {
+		if(StrKit.isBlank(v)){
+			return null;
 		}
-		return null;
+		try {
+			return converter.convert(v);
+		} catch (ParseException e) {
+			return null;
+		}
 	}
+
 }

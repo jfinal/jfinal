@@ -15,37 +15,27 @@
  */
 package com.jfinal.core.paragetter;
 
-import java.text.ParseException;
-
 import com.jfinal.core.Controller;
-import com.jfinal.core.converter.SqlDateConverter;
-import com.jfinal.kit.StrKit;
+import com.jfinal.upload.UploadFile;
 
-public class SqlDateParameterGetter extends ParameterGetter<java.sql.Date> {
-	private static SqlDateConverter converter = new SqlDateConverter();
-	public SqlDateParameterGetter(String parameterName, String defaultValue) {
-		super(parameterName, defaultValue);
+public class UploadFileGetter extends ParaGetter<UploadFile> {
+
+	public UploadFileGetter(String parameterName,String defaultValue) {
+		super(parameterName,null);
 	}
 
 	@Override
-	public java.sql.Date get(Controller c) {
-		String value = c.getPara(this.getParameterName());
-		if(StrKit.notBlank(value)){
-			return to(value);
+	public UploadFile get(Controller c) {
+		String parameterName = this.getParameterName();
+		if(parameterName.isEmpty()){
+			return c.getFile();
 		}
-		return this.getDefaultValue();
+		return c.getFile(parameterName);
 	}
 
 	@Override
-	protected java.sql.Date to(String v) {
-		if(StrKit.isBlank(v)){
-			return null;
-		}
-		try {
-			return converter.convert(v);
-		} catch (ParseException e) {
-			return null;
-		}
+	protected UploadFile to(String v) {
+		return null;
 	}
 
 }

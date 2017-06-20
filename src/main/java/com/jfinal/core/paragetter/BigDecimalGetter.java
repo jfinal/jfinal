@@ -15,36 +15,38 @@
  */
 package com.jfinal.core.paragetter;
 
+import java.math.BigDecimal;
+
 import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.RenderManager;
 
-public class DoubleParameterGetter extends ParameterGetter<Double> {
-	
-	public DoubleParameterGetter(String parameterName, String defaultValue) {
-		super(parameterName,defaultValue);
+public class BigDecimalGetter extends ParaGetter<BigDecimal> {
+
+	public BigDecimalGetter(String parameterName, String defaultValue) {
+		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Double get(Controller c) {
+	public BigDecimal get(Controller c) {
 		String value = c.getPara(this.getParameterName());
 		try {
 			if (StrKit.isBlank(value))
 				return this.getDefaultValue();
-			value = value.trim();
-			return to(value);
+			return to(value.trim());
 		} catch (Exception e) {
 			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
-					"Can not parse the parameter \"" + value + "\" to Double value.");
+					"Can not parse the parameter \"" + value + "\" to BigDecimal value.");
 		}
 	}
 
 	@Override
-	protected Double to(String v) {
+	protected BigDecimal to(String v) {
 		if(StrKit.notBlank(v)){
-			return Double.parseDouble(v);
+			return new BigDecimal(v);
 		}
 		return null;
 	}
+
 }

@@ -20,36 +20,36 @@ import java.util.List;
 
 import com.jfinal.core.Controller;
 
-public class ParameterGetterProcessor implements IParameterGetter<Object[]>{
+public class ParaProcessor implements IParaGetter<Object[]>{
 	
-	private final List<IParameterGetter<?>> parameterGetters;
+	private final List<IParaGetter<?>> paraGetters;
 	
 	private static final Object[] NULL_ARGS = new Object[0];
 	
-	public ParameterGetterProcessor(int parameterCount){
-		if( parameterCount > 0){
-			this.parameterGetters = new ArrayList<IParameterGetter<?>>(parameterCount);
+	public ParaProcessor(int paramCount){
+		if( paramCount > 0){
+			this.paraGetters = new ArrayList<IParaGetter<?>>(paramCount);
 		}else{
-			this.parameterGetters = null;
+			this.paraGetters = null;
 		}
 	}
-	public void addParameterGetterToHeader(IParameterGetter<?> parameterGetter){
-		if(this.parameterGetters != null){
-			this.parameterGetters.add(0, parameterGetter);
+	public void addParaGetterToHeader(IParaGetter<?> paraGetter){
+		if(this.paraGetters != null){
+			this.paraGetters.add(0, paraGetter);
 		}
 	}
 	
-	public void addParameterGetter(IParameterGetter<?> parameterGetter){
-		if(this.parameterGetters != null){
-			this.parameterGetters.add(parameterGetter);
+	public void addParaGetter(IParaGetter<?> paraGetter){
+		if(this.paraGetters != null){
+			this.paraGetters.add(paraGetter);
 		}
 	}
 	@Override
 	public Object[] get(Controller c) {
-		if(this.parameterGetters != null){
-			List<Object> parameters = new ArrayList<Object>(this.parameterGetters.size());
-			for(IParameterGetter<?> parameterGetter : this.parameterGetters ){
-				parameters.add(parameterGetter.get(c));
+		if(this.paraGetters != null){
+			List<Object> parameters = new ArrayList<Object>(this.paraGetters.size());
+			for(IParaGetter<?> paraGetter : this.paraGetters ){
+				parameters.add(paraGetter.get(c));
 			}
 			return parameters.toArray();
 		}else{

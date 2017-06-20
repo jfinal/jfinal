@@ -15,33 +15,38 @@
  */
 package com.jfinal.core.paragetter;
 
-import java.text.ParseException;
+import java.math.BigInteger;
 
+import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
-import com.jfinal.core.converter.DateConverter;
 import com.jfinal.kit.StrKit;
+import com.jfinal.render.RenderManager;
 
-public class DateParameterGetter extends ParameterGetter<java.util.Date> {
-	private static DateConverter converter = new DateConverter();
-	public DateParameterGetter(String parameterName, String defaultValue) {
+public class BigIntegerGetter extends ParaGetter<BigInteger> {
+
+	public BigIntegerGetter(String parameterName, String defaultValue) {
 		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public java.util.Date get(Controller c) {
-		return c.getParaToDate(getParameterName(), getDefaultValue());
+	public BigInteger get(Controller c) {
+		String value = c.getPara(this.getParameterName());
+		try {
+			if (StrKit.isBlank(value))
+				return this.getDefaultValue();
+			return to(value.trim());
+		} catch (Exception e) {
+			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
+					"Can not parse the parameter \"" + value + "\" to BigInteger value.");
+		}
 	}
 
 	@Override
-	protected java.util.Date to(String v) {
-		if(StrKit.isBlank(v)){
-			return null;
+	protected BigInteger to(String v) {
+		if(StrKit.notBlank(v)){
+			return new BigInteger(v);
 		}
-		try {
-			return converter.convert(v);
-		} catch (ParseException e) {
-			return null;
-		}
+		return null;
 	}
 
 }

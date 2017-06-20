@@ -17,19 +17,19 @@ package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
 
-public class ModelParameterGetter<T> extends ParameterGetter<T> {
+public class StringGetter extends ParaGetter<String> {
 
-	private final Class<T> modelClass;
-	public ModelParameterGetter(Class<T> modelClass, String parameterName) {
-		super(parameterName,null);
-		this.modelClass = modelClass;
+	public StringGetter(String parameterName, String defaultValue){
+		super(parameterName, defaultValue);
 	}
+
 	@Override
-	public T get(Controller c) {
-		return c.getModel(modelClass, this.getParameterName(),true);
+	public String get(Controller c) {
+		return c.getPara(getParameterName(), getDefaultValue());
 	}
+
 	@Override
-	protected T to(String v) {
-		return null;
+	protected String to(String v) {
+		return v;
 	}
 }

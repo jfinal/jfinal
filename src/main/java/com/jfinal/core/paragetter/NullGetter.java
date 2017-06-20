@@ -16,34 +16,20 @@
 package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
-import com.jfinal.kit.StrKit;
 
-@SuppressWarnings({"unchecked", "rawtypes"})
-public class EnumParameterGetter<T extends Enum> extends ParameterGetter<T> {
-	private final Class<T> enumType;
-	public EnumParameterGetter(Class<T> enumType, String parameterName, String defaultValue) {
-		super(parameterName, defaultValue);
-		this.enumType = enumType;
+public class NullGetter extends ParaGetter<Object> {
+
+	public NullGetter(String parameterName, String defaultValue) {
+		super(null,null);
 	}
 
 	@Override
-	public T get(Controller c) {
-		String value = c.getPara(this.getParameterName());
-		if(StrKit.notBlank(value)){
-			return to(value);
-		}
-		return this.getDefaultValue();
+	public Object get(Controller c) {
+		return null;
 	}
 
 	@Override
-	protected T to(String v) {
-		if(StrKit.notBlank(v)){
-			try{
-				return (T) Enum.valueOf(this.enumType, v.trim());
-			}catch(Exception e){
-				return null;
-			}
-		}
+	protected Object to(String v) {
 		return null;
 	}
 }

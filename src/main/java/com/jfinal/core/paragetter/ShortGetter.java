@@ -15,37 +15,36 @@
  */
 package com.jfinal.core.paragetter;
 
-import java.text.ParseException;
-
+import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
-import com.jfinal.core.converter.TimestampConverter;
 import com.jfinal.kit.StrKit;
+import com.jfinal.render.RenderManager;
 
-public class TimestampParameterGetter extends ParameterGetter<java.sql.Timestamp> {
-	private static TimestampConverter converter = new TimestampConverter();
-	public TimestampParameterGetter(String parameterName, String defaultValue) {
-		super(parameterName, defaultValue);
+public class ShortGetter extends ParaGetter<Short> {
+	
+	public ShortGetter(String parameterName, String defaultValue) {
+		super(parameterName,defaultValue);
 	}
 
 	@Override
-	public java.sql.Timestamp get(Controller c) {
+	public Short get(Controller c) {
 		String value = c.getPara(this.getParameterName());
-		if(StrKit.notBlank(value)){
-			return to(value);
+		try {
+			if (StrKit.isBlank(value))
+				return this.getDefaultValue();
+			return to(value.trim());
 		}
-		return this.getDefaultValue();
+		catch (Exception e) {
+			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),  "Can not parse the parameter \"" + value + "\" to Short value.");
+		}
 	}
 
 	@Override
-	protected java.sql.Timestamp to(String v) {
-		if(StrKit.isBlank(v)){
-			return null;
+	protected Short to(String v) {
+		if(StrKit.notBlank(v)){
+			return Short.parseShort(v);
 		}
-		try {
-			return converter.convert(v);
-		} catch (ParseException e) {
-			return null;
-		}
+		return null;
 	}
 
 }

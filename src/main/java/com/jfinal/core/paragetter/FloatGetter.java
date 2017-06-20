@@ -15,37 +15,35 @@
  */
 package com.jfinal.core.paragetter;
 
-import java.text.ParseException;
-
+import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
-import com.jfinal.core.converter.TimeConverter;
 import com.jfinal.kit.StrKit;
+import com.jfinal.render.RenderManager;
 
-public class TimeParameterGetter extends ParameterGetter<java.sql.Time> {
-	private static TimeConverter converter = new TimeConverter();
-	public TimeParameterGetter(String parameterName, String defaultValue) {
+public class FloatGetter extends ParaGetter<Float> {
+
+	public FloatGetter(String parameterName, String defaultValue) {
 		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public java.sql.Time get(Controller c) {
+	public Float get(Controller c) {
 		String value = c.getPara(this.getParameterName());
-		if(StrKit.notBlank(value)){
-			return to(value);
+		try {
+			if (StrKit.isBlank(value))
+				return this.getDefaultValue();
+			return to(value.trim());
+		} catch (Exception e) {
+			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
+					"Can not parse the parameter \"" + value + "\" to Float value.");
 		}
-		return this.getDefaultValue();
 	}
 
 	@Override
-	protected java.sql.Time to(String v) {
-		if(StrKit.isBlank(v)){
-			return null;
+	protected Float to(String v) {
+		if(StrKit.notBlank(v)){
+			return Float.parseFloat(v);
 		}
-		try {
-			return converter.convert(v);
-		} catch (ParseException e) {
-			return null;
-		}
+		return null;
 	}
-
 }

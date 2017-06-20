@@ -17,6 +17,19 @@ package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
 
-public interface IParameterGetter<T> {
-	public T get(Controller c);
+public class BeanGetter<T> extends ParaGetter<T> {
+	private final Class<T> modelClass;
+	public BeanGetter(Class<T> modelClass, String parameterName) {
+		super(parameterName, null);
+		this.modelClass = modelClass;
+	}
+	@Override
+	public T get(Controller c) {
+		return c.getBean(modelClass, this.getParameterName(),true);
+	}
+	
+	@Override
+	protected T to(String v) {
+		return null;
+	}
 }

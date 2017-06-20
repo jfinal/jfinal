@@ -15,22 +15,35 @@
  */
 package com.jfinal.core.paragetter;
 
-public abstract class ParameterGetter<T> implements IParameterGetter<T> {
-	private final String parameterName;
-	private final T defaultValue;
-	
-	protected final String getParameterName() {
-		return parameterName;
+import java.io.File;
+
+import com.jfinal.core.Controller;
+import com.jfinal.upload.UploadFile;
+
+public class FileGetter extends ParaGetter<File> {
+
+	public FileGetter(String parameterName,String defaultValue) {
+		super(parameterName,null);
 	}
-	
-	protected final T getDefaultValue() {
-		return defaultValue;
+
+	@Override
+	public File get(Controller c) {
+		String parameterName = this.getParameterName();
+		UploadFile uf = null;
+		if(parameterName.isEmpty()){
+			uf = c.getFile();
+		}else{
+			uf = c.getFile(parameterName);
+		}
+		if(uf != null){
+			return uf.getFile();
+		}
+		return null;
 	}
-	
-	public ParameterGetter(String parameterName, String defaultValue){
-		this.parameterName = parameterName;
-		this.defaultValue = to(defaultValue);
+
+	@Override
+	protected File to(String v) {
+		return null;
 	}
-	
-	protected abstract T to(String v);
+
 }

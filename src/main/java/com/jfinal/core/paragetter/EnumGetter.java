@@ -18,21 +18,31 @@ package com.jfinal.core.paragetter;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 
-public class IntegerParameterGetter extends ParameterGetter<Integer> {
-
-	public IntegerParameterGetter(String parameterName, String defaultValue) {
+@SuppressWarnings({"unchecked", "rawtypes"})
+public class EnumGetter<T extends Enum> extends ParaGetter<T> {
+	private final Class<T> enumType;
+	public EnumGetter(Class<T> enumType, String parameterName, String defaultValue) {
 		super(parameterName, defaultValue);
+		this.enumType = enumType;
 	}
 
 	@Override
-	public Integer get(Controller c) {
-		return c.getParaToInt(getParameterName(),getDefaultValue());
+	public T get(Controller c) {
+		String value = c.getPara(this.getParameterName());
+		if(StrKit.notBlank(value)){
+			return to(value);
+		}
+		return this.getDefaultValue();
 	}
 
 	@Override
-	protected Integer to(String v) {
+	protected T to(String v) {
 		if(StrKit.notBlank(v)){
-			return Integer.parseInt(v);
+			try{
+				return (T) Enum.valueOf(this.enumType, v.trim());
+			}catch(Exception e){
+				return null;
+			}
 		}
 		return null;
 	}

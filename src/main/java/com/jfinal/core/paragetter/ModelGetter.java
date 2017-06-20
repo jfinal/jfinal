@@ -16,25 +16,20 @@
 package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
-import com.jfinal.kit.StrKit;
 
-public class BooleanParameterGetter extends ParameterGetter<Boolean> {
-	
-	public BooleanParameterGetter(String parameterName, String defaultValue) {
-		super(parameterName,defaultValue);
+public class ModelGetter<T> extends ParaGetter<T> {
+
+	private final Class<T> modelClass;
+	public ModelGetter(Class<T> modelClass, String parameterName) {
+		super(parameterName,null);
+		this.modelClass = modelClass;
 	}
-
 	@Override
-	public Boolean get(Controller c) {
-		return c.getParaToBoolean(getParameterName(),getDefaultValue());
+	public T get(Controller c) {
+		return c.getModel(modelClass, this.getParameterName(),true);
 	}
-
 	@Override
-	protected Boolean to(String v) {
-		if(StrKit.notBlank(v)){
-			return Boolean.parseBoolean(v);
-		}
+	protected T to(String v) {
 		return null;
 	}
-
 }

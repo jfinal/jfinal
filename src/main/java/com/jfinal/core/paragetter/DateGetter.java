@@ -15,21 +15,33 @@
  */
 package com.jfinal.core.paragetter;
 
+import java.text.ParseException;
+
 import com.jfinal.core.Controller;
+import com.jfinal.core.converter.Converters.DateConverter;
+import com.jfinal.kit.StrKit;
 
-public class StringParameterGetter extends ParameterGetter<String> {
-
-	public StringParameterGetter(String parameterName, String defaultValue){
+public class DateGetter extends ParaGetter<java.util.Date> {
+	private static DateConverter converter = new DateConverter();
+	public DateGetter(String parameterName, String defaultValue) {
 		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public String get(Controller c) {
-		return c.getPara(getParameterName(), getDefaultValue());
+	public java.util.Date get(Controller c) {
+		return c.getParaToDate(getParameterName(), getDefaultValue());
 	}
 
 	@Override
-	protected String to(String v) {
-		return v;
+	protected java.util.Date to(String v) {
+		if(StrKit.isBlank(v)){
+			return null;
+		}
+		try {
+			return converter.convert(v);
+		} catch (ParseException e) {
+			return null;
+		}
 	}
+
 }
