@@ -16,26 +16,33 @@
 package com.jfinal.core.paragetter;
 
 import java.text.ParseException;
-import java.util.Date;
 
 import com.jfinal.core.Controller;
+import com.jfinal.core.converter.Converters.SqlDateConverter;
+import com.jfinal.kit.StrKit;
 
-public class DateParameterGetter extends ParameterGetter<Date> {
-	
-	public DateParameterGetter(String parameterName, String defaultValue) {
-		super(parameterName, toDate(defaultValue));
+public class SqlDateGetter extends ParaGetter<java.sql.Date> {
+	private static SqlDateConverter converter = new SqlDateConverter();
+	public SqlDateGetter(String parameterName, String defaultValue) {
+		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Date get(Controller c) {
-		return c.getParaToDate(getParameterName(), getDefaultValue());
+	public java.sql.Date get(Controller c) {
+		String value = c.getPara(this.getParameterName());
+		if(StrKit.notBlank(value)){
+			return to(value);
+		}
+		return this.getDefaultValue();
 	}
-	
-	private static Date toDate(String value) {
-		if (value == null || "".equals(value.trim()))
+
+	@Override
+	protected java.sql.Date to(String v) {
+		if(StrKit.isBlank(v)){
 			return null;
+		}
 		try {
-			return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value);
+			return converter.convert(v);
 		} catch (ParseException e) {
 			return null;
 		}

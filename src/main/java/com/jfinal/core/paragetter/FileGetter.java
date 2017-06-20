@@ -15,17 +15,35 @@
  */
 package com.jfinal.core.paragetter;
 
-import com.jfinal.core.Controller;
+import java.io.File;
 
-public class IntParameterGetter extends ParameterGetter<Integer> {
-	
-	public IntParameterGetter(String parameterName, Integer defaultValue) {
-		super(parameterName,defaultValue);
+import com.jfinal.core.Controller;
+import com.jfinal.upload.UploadFile;
+
+public class FileGetter extends ParaGetter<File> {
+
+	public FileGetter(String parameterName,String defaultValue) {
+		super(parameterName,null);
 	}
 
 	@Override
-	public Integer get(Controller c) {
-		return c.getParaToInt(getParameterName(),getDefaultValue());
+	public File get(Controller c) {
+		String parameterName = this.getParameterName();
+		UploadFile uf = null;
+		if(parameterName.isEmpty()){
+			uf = c.getFile();
+		}else{
+			uf = c.getFile(parameterName);
+		}
+		if(uf != null){
+			return uf.getFile();
+		}
+		return null;
+	}
+
+	@Override
+	protected File to(String v) {
+		return null;
 	}
 
 }

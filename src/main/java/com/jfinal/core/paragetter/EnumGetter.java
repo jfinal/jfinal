@@ -15,20 +15,35 @@
  */
 package com.jfinal.core.paragetter;
 
-import java.util.List;
-
 import com.jfinal.core.Controller;
-import com.jfinal.upload.UploadFile;
+import com.jfinal.kit.StrKit;
 
-public class FileArrayParameterGetter extends ParameterGetter<List<UploadFile>> {
-
-	public FileArrayParameterGetter() {
-		super("",null);
+@SuppressWarnings({"unchecked", "rawtypes"})
+public class EnumGetter<T extends Enum> extends ParaGetter<T> {
+	private final Class<T> enumType;
+	public EnumGetter(Class<T> enumType, String parameterName, String defaultValue) {
+		super(parameterName, defaultValue);
+		this.enumType = enumType;
 	}
 
 	@Override
-	public List<UploadFile> get(Controller c) {
-		return c.getFiles();
+	public T get(Controller c) {
+		String value = c.getPara(this.getParameterName());
+		if(StrKit.notBlank(value)){
+			return to(value);
+		}
+		return this.getDefaultValue();
 	}
 
+	@Override
+	protected T to(String v) {
+		if(StrKit.notBlank(v)){
+			try{
+				return (T) Enum.valueOf(this.enumType, v.trim());
+			}catch(Exception e){
+				return null;
+			}
+		}
+		return null;
+	}
 }

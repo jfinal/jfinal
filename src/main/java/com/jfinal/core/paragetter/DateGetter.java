@@ -15,17 +15,33 @@
  */
 package com.jfinal.core.paragetter;
 
-import com.jfinal.core.Controller;
+import java.text.ParseException;
 
-public class BooleanParameterGetter extends ParameterGetter<Boolean> {
-	
-	public BooleanParameterGetter(String parameterName, Boolean defaultValue) {
-		super(parameterName,defaultValue);
+import com.jfinal.core.Controller;
+import com.jfinal.core.converter.Converters.DateConverter;
+import com.jfinal.kit.StrKit;
+
+public class DateGetter extends ParaGetter<java.util.Date> {
+	private static DateConverter converter = new DateConverter();
+	public DateGetter(String parameterName, String defaultValue) {
+		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Boolean get(Controller c) {
-		return c.getParaToBoolean(getParameterName(),getDefaultValue());
+	public java.util.Date get(Controller c) {
+		return c.getParaToDate(getParameterName(), getDefaultValue());
+	}
+
+	@Override
+	protected java.util.Date to(String v) {
+		if(StrKit.isBlank(v)){
+			return null;
+		}
+		try {
+			return converter.convert(v);
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 
 }

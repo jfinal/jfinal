@@ -15,31 +15,38 @@
  */
 package com.jfinal.core.paragetter;
 
+import java.math.BigDecimal;
+
 import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.RenderManager;
 
-public class ShortParameterGetter extends ParameterGetter<Short> {
-	
-	public ShortParameterGetter(String parameterName, Short defaultValue) {
-		super(parameterName,defaultValue);
+public class BigDecimalGetter extends ParaGetter<BigDecimal> {
+
+	public BigDecimalGetter(String parameterName, String defaultValue) {
+		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Short get(Controller c) {
+	public BigDecimal get(Controller c) {
 		String value = c.getPara(this.getParameterName());
 		try {
 			if (StrKit.isBlank(value))
 				return this.getDefaultValue();
-			value = value.trim();
-			if (value.startsWith("N") || value.startsWith("n"))
-				return (short)-Short.parseShort(value.substring(1));
-			return Short.parseShort(value);
+			return to(value.trim());
+		} catch (Exception e) {
+			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
+					"Can not parse the parameter \"" + value + "\" to BigDecimal value.");
 		}
-		catch (Exception e) {
-			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),  "Can not parse the parameter \"" + value + "\" to Short value.");
+	}
+
+	@Override
+	protected BigDecimal to(String v) {
+		if(StrKit.notBlank(v)){
+			return new BigDecimal(v);
 		}
+		return null;
 	}
 
 }

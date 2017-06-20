@@ -15,16 +15,39 @@
  */
 package com.jfinal.core.paragetter;
 
-import com.jfinal.core.Controller;
+import java.util.ArrayList;
+import java.util.List;
 
-public class LongParameterGetter extends ParameterGetter<Long> {
-	
-	public LongParameterGetter(String parameterName, Long defaultValue) {
+import com.jfinal.core.Controller;
+import com.jfinal.kit.StrKit;
+
+public class LongArrayGetter extends ParaGetter<Long[]> {
+
+	public LongArrayGetter(String parameterName, String defaultValue) {
 		super(parameterName,defaultValue);
 	}
 
 	@Override
-	public Long get(Controller c) {
-		return c.getParaToLong(getParameterName(),getDefaultValue());
+	public Long[] get(Controller c) {
+		Long[] ret =  c.getParaValuesToLong(getParameterName());
+		if( null == ret) {
+			ret =  this.getDefaultValue();
+		}
+		return ret;
+	}
+
+	@Override
+	protected Long[] to(String v) {
+		if(StrKit.notBlank(v)){
+			String[] ss = v.split(",");
+			List<Long> ls = new ArrayList<Long>(ss.length);
+			for(String s : ss){
+				if(StrKit.notBlank(s)){
+					ls.add(Long.parseLong(s.trim()));
+				}
+			}
+			return ls.toArray(new Long[0]);
+		}
+		return null;
 	}
 }

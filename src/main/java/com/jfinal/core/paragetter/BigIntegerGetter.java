@@ -15,28 +15,38 @@
  */
 package com.jfinal.core.paragetter;
 
+import java.math.BigInteger;
+
 import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.RenderManager;
 
-public class DoubleParameterGetter extends ParameterGetter<Double> {
-	
-	public DoubleParameterGetter(String parameterName, Double defaultValue) {
-		super(parameterName,defaultValue);
+public class BigIntegerGetter extends ParaGetter<BigInteger> {
+
+	public BigIntegerGetter(String parameterName, String defaultValue) {
+		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Double get(Controller c) {
+	public BigInteger get(Controller c) {
 		String value = c.getPara(this.getParameterName());
 		try {
 			if (StrKit.isBlank(value))
 				return this.getDefaultValue();
-			value = value.trim();
-			return Double.parseDouble(value);
+			return to(value.trim());
 		} catch (Exception e) {
 			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
-					"Can not parse the parameter \"" + value + "\" to Double value.");
+					"Can not parse the parameter \"" + value + "\" to BigInteger value.");
 		}
 	}
+
+	@Override
+	protected BigInteger to(String v) {
+		if(StrKit.notBlank(v)){
+			return new BigInteger(v);
+		}
+		return null;
+	}
+
 }

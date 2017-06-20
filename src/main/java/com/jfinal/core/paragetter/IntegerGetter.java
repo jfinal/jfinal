@@ -16,15 +16,24 @@
 package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
+import com.jfinal.kit.StrKit;
 
-public class IntArrayParameterGetter extends ParameterGetter<Integer[]> {
-	
-	public IntArrayParameterGetter(String parameterName) {
-		super(parameterName,null);
+public class IntegerGetter extends ParaGetter<Integer> {
+
+	public IntegerGetter(String parameterName, String defaultValue) {
+		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Integer[] get(Controller c) {
-		return c.getParaValuesToInt(getParameterName());
+	public Integer get(Controller c) {
+		return c.getParaToInt(getParameterName(),getDefaultValue());
+	}
+
+	@Override
+	protected Integer to(String v) {
+		if(StrKit.notBlank(v)){
+			return Integer.parseInt(v);
+		}
+		return null;
 	}
 }

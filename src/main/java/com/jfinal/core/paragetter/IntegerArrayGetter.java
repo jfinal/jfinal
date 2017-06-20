@@ -15,32 +15,39 @@
  */
 package com.jfinal.core.paragetter;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
-import com.jfinal.render.RenderManager;
 
-public class BigDecimalParameterGetter extends ParameterGetter<BigDecimal> {
+public class IntegerArrayGetter extends ParaGetter<Integer[]> {
 	
-
-	public BigDecimalParameterGetter(String parameterName, BigDecimal defaultValue) {
-		super(parameterName, defaultValue);
+	public IntegerArrayGetter(String parameterName, String defaultValue) {
+		super(parameterName,defaultValue);
 	}
 
 	@Override
-	public BigDecimal get(Controller c) {
-		String value = c.getPara(this.getParameterName());
-		try {
-			if (StrKit.isBlank(value))
-				return this.getDefaultValue();
-			value = value.trim();
-			return BigDecimal.valueOf(Double.parseDouble(value));
-		} catch (Exception e) {
-			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
-					"Can not parse the parameter \"" + value + "\" to BigDecimal value.");
+	public Integer[] get(Controller c) {
+		Integer[] ret = c.getParaValuesToInt(getParameterName());
+		if( null == ret) {
+			ret =  this.getDefaultValue();
 		}
+		return ret;
 	}
 
+	@Override
+	protected Integer[] to(String v) {
+		if(StrKit.notBlank(v)){
+			String[] ss = v.split(",");
+			List<Integer> ls = new ArrayList<Integer>(ss.length);
+			for(String s : ss){
+				if(StrKit.notBlank(s)){
+					ls.add(Integer.parseInt(s.trim()));
+				}
+			}
+			return ls.toArray(new Integer[0]);
+		}
+		return null;
+	}
 }

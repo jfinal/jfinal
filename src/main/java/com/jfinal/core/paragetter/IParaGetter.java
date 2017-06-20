@@ -16,21 +16,7 @@
 package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
-import com.jfinal.upload.UploadFile;
 
-public class FileParameterGetter extends ParameterGetter<UploadFile> {
-
-	public FileParameterGetter(String parameterName) {
-		super(parameterName,null);
-	}
-
-	@Override
-	public UploadFile get(Controller c) {
-		String parameterName = this.getParameterName();
-		if(parameterName.isEmpty()){
-			return c.getFile();
-		}
-		return c.getFile(parameterName);
-	}
-
+public interface IParaGetter<T> {
+	public T get(Controller c);
 }

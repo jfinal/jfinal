@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2017, 玛雅牛 (myaniu AT gmail.com).
+ * Copyright (c) 2011-2017, 玛雅牛 (myaniu AT gmail dot com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jfinal.core.paragetter;
+package com.jfinal.core.converter;
 
-import com.jfinal.core.Controller;
+import java.text.ParseException;
 
-public class NullParameterGetter extends ParameterGetter<Object> {
-
-	public NullParameterGetter(String parameterName) {
-		super(parameterName,null);
-	}
-
-	@Override
-	public Object get(Controller c) {
-		return null;
-	}
+/**
+ * 将一个字符串转换成特定类型。
+ * @ClassName: IConverter  
+ * @since V1.0.0
+ */
+public interface IConverter<T> {
+	T convert(String s) throws ParseException;
 }

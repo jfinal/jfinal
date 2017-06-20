@@ -15,20 +15,21 @@
  */
 package com.jfinal.core.paragetter;
 
-public abstract class ParameterGetter<T> implements IParameterGetter<T> {
-	private final String parameterName;
-	private final T defaultValue;
-	
-	protected final String getParameterName() {
-		return parameterName;
+import com.jfinal.core.Controller;
+
+public class NullGetter extends ParaGetter<Object> {
+
+	public NullGetter(String parameterName, String defaultValue) {
+		super(null,null);
 	}
-	
-	protected final T getDefaultValue() {
-		return defaultValue;
+
+	@Override
+	public Object get(Controller c) {
+		return null;
 	}
-	
-	public ParameterGetter(String parameterName, T defaultValue){
-		this.parameterName = parameterName;
-		this.defaultValue = defaultValue;
+
+	@Override
+	protected Object to(String v) {
+		return null;
 	}
 }

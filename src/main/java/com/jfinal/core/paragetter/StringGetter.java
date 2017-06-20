@@ -17,14 +17,19 @@ package com.jfinal.core.paragetter;
 
 import com.jfinal.core.Controller;
 
-public class LongArrayParameterGetter extends ParameterGetter<Long[]> {
+public class StringGetter extends ParaGetter<String> {
 
-	public LongArrayParameterGetter(String parameterName) {
-		super(parameterName,null);
+	public StringGetter(String parameterName, String defaultValue){
+		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Long[] get(Controller c) {
-		return c.getParaValuesToLong(getParameterName());
+	public String get(Controller c) {
+		return c.getPara(getParameterName(), getDefaultValue());
+	}
+
+	@Override
+	protected String to(String v) {
+		return v;
 	}
 }
