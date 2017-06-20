@@ -20,6 +20,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.jfinal.core.JFinal;
+import com.jfinal.core.converter.Converters.BigDecimalConverter;
+import com.jfinal.core.converter.Converters.BigIntegerConverter;
+import com.jfinal.core.converter.Converters.BooleanConverter;
+import com.jfinal.core.converter.Converters.ByteConverter;
+import com.jfinal.core.converter.Converters.DateConverter;
+import com.jfinal.core.converter.Converters.DoubleConverter;
+import com.jfinal.core.converter.Converters.FloatConverter;
+import com.jfinal.core.converter.Converters.IntegerConverter;
+import com.jfinal.core.converter.Converters.LongConverter;
+import com.jfinal.core.converter.Converters.SqlDateConverter;
+import com.jfinal.core.converter.Converters.TimeConverter;
+import com.jfinal.core.converter.Converters.TimestampConverter;
 
 /**
  * test for all types of mysql
