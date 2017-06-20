@@ -35,8 +35,8 @@ package com.jfinal.template.ext.extensionmethod;
  *     如上所示，无论 age 是 String 还是 int 型，调用其 toInt() 方法将一直确保
  *     age 为 int 类型
  * 
- *   以上用法，必须针对 String 与 Integer 同时扩展一个 toInt() 方法，模型表达式中
- * 的变在为 String 或为 Integer 时都存在 toInt() 方法可供调用
+ *   以上用法，必须针对 String 与 Integer 同时扩展一个 toInt() 方法，模板表达式中的
+ *   变量为 String 或为 Integer 时都存在 toInt() 方法可供调用
  * 
  * 用法：
  * #if(age.toInt() > 18)
