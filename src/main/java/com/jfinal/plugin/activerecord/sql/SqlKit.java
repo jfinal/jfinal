@@ -193,6 +193,10 @@ public class SqlKit {
 		return sqlPara;
 	}
 	
+	public java.util.Set<java.util.Map.Entry<String, Template>> getSqlMapEntrySet() {
+		return sqlTemplateMap.entrySet();
+	}
+	
 	public String toString() {
 		return "SqlKit for config : " + configName;
 	}
