@@ -38,7 +38,7 @@ import com.jfinal.template.stat.Scope;
  *   #end
  *   
  * 2： java 代码
- *   SqlPara sp = getSqlPara("find", Kv.create("nickName", "prettyGirl").set("age", 18));
+ *   SqlPara sp = getSqlPara("find", Kv.by("nickName", "prettyGirl").set("age", 18));
  *   user.find(sp)
  *   或者：
  *   user.find(sp.getSql(), sp.getPara());
