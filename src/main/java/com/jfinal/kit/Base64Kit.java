@@ -109,7 +109,7 @@ public class Base64Kit {
     static class Java8Base64 implements IBase64 {
     	@Override
     	public String encode(byte[] value) {
-    		return java.util.Base64.getEncoder().encodeToString(value);  
+    		return java.util.Base64.getEncoder().encodeToString(value);
     	}
     	
     	@Override
@@ -118,7 +118,7 @@ public class Base64Kit {
     	}
     }
     
-    static class Java67Base64 implements IBase64{
+    static class Java67Base64 implements IBase64 {
     	public String encode(byte[] data) {
             return javax.xml.bind.DatatypeConverter.printBase64Binary(data);
         }

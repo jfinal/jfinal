@@ -29,8 +29,10 @@ public class FileKit {
 			}
 			else if (file.isDirectory()) {
 				File files[] = file.listFiles();
-				for (int i=0; i<files.length; i++) {
-					delete(files[i]);
+				if (files != null) {
+					for (int i=0; i<files.length; i++) {
+						delete(files[i]);
+					}
 				}
 			}
 			file.delete();
