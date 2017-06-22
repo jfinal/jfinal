@@ -116,6 +116,9 @@ public class ParaProcessorBuilder {
 		//枚举
 		if(Enum.class.isAssignableFrom(typeClass)){
 			return new EnumGetter(typeClass,parameterName,defaultValue);
+		}else if (com.jfinal.plugin.activerecord.IBean.class.isAssignableFrom(typeClass)) {
+			//实现了IBean接口，优先按BeanGetter来处理。
+			return new BeanGetter(typeClass, parameterName);
 		}else if (com.jfinal.plugin.activerecord.Model.class.isAssignableFrom(typeClass)) {
 			return new ModelGetter(typeClass, parameterName);
 		} else {
