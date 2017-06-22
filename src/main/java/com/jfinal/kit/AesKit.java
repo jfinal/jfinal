@@ -13,73 +13,86 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.jfinal.kit;
 
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
-
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 public class AesKit {
-	private AesKit() {
-	}
-	public static String genRandomPassword(){
+	
+	private AesKit() {}
+	
+	public static String genRandomPassword() {
 		return HashKit.generateSalt(32);
 	}
-	public static Encrypter getAes128Encrypter(String password){
+	
+	public static Encrypter getAes128Encrypter(String password) {
 		return new Encrypter(128,password);
 	}
-	public static Encrypter getAes192Encrypter(String password){
+	
+	public static Encrypter getAes192Encrypter(String password) {
 		return new Encrypter(192,password);
 	}
-	public static Encrypter getAes256Encrypter(String password){
+	
+	public static Encrypter getAes256Encrypter(String password) {
 		return new Encrypter(256,password);
 	}
-	public static Decrypter getAes128Decrypter(String password){
+	
+	public static Decrypter getAes128Decrypter(String password) {
 		return new Decrypter(128,password);
 	}
-	public static Decrypter getAes192Decrypter(String password){
+	
+	public static Decrypter getAes192Decrypter(String password) {
 		return new Decrypter(192,password);
 	}
-	public static Decrypter getAes256Decrypter(String password){
+	
+	public static Decrypter getAes256Decrypter(String password) {
 		return new Decrypter(256,password);
 	}
 	
-	static abstract class Aes{
+	static abstract class Aes {
 		protected static final Charset UTF_8 = Charset.forName("UTF-8");
 		protected final int keyLen;
 		protected final String password;
-		Aes(int keyLen,String password){
+		
+		Aes(int keyLen,String password) {
 			this.keyLen = keyLen;
 			this.password = password;
 		}
 	}
-	public static class Encrypter extends Aes{
-		Encrypter(int keyLen, String password){
+	
+	public static class Encrypter extends Aes {
+		Encrypter(int keyLen, String password) {
 			super(keyLen, password);
 		}
+		
 		public byte[] encrypt(byte[] content) {
-			if(null == content || content.length == 0){
+			if(null == content || content.length == 0) {
 				return content;
 			}
 			return encrypt(keyLen,content, password);
 		}
+		
 		public byte[] encrypt(String content) {
-			if(null == content){
+			if(null == content) {
 				return null;
 			}
 			return encrypt(keyLen,content.getBytes(UTF_8), password);
 		}
-		public byte[] encrypt(String content, String charsetName){
-			if(null == content){
+		
+		public byte[] encrypt(String content, String charsetName) {
+			if(null == content) {
 				return null;
 			}
 			return encrypt(keyLen, content.getBytes(Charset.forName(charsetName)), password);
 		}
-		private static byte[] encrypt(int keyLen, byte[] content, String password){
+		
+		private static byte[] encrypt(int keyLen, byte[] content, String password) {
 			try {
 				KeyGenerator kgen = KeyGenerator.getInstance("AES");
 				SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG" );
@@ -98,29 +111,34 @@ public class AesKit {
 		}
 	}
 
-	public static class Decrypter extends Aes{
-		Decrypter(int keyLen, String password){
+	public static class Decrypter extends Aes {
+		
+		Decrypter(int keyLen, String password) {
 			super(keyLen,password);
 		}
+		
 		public byte[] decrypt(byte[] content) {
-			if(null == content || content.length == 0){
+			if(null == content || content.length == 0) {
 				return content;
 			}
 			return decrypt(keyLen, content, password);
 		}
+		
 		public String decryptToStr(byte[] content) {
-			if(null == content || content.length == 0){
+			if(null == content || content.length == 0) {
 				return "";
 			}
 			return new String(decrypt(content), UTF_8);
 		}
+		
 		public String decryptToStr(byte[] content,String charsetName) {
-			if(null == content || content.length == 0){
+			if(null == content || content.length == 0) {
 				return "";
 			}
 			return new String(decrypt(content), Charset.forName(charsetName));
 		}
-		private static byte[] decrypt(int keyLen, byte[] content, String password){
+		
+		private static byte[] decrypt(int keyLen, byte[] content, String password) {
 			try {
 				KeyGenerator kgen = KeyGenerator.getInstance("AES");
 				SecureRandom secureRandom = SecureRandom.getInstance("SHA1PRNG" );
@@ -139,3 +157,10 @@ public class AesKit {
 		}
 	}
 }
+
+
+
+
+
+
+
