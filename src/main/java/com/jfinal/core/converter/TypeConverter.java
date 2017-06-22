@@ -63,7 +63,7 @@ public class TypeConverter {
 	private final Map<Class<?>, IConverter<?>> converterMap = new HashMap<Class<?>, IConverter<?>>();
 	private static TypeConverter me = new TypeConverter();
 	
-	private TypeConverter(){
+	private TypeConverter() {
 		regist(Integer.class, new IntegerConverter());
 		regist(int.class, new IntegerConverter());
 		regist(Long.class, new LongConverter());
@@ -83,11 +83,11 @@ public class TypeConverter {
 		regist(byte[].class, new ByteConverter());
 	}
 	
-	public static TypeConverter me(){
+	public static TypeConverter me() {
 		return me;
 	}
 	
-	public <T> void regist(Class<T> type, IConverter<T> converter){
+	public <T> void regist(Class<T> type, IConverter<T> converter) {
 		converterMap.put(type, converter);
 	}
 	

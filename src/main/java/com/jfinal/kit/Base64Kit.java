@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.jfinal.kit;
 
 import java.nio.charset.Charset;
 
 public class Base64Kit {
+	
 	public static final Charset UTF_8 = Charset.forName("UTF-8");
-	private Base64Kit() {}
 	private static IBase64 delegate;
-	static{
-		IBase64 delegateToUse = null;
+	private Base64Kit() {}
+	
+	static {
 		if (isPresent("java.util.Base64", Base64Kit.class.getClassLoader())) {
-            delegateToUse = new Java8Base64();
-        }else{
-        	delegateToUse = new Java67Base64();
+			delegate = new Java8Base64();
+        } else {
+        	delegate = new Java67Base64();
         }
-		delegate = delegateToUse;
 	}
+	
 	/**
      * 编码
      * @param value byte数组
@@ -103,25 +105,32 @@ public class Base64Kit {
     	public String encode(byte[] value);
     	public byte[] decode(String value);
     }
-
-    static class Java8Base64 implements IBase64{
+    
+    static class Java8Base64 implements IBase64 {
     	@Override
     	public String encode(byte[] value) {
-    		return java.util.Base64.getEncoder().encodeToString(value);  
+    		return java.util.Base64.getEncoder().encodeToString(value);
     	}
-
+    	
     	@Override
     	public byte[] decode(String value) {
     		return java.util.Base64.getDecoder().decode(value);
     	}
     }
-
-    static class Java67Base64 implements IBase64{
+    
+    static class Java67Base64 implements IBase64 {
     	public String encode(byte[] data) {
-            return javax.xml.bind.DatatypeConverter.printBase64Binary( data );
+            return javax.xml.bind.DatatypeConverter.printBase64Binary(data);
         }
-        public byte[] decode(String base64){
-            return javax.xml.bind.DatatypeConverter.parseBase64Binary( base64 );
+    	
+        public byte[] decode(String base64) {
+            return javax.xml.bind.DatatypeConverter.parseBase64Binary(base64);
         }
     }
 }
+
+
+
+
+
+

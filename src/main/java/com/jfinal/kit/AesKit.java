@@ -13,6 +13,7 @@ import javax.crypto.spec.SecretKeySpec;
  * @ClassName: AesKit  
  */
 public class AesKit {
+	
 	private static final Charset UTF_8 = Charset.forName("UTF-8");
 	
 	private AesKit(){}
