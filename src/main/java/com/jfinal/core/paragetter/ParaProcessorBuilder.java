@@ -26,7 +26,7 @@ import com.jfinal.core.Controller;
 public class ParaProcessorBuilder {
 
 	private final static ParaProcessorBuilder me = new ParaProcessorBuilder();
-	private Map<Class<?>, Holder> typeMap = new HashMap<>();
+	private Map<Class<?>, Holder> typeMap = new HashMap<Class<?>, Holder>();
 
 	private ParaProcessorBuilder() {
 		regist(short.class, ShortGetter.class, "0");
@@ -117,9 +117,9 @@ public class ParaProcessorBuilder {
 		if(Enum.class.isAssignableFrom(typeClass)){
 			return new EnumGetter(typeClass,parameterName,defaultValue);
 		}else if (com.jfinal.plugin.activerecord.Model.class.isAssignableFrom(typeClass)) {
-			return new ModelGetter<>(typeClass, parameterName);
+			return new ModelGetter(typeClass, parameterName);
 		} else {
-			return new BeanGetter<>(typeClass, parameterName);
+			return new BeanGetter(typeClass, parameterName);
 		}
 	}
 
