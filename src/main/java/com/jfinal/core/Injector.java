@@ -19,9 +19,7 @@ package com.jfinal.core;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.servlet.http.HttpServletRequest;
-
 import com.jfinal.core.converter.TypeConverter;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
