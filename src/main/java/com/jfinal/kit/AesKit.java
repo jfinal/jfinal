@@ -73,11 +73,11 @@ public class AesKit {
 			}
 			return encrypt(keyLen,content.getBytes(UTF_8), password);
 		}
-		public byte[] encrypt(String content, Charset charset){
+		public byte[] encrypt(String content, String charsetName){
 			if(null == content){
 				return null;
 			}
-			return encrypt(keyLen, content.getBytes(charset), password);
+			return encrypt(keyLen, content.getBytes(Charset.forName(charsetName)), password);
 		}
 		private static byte[] encrypt(int keyLen, byte[] content, String password){
 			try {
@@ -109,13 +109,16 @@ public class AesKit {
 			return decrypt(keyLen, content, password);
 		}
 		public String decryptToStr(byte[] content) {
-			return decryptToStr(content, UTF_8);
-		}
-		public String decryptToStr(byte[] content, Charset charset) {
 			if(null == content || content.length == 0){
 				return "";
 			}
-			return new String(decrypt(content), charset);
+			return new String(decrypt(content), UTF_8);
+		}
+		public String decryptToStr(byte[] content,String charsetName) {
+			if(null == content || content.length == 0){
+				return "";
+			}
+			return new String(decrypt(content), Charset.forName(charsetName));
 		}
 		private static byte[] decrypt(int keyLen, byte[] content, String password){
 			try {
