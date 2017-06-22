@@ -31,7 +31,7 @@ public class Converters {
 	private static final int timePatternLen = "hh:mm:ss".length();
 	private static final int timeWithoutSecPatternLen = "hh:mm".length();
 	
-	private Converters(){}
+	private Converters() {}
 	
 	public static class IntegerConverter implements IConverter<Integer> {
 		// mysql type: int, integer, tinyint(n) n > 1, smallint, mediumint
