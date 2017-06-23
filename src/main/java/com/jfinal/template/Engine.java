@@ -319,6 +319,10 @@ public class Engine {
 		templateCache.clear();
 	}
 	
+	public int getTemplateCacheSize() {
+		return templateCache.size();
+	}
+	
 	public String getName() {
 		return name;
 	}
