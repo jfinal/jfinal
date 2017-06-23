@@ -55,7 +55,7 @@ public class HashKit {
 		}
 	}
 	
-	private static String toHex(byte[] bytes) {
+	public static String toHex(byte[] bytes) {
 		StringBuilder ret = new StringBuilder(bytes.length * 2);
 		for (int i=0; i<bytes.length; i++) {
 			ret.append(HEX_DIGITS[(bytes[i] >> 4) & 0x0f]);
@@ -72,7 +72,7 @@ public class HashKit {
 	 * sha512 512bit 64bytes
 	 */
 	public static String generateSalt(int saltLength) {
-		StringBuilder salt = new StringBuilder();
+		StringBuilder salt = new StringBuilder(saltLength);
 		for (int i=0; i<saltLength; i++) {
 			salt.append(CHAR_ARRAY[random.nextInt(CHAR_ARRAY.length)]);
 		}
