@@ -40,7 +40,7 @@ import com.jfinal.render.RenderException;
 public class CaptchaRender extends Render {
 	
 	protected static String captchaName = "_jfinal_captcha";
-	protected static Random random = new Random(System.nanoTime());
+	protected static final Random random = new Random(System.nanoTime());
 	
 	// 默认的验证码大小
 	protected static final int WIDTH = 108, HEIGHT = 40;
