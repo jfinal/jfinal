@@ -111,7 +111,7 @@ public class JFinalJson extends Json {
 		return sb.toString();
 	}
 	
-	protected String toKeyValue(String key, Object value, StringBuilder sb, int depth){
+	protected void toKeyValue(String key, Object value, StringBuilder sb, int depth){
 		sb.append('\"');
         if(key == null)
             sb.append("null");
@@ -120,8 +120,6 @@ public class JFinalJson extends Json {
 		sb.append('\"').append(':');
 		
 		sb.append(toJson(value, depth));
-		
-		return sb.toString();
 	}
 	
 	protected String iteratorToJson(Iterator iter, int depth) {
