@@ -260,16 +260,15 @@ public class MethodKit {
 			}
 			
 			Class<?>[] targetParaTypes = new Class<?>[extensionMethodParaTypes.length - 1];
+			System.arraycopy(extensionMethodParaTypes, 1, targetParaTypes, 0, targetParaTypes.length);
+			
 			try {
-				if (targetParaTypes.length > 0) {
-					System.arraycopy(extensionMethodParaTypes, 1, targetParaTypes, 0, targetParaTypes.length);
-				}
 				Method error = targetClass.getMethod(methodName, targetParaTypes);
 				if (error != null) {
 					throw new RuntimeException("Extension method \"" + methodName + "\" is already exists in class \"" + targetClass.getName() + "\"");
 				}
-			} catch (Exception e) {		// Method 找不到才能添加该扩展方法
-				String key = MethodKit.getMethodKey(targetClass, methodName, targetParaTypes);
+			} catch (NoSuchMethodException e) {		// Method 找不到才能添加该扩展方法
+				String key = MethodKit.getMethodKey(targetClass, methodName, toBoxedType(targetParaTypes));
 				if (methodCache.containsKey(key)) {
 					throw new RuntimeException(buildMethodSignatureForException("The extension method is already exists: " + extensionClass.getName() + ".", methodName, targetParaTypes));
 				}
@@ -304,14 +303,49 @@ public class MethodKit {
 			Class<?>[] extensionMethodParaTypes = method.getParameterTypes();
 			String methodName = method.getName();
 			Class<?>[] targetParaTypes = new Class<?>[extensionMethodParaTypes.length - 1];
+			System.arraycopy(extensionMethodParaTypes, 1, targetParaTypes, 0, targetParaTypes.length);
 			
-			if (targetParaTypes.length > 0) {
-				System.arraycopy(extensionMethodParaTypes, 1, targetParaTypes, 0, targetParaTypes.length);
-			}
-			
-			String key = MethodKit.getMethodKey(targetClass, methodName, targetParaTypes);
+			String key = MethodKit.getMethodKey(targetClass, methodName, toBoxedType(targetParaTypes));
 			methodCache.remove(key);
 		}
+	}
+	
+	private static final Map<Class<?>, Class<?>> primitiveToBoxedMap = new HashMap<Class<?>, Class<?>>();
+	static {
+		primitiveToBoxedMap.put(byte.class, Byte.class);
+		primitiveToBoxedMap.put(short.class, Short.class);
+		primitiveToBoxedMap.put(int.class, Integer.class);
+		primitiveToBoxedMap.put(long.class, Long.class);
+		primitiveToBoxedMap.put(float.class, Float.class);
+		primitiveToBoxedMap.put(double.class, Double.class);
+		primitiveToBoxedMap.put(char.class, Character.class);
+		primitiveToBoxedMap.put(boolean.class, Boolean.class);
+	}
+	
+	/**
+	 * 由于从在模板中传递的基本数据类型参数只可能是 boxed 类型，当 extension method 中的方法参数是
+	 * primitive 类型时，在 getMethod(key) 时无法获取 addExtensionMethod(...) 注册的扩展方法
+	 * 所以为扩展方法调用 getMethodKey(...) 生成 key 时一律转成 boxed 类型去生成方法的 key 值
+	 * 
+	 * 注意：该值仅用于在获取方法是通过 key 能获取到 MethindInfoExt，而 MethindInfoExt.paraType 仍然
+	 *      是原来的参数值
+	 */
+	private static Class<?>[] toBoxedType(Class<?>[] targetParaTypes) {
+		int len = targetParaTypes.length;
+		if (len == 0) {
+			return targetParaTypes;
+		}
+		
+		Class<?>[] ret = new Class<?>[len];
+		for (int i=0; i<len; i++) {
+			Class<?> temp = primitiveToBoxedMap.get(targetParaTypes[i]);
+			if (temp != null) {
+				ret[i] = temp;
+			} else {
+				ret[i] = targetParaTypes[i];
+			}
+		}
+		return ret;
 	}
 	
 	public static void removeExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {

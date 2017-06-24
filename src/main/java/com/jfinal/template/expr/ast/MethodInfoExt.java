@@ -29,6 +29,12 @@ public class MethodInfoExt extends MethodInfo {
 	public MethodInfoExt(Object objectOfExtensionClass, String key, Class<?> clazz, Method method) {
 		super(key, clazz, method);
 		this.objectOfExtensionClass = objectOfExtensionClass;
+		
+		// 将被 mixed 的类自身添加入参数类型数组的第一个位置
+		// Class<?>[] newParaTypes = new Class<?>[paraTypes.length + 1];
+		// newParaTypes[0] = clazz;	// 第一个参数就是被 mixed 的类它自己
+		// System.arraycopy(paraTypes, 0, newParaTypes, 1, paraTypes.length);
+		// this.paraTypes = newParaTypes;
 	}
 	
 	public Object invoke(Object target, Object... args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -46,6 +52,9 @@ public class MethodInfoExt extends MethodInfo {
 		}
 	}
 }
+
+
+
 
 
 
