@@ -16,6 +16,7 @@
 
 package com.jfinal.template.expr.ast;
 
+import java.lang.reflect.InvocationTargetException;
 import com.jfinal.template.TemplateException;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ParseException;
@@ -79,6 +80,13 @@ public class Method extends Expr {
 		
 		try {
 			return methodInfo.invoke(target, argValues);
+		} catch (InvocationTargetException e) {
+			Throwable t = e.getTargetException();
+			if (t != null) {
+				throw new TemplateException(t.getMessage(), location, t);
+			} else {
+				throw new TemplateException(e.getMessage(), location, e);
+			}
 		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}
