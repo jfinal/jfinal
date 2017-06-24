@@ -44,15 +44,22 @@ package com.jfinal.template.ext.extensionmethod;
 public class StringExt {
 	
 	/**
-	 * toBoolean(...) 与 Logic.isTrue(...) 中的逻辑不同
-	 * 后者针对 String，只要 length() > 0 即返回 true 值
+	 * 此处 String.toBoolean() 与 Logic.isTrue(String)
+	 * 中的逻辑不同，后者只要 非 null 并且 length() > 0 即返回 true
 	 */
 	public Boolean toBoolean(String self) {
 		if (self == null) {
 			return Boolean.FALSE;
 		}
-		self = self.trim().toLowerCase();
-		return self.equals("true") || self.equals("1");	// 未来考虑 "t"、"on"
+		
+		String value = self.trim().toLowerCase();
+		if ("true".equals(value) || "1".equals(value)) {	// 未来考虑 "yes"、"on"
+			return Boolean.TRUE;
+		} else if ("false".equals(value) || "0".equals(value)) {
+			return Boolean.FALSE;
+		} else {
+			throw new RuntimeException("Can not parse to boolean type of value: \"" + self + "\"");
+		}
 	}
 	
 	public Integer toInt(String self) {
