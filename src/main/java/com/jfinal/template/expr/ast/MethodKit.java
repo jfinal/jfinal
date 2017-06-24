@@ -36,6 +36,7 @@ public class MethodKit {
 	private static final Map<Class<?>, Class<?>> primitiveMap = new HashMap<Class<?>, Class<?>>();
 	private static final ConcurrentHashMap<String, Object> methodCache = new ConcurrentHashMap<String, Object>();
 	
+	// 初始化在模板中调用 method 时所在的被禁止使用类
 	static {
 		Class<?>[] cs = {
 			System.class, Runtime.class, Thread.class, Class.class, ClassLoader.class, File.class
@@ -43,7 +44,10 @@ public class MethodKit {
 		for (Class<?> c : cs) {
 			forbiddenClasses.add(c);
 		}
-		
+	}
+	
+	// 初始化在模板中被禁止使用的 method name
+	static {
 		String[] ms = {
 			"getClass", "getDeclaringClass", "forName", "newInstance", "getClassLoader",
 			"getMethod", "getMethods", "getField", "getFields",
@@ -54,7 +58,10 @@ public class MethodKit {
 		for (String m : ms) {
 			forbiddenMethods.add(m);
 		}
-		
+	}
+	
+	// 初始化 primitive type 与 boxed type 双向映射关系
+	static {
 		primitiveMap.put(byte.class, Byte.class);
 		primitiveMap.put(short.class, Short.class);
 		primitiveMap.put(int.class, Integer.class);
@@ -230,6 +237,8 @@ public class MethodKit {
 		key.append(HashKit.md5(argTypesDigest.toString()));
 	}
 	
+	// 以下代码实现 extension method 功能 --------------------
+	
 	// 添加 jfinal 官方扩展方法 extension method
 	static {
 		addExtensionMethod(String.class, new com.jfinal.template.ext.extensionmethod.StringExt());
@@ -308,6 +317,8 @@ public class MethodKit {
 	}
 	
 	private static final Map<Class<?>, Class<?>> primitiveToBoxedMap = new HashMap<Class<?>, Class<?>>();
+	
+	// 初始化 primitive type 到 boxed type 的映射
 	static {
 		primitiveToBoxedMap.put(byte.class, Byte.class);
 		primitiveToBoxedMap.put(short.class, Short.class);
