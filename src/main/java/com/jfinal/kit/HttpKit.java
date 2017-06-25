@@ -51,7 +51,7 @@ public class HttpKit {
 	/**
 	 * https 域名校验
 	 */
-	private class TrustAnyHostnameVerifier implements HostnameVerifier {
+	private static class TrustAnyHostnameVerifier implements HostnameVerifier {
 		public boolean verify(String hostname, SSLSession session) {
 			return true;
 		}
@@ -60,7 +60,7 @@ public class HttpKit {
 	/**
 	 * https 证书管理
 	 */
-	private class TrustAnyTrustManager implements X509TrustManager {
+	private static class TrustAnyTrustManager implements X509TrustManager {
 		public X509Certificate[] getAcceptedIssuers() {
 			return null;  
 		}
@@ -75,11 +75,11 @@ public class HttpKit {
 	private static String CHARSET = "UTF-8";
 	
 	private static final SSLSocketFactory sslSocketFactory = initSSLSocketFactory();
-	private static final TrustAnyHostnameVerifier trustAnyHostnameVerifier = new HttpKit().new TrustAnyHostnameVerifier();
+	private static final TrustAnyHostnameVerifier trustAnyHostnameVerifier = new HttpKit.TrustAnyHostnameVerifier();
 	
 	private static SSLSocketFactory initSSLSocketFactory() {
 		try {
-			TrustManager[] tm = {new HttpKit().new TrustAnyTrustManager() };
+			TrustManager[] tm = {new HttpKit.TrustAnyTrustManager() };
 			SSLContext sslContext = SSLContext.getInstance("TLS");	// ("TLS", "SunJSSE");
 			sslContext.init(null, tm, new java.security.SecureRandom());
 			return sslContext.getSocketFactory();
@@ -157,11 +157,12 @@ public class HttpKit {
 		try {
 			conn = getHttpConnection(buildUrlWithQueryString(url, queryParas), POST, headers);
 			conn.connect();
-			
-			OutputStream out = conn.getOutputStream();
-			out.write(data != null ? data.getBytes(CHARSET) : null);
-			out.flush();
-			out.close();
+			if(data != null) {
+				OutputStream out = conn.getOutputStream();
+				out.write(data.getBytes(CHARSET));
+				out.flush();
+				out.close();
+			}
 			
 			return readResponseString(conn);
 		}
@@ -190,9 +191,10 @@ public class HttpKit {
 	private static String readResponseString(HttpURLConnection conn) {
 		StringBuilder sb = new StringBuilder();
 		InputStream inputStream = null;
+		BufferedReader reader = null;
 		try {
 			inputStream = conn.getInputStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, CHARSET));
+			reader = new BufferedReader(new InputStreamReader(inputStream, CHARSET));
 			String line = null;
 			while ((line = reader.readLine()) != null){
 				sb.append(line).append('\n');
@@ -203,6 +205,13 @@ public class HttpKit {
 			throw new RuntimeException(e);
 		}
 		finally {
+			if(reader != null){
+				try {
+					reader.close();
+				} catch (IOException e) {
+					LogKit.error(e.getMessage(), e);
+				}
+			}
 			if (inputStream != null) {
 				try {
 					inputStream.close();
