@@ -113,9 +113,11 @@ public class HttpKit {
 		conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
 		conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36");
 		
-		if (headers != null && !headers.isEmpty())
-			for (Entry<String, String> entry : headers.entrySet())
+		if (headers != null && !headers.isEmpty()) {
+			for (Entry<String, String> entry : headers.entrySet()) {
 				conn.setRequestProperty(entry.getKey(), entry.getValue());
+			}
+		}
 		
 		return conn;
 	}
@@ -156,7 +158,8 @@ public class HttpKit {
 		try {
 			conn = getHttpConnection(buildUrlWithQueryString(url, queryParas), POST, headers);
 			conn.connect();
-			if(data != null) {
+			
+			if (data != null) {
 				OutputStream out = conn.getOutputStream();
 				out.write(data.getBytes(CHARSET));
 				out.flush();
@@ -223,8 +226,9 @@ public class HttpKit {
 	 * Build queryString of the url
 	 */
 	private static String buildUrlWithQueryString(String url, Map<String, String> queryParas) {
-		if (queryParas == null || queryParas.isEmpty())
+		if (queryParas == null || queryParas.isEmpty()) {
 			return url;
+		}
 		
 		StringBuilder sb = new StringBuilder(url);
 		boolean isFirst;
@@ -237,13 +241,17 @@ public class HttpKit {
 		}
 		
 		for (Entry<String, String> entry : queryParas.entrySet()) {
-			if (isFirst) isFirst = false;	
-			else sb.append('&');
+			if (isFirst) {
+				isFirst = false;
+			} else {
+				sb.append('&');
+			}
 			
 			String key = entry.getKey();
 			String value = entry.getValue();
-			if (StrKit.notBlank(value))
+			if (StrKit.notBlank(value)) {
 				try {value = URLEncoder.encode(value, CHARSET);} catch (UnsupportedEncodingException e) {throw new RuntimeException(e);}
+			}
 			sb.append(key).append('=').append(value);
 		}
 		return sb.toString();
@@ -263,7 +271,7 @@ public class HttpKit {
 				return "";
 			}
 			
-			while ((line = br.readLine())!=null) {
+			while ((line = br.readLine()) != null) {
 				ret.append('\n').append(line);
 			}
 			
@@ -272,8 +280,9 @@ public class HttpKit {
 			throw new RuntimeException(e);
 		}
 		finally {
-			if (br != null)
+			if (br != null) {
 				try {br.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
+			}
 		}
 	}
 	
