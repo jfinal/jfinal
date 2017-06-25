@@ -1,5 +1,22 @@
+/**
+ * Copyright (c) 2011-2017, James Zhan 詹波 (jfinal@126.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.jfinal.template.ext.spring;
 
+import java.io.Writer;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,12 +26,25 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 
+/**
+ * 关键设置：
+ * 1：setContentType("text/html;charset=UTF-8") 设置 content type 字符集为 UTF-8
+ * 
+ * 2：setExposeRequestAttributes(true) 设置将 request 中的属性值注入到 model 中去
+ *    便于在模板中使用 #(value) 访问 request.setAttribute(...) 进去的值
+ *    
+ * 3： setExposeSessionAttributes(true) 设置将 session 中的属性值注入到 model 中去
+ *    使用在模板中使用 #(value) 访问 session.setAttribute(...) 进去的值
+ * 
+ * 注意：JFinalViewResolver.setSessionInView(true) 中的配置与
+ *      JFinalView.setExposeSessionAttributes(true) 可实现
+ *      相似的功能，区别在于前者访问方式为 #(session.value) 而后者为
+ *      #(value)，两种配置只选其一
+ */
 public class JFinalView extends AbstractTemplateView {
 	
 	@Override
 	protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// response.setContentType(getContentType());
-		
 		if (JFinalViewResolver.sessionInView) {
 			HttpSession hs = request.getSession(JFinalViewResolver.createSession);
 			if (hs != null) {
@@ -22,12 +52,9 @@ public class JFinalView extends AbstractTemplateView {
 			}
 		}
 		
-		for (Enumeration<String> attrs=request.getAttributeNames(); attrs.hasMoreElements();) {
-			String attrName = attrs.nextElement();
-			model.put(attrName, request.getAttribute(attrName));
-		}
-		
-		JFinalViewResolver.engine.getTemplate(getUrl()).render(model, response.getWriter());
+		Writer writer = response.getWriter();
+		JFinalViewResolver.engine.getTemplate(getUrl()).render(model, writer);
+		writer.flush();
 	}
 }
 
