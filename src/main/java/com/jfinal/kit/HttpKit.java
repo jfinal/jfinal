@@ -18,7 +18,6 @@ package com.jfinal.kit;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -51,7 +50,7 @@ public class HttpKit {
 	/**
 	 * https 域名校验
 	 */
-	private class TrustAnyHostnameVerifier implements HostnameVerifier {
+	private static class TrustAnyHostnameVerifier implements HostnameVerifier {
 		public boolean verify(String hostname, SSLSession session) {
 			return true;
 		}
@@ -60,7 +59,7 @@ public class HttpKit {
 	/**
 	 * https 证书管理
 	 */
-	private class TrustAnyTrustManager implements X509TrustManager {
+	private static class TrustAnyTrustManager implements X509TrustManager {
 		public X509Certificate[] getAcceptedIssuers() {
 			return null;  
 		}
@@ -75,11 +74,11 @@ public class HttpKit {
 	private static String CHARSET = "UTF-8";
 	
 	private static final SSLSocketFactory sslSocketFactory = initSSLSocketFactory();
-	private static final TrustAnyHostnameVerifier trustAnyHostnameVerifier = new HttpKit().new TrustAnyHostnameVerifier();
+	private static final TrustAnyHostnameVerifier trustAnyHostnameVerifier = new HttpKit.TrustAnyHostnameVerifier();
 	
 	private static SSLSocketFactory initSSLSocketFactory() {
 		try {
-			TrustManager[] tm = {new HttpKit().new TrustAnyTrustManager() };
+			TrustManager[] tm = {new HttpKit.TrustAnyTrustManager() };
 			SSLContext sslContext = SSLContext.getInstance("TLS");	// ("TLS", "SunJSSE");
 			sslContext.init(null, tm, new java.security.SecureRandom());
 			return sslContext.getSocketFactory();
@@ -157,11 +156,12 @@ public class HttpKit {
 		try {
 			conn = getHttpConnection(buildUrlWithQueryString(url, queryParas), POST, headers);
 			conn.connect();
-			
-			OutputStream out = conn.getOutputStream();
-			out.write(data != null ? data.getBytes(CHARSET) : null);
-			out.flush();
-			out.close();
+			if(data != null) {
+				OutputStream out = conn.getOutputStream();
+				out.write(data.getBytes(CHARSET));
+				out.flush();
+				out.close();
+			}
 			
 			return readResponseString(conn);
 		}
@@ -188,24 +188,30 @@ public class HttpKit {
 	}
 	
 	private static String readResponseString(HttpURLConnection conn) {
-		StringBuilder sb = new StringBuilder();
-		InputStream inputStream = null;
+		BufferedReader reader = null;
 		try {
-			inputStream = conn.getInputStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, CHARSET));
-			String line = null;
-			while ((line = reader.readLine()) != null){
-				sb.append(line).append('\n');
+			StringBuilder ret;
+			reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), CHARSET));
+			String line = reader.readLine();
+			if (line != null) {
+				ret = new StringBuilder();
+				ret.append(line);
+			} else {
+				return "";
 			}
-			return sb.toString();
+			
+			while ((line = reader.readLine()) != null) {
+				ret.append('\n').append(line);
+			}
+			return ret.toString();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		finally {
-			if (inputStream != null) {
+			if(reader != null){
 				try {
-					inputStream.close();
+					reader.close();
 				} catch (IOException e) {
 					LogKit.error(e.getMessage(), e);
 				}
@@ -246,16 +252,22 @@ public class HttpKit {
 	public static String readData(HttpServletRequest request) {
 		BufferedReader br = null;
 		try {
-			StringBuilder result = new StringBuilder();
+			StringBuilder ret;
 			br = request.getReader();
-			for (String line; (line=br.readLine())!=null;) {
-				if (result.length() > 0) {
-					result.append('\n');
-				}
-				result.append(line);
+			
+			String line = br.readLine();
+			if (line != null) {
+				ret = new StringBuilder();
+				ret.append(line);
+			} else {
+				return "";
 			}
-
-			return result.toString();
+			
+			while ((line = br.readLine())!=null) {
+				ret.append('\n').append(line);
+			}
+			
+			return ret.toString();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
