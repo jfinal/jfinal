@@ -131,10 +131,6 @@ public class VelocityRender extends Render {
         catch(Exception e ) {
             throw new RenderException(e);
         }
-        finally {
-        	if (writer != null)
-        		writer.close();
-        }
 	}
 }
 
