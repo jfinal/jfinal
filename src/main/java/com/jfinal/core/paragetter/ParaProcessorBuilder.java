@@ -53,6 +53,8 @@ public class ParaProcessorBuilder {
 		regist(java.lang.String[].class, StringArrayGetter.class, null);
 		regist(java.lang.Integer[].class, IntegerArrayGetter.class, null);
 		regist(java.lang.Long[].class, LongArrayGetter.class, null);
+		regist(com.jfinal.core.paragetter.RawPostData.class, RawPostDataGetter.class, null);
+		
 	}
 
 	public static ParaProcessorBuilder me() {
