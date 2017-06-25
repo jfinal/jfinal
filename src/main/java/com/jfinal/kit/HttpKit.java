@@ -18,7 +18,6 @@ package com.jfinal.kit;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -189,14 +188,22 @@ public class HttpKit {
 	}
 	
 	private static String readResponseString(HttpURLConnection conn) {
-		StringBuilder sb = new StringBuilder();
 		BufferedReader reader = null;
 		try {
+			StringBuilder ret;
 			reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), CHARSET));
-			for (String line = reader.readLine(); line != null; line = reader.readLine()){
-				sb.append(line).append('\n');
+			String line = reader.readLine();
+			if (line != null) {
+				ret = new StringBuilder();
+				ret.append(line);
+			} else {
+				return "";
 			}
-			return sb.toString();
+			
+			while ((line = reader.readLine()) != null) {
+				ret.append('\n').append(line);
+			}
+			return ret.toString();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
@@ -245,16 +252,22 @@ public class HttpKit {
 	public static String readData(HttpServletRequest request) {
 		BufferedReader br = null;
 		try {
-			StringBuilder result = new StringBuilder();
+			StringBuilder ret;
 			br = request.getReader();
-			for (String line; (line=br.readLine())!=null;) {
-				if (result.length() > 0) {
-					result.append('\n');
-				}
-				result.append(line);
+			
+			String line = br.readLine();
+			if (line != null) {
+				ret = new StringBuilder();
+				ret.append(line);
+			} else {
+				return "";
 			}
-
-			return result.toString();
+			
+			while ((line = br.readLine())!=null) {
+				ret.append('\n').append(line);
+			}
+			
+			return ret.toString();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
