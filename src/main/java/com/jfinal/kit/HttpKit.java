@@ -190,13 +190,10 @@ public class HttpKit {
 	
 	private static String readResponseString(HttpURLConnection conn) {
 		StringBuilder sb = new StringBuilder();
-		InputStream inputStream = null;
 		BufferedReader reader = null;
 		try {
-			inputStream = conn.getInputStream();
-			reader = new BufferedReader(new InputStreamReader(inputStream, CHARSET));
-			String line = null;
-			while ((line = reader.readLine()) != null){
+			reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), CHARSET));
+			for (String line = reader.readLine(); line != null; line = reader.readLine()){
 				sb.append(line).append('\n');
 			}
 			return sb.toString();
@@ -208,13 +205,6 @@ public class HttpKit {
 			if(reader != null){
 				try {
 					reader.close();
-				} catch (IOException e) {
-					LogKit.error(e.getMessage(), e);
-				}
-			}
-			if (inputStream != null) {
-				try {
-					inputStream.close();
 				} catch (IOException e) {
 					LogKit.error(e.getMessage(), e);
 				}
