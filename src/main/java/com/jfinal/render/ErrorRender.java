@@ -62,10 +62,6 @@ public class ErrorRender extends Render {
 		} catch (IOException e) {
 			throw new RenderException(e);
 		}
-		finally {
-			if (writer != null)
-				writer.close();
-		}
 	}
 	
 	public String getErrorHtml() {
