@@ -212,7 +212,7 @@ public class HttpKit {
 			throw new RuntimeException(e);
 		}
 		finally {
-			if(reader != null){
+			if (reader != null) {
 				try {
 					reader.close();
 				} catch (IOException e) {
