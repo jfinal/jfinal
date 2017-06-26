@@ -70,13 +70,18 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 		JFinalViewResolver.createSession = createSession;
 	}
 	
+	public void setDatePattern(String datePattern) {
+		engine.setDatePattern(datePattern);
+	}
+	
 	// ---------------------------------------------------------------
 	
 	public JFinalViewResolver() {
 		setViewClass(requiredViewClass());
+		// setOrder(0);
+		// setPrefix("/view/");
 		// setSuffix(".html");
         // setContentType("text/html;charset=UTF-8");
-        // setOrder(0);
 	}
 	
 	@Override
