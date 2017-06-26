@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import com.jfinal.core.Const;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.SharedMethodKit;
@@ -39,6 +38,8 @@ import com.jfinal.template.stat.ast.Stat;
  */
 public class EngineConfig {
 	
+	public static final String DEFAULT_ENCODING = "UTF-8";
+	
 	private Map<String, Define> sharedFunctionMap = new HashMap<String, Define>();
 	private List<IStringSource> sharedFunctionSourceList = new ArrayList<IStringSource>();		// for devMode only
 	
@@ -51,7 +52,7 @@ public class EngineConfig {
 	private boolean devMode = false;
 	private boolean reloadModifiedSharedFunctionInDevMode = true;
 	private String baseTemplatePath = null;
-	private String encoding = Const.DEFAULT_ENCODING;
+	private String encoding = DEFAULT_ENCODING;
 	private String datePattern = "yyyy-MM-dd HH:mm";
 	
 	public EngineConfig() {
