@@ -33,7 +33,7 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 	static boolean sessionInView = false;
 	static boolean createSession = true;
 	
-	public Engine getEngine() {
+	public static Engine getEngine() {
 		return engine;
 	}
 	
