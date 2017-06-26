@@ -16,7 +16,9 @@
 
 package com.jfinal.template.ext.spring;
 
+import javax.servlet.ServletContext;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
+import com.jfinal.kit.StrKit;
 import com.jfinal.template.Engine;
 
 /**
@@ -64,6 +66,16 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 		// setSuffix(".html");
         // setContentType("text/html;charset=UTF-8");
         // setOrder(0);
+	}
+	
+	@Override
+	protected void initServletContext(ServletContext servletContext) {
+		super.initServletContext(servletContext);
+		
+		if (StrKit.isBlank(engine.getBaseTemplatePath())) {
+			String path = servletContext.getRealPath("/");
+			engine.setBaseTemplatePath(path);
+		}
 	}
 	
 	@Override
