@@ -32,11 +32,22 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 	
 	public static final Engine engine = new Engine();
 	
+	static String sharedFunctionFiles = null;
 	static boolean sessionInView = false;
 	static boolean createSession = true;
 	
 	public Engine getEngine() {
 		return engine;
+	}
+	
+	/**
+	 * 添加 shared function 文件，多个文件用逗号分隔
+	 */
+	public void setSharedFunction(String sharedFunctionFiles) {
+		if (StrKit.isBlank(sharedFunctionFiles)) {
+			throw new IllegalArgumentException("sharedFunctionFiles can not be blank");
+		}
+		JFinalViewResolver.sharedFunctionFiles = sharedFunctionFiles;
 	}
 	
 	public void setDevMode(boolean devMode) {
@@ -75,6 +86,17 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 		if (StrKit.isBlank(engine.getBaseTemplatePath())) {
 			String path = servletContext.getRealPath("/");
 			engine.setBaseTemplatePath(path);
+		}
+		
+		initSharedFunctionFiles();
+	}
+	
+	private void initSharedFunctionFiles() {
+		if (sharedFunctionFiles != null) {
+			String[] fileArray = sharedFunctionFiles.split(",");
+			for (String file : fileArray) {
+				engine.addSharedFunction(file.trim());
+			}
 		}
 	}
 	
