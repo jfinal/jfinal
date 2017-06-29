@@ -16,8 +16,10 @@
 
 package com.jfinal.template.stat.ast;
 
+import java.io.IOException;
 import java.io.Writer;
 import com.jfinal.template.Env;
+import com.jfinal.template.TemplateException;
 import com.jfinal.template.stat.Scope;
 
 /**
@@ -33,7 +35,11 @@ public class Text extends Stat {
 	}
 	
 	public void exec(Env env, Scope scope, Writer writer) {
-		write(writer, text);
+		try {
+			writer.write(text, 0, text.length);
+		} catch (IOException e) {
+			throw new TemplateException(e.getMessage(), location, e);
+		}
 	}
 	
 	public boolean isEmpty() {
