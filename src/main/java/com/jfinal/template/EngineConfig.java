@@ -290,10 +290,17 @@ public class EngineConfig {
 	}
 	
 	/**
+	 * Add shared method from class
+	 */
+	public void addSharedMethod(Class<?> sharedMethodFromClass) {
+		sharedMethodKit.addSharedMethod(sharedMethodFromClass);
+	}
+	
+	/**
 	 * Add shared static method of Class
 	 */
-	public void addSharedStaticMethod(Class<?> sharedClass) {
-		sharedMethodKit.addSharedStaticMethod(sharedClass);
+	public void addSharedStaticMethod(Class<?> sharedStaticMethodFromClass) {
+		sharedMethodKit.addSharedStaticMethod(sharedStaticMethodFromClass);
 	}
 	
 	/**
