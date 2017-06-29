@@ -19,6 +19,7 @@ package com.jfinal.aop;
 /**
  * duang duang duang
  */
+@SuppressWarnings("unchecked")
 public class Duang {
 	
 	private Duang(){}
