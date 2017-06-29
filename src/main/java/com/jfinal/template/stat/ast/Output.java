@@ -47,7 +47,8 @@ public class Output extends Stat {
 		try {
 			Object value = exprList.eval(scope);
 			if (value != null) {
-				writer.write(value.toString());
+				String str = value.toString();
+				writer.write(str, 0, str.length());
 			}
 		} catch(TemplateException e) {
 			throw e;
