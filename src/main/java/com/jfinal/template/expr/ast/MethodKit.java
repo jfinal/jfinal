@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import com.jfinal.kit.HashKit;
+import com.jfinal.kit.ReflectKit;
 
 /**
  * MethodKit
@@ -289,12 +290,7 @@ public class MethodKit {
 	}
 	
 	public static void addExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {
-		addExtensionMethod(targetClass, newExtensionObject(extensionClass));
-	}
-	
-	private static Object newExtensionObject(Class<?> extensionClass) {
-		try {return extensionClass.newInstance();}
-		catch (Exception e) {throw new RuntimeException(e);}
+		addExtensionMethod(targetClass, ReflectKit.newInstance(extensionClass));
 	}
 	
 	public static void removeExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
@@ -357,7 +353,7 @@ public class MethodKit {
 	}
 	
 	public static void removeExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {
-		removeExtensionMethod(targetClass, newExtensionObject(extensionClass));
+		removeExtensionMethod(targetClass, ReflectKit.newInstance(extensionClass));
 	}
 	
 	private static String buildMethodSignatureForException(String preMsg, String methodName, Class<?>[] argTypes) {
