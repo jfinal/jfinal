@@ -274,10 +274,18 @@ public class Engine {
 	}
 	
 	/**
+	 * Add shared method from class
+	 */
+	public Engine addSharedMethod(Class<?> sharedMethodFromClass) {
+		config.addSharedMethod(sharedMethodFromClass);
+		return this;
+	}
+	
+	/**
 	 * Add shared static method of Class
 	 */
-	public Engine addSharedStaticMethod(Class<?> sharedClass) {
-		config.addSharedStaticMethod(sharedClass);
+	public Engine addSharedStaticMethod(Class<?> sharedStaticMethodFromClass) {
+		config.addSharedStaticMethod(sharedStaticMethodFromClass);
 		return this;
 	}
 	

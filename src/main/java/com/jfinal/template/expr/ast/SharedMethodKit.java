@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import com.jfinal.kit.ReflectKit;
 
 /**
  * SharedMethodKit
@@ -74,14 +75,15 @@ public class SharedMethodKit {
 	}
 	
 	public void addSharedMethod(Object sharedMethodFromObject) {
-		if (sharedMethodFromObject instanceof Class) {
-			throw new IllegalArgumentException("The parameter of sharedMethodFromObject can not be Class type, using the addSharedStaticMethod(...) to share static method");
-		}
 		addSharedMethod(sharedMethodFromObject.getClass(), sharedMethodFromObject);
 	}
 	
-	public void addSharedStaticMethod(Class<?> sharedClass) {
-		addSharedMethod(sharedClass, null);
+	public void addSharedMethod(Class<?> sharedMethodFromClass) {
+		addSharedMethod(sharedMethodFromClass, ReflectKit.newInstance(sharedMethodFromClass));
+	}
+	
+	public void addSharedStaticMethod(Class<?> sharedStaticMethodFromClass) {
+		addSharedMethod(sharedStaticMethodFromClass, null);
 	}
 	
 	public void removeSharedMethod(String methodName) {
