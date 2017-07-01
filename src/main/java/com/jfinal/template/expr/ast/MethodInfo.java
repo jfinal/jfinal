@@ -49,7 +49,7 @@ public class MethodInfo {
 		}
 	}
 	
-	private Object invokeVarArgsMethod(Object target, Object[] argValues) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	protected Object invokeVarArgsMethod(Object target, Object[] argValues) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Object[] finalArgValues = new Object[paraTypes.length];
 		
 		int fixedParaLength = paraTypes.length - 1;

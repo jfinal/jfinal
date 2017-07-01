@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import com.jfinal.core.Const;
 
 /**
  * FileStringSource
@@ -41,7 +40,7 @@ public class FileStringSource implements IStringSource {
 	}
 	
 	public FileStringSource(String baseTemplatePath, String fileName) {
-		this(baseTemplatePath, fileName, Const.DEFAULT_ENCODING);
+		this(baseTemplatePath, fileName, EngineConfig.DEFAULT_ENCODING);
 	}
 	
 	public boolean isModified() {
@@ -101,7 +100,7 @@ public class FileStringSource implements IStringSource {
 			}
 			
 			while ((line=br.readLine()) != null) {
-				ret.append("\n").append(line);
+				ret.append('\n').append(line);
 			}
 			return ret;
 		} catch (Exception e) {

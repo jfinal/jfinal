@@ -34,7 +34,7 @@ public class Sqlite3Dialect extends Dialect {
 	}
 	
 	public void forModelSave(Table table, Map<String, Object> attrs, StringBuilder sql, List<Object> paras) {
-		sql.append("insert into ").append(table.getName()).append("(");
+		sql.append("insert into ").append(table.getName()).append('(');
 		StringBuilder temp = new StringBuilder(") values(");
 		for (Entry<String, Object> e: attrs.entrySet()) {
 			String colName = e.getKey();
@@ -44,11 +44,11 @@ public class Sqlite3Dialect extends Dialect {
 					temp.append(", ");
 				}
 				sql.append(colName);
-				temp.append("?");
+				temp.append('?');
 				paras.add(e.getValue());
 			}
 		}
-		sql.append(temp.toString()).append(")");
+		sql.append(temp.toString()).append(')');
 	}
 	
 	public String forModelDeleteById(Table table) {
@@ -136,7 +136,7 @@ public class Sqlite3Dialect extends Dialect {
 		trimPrimaryKeys(pKeys);
 		
 		sql.append("insert into ");
-		sql.append(tableName).append("(");
+		sql.append(tableName).append('(');
 		StringBuilder temp = new StringBuilder();
 		temp.append(") values(");
 		
@@ -146,10 +146,10 @@ public class Sqlite3Dialect extends Dialect {
 				temp.append(", ");
 			}
 			sql.append(e.getKey());
-			temp.append("?");
+			temp.append('?');
 			paras.add(e.getValue());
 		}
-		sql.append(temp.toString()).append(")");
+		sql.append(temp.toString()).append(')');
 	}
 	
 	public void forDbUpdate(String tableName, String[] pKeys, Object[] ids, Record record, StringBuilder sql, List<Object> paras) {

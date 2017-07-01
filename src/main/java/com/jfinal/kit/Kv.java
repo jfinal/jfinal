@@ -21,7 +21,7 @@ import java.util.Map;
 import com.jfinal.json.Json;
 
 /**
- * Kv ---> key value 
+ * Kv ---> Key Value 
  * Kv 用于取代 JMap，前者输入量少，且输入更顺滑
  * 
  * 参数或者返回值封装，常用于业务层传参与返回值

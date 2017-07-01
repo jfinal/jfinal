@@ -16,8 +16,6 @@
 
 package com.jfinal.plugin.activerecord;
 
-import java.util.LinkedList;
-
 /**
  * PageSqlKit
  */
@@ -65,30 +63,32 @@ public class PageSqlKit {
 	 * 3：如果一定要处理上例中的问题，还要了解不同数据库有关字符串常量的定界符细节
 	 */
 	private static int getIndexOfFrom(String sql) {
-		LinkedList<String> stack = null;
+		int parenDepth = 0;
 		char c;
 		for (int i = start, end = sql.length() - 5; i < end; i++) {
-			c = charTable[sql.charAt(i)];
+			c = sql.charAt(i);
+			if (c >= SIZE) {
+				continue ;
+			}
+			
+			c = charTable[c];
 			if (c == NULL) {
 				continue ;
 			}
 			
 			if (c == '(') {
-				if (stack == null) {
-					stack = new LinkedList<String>();
-				}
-				stack.push("(");
+				parenDepth++;
 				continue ;
 			}
 			
 			if (c == ')') {
-				if (stack == null) {
+				if (parenDepth == 0) {
 					throw new RuntimeException("Can not match left paren '(' for right paren ')': " + sql);
 				}
-				stack.pop();
+				parenDepth--;
 				continue ;
 			}
-			if (stack != null && !stack.isEmpty()) {
+			if (parenDepth > 0) {
 				continue ;
 			}
 			

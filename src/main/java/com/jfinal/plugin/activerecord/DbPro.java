@@ -22,7 +22,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,28 +37,23 @@ import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class DbPro {
 	
-	private final Config config;
-	
-	static DbPro MAIN = null;
-	private static final Map<String, DbPro> map = new HashMap<String, DbPro>();
+	protected final Config config;
 	
 	/**
-	 * for DbKit.addConfig(configName)
+	 * 建议用 Db.use(configName) 代替，未来版本会去除该方法
 	 */
-	static void init(String configName) {
-		MAIN = new DbPro(configName);
-		map.put(configName, MAIN);
+	@Deprecated
+	public static DbPro use(String configName) {
+		return Db.use(configName);
 	}
 	
-    /**
-     * for DbKit.removeConfig(configName)
-     */
-    static void removeDbProWithConfig(String configName) {
-    	if (MAIN != null && MAIN.config.getName().equals(configName)) {
-    		MAIN = null;
-    	}
-    	map.remove(configName);
-    }
+	/**
+	 * 建议用 Db.use() 代替，未来版本会去除该方法
+	 */
+	@Deprecated
+	public static DbPro use() {
+		return Db.use();
+	}
 	
 	public DbPro() {
 		if (DbKit.config == null) {
@@ -75,17 +69,8 @@ public class DbPro {
 		}
 	}
 	
-	public static DbPro use(String configName) {
-		DbPro result = map.get(configName);
-		if (result == null) {
-			result = new DbPro(configName);
-			map.put(configName, result);
-		}
-		return result;
-	}
-	
-	public static DbPro use() {
-		return MAIN;
+	public Config getConfig() {
+		return config;
 	}
 	
 	<T> List<T> query(Config config, Connection conn, String sql, Object... paras) throws SQLException {
@@ -512,7 +497,7 @@ public class DbPro {
 			conn = config.getConnection();
 			String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
 			StringBuilder findSql = new StringBuilder();
-			findSql.append(select).append(" ").append(sqlExceptSelect);
+			findSql.append(select).append(' ').append(sqlExceptSelect);
 			return doPaginateByFullSql(config, conn, pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
@@ -563,7 +548,7 @@ public class DbPro {
 	Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
 		String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
 		StringBuilder findSql = new StringBuilder();
-		findSql.append(select).append(" ").append(sqlExceptSelect);
+		findSql.append(select).append(' ').append(sqlExceptSelect);
 		return doPaginateByFullSql(config, conn, pageNumber, pageSize, null, totalRowSql, findSql, paras);
 	}
 	
@@ -973,7 +958,7 @@ public class DbPro {
 		int[] result = new int[size];
 		PreparedStatement pst = conn.prepareStatement(sql);
 		for (int i=0; i<size; i++) {
-			Map map = isModel ? ((Model)list.get(i)).getAttrs() : ((Record)list.get(i)).getColumns();
+			Map map = isModel ? ((Model)list.get(i))._getAttrs() : ((Record)list.get(i)).getColumns();
 			for (int j=0; j<columnArray.length; j++) {
 				Object value = map.get(columnArray[j]);
 				if (config.dialect.isOracle()) {
@@ -1104,7 +1089,7 @@ public class DbPro {
     		return new int[0];
     	
     	Model model = modelList.get(0);
-    	Map<String, Object> attrs = model.getAttrs();
+    	Map<String, Object> attrs = model._getAttrs();
     	int index = 0;
     	StringBuilder columns = new StringBuilder();
     	// the same as the iterator in Dialect.forModelSave() to ensure the order of the attrs
@@ -1117,7 +1102,7 @@ public class DbPro {
 			}
 			
 			if (index++ > 0) {
-				columns.append(",");
+				columns.append(',');
 			}
 			columns.append(e.getKey());
 		}
@@ -1151,7 +1136,7 @@ public class DbPro {
 			}
 			
 			if (index++ > 0) {
-				columns.append(",");
+				columns.append(',');
 			}
 			columns.append(e.getKey());
 		}
@@ -1174,7 +1159,7 @@ public class DbPro {
     	Model model = modelList.get(0);
     	Table table = TableMapping.me().getTable(model.getClass());
     	String[] pKeys = table.getPrimaryKey();
-    	Map<String, Object> attrs = model.getAttrs();
+    	Map<String, Object> attrs = model._getAttrs();
     	List<String> attrNames = new ArrayList<String>();
     	// the same as the iterator in Dialect.forModelSave() to ensure the order of the attrs
     	for (Entry<String, Object> e : attrs.entrySet()) {
@@ -1246,7 +1231,7 @@ public class DbPro {
     }
     
     public SqlPara getSqlPara(String key, Model model) {
-    	return getSqlPara(key, model.getAttrs());
+    	return getSqlPara(key, model._getAttrs());
     }
     
     public SqlPara getSqlPara(String key, Map data) {
@@ -1263,6 +1248,10 @@ public class DbPro {
     
     public Record findFirst(SqlPara sqlPara) {
     	return findFirst(sqlPara.getSql(), sqlPara.getPara());
+    }
+    
+    public int update(SqlPara sqlPara) {
+    	return update(sqlPara.getSql(), sqlPara.getPara());
     }
     
     public Page<Record> paginate(int pageNumber, int pageSize, SqlPara sqlPara) {

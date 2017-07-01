@@ -24,6 +24,10 @@ import com.jfinal.template.stat.Scope;
 
 /**
  * RangeArray : [expr .. expr]
+ * 
+ * 用法：
+ * 1：[1..3]
+ * 2：[3..1]
  */
 public class RangeArray extends Expr {
 	

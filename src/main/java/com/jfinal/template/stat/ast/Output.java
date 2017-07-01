@@ -18,6 +18,7 @@ package com.jfinal.template.stat.ast;
 
 import java.io.Writer;
 import com.jfinal.template.Env;
+import com.jfinal.template.TemplateException;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ParseException;
@@ -43,9 +44,16 @@ public class Output extends Stat {
 	}
 	
 	public void exec(Env env, Scope scope, Writer writer) {
-		Object value = exprList.eval(scope);
-		if (value != null) {
-			write(writer, value.toString());
+		try {
+			Object value = exprList.eval(scope);
+			if (value != null) {
+				String str = value.toString();
+				writer.write(str, 0, str.length());
+			}
+		} catch(TemplateException e) {
+			throw e;
+		} catch(Exception e) {
+			throw new TemplateException(e.getMessage(), location, e);
 		}
 	}
 }

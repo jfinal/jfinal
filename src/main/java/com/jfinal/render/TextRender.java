@@ -61,10 +61,6 @@ public class TextRender extends Render {
 		} catch (IOException e) {
 			throw new RenderException(e);
 		}
-		finally {
-			if (writer != null)
-				writer.close();
-		}
 	}
 	
 	public String getText() {

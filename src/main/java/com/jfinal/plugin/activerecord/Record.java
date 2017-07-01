@@ -98,7 +98,7 @@ public class Record implements Serializable {
 	 * @param model the Model object
 	 */
 	public Record setColumns(Model<?> model) {
-		getColumns().putAll(model.getAttrs());
+		getColumns().putAll(model._getAttrs());
 		return this;
 	}
 	
@@ -298,7 +298,7 @@ public class Record implements Serializable {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("{");
+		sb.append('{');
 		boolean first = true;
 		for (Entry<String, Object> e : getColumns().entrySet()) {
 			if (first)
@@ -309,9 +309,9 @@ public class Record implements Serializable {
 			Object value = e.getValue();
 			if (value != null)
 				value = value.toString();
-			sb.append(e.getKey()).append(":").append(value);
+			sb.append(e.getKey()).append(':').append(value);
 		}
-		sb.append("}");
+		sb.append('}');
 		return sb.toString();
 	}
 	

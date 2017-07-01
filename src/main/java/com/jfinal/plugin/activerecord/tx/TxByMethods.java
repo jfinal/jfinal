@@ -23,7 +23,7 @@ import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.DbKit;
-import com.jfinal.plugin.activerecord.DbPro;
+import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 
 /**
@@ -47,7 +47,7 @@ public class TxByMethods implements Interceptor {
 			config = DbKit.getConfig();
 		
 		if (methodSet.contains(inv.getMethodName())) {
-			DbPro.use(config.getName()).tx(new IAtom() {
+			Db.use(config.getName()).tx(new IAtom() {
 				public boolean run() throws SQLException {
 					inv.invoke();
 					return true;
