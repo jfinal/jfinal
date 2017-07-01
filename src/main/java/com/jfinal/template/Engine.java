@@ -153,12 +153,25 @@ public class Engine {
 		return template;
 	}
 	
+	/**
+	 * Get template by string content and do not cache the template
+	 * 
+	 * 重要：MemoryStringSource 中的 key = HashKit.md5(content)，也即 key
+	 *     与 content 有紧密的对应关系，当 content 发生变化时 key 值也相应变化
+	 *     因此，原先 key 所对应的 Template 缓存对象已无法被获取，当 getTemplateByString(String)
+	 *     的 String 参数的数量不确定时会引发内存泄漏
+	 *     
+	 *     当 getTemplateByString(String, boolean) 中的 String 参数的
+	 *     数量可控并且确定时，才可对其使用缓存 
+	 */
 	public Template getTemplateByString(String content) {
 		return getTemplateByString(content, false);
 	}
 	
 	/**
 	 * Get template by string content
+	 * @param content 模板内容
+	 * @param cache true 则缓存 Template，否则不缓存
 	 */
 	public Template getTemplateByString(String content, boolean cache) {
 		MemoryStringSource memoryStringSource = new MemoryStringSource(content, cache);
@@ -185,7 +198,7 @@ public class Engine {
 	 */
 	public Template getTemplate(IStringSource stringSource) {
 		String key = stringSource.getKey();
-		if (key == null) {
+		if (key == null) {	// key 为 null 则不缓存，详见 IStringSource.getKey() 注释
 			return buildTemplateByStringSource(stringSource);
 		}
 		
