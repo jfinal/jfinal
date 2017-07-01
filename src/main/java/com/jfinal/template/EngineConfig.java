@@ -98,7 +98,9 @@ public class EngineConfig {
 	 * Add shared function by string content
 	 */
 	public void addSharedFunctionByString(String content) {
-		MemoryStringSource memoryStringSource = new MemoryStringSource(content);
+		// content 中的内容被解析后会存放在 Env 之中，而 MemoryStringSource 所对应的
+		// Template 对象 isModified() 始终返回 false，所以没有必要对其缓存
+		MemoryStringSource memoryStringSource = new MemoryStringSource(content, false);
 		doAddSharedFunction(memoryStringSource, null);
 	}
 	
