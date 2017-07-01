@@ -90,7 +90,7 @@ public class JFinalFilter implements Filter {
 		jfinal.stopPlugins();
 	}
 	
-	private void createJFinalConfig(String configClass) {
+	protected void createJFinalConfig(String configClass) {
 		if (configClass == null) {
 			throw new RuntimeException("Please set configClass parameter of JFinalFilter in web.xml");
 		}

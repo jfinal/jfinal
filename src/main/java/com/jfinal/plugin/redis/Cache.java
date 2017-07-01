@@ -16,12 +16,17 @@
 
 package com.jfinal.plugin.redis;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import com.jfinal.plugin.redis.serializer.ISerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-
-import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * Cache.
@@ -626,7 +631,8 @@ public class Cache {
 	public Long getCounter(Object key) {
 		Jedis jedis = getJedis();
 		try {
-			return Long.parseLong((String)jedis.get(keyNamingPolicy.getKeyName(key)));
+			String ret = (String)jedis.get(keyNamingPolicy.getKeyName(key));
+			return ret != null ? Long.parseLong(ret) : null;
 		}
 		finally {close(jedis);}
 	}
@@ -785,6 +791,9 @@ public class Cache {
 	 * BLPOP 是列表的阻塞式(blocking)弹出原语。
 	 * 它是 LPOP 命令的阻塞版本，当给定列表内没有任何元素可供弹出的时候，连接将被 BLPOP 命令阻塞，直到等待超时或发现可弹出元素为止。
 	 * 当给定多个 key 参数时，按参数 key 的先后顺序依次检查各个列表，弹出第一个非空列表的头元素。
+	 * 
+	 * 参考：http://redisdoc.com/list/blpop.html
+	 * 命令行：BLPOP key [key ...] timeout
 	 */
 	@SuppressWarnings("rawtypes")
 	public List blpop(int timeout, Object... keys) {
@@ -801,6 +810,9 @@ public class Cache {
 	 * 它是 RPOP 命令的阻塞版本，当给定列表内没有任何元素可供弹出的时候，连接将被 BRPOP 命令阻塞，直到等待超时或发现可弹出元素为止。
 	 * 当给定多个 key 参数时，按参数 key 的先后顺序依次检查各个列表，弹出第一个非空列表的尾部元素。
 	 * 关于阻塞操作的更多信息，请查看 BLPOP 命令， BRPOP 除了弹出元素的位置和 BLPOP 不同之外，其他表现一致。
+	 * 
+	 * 参考：http://redisdoc.com/list/brpop.html
+	 * 命令行：BRPOP key [key ...] timeout
 	 */
 	@SuppressWarnings("rawtypes")
 	public List brpop(int timeout, Object... keys) {
@@ -1203,7 +1215,8 @@ public class Cache {
 			result.add(valueFromBytes(d));
 		return result;
 	}
-
+	
+	@SuppressWarnings("rawtypes")
 	protected List keyValueListFromBytesList(List<byte[]> data) {
 		List<Object> result = new ArrayList<Object>();
 		result.add(keyFromBytes(data.get(0)));

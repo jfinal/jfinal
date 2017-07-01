@@ -46,7 +46,7 @@ public class SqlKit {
 		this.configName = configName;
 		this.devMode = devMode;
 		
-		engine =  new Engine(configName);
+		engine = new Engine(configName);
 		engine.setDevMode(devMode);
 		
 		engine.addDirective("namespace", new NameSpaceDirective());
@@ -153,7 +153,7 @@ public class SqlKit {
 	 *	#end
 	 *
 	 * 2：java 代码
-	 * 	Kv cond = Kv.create("id", 123).set("age", 18);
+	 * 	Kv cond = Kv.by("id", 123).set("age", 18);
 	 * 	getSqlPara("key", cond);
 	 */
 	public SqlPara getSqlPara(String key, Map data) {
@@ -191,6 +191,10 @@ public class SqlKit {
 		data.put(PARA_ARRAY_KEY, paras);
 		sqlPara.setSql(template.renderToString(data));
 		return sqlPara;
+	}
+	
+	public java.util.Set<java.util.Map.Entry<String, Template>> getSqlMapEntrySet() {
+		return sqlTemplateMap.entrySet();
 	}
 	
 	public String toString() {

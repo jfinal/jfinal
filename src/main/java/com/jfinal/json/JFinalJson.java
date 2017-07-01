@@ -111,7 +111,7 @@ public class JFinalJson extends Json {
 		return sb.toString();
 	}
 	
-	protected String toKeyValue(String key, Object value, StringBuilder sb, int depth){
+	protected void toKeyValue(String key, Object value, StringBuilder sb, int depth){
 		sb.append('\"');
         if(key == null)
             sb.append("null");
@@ -120,8 +120,6 @@ public class JFinalJson extends Json {
 		sb.append('\"').append(':');
 		
 		sb.append(toJson(value, depth));
-		
-		return sb.toString();
 	}
 	
 	protected String iteratorToJson(Iterator iter, int depth) {
@@ -342,7 +340,7 @@ public class JFinalJson extends Json {
 	public <T> T parse(String jsonString, Class<T> type) {
 		throw new RuntimeException("jfinal " + com.jfinal.core.Const.JFINAL_VERSION + 
 		"默认 json 实现暂不支持 json 到 object 的转换,建议使用 active recrord 的 Generator 生成 base model，" +
-		"再通过 me.setJsonFactory(new JacksonFactory()) 来支持");
+		"再通过 me.setJsonFactory(new MixedJsonFactory()) 来支持");
 	}
 }
 

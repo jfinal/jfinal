@@ -146,7 +146,7 @@ final class ActionMapping {
 		}
 		
 		// --------
-		int i = url.lastIndexOf(SLASH);
+		int i = url.lastIndexOf('/');
 		if (i != -1) {
 			action = mapping.get(url.substring(0, i));
 			urlPara[0] = url.substring(i + 1);

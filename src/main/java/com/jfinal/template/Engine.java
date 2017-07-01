@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
+import com.jfinal.template.expr.ast.MethodKit;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Stat;
 
@@ -273,10 +274,18 @@ public class Engine {
 	}
 	
 	/**
+	 * Add shared method from class
+	 */
+	public Engine addSharedMethod(Class<?> sharedMethodFromClass) {
+		config.addSharedMethod(sharedMethodFromClass);
+		return this;
+	}
+	
+	/**
 	 * Add shared static method of Class
 	 */
-	public Engine addSharedStaticMethod(Class<?> sharedClass) {
-		config.addSharedStaticMethod(sharedClass);
+	public Engine addSharedStaticMethod(Class<?> sharedStaticMethodFromClass) {
+		config.addSharedStaticMethod(sharedStaticMethodFromClass);
 		return this;
 	}
 	
@@ -316,6 +325,10 @@ public class Engine {
 	 */
 	public void removeAllTemplateCache() {
 		templateCache.clear();
+	}
+	
+	public int getTemplateCacheSize() {
+		return templateCache.size();
 	}
 	
 	public String getName() {
@@ -382,6 +395,22 @@ public class Engine {
 	public Engine setReloadModifiedSharedFunctionInDevMode(boolean reloadModifiedSharedFunctionInDevMode) {
 		config.setReloadModifiedSharedFunctionInDevMode(reloadModifiedSharedFunctionInDevMode);
 		return this;
+	}
+	
+	public static void addExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
+		MethodKit.addExtensionMethod(targetClass, objectOfExtensionClass);
+	}
+	
+	public static void addExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {
+		MethodKit.addExtensionMethod(targetClass, extensionClass);
+	}
+	
+	public static void removeExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
+		MethodKit.removeExtensionMethod(targetClass, objectOfExtensionClass);;
+	}
+	
+	public static void removeExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {
+		MethodKit.removeExtensionMethod(targetClass, extensionClass);
 	}
 }
 

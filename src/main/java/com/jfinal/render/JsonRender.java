@@ -142,11 +142,6 @@ public class JsonRender extends Render {
 		} catch (IOException e) {
 			throw new RenderException(e);
 		}
-		finally {
-			if (writer != null) {
-				writer.close();
-			}
-		}
 	}
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})

@@ -179,6 +179,14 @@ public class ActiveRecordPlugin implements IPlugin {
 		return this;
 	}
 	
+	public ActiveRecordPlugin setDbProFactory(IDbProFactory dbProFactory) {
+		if (dbProFactory == null) {
+			throw new IllegalArgumentException("dbProFactory can not be null");
+		}
+		config.dbProFactory = dbProFactory;
+		return this;
+	}
+	
 	/**
 	 * 当使用 create table 语句创建用于开发使用的数据表副本时，假如create table 中使用的
 	 * 复合主键次序不同，那么MappingKitGeneretor 反射生成的复合主键次序也会不同。
@@ -287,6 +295,10 @@ public class ActiveRecordPlugin implements IPlugin {
 	 */
 	public static void useAsDataTransfer() {
 		useAsDataTransfer(new com.jfinal.plugin.activerecord.dialect.MysqlDialect(), IContainerFactory.defaultContainerFactory, new com.jfinal.plugin.activerecord.cache.EhCache());
+	}
+	
+	public Config getConfig() {
+		return config;
 	}
 }
 

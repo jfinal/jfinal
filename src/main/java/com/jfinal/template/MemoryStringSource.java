@@ -16,7 +16,6 @@
 
 package com.jfinal.template;
 
-import com.jfinal.core.Const;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 
@@ -57,7 +56,7 @@ public class MemoryStringSource implements IStringSource {
 	}
 	
 	public String getEncoding() {
-		return Const.DEFAULT_ENCODING;
+		return EngineConfig.DEFAULT_ENCODING;
 	}
 	
 	public String toString() {

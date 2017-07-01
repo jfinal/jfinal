@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import com.jfinal.kit.HashKit;
+import com.jfinal.kit.ReflectKit;
 
 /**
  * MethodKit
@@ -36,6 +37,7 @@ public class MethodKit {
 	private static final Map<Class<?>, Class<?>> primitiveMap = new HashMap<Class<?>, Class<?>>();
 	private static final ConcurrentHashMap<String, Object> methodCache = new ConcurrentHashMap<String, Object>();
 	
+	// 初始化在模板中调用 method 时所在的被禁止使用类
 	static {
 		Class<?>[] cs = {
 			System.class, Runtime.class, Thread.class, Class.class, ClassLoader.class, File.class
@@ -43,7 +45,10 @@ public class MethodKit {
 		for (Class<?> c : cs) {
 			forbiddenClasses.add(c);
 		}
-		
+	}
+	
+	// 初始化在模板中被禁止使用的 method name
+	static {
 		String[] ms = {
 			"getClass", "getDeclaringClass", "forName", "newInstance", "getClassLoader",
 			"getMethod", "getMethods", "getField", "getFields",
@@ -54,7 +59,10 @@ public class MethodKit {
 		for (String m : ms) {
 			forbiddenMethods.add(m);
 		}
-		
+	}
+	
+	// 初始化 primitive type 与 boxed type 双向映射关系
+	static {
 		primitiveMap.put(byte.class, Byte.class);
 		primitiveMap.put(short.class, Short.class);
 		primitiveMap.put(int.class, Integer.class);
@@ -228,6 +236,137 @@ public class MethodKit {
             argTypesDigest.append(type != null ? type.getName() : "null");
         }
 		key.append(HashKit.md5(argTypesDigest.toString()));
+	}
+	
+	// 以下代码实现 extension method 功能 --------------------
+	
+	// 添加 jfinal 官方扩展方法 extension method
+	static {
+		addExtensionMethod(String.class, new com.jfinal.template.ext.extensionmethod.StringExt());
+		addExtensionMethod(Integer.class, new com.jfinal.template.ext.extensionmethod.IntegerExt());
+		addExtensionMethod(Long.class, new com.jfinal.template.ext.extensionmethod.LongExt());
+		addExtensionMethod(Float.class, new com.jfinal.template.ext.extensionmethod.FloatExt());
+		addExtensionMethod(Double.class, new com.jfinal.template.ext.extensionmethod.DoubleExt());
+	}
+	
+	public synchronized static void addExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
+		Class<?> extensionClass = objectOfExtensionClass.getClass();
+		java.lang.reflect.Method[] methodArray = extensionClass.getMethods();
+		for (java.lang.reflect.Method method : methodArray) {
+			Class<?> decClass = method.getDeclaringClass();	
+			if (decClass == Object.class) {		// 考虑用于优化路由生成那段代码
+				continue ;
+			}
+			
+			Class<?>[] extensionMethodParaTypes = method.getParameterTypes();
+			String methodName = method.getName();
+			if (extensionMethodParaTypes.length == 0) {
+				throw new RuntimeException(buildMethodSignatureForException("Extension method requires at least one argument: " + extensionClass.getName() + ".", methodName, extensionMethodParaTypes));
+			}
+			
+			// Extension method 第一个参数必须与当前对象的类型一致，在调用时会将当前对象自身传给扩展方法的第一个参数
+			if (targetClass != extensionMethodParaTypes[0]) {
+				throw new RuntimeException(buildMethodSignatureForException("The first argument type of : " + extensionClass.getName() + ".", methodName, extensionMethodParaTypes) + " must be: " + targetClass.getName());
+			}
+			
+			Class<?>[] targetParaTypes = new Class<?>[extensionMethodParaTypes.length - 1];
+			System.arraycopy(extensionMethodParaTypes, 1, targetParaTypes, 0, targetParaTypes.length);
+			
+			try {
+				Method error = targetClass.getMethod(methodName, targetParaTypes);
+				if (error != null) {
+					throw new RuntimeException("Extension method \"" + methodName + "\" is already exists in class \"" + targetClass.getName() + "\"");
+				}
+			} catch (NoSuchMethodException e) {		// Method 找不到才能添加该扩展方法
+				String key = MethodKit.getMethodKey(targetClass, methodName, toBoxedType(targetParaTypes));
+				if (methodCache.containsKey(key)) {
+					throw new RuntimeException(buildMethodSignatureForException("The extension method is already exists: " + extensionClass.getName() + ".", methodName, targetParaTypes));
+				}
+				
+				MethodInfoExt mie = new MethodInfoExt(objectOfExtensionClass, key, extensionClass/* targetClass */, method);
+				methodCache.put(key, mie);
+			}
+		}
+	}
+	
+	public static void addExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {
+		addExtensionMethod(targetClass, ReflectKit.newInstance(extensionClass));
+	}
+	
+	public static void removeExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
+		Class<?> extensionClass = objectOfExtensionClass.getClass();
+		java.lang.reflect.Method[] methodArray = extensionClass.getMethods();
+		for (java.lang.reflect.Method method : methodArray) {
+			Class<?> decClass = method.getDeclaringClass();	
+			if (decClass == Object.class) {		// 考虑用于优化路由生成那段代码
+				continue ;
+			}
+			
+			Class<?>[] extensionMethodParaTypes = method.getParameterTypes();
+			String methodName = method.getName();
+			Class<?>[] targetParaTypes = new Class<?>[extensionMethodParaTypes.length - 1];
+			System.arraycopy(extensionMethodParaTypes, 1, targetParaTypes, 0, targetParaTypes.length);
+			
+			String key = MethodKit.getMethodKey(targetClass, methodName, toBoxedType(targetParaTypes));
+			methodCache.remove(key);
+		}
+	}
+	
+	private static final Map<Class<?>, Class<?>> primitiveToBoxedMap = new HashMap<Class<?>, Class<?>>();
+	
+	// 初始化 primitive type 到 boxed type 的映射
+	static {
+		primitiveToBoxedMap.put(byte.class, Byte.class);
+		primitiveToBoxedMap.put(short.class, Short.class);
+		primitiveToBoxedMap.put(int.class, Integer.class);
+		primitiveToBoxedMap.put(long.class, Long.class);
+		primitiveToBoxedMap.put(float.class, Float.class);
+		primitiveToBoxedMap.put(double.class, Double.class);
+		primitiveToBoxedMap.put(char.class, Character.class);
+		primitiveToBoxedMap.put(boolean.class, Boolean.class);
+	}
+	
+	/**
+	 * 由于从在模板中传递的基本数据类型参数只可能是 boxed 类型，当 extension method 中的方法参数是
+	 * primitive 类型时，在 getMethod(key) 时无法获取 addExtensionMethod(...) 注册的扩展方法
+	 * 所以为扩展方法调用 getMethodKey(...) 生成 key 时一律转成 boxed 类型去生成方法的 key 值
+	 * 
+	 * 注意：该值仅用于在获取方法是通过 key 能获取到 MethindInfoExt，而 MethindInfoExt.paraType 仍然
+	 *      是原来的参数值
+	 */
+	private static Class<?>[] toBoxedType(Class<?>[] targetParaTypes) {
+		int len = targetParaTypes.length;
+		if (len == 0) {
+			return targetParaTypes;
+		}
+		
+		Class<?>[] ret = new Class<?>[len];
+		for (int i=0; i<len; i++) {
+			Class<?> temp = primitiveToBoxedMap.get(targetParaTypes[i]);
+			if (temp != null) {
+				ret[i] = temp;
+			} else {
+				ret[i] = targetParaTypes[i];
+			}
+		}
+		return ret;
+	}
+	
+	public static void removeExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {
+		removeExtensionMethod(targetClass, ReflectKit.newInstance(extensionClass));
+	}
+	
+	private static String buildMethodSignatureForException(String preMsg, String methodName, Class<?>[] argTypes) {
+		StringBuilder ret = new StringBuilder().append(preMsg).append(methodName).append("(");
+		if (argTypes != null) {
+			for (int i = 0; i < argTypes.length; i++) {
+				if (i > 0) {
+					ret.append(", ");
+				}
+				ret.append(argTypes[i] != null ? argTypes[i].getName() : "null");
+			}
+		}
+		return ret.append(")").toString();
 	}
 }
 

@@ -54,7 +54,7 @@ public abstract class Stat {
 	
 	protected void write(Writer writer, String str) {
 		try {
-			writer.write(str);
+			writer.write(str, 0, str.length());
 		} catch (IOException e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}
@@ -62,7 +62,7 @@ public abstract class Stat {
 	
 	protected void write(Writer writer, char[] chars) {
 		try {
-			writer.write(chars);
+			writer.write(chars, 0, chars.length);
 		} catch (IOException e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}

@@ -549,6 +549,7 @@ public class ExprParser {
 		case RBRACK:	// support "[start .. end ??]"
 		case RBRACE:	// support "{key : value ??}"
 		case RANGE:		// support "[start ?? .. end]"
+		case COLON:		// support "c ? a ?? : b"
 		case EOF:
 			return null;
 		default :

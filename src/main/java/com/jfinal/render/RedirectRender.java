@@ -56,7 +56,7 @@ public class RedirectRender extends Render {
 		if (withQueryString) {
 			String queryString = request.getQueryString();
 			if (queryString != null) {
-				if (result.indexOf("?") == -1) {
+				if (result.indexOf('?') == -1) {
 					result = result + "?" + queryString;
 				} else {
 					result = result + "&" + queryString;
