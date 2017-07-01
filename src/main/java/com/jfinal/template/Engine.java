@@ -19,7 +19,6 @@ package com.jfinal.template;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.MethodKit;
 import com.jfinal.template.stat.Parser;
@@ -154,18 +153,27 @@ public class Engine {
 		return template;
 	}
 	
+	public Template getTemplateByString(String content) {
+		return getTemplateByString(content, false);
+	}
+	
 	/**
 	 * Get template by string content
 	 */
-	public Template getTemplateByString(String content) {
-		String key = HashKit.md5(content);
+	public Template getTemplateByString(String content, boolean cache) {
+		MemoryStringSource memoryStringSource = new MemoryStringSource(content, cache);
+		if (!cache) {
+			return buildTemplateByStringSource(memoryStringSource);
+		}
+		
+		String key = memoryStringSource.getKey();
 		Template template = templateCache.get(key);
 		if (template == null) {
-			template = buildTemplateByStringSource(new MemoryStringSource(content));
+			template = buildTemplateByStringSource(memoryStringSource);
 			templateCache.put(key, template);
 		} else if (devMode) {
 			if (template.isModified()) {
-				template = buildTemplateByStringSource(new MemoryStringSource(content));
+				template = buildTemplateByStringSource(memoryStringSource);
 				templateCache.put(key, template);
 			}
 		}
@@ -177,6 +185,10 @@ public class Engine {
 	 */
 	public Template getTemplate(IStringSource stringSource) {
 		String key = stringSource.getKey();
+		if (key == null) {
+			return buildTemplateByStringSource(stringSource);
+		}
+		
 		Template template = templateCache.get(key);
 		if (template == null) {
 			template = buildTemplateByStringSource(stringSource);
