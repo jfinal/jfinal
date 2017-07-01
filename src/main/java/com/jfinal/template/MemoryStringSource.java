@@ -27,20 +27,25 @@ public class MemoryStringSource implements IStringSource {
 	private String key;
 	private StringBuilder content;
 	
-	public MemoryStringSource(String content) {
+	/**
+	 * 构造 MemoryStringSource
+	 * @param content 模板内容
+	 * @param cache true 则缓存 Template，否则不缓存
+	 */
+	public MemoryStringSource(String content, boolean cache) {
 		if (StrKit.isBlank(content)) {
 			throw new IllegalArgumentException("content can not be blank");
 		}
 		this.content = new StringBuilder(content);
-		this.key = HashKit.md5(content);
+		this.key = cache ? HashKit.md5(content) : null;	// 不缓存只要将 key 值赋为 null 即可
 	}
 	
-	public MemoryStringSource(StringBuilder content) {
+	public MemoryStringSource(StringBuilder content, boolean cache) {
 		if (content == null || content.length() == 0) {
 			throw new IllegalArgumentException("content can not be blank");
 		}
 		this.content = content;
-		this.key = HashKit.md5(content.toString());
+		this.key = cache ? HashKit.md5(content.toString()) : null;	// 不缓存只要将 key 值赋为 null 即可
 	}
 	
 	public boolean isModified() {
