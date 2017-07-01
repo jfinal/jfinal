@@ -19,6 +19,8 @@ package com.jfinal.template;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.MethodKit;
 import com.jfinal.template.stat.Parser;
@@ -174,19 +176,18 @@ public class Engine {
 	 * @param cache true 则缓存 Template，否则不缓存
 	 */
 	public Template getTemplateByString(String content, boolean cache) {
-		MemoryStringSource memoryStringSource = new MemoryStringSource(content, cache);
 		if (!cache) {
-			return buildTemplateByStringSource(memoryStringSource);
+			return buildTemplateByStringSource(new MemoryStringSource(content, cache));
 		}
 		
-		String key = memoryStringSource.getKey();
+		String key = HashKit.md5(content);
 		Template template = templateCache.get(key);
 		if (template == null) {
-			template = buildTemplateByStringSource(memoryStringSource);
+			template = buildTemplateByStringSource(new MemoryStringSource(content, cache));
 			templateCache.put(key, template);
 		} else if (devMode) {
 			if (template.isModified()) {
-				template = buildTemplateByStringSource(memoryStringSource);
+				template = buildTemplateByStringSource(new MemoryStringSource(content, cache));
 				templateCache.put(key, template);
 			}
 		}
