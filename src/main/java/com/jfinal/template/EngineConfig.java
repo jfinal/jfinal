@@ -98,7 +98,7 @@ public class EngineConfig {
 	 * Add shared function by string content
 	 */
 	public void addSharedFunctionByString(String content) {
-		MemoryStringSource memoryStringSource = new MemoryStringSource(content);
+		MemoryStringSource memoryStringSource = new MemoryStringSource(content, false);
 		doAddSharedFunction(memoryStringSource, null);
 	}
 	
