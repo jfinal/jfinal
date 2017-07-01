@@ -27,20 +27,20 @@ public class MemoryStringSource implements IStringSource {
 	private String key;
 	private StringBuilder content;
 	
-	public MemoryStringSource(String content) {
+	public MemoryStringSource(String content, boolean cache) {
 		if (StrKit.isBlank(content)) {
 			throw new IllegalArgumentException("content can not be blank");
 		}
 		this.content = new StringBuilder(content);
-		this.key = HashKit.md5(content);
+		this.key = cache ? HashKit.md5(content) : null;	// 
 	}
 	
-	public MemoryStringSource(StringBuilder content) {
+	public MemoryStringSource(StringBuilder content, boolean cache) {
 		if (content == null || content.length() == 0) {
 			throw new IllegalArgumentException("content can not be blank");
 		}
 		this.content = content;
-		this.key = HashKit.md5(content.toString());
+		this.key = cache ? HashKit.md5(content.toString()) : null;
 	}
 	
 	public boolean isModified() {
