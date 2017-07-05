@@ -46,9 +46,7 @@ public class JFinalFilter implements Filter {
 	public void init(FilterConfig filterConfig) throws ServletException {
 		createJFinalConfig(filterConfig.getInitParameter("configClass"));
 		
-		if (jfinal.init(jfinalConfig, filterConfig.getServletContext()) == false) {
-			throw new RuntimeException("JFinal init error!");
-		}
+		jfinal.init(jfinalConfig, filterConfig.getServletContext());
 		
 		String contextPath = filterConfig.getServletContext().getContextPath();
 		contextPathLength = (contextPath == null || "/".equals(contextPath) ? 0 : contextPath.length());
@@ -57,7 +55,7 @@ public class JFinalFilter implements Filter {
 		encoding = constants.getEncoding();
 		jfinalConfig.afterJFinalStart();
 		
-		handler = jfinal.getHandler();
+		handler = jfinal.getHandler();		// 开始接受请求
 	}
 	
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
@@ -87,6 +85,8 @@ public class JFinalFilter implements Filter {
 	}
 	
 	public void destroy() {
+		handler = null;		// 停止接受请求
+		
 		jfinalConfig.beforeJFinalStop();
 		jfinal.stopPlugins();
 	}
