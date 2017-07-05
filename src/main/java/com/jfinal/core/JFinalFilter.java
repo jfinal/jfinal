@@ -50,13 +50,14 @@ public class JFinalFilter implements Filter {
 			throw new RuntimeException("JFinal init error!");
 		}
 		
-		handler = jfinal.getHandler();
+		String contextPath = filterConfig.getServletContext().getContextPath();
+		contextPathLength = (contextPath == null || "/".equals(contextPath) ? 0 : contextPath.length());
+		
 		constants = Config.getConstants();
 		encoding = constants.getEncoding();
 		jfinalConfig.afterJFinalStart();
 		
-		String contextPath = filterConfig.getServletContext().getContextPath();
-		contextPathLength = (contextPath == null || "/".equals(contextPath) ? 0 : contextPath.length());
+		handler = jfinal.getHandler();
 	}
 	
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
