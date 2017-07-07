@@ -70,7 +70,7 @@ import it.sauronsoftware.cron4j.Task;
  * myCron4jConfig=task1, task2
  * 后面的配置完全不变
  *
- * 二、java 代码用法用法
+ * 二、java 代码用法
  * cp = new Cron4jPlugin();
  * cp.addTask("* * * * *", new MyTask());
  * me.add(cp);
