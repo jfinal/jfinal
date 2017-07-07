@@ -27,7 +27,7 @@ public interface IStringSource {
 	boolean isModified();
 	
 	/**
-	 * key used to cache, return false if do not cache the template
+	 * key used to cache, return null if do not cache the template
 	 * 
 	 * 注意：如果不希望缓存从该 IStreamSource 解析出来的 Template 对象
 	 *      让 getKey() 返回 null 值即可  
