@@ -340,10 +340,10 @@ class ExprLexer {
 		if (c == '.') {							// 以 '.' 字符结尾是合法的浮点数
 			next();
 			if (peek() == '.' ||				// 处理 [0..9] 这样的表达式
-				CharTable.isLetter(peek())) {	// 
+				CharTable.isLetter(peek())) {	// 处理 123.toInt() 这样的表达式，1.2.toInt() 及 1D.toInt() 可正常处理
 				StringBuilder n = subBuf(numStart, forward - 2);
 				if (n == null /* && radix == 16 */) {
-					// 16 进制数格式错误，前缀 0x 后缺少 16 进制数字
+					// 16 进制数格式错误，前缀 0x 后缺少 16 进制数字(16 进制时 numStart 已增加了 2， n 为 null 必是 16 进制解析出错)
 					throw new ParseException("Error hex format", location);
 				}
 				NumTok tok = new NumTok(Sym.INT, n.toString(), radix, false, location);
