@@ -339,7 +339,8 @@ class ExprLexer {
 		Sym sym = null;
 		if (c == '.') {							// 以 '.' 字符结尾是合法的浮点数
 			next();
-			if (peek() == '.') {				// 处理 [0..9] 这样的表达式
+			if (peek() == '.' ||				// 处理 [0..9] 这样的表达式
+				CharTable.isLetter(peek())) {	// 
 				StringBuilder n = subBuf(numStart, forward - 2);
 				if (n == null /* && radix == 16 */) {
 					// 16 进制数格式错误，前缀 0x 后缺少 16 进制数字
