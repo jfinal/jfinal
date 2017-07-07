@@ -54,11 +54,11 @@ public final class JFinal {
 		return me;
 	}
 	
-	boolean init(JFinalConfig jfinalConfig, ServletContext servletContext) {
+	void init(JFinalConfig jfinalConfig, ServletContext servletContext) {
 		this.servletContext = servletContext;
 		this.contextPath = servletContext.getContextPath();
 		
-		initPathUtil();
+		initPathKit();
 		
 		Config.configJFinal(jfinalConfig);	// start plugin, init log factory and init engine in this method
 		constants = Config.getConstants();
@@ -68,8 +68,6 @@ public final class JFinal {
 		initRender();
 		initOreillyCos();
 		initTokenManager();
-		
-		return true;
 	}
 	
 	private void initTokenManager() {
@@ -88,7 +86,7 @@ public final class JFinal {
 		OreillyCos.init(constants.getBaseUploadPath(), constants.getMaxPostSize(), constants.getEncoding());
 	}
 	
-	private void initPathUtil() {
+	private void initPathKit() {
 		String path = servletContext.getRealPath("/");
 		PathKit.setWebRootPath(path);
 	}

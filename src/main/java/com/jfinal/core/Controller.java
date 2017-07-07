@@ -241,7 +241,7 @@ public abstract class Controller {
 			return Integer.parseInt(value);
 		}
 		catch (Exception e) {
-			throw new ActionException(404, renderManager.getRenderFactory().getErrorRender(404),  "Can not parse the parameter \"" + value + "\" to Integer value.");
+			throw new ActionException(400, renderManager.getRenderFactory().getErrorRender(400),  "Can not parse the parameter \"" + value + "\" to Integer value.");
 		}
 	}
 	
@@ -273,7 +273,7 @@ public abstract class Controller {
 			return Long.parseLong(value);
 		}
 		catch (Exception e) {
-			throw new ActionException(404, renderManager.getRenderFactory().getErrorRender(404),  "Can not parse the parameter \"" + value + "\" to Long value.");
+			throw new ActionException(400, renderManager.getRenderFactory().getErrorRender(400),  "Can not parse the parameter \"" + value + "\" to Long value.");
 		}
 	}
 	
@@ -303,7 +303,7 @@ public abstract class Controller {
 			return Boolean.TRUE;
 		else if ("0".equals(value) || "false".equals(value))
 			return Boolean.FALSE;
-		throw new ActionException(404, renderManager.getRenderFactory().getErrorRender(404), "Can not parse the parameter \"" + value + "\" to Boolean value.");
+		throw new ActionException(400, renderManager.getRenderFactory().getErrorRender(400), "Can not parse the parameter \"" + value + "\" to Boolean value.");
 	}
 	
 	/**
@@ -351,7 +351,7 @@ public abstract class Controller {
 				return defaultValue;
 			return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value.trim());
 		} catch (Exception e) {
-			throw new ActionException(404, renderManager.getRenderFactory().getErrorRender(404),  "Can not parse the parameter \"" + value + "\" to Date value.");
+			throw new ActionException(400, renderManager.getRenderFactory().getErrorRender(400),  "Can not parse the parameter \"" + value + "\" to Date value.");
 		}
 	}
 	

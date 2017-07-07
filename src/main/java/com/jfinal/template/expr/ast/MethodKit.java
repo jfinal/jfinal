@@ -25,6 +25,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.ReflectKit;
+import com.jfinal.template.ext.extensionmethod.DoubleExt;
+import com.jfinal.template.ext.extensionmethod.FloatExt;
+import com.jfinal.template.ext.extensionmethod.IntegerExt;
+import com.jfinal.template.ext.extensionmethod.LongExt;
+import com.jfinal.template.ext.extensionmethod.StringExt;
 
 /**
  * MethodKit
@@ -242,11 +247,11 @@ public class MethodKit {
 	
 	// 添加 jfinal 官方扩展方法 extension method
 	static {
-		addExtensionMethod(String.class, new com.jfinal.template.ext.extensionmethod.StringExt());
-		addExtensionMethod(Integer.class, new com.jfinal.template.ext.extensionmethod.IntegerExt());
-		addExtensionMethod(Long.class, new com.jfinal.template.ext.extensionmethod.LongExt());
-		addExtensionMethod(Float.class, new com.jfinal.template.ext.extensionmethod.FloatExt());
-		addExtensionMethod(Double.class, new com.jfinal.template.ext.extensionmethod.DoubleExt());
+		addExtensionMethod(String.class, new StringExt());
+		addExtensionMethod(Integer.class, new IntegerExt());
+		addExtensionMethod(Long.class, new LongExt());
+		addExtensionMethod(Float.class, new FloatExt());
+		addExtensionMethod(Double.class, new DoubleExt());
 	}
 	
 	public synchronized static void addExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
