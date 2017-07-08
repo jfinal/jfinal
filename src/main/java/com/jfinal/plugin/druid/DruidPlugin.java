@@ -86,7 +86,7 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	private List<Filter> filterList;
 	
 	private DruidDataSource ds;
-	private boolean isStarted = false;
+	private volatile boolean isStarted = false;
 	
 	public DruidPlugin(String url, String username, String password) {
 		this.url = url;
