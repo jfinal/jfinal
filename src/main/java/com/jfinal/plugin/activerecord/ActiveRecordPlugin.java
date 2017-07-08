@@ -39,7 +39,7 @@ public class ActiveRecordPlugin implements IPlugin {
 	
 	private Config config = null;
 	
-	private boolean isStarted = false;
+	private volatile boolean isStarted = false;
 	private List<Table> tableList = new ArrayList<Table>();
 	
 	public ActiveRecordPlugin(String configName, DataSource dataSource, int transactionLevel) {
