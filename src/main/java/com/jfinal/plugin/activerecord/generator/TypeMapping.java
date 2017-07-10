@@ -73,7 +73,7 @@ public class TypeMapping {
 		// unsigned bigint
 		put("java.math.BigInteger", "java.math.BigInteger");
 		
-		//short
+		// short
 		put("java.lang.Short", "java.lang.Short");
 	}};
 	
