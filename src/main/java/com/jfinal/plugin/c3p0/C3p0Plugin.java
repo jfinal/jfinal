@@ -44,7 +44,7 @@ public class C3p0Plugin implements IPlugin, IDataSourceProvider {
 	private int acquireIncrement = 2;
 	
 	private ComboPooledDataSource dataSource;
-	private boolean isStarted = false;
+	private volatile boolean isStarted = false;
 	
 	public C3p0Plugin setDriverClass(String driverClass) {
 		if (StrKit.isBlank(driverClass))
