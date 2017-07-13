@@ -26,7 +26,7 @@ import com.jfinal.template.stat.Scope;
 /**
  * Compare
  * 
- * 1：支持 int long float double BigDecimal 的 == != > >= < <= 操作
+ * 1：支持 byte short int long float double BigDecimal 的 == != > >= < <= 操作
  * 2：== != 作用于 string，调用其 equals 方法进行比较
  * 3：> >= < <= 可以比较实现了 Comparable 接口的对象
  * 
@@ -247,6 +247,8 @@ public class Compare extends Expr {
 			return Arith.DOUBLE;
 		} else if (obj instanceof BigDecimal) {
 			return Arith.BIGDECIMAL;
+		} else if (obj instanceof Short || obj instanceof Byte) {
+			return Arith.INT;
 		}
 		throw new TemplateException("Unsupported data type: " + obj.getClass().getName(), location);
 	}

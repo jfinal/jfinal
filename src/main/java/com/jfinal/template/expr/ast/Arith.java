@@ -26,7 +26,7 @@ import com.jfinal.template.stat.Scope;
 
 /**
  * Arithmetic
- * 1：支持 int long float double BigDecimal 的 + - * / % 运算
+ * 1：支持 byte short int long float double BigDecimal 的 + - * / % 运算
  * 2：支持字符串加法运算
  */
 public class Arith extends Expr {
@@ -36,11 +36,6 @@ public class Arith extends Expr {
 	public static final int FLOAT = 2;
 	public static final int DOUBLE = 3;
 	public static final int BIGDECIMAL = 4;
-	
-	// 后续版本考虑支持
-	// public static final int BYTE = 5;
-	// public static final int SHORT = 6;
-	// public static final int BIGINTEGER = 7;
 	
 	private Sym op;
 	private Expr left;
@@ -136,6 +131,8 @@ public class Arith extends Expr {
 			return DOUBLE;
 		} else if (obj instanceof BigDecimal) {
 			return BIGDECIMAL;
+		} else if (obj instanceof Short || obj instanceof Byte) {
+			return INT;
 		}
 		throw new TemplateException("Unsupported data type: " + obj.getClass().getName(), location);
 	}
