@@ -103,7 +103,7 @@ public class TokenManager {
 	 * @param tokenName the token name used in view's form
 	 * @return true if token is correct
 	 */
-	public static synchronized boolean validateToken(Controller controller, String tokenName) {
+	public static boolean validateToken(Controller controller, String tokenName) {
 		String clientTokenId = controller.getPara(tokenName);
 		if (tokenCache == null) {
 			String serverTokenId = controller.getSessionAttr(tokenName);
@@ -112,7 +112,7 @@ public class TokenManager {
 		}
 		else {
 			Token token = new Token(clientTokenId);
-			boolean result = tokenCache.contains(token); 
+			boolean result = tokenCache.contains(token);
 			tokenCache.remove(token);
 			return result;
 		}

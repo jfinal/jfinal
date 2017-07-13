@@ -72,6 +72,9 @@ public class TypeMapping {
 		
 		// unsigned bigint
 		put("java.math.BigInteger", "java.math.BigInteger");
+		
+		// short
+		put("java.lang.Short", "java.lang.Short");
 	}};
 	
 	public String getType(String typeString) {
