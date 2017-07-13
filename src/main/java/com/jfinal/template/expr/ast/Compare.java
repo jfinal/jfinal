@@ -248,7 +248,7 @@ public class Compare extends Expr {
 		} else if (obj instanceof BigDecimal) {
 			return Arith.BIGDECIMAL;
 		} else if (obj instanceof Short || obj instanceof Byte) {
-			return Arith.INT;
+			return Arith.INT;	// short byte 用 int 支持，java 表达式亦如此
 		}
 		throw new TemplateException("Unsupported data type: " + obj.getClass().getName(), location);
 	}

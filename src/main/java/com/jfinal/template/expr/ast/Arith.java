@@ -31,7 +31,7 @@ import com.jfinal.template.stat.Scope;
  */
 public class Arith extends Expr {
 	
-	public static final int INT = 0;
+	public static final int INT = 0;	// byte、short 用 int 类型支持，java 表达式亦如此
 	public static final int LONG = 1;
 	public static final int FLOAT = 2;
 	public static final int DOUBLE = 3;
@@ -132,7 +132,7 @@ public class Arith extends Expr {
 		} else if (obj instanceof BigDecimal) {
 			return BIGDECIMAL;
 		} else if (obj instanceof Short || obj instanceof Byte) {
-			return INT;
+			return INT;	// short byte 用 int 支持，java 表达式亦如此
 		}
 		throw new TemplateException("Unsupported data type: " + obj.getClass().getName(), location);
 	}
