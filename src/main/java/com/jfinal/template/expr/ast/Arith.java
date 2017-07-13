@@ -37,11 +37,6 @@ public class Arith extends Expr {
 	public static final int DOUBLE = 3;
 	public static final int BIGDECIMAL = 4;
 	
-	// 后续版本考虑支持
-	// public static final int BYTE = 5;
-	// public static final int SHORT = 6;
-	// public static final int BIGINTEGER = 7;
-	
 	private Sym op;
 	private Expr left;
 	private Expr right;
@@ -136,6 +131,8 @@ public class Arith extends Expr {
 			return DOUBLE;
 		} else if (obj instanceof BigDecimal) {
 			return BIGDECIMAL;
+		} else if (obj instanceof Short || obj instanceof Byte) {
+			return INT;
 		}
 		throw new TemplateException("Unsupported data type: " + obj.getClass().getName(), location);
 	}

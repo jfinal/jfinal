@@ -247,6 +247,8 @@ public class Compare extends Expr {
 			return Arith.DOUBLE;
 		} else if (obj instanceof BigDecimal) {
 			return Arith.BIGDECIMAL;
+		} else if (obj instanceof Short || obj instanceof Byte) {
+			return Arith.INT;
 		}
 		throw new TemplateException("Unsupported data type: " + obj.getClass().getName(), location);
 	}
