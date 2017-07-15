@@ -16,6 +16,8 @@
 
 package com.jfinal.template.ext.extensionmethod;
 
+import com.jfinal.kit.StrKit;
+
 /**
  * 针对 java.lang.String 的扩展方法
  * 
@@ -44,12 +46,12 @@ package com.jfinal.template.ext.extensionmethod;
 public class StringExt {
 	
 	/**
-	 * 此处 String.toBoolean() 与 Logic.isTrue(String)
-	 * 中的逻辑不同，后者只要 非 null 并且 length() > 0 即返回 true
+	 * StringExt.toBoolean() 是数据类型转换，所以与 Logic.isTrue(String)
+	 * 中的逻辑不同，后者只要 String 值非 null 并且 length() > 0 即返回 true
 	 */
 	public Boolean toBoolean(String self) {
-		if (self == null) {
-			return Boolean.FALSE;
+		if (StrKit.isBlank(self)) {
+			return null;	// return Boolean.FALSE;
 		}
 		
 		String value = self.trim().toLowerCase();
@@ -63,19 +65,19 @@ public class StringExt {
 	}
 	
 	public Integer toInt(String self) {
-		return self != null ? Integer.parseInt(self) : null;
+		return StrKit.isBlank(self) ? null : Integer.parseInt(self);
 	}
 	
 	public Long toLong(String self) {
-		return self != null ? Long.parseLong(self) : null;
+		return StrKit.isBlank(self) ? null : Long.parseLong(self);
 	}
 	
 	public Float toFloat(String self) {
-		return self != null ? Float.parseFloat(self) : null;
+		return StrKit.isBlank(self) ? null : Float.parseFloat(self);
 	}
 	
 	public Double toDouble(String self) {
-		return self != null ? Double.parseDouble(self) : null;
+		return StrKit.isBlank(self) ? null : Double.parseDouble(self);
 	}
 }
 
