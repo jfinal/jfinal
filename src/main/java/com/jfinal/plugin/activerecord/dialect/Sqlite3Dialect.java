@@ -16,11 +16,12 @@
 
 package com.jfinal.plugin.activerecord.dialect;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.Table;
 
@@ -181,5 +182,13 @@ public class Sqlite3Dialect extends Dialect {
 		int offset = pageSize * (pageNumber - 1);
 		findSql.append(" limit ").append(offset).append(", ").append(pageSize);
 		return findSql.toString();
+	}
+	
+	public void fillStatement(PreparedStatement pst, List<Object> paras) throws SQLException {
+		fillStatementHandleDateType(pst, paras);
+	}
+	
+	public void fillStatement(PreparedStatement pst, Object... paras) throws SQLException {
+		fillStatementHandleDateType(pst, paras);
 	}
 }
