@@ -371,4 +371,12 @@ public class AnsiSqlDialect extends Dialect {
 		}
 		return result;
 	}
+	
+	public void fillStatement(PreparedStatement pst, List<Object> paras) throws SQLException {
+		fillStatementHandleDateType(pst, paras);
+	}
+	
+	public void fillStatement(PreparedStatement pst, Object... paras) throws SQLException {
+		fillStatementHandleDateType(pst, paras);
+	}
 }
