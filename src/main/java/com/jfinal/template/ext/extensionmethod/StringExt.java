@@ -46,8 +46,8 @@ import com.jfinal.kit.StrKit;
 public class StringExt {
 	
 	/**
-	 * 此处 String.toBoolean() 与 Logic.isTrue(String)
-	 * 中的逻辑不同，后者只要 非 null 并且 length() > 0 即返回 true
+	 * StringExt.toBoolean() 是数据类型转换，所以与 Logic.isTrue(String)
+	 * 中的逻辑不同，后者只要 String 值非 null 并且 length() > 0 即返回 true
 	 */
 	public Boolean toBoolean(String self) {
 		if (StrKit.isBlank(self)) {
