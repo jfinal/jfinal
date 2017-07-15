@@ -93,6 +93,9 @@ public class ParaProcessorBuilder {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private IParaGetter<?> createParaGetter(Class<? extends Controller> controllerClass, Method method,
 			Parameter p) {
+		if(!p.isNamePresent()) {
+			throw new RuntimeException("you should add compiler flag -parameters to support parameter auto binding");
+		}
 		String parameterName = p.getName();
 		String defaultValue = null;
 		Class<?> typeClass = p.getType();
