@@ -16,8 +16,6 @@
 
 package com.jfinal.template.ext.extensionmethod;
 
-import com.jfinal.template.expr.ast.Logic;
-
 /**
  * 针对 java.lang.Long 的扩展方法
  * 
@@ -27,11 +25,11 @@ import com.jfinal.template.expr.ast.Logic;
 public class LongExt {
 	
 	public Boolean toBoolean(Long self) {
-		return Logic.isTrue(self);
+		return self != 0;
 	}
 	
 	public Integer toInt(Long self) {
-		return self != null ? self.intValue() : null;
+		return self.intValue();
 	}
 	
 	public Long toLong(Long self) {
@@ -39,11 +37,11 @@ public class LongExt {
 	}
 	
 	public Float toFloat(Long self) {
-		return self != null ? self.floatValue() : null;
+		return self.floatValue();
 	}
 	
 	public Double toDouble(Long self) {
-		return self != null ? self.doubleValue() : null;
+		return self.doubleValue();
 	}
 }
 
