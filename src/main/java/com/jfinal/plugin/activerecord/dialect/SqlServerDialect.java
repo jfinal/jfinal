@@ -16,6 +16,8 @@
 
 package com.jfinal.plugin.activerecord.dialect;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -194,6 +196,14 @@ public class SqlServerDialect extends Dialect {
 		ret.append(findSql.toString().replaceFirst("(?i)select", ""));
 		ret.append(")vip)mvp where temprownumber>").append(begin);
 		return ret.toString();
+	}
+	
+	public void fillStatement(PreparedStatement pst, List<Object> paras) throws SQLException {
+		fillStatementHandleDateType(pst, paras);
+	}
+	
+	public void fillStatement(PreparedStatement pst, Object... paras) throws SQLException {
+		fillStatementHandleDateType(pst, paras);
 	}
 }
 
