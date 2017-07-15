@@ -16,8 +16,6 @@
 
 package com.jfinal.template.ext.extensionmethod;
 
-import com.jfinal.template.expr.ast.Logic;
-
 /**
  * 针对 java.lang.Double 的扩展方法
  * 
@@ -27,19 +25,19 @@ import com.jfinal.template.expr.ast.Logic;
 public class DoubleExt {
 	
 	public Boolean toBoolean(Double self) {
-		return Logic.isTrue(self);
+		return self != 0;
 	}
 	
 	public Integer toInt(Double self) {
-		return self != null ? self.intValue() : null;
+		return self.intValue();
 	}
 	
 	public Long toLong(Double self) {
-		return self != null ? self.longValue() : null;
+		return self.longValue();
 	}
 	
 	public Float toFloat(Double self) {
-		return self != null ? self.floatValue() : null;
+		return self.floatValue();
 	}
 	
 	public Double toDouble(Double self) {

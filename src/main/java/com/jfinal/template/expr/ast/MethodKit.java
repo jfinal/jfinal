@@ -25,10 +25,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.ReflectKit;
+import com.jfinal.template.ext.extensionmethod.ByteExt;
 import com.jfinal.template.ext.extensionmethod.DoubleExt;
 import com.jfinal.template.ext.extensionmethod.FloatExt;
 import com.jfinal.template.ext.extensionmethod.IntegerExt;
 import com.jfinal.template.ext.extensionmethod.LongExt;
+import com.jfinal.template.ext.extensionmethod.ShortExt;
 import com.jfinal.template.ext.extensionmethod.StringExt;
 
 /**
@@ -252,6 +254,8 @@ public class MethodKit {
 		addExtensionMethod(Long.class, new LongExt());
 		addExtensionMethod(Float.class, new FloatExt());
 		addExtensionMethod(Double.class, new DoubleExt());
+		addExtensionMethod(Short.class, new ShortExt());
+		addExtensionMethod(Byte.class, new ByteExt());
 	}
 	
 	public synchronized static void addExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {

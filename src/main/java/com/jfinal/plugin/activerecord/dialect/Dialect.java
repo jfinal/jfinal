@@ -147,6 +147,38 @@ public abstract class Dialect {
 	public String replaceOrderBy(String sql) {
 		return Holder.ORDER_BY_PATTERN.matcher(sql).replaceAll("");
 	}
+	
+	/**
+	 * fillStatement 时处理日期类型
+	 */
+	protected void fillStatementHandleDateType(PreparedStatement pst, List<Object> paras) throws SQLException {
+		for (int i=0, size=paras.size(); i<size; i++) {
+			Object value = paras.get(i);
+			if (value instanceof java.sql.Date) {
+				pst.setDate(i + 1, (java.sql.Date)value);
+			} else if (value instanceof java.sql.Timestamp) {
+				pst.setTimestamp(i + 1, (java.sql.Timestamp)value);
+			} else {
+				pst.setObject(i + 1, value);
+			}
+		}
+	}
+	
+	/**
+	 * fillStatement 时处理日期类型
+	 */
+	protected void fillStatementHandleDateType(PreparedStatement pst, Object... paras) throws SQLException {
+		for (int i=0; i<paras.length; i++) {
+			Object value = paras[i];
+			if (value instanceof java.sql.Date) {
+				pst.setDate(i + 1, (java.sql.Date)value);
+			} else if (value instanceof java.sql.Timestamp) {
+				pst.setTimestamp(i + 1, (java.sql.Timestamp)value);
+			} else {
+				pst.setObject(i + 1, value);
+			}
+		}
+	}
 }
 
 

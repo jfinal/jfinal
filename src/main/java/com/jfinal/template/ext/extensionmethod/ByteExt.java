@@ -17,30 +17,30 @@
 package com.jfinal.template.ext.extensionmethod;
 
 /**
- * 针对 java.lang.Float 的扩展方法
+ * 针对 java.lang.Byte 的扩展方法
  * 
  * 用法：
  * #if(value.toInt() == 123)
  */
-public class FloatExt {
+public class ByteExt {
 	
-	public Boolean toBoolean(Float self) {
+	public Boolean toBoolean(Byte self) {
 		return self != 0;
 	}
 	
-	public Integer toInt(Float self) {
+	public Integer toInt(Byte self) {
 		return self.intValue();
 	}
 	
-	public Long toLong(Float self) {
+	public Long toLong(Byte self) {
 		return self.longValue();
 	}
 	
-	public Float toFloat(Float self) {
-		return self;
+	public Float toFloat(Byte self) {
+		return self.floatValue();
 	}
 	
-	public Double toDouble(Float self) {
+	public Double toDouble(Byte self) {
 		return self.doubleValue();
 	}
 }

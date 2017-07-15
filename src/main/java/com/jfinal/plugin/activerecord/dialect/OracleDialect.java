@@ -210,29 +210,11 @@ public class OracleDialect extends Dialect {
 	}
 	
 	public void fillStatement(PreparedStatement pst, List<Object> paras) throws SQLException {
-		for (int i=0, size=paras.size(); i<size; i++) {
-			Object value = paras.get(i);
-			if (value instanceof java.sql.Date) {
-				pst.setDate(i + 1, (java.sql.Date)value);
-			} else if (value instanceof java.sql.Timestamp) {
-				pst.setTimestamp(i + 1, (java.sql.Timestamp)value);
-			} else {
-				pst.setObject(i + 1, value);
-			}
-		}
+		fillStatementHandleDateType(pst, paras);
 	}
 	
 	public void fillStatement(PreparedStatement pst, Object... paras) throws SQLException {
-		for (int i=0; i<paras.length; i++) {
-			Object value = paras[i];
-			if (value instanceof java.sql.Date) {
-				pst.setDate(i + 1, (java.sql.Date)value);
-			} else if (value instanceof java.sql.Timestamp) {
-				pst.setTimestamp(i + 1, (java.sql.Timestamp)value);
-			} else {
-				pst.setObject(i + 1, value);
-			}
-		}
+		fillStatementHandleDateType(pst, paras);
 	}
 	
 	public String getDefaultPrimaryKey() {
