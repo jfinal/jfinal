@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.jfinal.core.Controller;
+import com.jfinal.kit.LogKit;
 
 public class ParaProcessorBuilder {
 
@@ -94,7 +95,7 @@ public class ParaProcessorBuilder {
 	private IParaGetter<?> createParaGetter(Class<? extends Controller> controllerClass, Method method,
 			Parameter p) {
 		if(!p.isNamePresent()) {
-			throw new RuntimeException("you should add compiler flag -parameters to support parameter auto binding");
+			LogKit.warn("you should add compiler flag -parameters to support parameter auto binding");
 		}
 		String parameterName = p.getName();
 		String defaultValue = null;
