@@ -22,6 +22,7 @@ import java.util.Map;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.MethodKit;
+import com.jfinal.template.source.FileSource;
 import com.jfinal.template.source.ISource;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Stat;
@@ -132,23 +133,23 @@ public class Engine {
 		
 		Template template = templateCache.get(fileName);
 		if (template == null) {
-			template = buildTemplateByFileStringSource(fileName);
+			template = buildTemplateByFileSource(fileName);
 			templateCache.put(fileName, template);
 		} else if (devMode) {
 			if (template.isModified()) {
-				template = buildTemplateByFileStringSource(fileName);
+				template = buildTemplateByFileSource(fileName);
 				templateCache.put(fileName, template);
 			}
 		}
 		return template;
 	}
 	
-	private Template buildTemplateByFileStringSource(String fileName) {
-		FileStringSource fileStringSource = new FileStringSource(config.getBaseTemplatePath(), fileName, config.getEncoding());
+	private Template buildTemplateByFileSource(String fileName) {
+		FileSource fileSource = new FileSource(config.getBaseTemplatePath(), fileName, config.getEncoding());
 		Env env = new Env(config);
-		Parser parser = new Parser(env, fileStringSource.getContent(), fileName);
+		Parser parser = new Parser(env, fileSource.getContent(), fileName);
 		if (devMode) {
-			env.addSource(fileStringSource);
+			env.addSource(fileSource);
 		}
 		Stat stat = parser.parse();
 		Template template = new Template(env, stat);
