@@ -47,7 +47,9 @@ public class MethodKit {
 	// 初始化在模板中调用 method 时所在的被禁止使用类
 	static {
 		Class<?>[] cs = {
-			System.class, Runtime.class, Thread.class, Class.class, ClassLoader.class, File.class
+			System.class, Runtime.class, Thread.class, Class.class, ClassLoader.class, File.class,
+			Compiler.class, InheritableThreadLocal.class, Package.class, Process.class,
+			RuntimePermission.class, SecurityManager.class, ThreadGroup.class, ThreadLocal.class
 		};
 		for (Class<?> c : cs) {
 			forbiddenClasses.add(c);
@@ -149,9 +151,10 @@ public class MethodKit {
 		if (forbiddenClasses.contains(targetClass)) {
 			throw new RuntimeException("Forbidden class: " + targetClass.getName());
 		}
-		if (forbiddenMethods.contains(methodName)) {
-			throw new RuntimeException("Forbidden method: " + methodName);
-		}
+		// 仅开启 forbiddenClasses 检测
+		// if (forbiddenMethods.contains(methodName)) {
+		// 	throw new RuntimeException("Forbidden method: " + methodName);
+		// }
 		
 		Method[] methodArray = targetClass.getMethods();
 		for (Method method : methodArray) {

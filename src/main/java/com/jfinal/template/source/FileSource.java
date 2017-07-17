@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jfinal.template;
+package com.jfinal.template.source;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,10 +22,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.jfinal.template.EngineConfig;
+
 /**
- * FileStringSource
+ * FileSource
  */
-public class FileStringSource implements IStringSource {
+public class FileSource implements ISource {
 	
 	private String finalFileName;
 	private String fileName;
@@ -33,13 +35,13 @@ public class FileStringSource implements IStringSource {
 	
 	private long lastModified;
 	
-	public FileStringSource(String baseTemplatePath, String fileName, String encoding) {
+	public FileSource(String baseTemplatePath, String fileName, String encoding) {
 		this.finalFileName = buildFinalFileName(baseTemplatePath, fileName);
 		this.fileName = fileName;
 		this.encoding= encoding;
 	}
 	
-	public FileStringSource(String baseTemplatePath, String fileName) {
+	public FileSource(String baseTemplatePath, String fileName) {
 		this(baseTemplatePath, fileName, EngineConfig.DEFAULT_ENCODING);
 	}
 	

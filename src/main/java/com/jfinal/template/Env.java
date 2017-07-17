@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.jfinal.template.source.ISource;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ParseException;
 import com.jfinal.template.stat.ast.Define;
@@ -36,8 +37,8 @@ public class Env {
 	protected EngineConfig engineConfig;
 	protected Map<String, Define> functionMap = new HashMap<String, Define>();
 	
-	// 代替 Template 持有该属性，便于在 #include 指令中调用 Env.addStringSource()
-	protected List<IStringSource> stringSourceList = null;
+	// 代替 Template 持有该属性，便于在 #include 指令中调用 Env.addSource()
+	protected List<ISource> sourceList = null;
 	
 	public Env(EngineConfig engineConfig) {
 		this.engineConfig = engineConfig;
@@ -90,15 +91,15 @@ public class Env {
 	
 	/**
 	 * 本方法用于在 devMode 之下，判断当前 Template 以及其下 #include 指令
-	 * 所涉及的所有 IStringSource 对象是否被修改，以便于在 devMode 下重新加载
+	 * 所涉及的所有 ISource 对象是否被修改，以便于在 devMode 下重新加载
 	 * 
-	 * stringSourceList 属性用于存放主模板以及 #include 进来的模板所对应的
-	 * IStringSource 对象
+	 * sourceList 属性用于存放主模板以及 #include 进来的模板所对应的
+	 * ISource 对象
 	 */
-	public boolean isStringSourceListModified() {
-		if (stringSourceList != null) {
-			for (int i = 0, size = stringSourceList.size(); i < size; i++) {
-				if (stringSourceList.get(i).isModified()) {
+	public boolean isSourceListModified() {
+		if (sourceList != null) {
+			for (int i = 0, size = sourceList.size(); i < size; i++) {
+				if (sourceList.get(i).isModified()) {
 					return true;
 				}
 			}
@@ -107,14 +108,14 @@ public class Env {
 	}
 	
 	/**
-	 * 添加本 Template 的 IStringSource，以及该 Template 使用 include 包含进来的所有 IStringSource
+	 * 添加本 Template 的 ISource，以及该 Template 使用 include 包含进来的所有 ISource
 	 * 以便于在 devMode 之下判断该 Template 是否被 modified，进而 reload 该 Template
 	 */
-	public void addStringSource(IStringSource stringSource) {
-		if (stringSourceList == null) {
-			stringSourceList = new ArrayList<IStringSource>();
+	public void addSource(ISource source) {
+		if (sourceList == null) {
+			sourceList = new ArrayList<ISource>();
 		}
-		stringSourceList.add(stringSource);
+		sourceList.add(source);
 	}
 }
 
