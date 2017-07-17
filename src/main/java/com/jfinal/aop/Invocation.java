@@ -37,7 +37,7 @@ public class Invocation {
 	private Object[] args;
 	private MethodProxy methodProxy;
 	private Interceptor[] inters;
-	private Object returnValue = null;
+	private Object returnValue;
 	
 	private int index = 0;
 	
