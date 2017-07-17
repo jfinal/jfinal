@@ -24,6 +24,7 @@ import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.MethodKit;
 import com.jfinal.template.source.FileSource;
 import com.jfinal.template.source.ISource;
+import com.jfinal.template.source.StringSource;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Stat;
 
@@ -159,7 +160,7 @@ public class Engine {
 	/**
 	 * Get template by string content and do not cache the template
 	 * 
-	 * 重要：MemoryStringSource 中的 key = HashKit.md5(content)，也即 key
+	 * 重要：StringSource 中的 key = HashKit.md5(content)，也即 key
 	 *     与 content 有紧密的对应关系，当 content 发生变化时 key 值也相应变化
 	 *     因此，原先 key 所对应的 Template 缓存对象已无法被获取，当 getTemplateByString(String)
 	 *     的 String 参数的数量不确定时会引发内存泄漏
@@ -178,17 +179,17 @@ public class Engine {
 	 */
 	public Template getTemplateByString(String content, boolean cache) {
 		if (!cache) {
-			return buildTemplateBySource(new MemoryStringSource(content, cache));
+			return buildTemplateBySource(new StringSource(content, cache));
 		}
 		
 		String key = HashKit.md5(content);
 		Template template = templateCache.get(key);
 		if (template == null) {
-			template = buildTemplateBySource(new MemoryStringSource(content, cache));
+			template = buildTemplateBySource(new StringSource(content, cache));
 			templateCache.put(key, template);
 		} else if (devMode) {
 			if (template.isModified()) {
-				template = buildTemplateBySource(new MemoryStringSource(content, cache));
+				template = buildTemplateBySource(new StringSource(content, cache));
 				templateCache.put(key, template);
 			}
 		}

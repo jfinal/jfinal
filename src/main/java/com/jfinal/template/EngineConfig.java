@@ -29,6 +29,7 @@ import com.jfinal.template.ext.directive.*;
 import com.jfinal.template.ext.sharedmethod.Json;
 import com.jfinal.template.source.FileSource;
 import com.jfinal.template.source.ISource;
+import com.jfinal.template.source.StringSource;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Define;
@@ -100,10 +101,10 @@ public class EngineConfig {
 	 * Add shared function by string content
 	 */
 	public void addSharedFunctionByString(String content) {
-		// content 中的内容被解析后会存放在 Env 之中，而 MemoryStringSource 所对应的
+		// content 中的内容被解析后会存放在 Env 之中，而 StringSource 所对应的
 		// Template 对象 isModified() 始终返回 false，所以没有必要对其缓存
-		MemoryStringSource memoryStringSource = new MemoryStringSource(content, false);
-		doAddSharedFunction(memoryStringSource, null);
+		StringSource stringSource = new StringSource(content, false);
+		doAddSharedFunction(stringSource, null);
 	}
 	
 	/**
