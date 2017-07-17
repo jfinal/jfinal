@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.jfinal.template;
+package com.jfinal.template.source;
 
 /**
- * IStringSource
+ * ISource
  */
-public interface IStringSource {
+public interface ISource {
 	
 	/**
 	 * reload template if modified on devMode
@@ -29,13 +29,13 @@ public interface IStringSource {
 	/**
 	 * key used to cache, return null if do not cache the template
 	 * 
-	 * 注意：如果不希望缓存从该 IStreamSource 解析出来的 Template 对象
+	 * 注意：如果不希望缓存从该 ISource 解析出来的 Template 对象
 	 *      让 getKey() 返回 null 值即可  
 	 */
 	String getKey();
 	
 	/**
-	 * content of StringSource
+	 * content of ISource
 	 */
 	StringBuilder getContent();
 	
