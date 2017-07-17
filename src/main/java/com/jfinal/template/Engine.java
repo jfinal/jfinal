@@ -22,8 +22,8 @@ import java.util.Map;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.MethodKit;
-import com.jfinal.template.source.FileSource;
 import com.jfinal.template.source.ISource;
+import com.jfinal.template.source.ISourceFactory;
 import com.jfinal.template.source.StringSource;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Stat;
@@ -51,6 +51,7 @@ public class Engine {
 	private String name;
 	private boolean devMode = false;
 	private EngineConfig config = new EngineConfig();
+	private ISourceFactory sourceFactory = config.getSourceFactory();
 	
 	private Map<String, Template> templateCache = new HashMap<String, Template>();
 	
@@ -134,23 +135,24 @@ public class Engine {
 		
 		Template template = templateCache.get(fileName);
 		if (template == null) {
-			template = buildTemplateByFileSource(fileName);
+			template = buildTemplateBySourceFactory(fileName);
 			templateCache.put(fileName, template);
 		} else if (devMode) {
 			if (template.isModified()) {
-				template = buildTemplateByFileSource(fileName);
+				template = buildTemplateBySourceFactory(fileName);
 				templateCache.put(fileName, template);
 			}
 		}
 		return template;
 	}
 	
-	private Template buildTemplateByFileSource(String fileName) {
-		FileSource fileSource = new FileSource(config.getBaseTemplatePath(), fileName, config.getEncoding());
+	private Template buildTemplateBySourceFactory(String fileName) {
+		// FileSource fileSource = new FileSource(config.getBaseTemplatePath(), fileName, config.getEncoding());
+		ISource source = sourceFactory.getSource(config.getBaseTemplatePath(), fileName, config.getEncoding());
 		Env env = new Env(config);
-		Parser parser = new Parser(env, fileSource.getContent(), fileName);
+		Parser parser = new Parser(env, source.getContent(), fileName);
 		if (devMode) {
-			env.addSource(fileSource);
+			env.addSource(source);
 		}
 		Stat stat = parser.parse();
 		Template template = new Template(env, stat);
@@ -384,6 +386,16 @@ public class Engine {
 	
 	public boolean getDevMode() {
 		return devMode;
+	}
+	
+	public Engine setSourceFactory(ISourceFactory sourceFactory) {
+		this.config.setSourceFactory(sourceFactory);	// 放第一行先进行参数验证
+		this.sourceFactory = sourceFactory;
+		return this;
+	}
+	
+	public ISourceFactory getSourceFactory() {
+		return sourceFactory;
 	}
 	
 	public Engine setBaseTemplatePath(String baseTemplatePath) {
