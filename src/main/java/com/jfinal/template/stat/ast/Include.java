@@ -91,7 +91,7 @@ public class Include extends Stat {
 		try {
 			Parser parser = new Parser(env, fileStringSource.getContent(), subFileName);
 			if (config.isDevMode()) {
-				env.addStringSource(fileStringSource);
+				env.addSource(fileStringSource);
 			}
 			this.stat = parser.parse();
 		} catch (Exception e) {

@@ -82,7 +82,7 @@ public class Template {
 	}
 	
 	public boolean isModified() {
-		return env.isStringSourceListModified();
+		return env.isSourceListModified();
 	}
 }
 

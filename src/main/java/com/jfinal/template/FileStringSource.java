@@ -22,10 +22,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.jfinal.template.source.ISource;
+
 /**
  * FileStringSource
  */
-public class FileStringSource implements IStringSource {
+public class FileStringSource implements ISource {
 	
 	private String finalFileName;
 	private String fileName;

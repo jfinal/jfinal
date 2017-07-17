@@ -27,6 +27,7 @@ import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.SharedMethodKit;
 import com.jfinal.template.ext.directive.*;
 import com.jfinal.template.ext.sharedmethod.Json;
+import com.jfinal.template.source.ISource;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Define;
@@ -41,7 +42,7 @@ public class EngineConfig {
 	public static final String DEFAULT_ENCODING = "UTF-8";
 	
 	private Map<String, Define> sharedFunctionMap = new HashMap<String, Define>();
-	private List<IStringSource> sharedFunctionSourceList = new ArrayList<IStringSource>();		// for devMode only
+	private List<ISource> sharedFunctionSourceList = new ArrayList<ISource>();		// for devMode only
 	
 	Map<String, Object> sharedObjectMap = null;
 	
@@ -75,13 +76,13 @@ public class EngineConfig {
 		doAddSharedFunction(fileStringSource, fileName);
 	}
 	
-	private synchronized void doAddSharedFunction(IStringSource stringSource, String fileName) {
+	private synchronized void doAddSharedFunction(ISource source, String fileName) {
 		Env env = new Env(this);
-		new Parser(env, stringSource.getContent(), fileName).parse();
+		new Parser(env, source.getContent(), fileName).parse();
 		addToSharedFunctionMap(sharedFunctionMap, env);
 		if (devMode) {
-			sharedFunctionSourceList.add(stringSource);
-			env.addStringSource(stringSource);
+			sharedFunctionSourceList.add(source);
+			env.addSource(source);
 		}
 	}
 	
@@ -105,11 +106,11 @@ public class EngineConfig {
 	}
 	
 	/**
-	 * Add shared function by IStringSource
+	 * Add shared function by ISource
 	 */
-	public void addSharedFunction(IStringSource stringSource) {
-		String fileName = stringSource instanceof FileStringSource ? ((FileStringSource)stringSource).getFileName() : null;
-		doAddSharedFunction(stringSource, fileName);
+	public void addSharedFunction(ISource source) {
+		String fileName = source instanceof FileStringSource ? ((FileStringSource)source).getFileName() : null;
+		doAddSharedFunction(source, fileName);
 	}
 	
 	private void addToSharedFunctionMap(Map<String, Define> sharedFunctionMap, Env env) {
@@ -169,14 +170,14 @@ public class EngineConfig {
 	private synchronized void reloadSharedFunctionSourceList() {
 		Map<String, Define> newMap = new HashMap<String, Define>();
 		for (int i = 0, size = sharedFunctionSourceList.size(); i < size; i++) {
-			IStringSource ss = sharedFunctionSourceList.get(i);
-			String fileName = ss instanceof FileStringSource ? ((FileStringSource)ss).getFileName() : null;
+			ISource source = sharedFunctionSourceList.get(i);
+			String fileName = source instanceof FileStringSource ? ((FileStringSource)source).getFileName() : null;
 			
 			Env env = new Env(this);
-			new Parser(env, ss.getContent(), fileName).parse();
+			new Parser(env, source.getContent(), fileName).parse();
 			addToSharedFunctionMap(newMap, env);
 			if (devMode) {
-				env.addStringSource(ss);
+				env.addSource(source);
 			}
 		}
 		this.sharedFunctionMap = newMap;

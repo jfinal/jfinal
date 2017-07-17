@@ -23,10 +23,10 @@ import com.jfinal.template.Directive;
 import com.jfinal.template.EngineConfig;
 import com.jfinal.template.Env;
 import com.jfinal.template.FileStringSource;
-import com.jfinal.template.IStringSource;
 import com.jfinal.template.TemplateException;
 import com.jfinal.template.expr.ast.Assign;
 import com.jfinal.template.expr.ast.ExprList;
+import com.jfinal.template.source.ISource;
 import com.jfinal.template.stat.Ctrl;
 import com.jfinal.template.stat.ParseException;
 import com.jfinal.template.stat.Parser;
@@ -113,8 +113,8 @@ public class RenderDirective extends Directive {
 			statInfo = parseStatInfo(env, subFileName);
 			statInfoCache.put(subFileName, statInfo);
 		} else if (env.getEngineConfig().isDevMode()) {
-			// statInfo.env.isStringSourceModified() 逻辑可以支持 #render 子模板中的 #include 过来的子模板在 devMode 下在修改后可被重加载
-			if (statInfo.stringSource.isModified() || statInfo.env.isStringSourceListModified()) {
+			// statInfo.env.isSourceListModified() 逻辑可以支持 #render 子模板中的 #include 过来的子模板在 devMode 下在修改后可被重加载
+			if (statInfo.source.isModified() || statInfo.env.isSourceListModified()) {
 				statInfo = parseStatInfo(env, subFileName);
 				statInfoCache.put(subFileName, statInfo);
 			}
@@ -140,12 +140,12 @@ public class RenderDirective extends Directive {
 	private static class StatInfo {
 		EnvSub env;
 		Stat stat;
-		IStringSource stringSource;
+		ISource source;
 		
-		StatInfo(EnvSub env, Stat stat, IStringSource stringSource) {
+		StatInfo(EnvSub env, Stat stat, ISource source) {
 			this.env = env;
 			this.stat = stat;
-			this.stringSource = stringSource;
+			this.source = source;
 		}
 	}
 	
