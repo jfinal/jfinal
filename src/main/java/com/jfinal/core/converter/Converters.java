@@ -94,10 +94,10 @@ public class Converters {
 		@Override
 		public Boolean convert(String s) {
 			String value = s.toLowerCase();
-			if ("1".equals(value) || "true".equals(value) || "yes".equals(value) || "on".equals(value)) {
+			if ("true".equals(value) || "1".equals(value) /* || "yes".equals(value) || "on".equals(value) */) {
 				return Boolean.TRUE;
 			}
-			else if ("0".equals(value) || "false".equals(value) || "no".equals(value) || "off".equals(value)) {
+			else if ("false".equals(value) || "0".equals(value) /* || "no".equals(value) || "off".equals(value) */) {
 				return Boolean.FALSE;
 			}
 			else {
