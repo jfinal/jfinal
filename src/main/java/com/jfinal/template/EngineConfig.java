@@ -222,6 +222,11 @@ public class EngineConfig {
 	}
 	
 	public void setBaseTemplatePath(String baseTemplatePath) {
+		// 使用 ClassPathSourceFactory 时，允许 baseTemplatePath 为 null 值
+		if (baseTemplatePath == null) {
+			this.baseTemplatePath = null;
+			return ;
+		}
 		if (StrKit.isBlank(baseTemplatePath)) {
 			throw new IllegalArgumentException("baseTemplatePath can not be blank");
 		}
