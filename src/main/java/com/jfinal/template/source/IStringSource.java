@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.jfinal.template;
+package com.jfinal.template.source;
 
 /**
  * IStringSource

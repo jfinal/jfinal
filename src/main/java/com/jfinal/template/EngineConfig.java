@@ -27,6 +27,7 @@ import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.SharedMethodKit;
 import com.jfinal.template.ext.directive.*;
 import com.jfinal.template.ext.sharedmethod.Json;
+import com.jfinal.template.source.IStringSource;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Define;

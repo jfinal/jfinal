@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.jfinal.template.source.IStringSource;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ParseException;
 import com.jfinal.template.stat.ast.Define;
