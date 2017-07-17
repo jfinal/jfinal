@@ -216,11 +216,11 @@ public class Engine {
 		return template;
 	}
 	
-	private Template buildTemplateBySource(ISource ource) {
+	private Template buildTemplateBySource(ISource source) {
 		Env env = new Env(config);
-		Parser parser = new Parser(env, ource.getContent(), null);
+		Parser parser = new Parser(env, source.getContent(), null);
 		if (devMode) {
-			env.addSource(ource);
+			env.addSource(source);
 		}
 		Stat stat = parser.parse();
 		Template template = new Template(env, stat);
