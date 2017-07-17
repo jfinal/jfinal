@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package com.jfinal.template;
+package com.jfinal.template.source;
 
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
+import com.jfinal.template.EngineConfig;
 
 /**
- * MemoryStringSource
+ * StringSource
  */
-public class MemoryStringSource implements IStringSource {
+public class StringSource implements ISource {
 	
 	private String key;
 	private StringBuilder content;
 	
 	/**
-	 * 构造 MemoryStringSource
+	 * 构造 StringSource
 	 * @param content 模板内容
 	 * @param cache true 则缓存 Template，否则不缓存
 	 */
-	public MemoryStringSource(String content, boolean cache) {
+	public StringSource(String content, boolean cache) {
 		if (StrKit.isBlank(content)) {
 			throw new IllegalArgumentException("content can not be blank");
 		}
@@ -40,7 +41,7 @@ public class MemoryStringSource implements IStringSource {
 		this.key = cache ? HashKit.md5(content) : null;	// 不缓存只要将 key 值赋为 null 即可
 	}
 	
-	public MemoryStringSource(StringBuilder content, boolean cache) {
+	public StringSource(StringBuilder content, boolean cache) {
 		if (content == null || content.length() == 0) {
 			throw new IllegalArgumentException("content can not be blank");
 		}

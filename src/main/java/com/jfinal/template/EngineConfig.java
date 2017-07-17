@@ -27,6 +27,9 @@ import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.SharedMethodKit;
 import com.jfinal.template.ext.directive.*;
 import com.jfinal.template.ext.sharedmethod.Json;
+import com.jfinal.template.source.FileSource;
+import com.jfinal.template.source.ISource;
+import com.jfinal.template.source.StringSource;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Define;
@@ -41,7 +44,7 @@ public class EngineConfig {
 	public static final String DEFAULT_ENCODING = "UTF-8";
 	
 	private Map<String, Define> sharedFunctionMap = new HashMap<String, Define>();
-	private List<IStringSource> sharedFunctionSourceList = new ArrayList<IStringSource>();		// for devMode only
+	private List<ISource> sharedFunctionSourceList = new ArrayList<ISource>();		// for devMode only
 	
 	Map<String, Object> sharedObjectMap = null;
 	
@@ -71,17 +74,17 @@ public class EngineConfig {
 	 * Add shared function with file
 	 */
 	public void addSharedFunction(String fileName) {
-		FileStringSource fileStringSource = new FileStringSource(baseTemplatePath, fileName, encoding);
-		doAddSharedFunction(fileStringSource, fileName);
+		FileSource fileSource = new FileSource(baseTemplatePath, fileName, encoding);
+		doAddSharedFunction(fileSource, fileName);
 	}
 	
-	private synchronized void doAddSharedFunction(IStringSource stringSource, String fileName) {
+	private synchronized void doAddSharedFunction(ISource source, String fileName) {
 		Env env = new Env(this);
-		new Parser(env, stringSource.getContent(), fileName).parse();
+		new Parser(env, source.getContent(), fileName).parse();
 		addToSharedFunctionMap(sharedFunctionMap, env);
 		if (devMode) {
-			sharedFunctionSourceList.add(stringSource);
-			env.addStringSource(stringSource);
+			sharedFunctionSourceList.add(source);
+			env.addSource(source);
 		}
 	}
 	
@@ -98,18 +101,18 @@ public class EngineConfig {
 	 * Add shared function by string content
 	 */
 	public void addSharedFunctionByString(String content) {
-		// content 中的内容被解析后会存放在 Env 之中，而 MemoryStringSource 所对应的
+		// content 中的内容被解析后会存放在 Env 之中，而 StringSource 所对应的
 		// Template 对象 isModified() 始终返回 false，所以没有必要对其缓存
-		MemoryStringSource memoryStringSource = new MemoryStringSource(content, false);
-		doAddSharedFunction(memoryStringSource, null);
+		StringSource stringSource = new StringSource(content, false);
+		doAddSharedFunction(stringSource, null);
 	}
 	
 	/**
-	 * Add shared function by IStringSource
+	 * Add shared function by ISource
 	 */
-	public void addSharedFunction(IStringSource stringSource) {
-		String fileName = stringSource instanceof FileStringSource ? ((FileStringSource)stringSource).getFileName() : null;
-		doAddSharedFunction(stringSource, fileName);
+	public void addSharedFunction(ISource source) {
+		String fileName = source instanceof FileSource ? ((FileSource)source).getFileName() : null;
+		doAddSharedFunction(source, fileName);
 	}
 	
 	private void addToSharedFunctionMap(Map<String, Define> sharedFunctionMap, Env env) {
@@ -169,14 +172,14 @@ public class EngineConfig {
 	private synchronized void reloadSharedFunctionSourceList() {
 		Map<String, Define> newMap = new HashMap<String, Define>();
 		for (int i = 0, size = sharedFunctionSourceList.size(); i < size; i++) {
-			IStringSource ss = sharedFunctionSourceList.get(i);
-			String fileName = ss instanceof FileStringSource ? ((FileStringSource)ss).getFileName() : null;
+			ISource source = sharedFunctionSourceList.get(i);
+			String fileName = source instanceof FileSource ? ((FileSource)source).getFileName() : null;
 			
 			Env env = new Env(this);
-			new Parser(env, ss.getContent(), fileName).parse();
+			new Parser(env, source.getContent(), fileName).parse();
 			addToSharedFunctionMap(newMap, env);
 			if (devMode) {
-				env.addStringSource(ss);
+				env.addSource(source);
 			}
 		}
 		this.sharedFunctionMap = newMap;
@@ -221,6 +224,11 @@ public class EngineConfig {
 	}
 	
 	public void setBaseTemplatePath(String baseTemplatePath) {
+		// 使用 ClassPathSourceFactory 时，允许 baseTemplatePath 为 null 值
+		if (baseTemplatePath == null) {
+			this.baseTemplatePath = null;
+			return ;
+		}
 		if (StrKit.isBlank(baseTemplatePath)) {
 			throw new IllegalArgumentException("baseTemplatePath can not be blank");
 		}

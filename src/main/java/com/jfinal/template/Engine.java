@@ -22,6 +22,9 @@ import java.util.Map;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.MethodKit;
+import com.jfinal.template.source.FileSource;
+import com.jfinal.template.source.ISource;
+import com.jfinal.template.source.StringSource;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Stat;
 
@@ -131,23 +134,23 @@ public class Engine {
 		
 		Template template = templateCache.get(fileName);
 		if (template == null) {
-			template = buildTemplateByFileStringSource(fileName);
+			template = buildTemplateByFileSource(fileName);
 			templateCache.put(fileName, template);
 		} else if (devMode) {
 			if (template.isModified()) {
-				template = buildTemplateByFileStringSource(fileName);
+				template = buildTemplateByFileSource(fileName);
 				templateCache.put(fileName, template);
 			}
 		}
 		return template;
 	}
 	
-	private Template buildTemplateByFileStringSource(String fileName) {
-		FileStringSource fileStringSource = new FileStringSource(config.getBaseTemplatePath(), fileName, config.getEncoding());
+	private Template buildTemplateByFileSource(String fileName) {
+		FileSource fileSource = new FileSource(config.getBaseTemplatePath(), fileName, config.getEncoding());
 		Env env = new Env(config);
-		Parser parser = new Parser(env, fileStringSource.getContent(), fileName);
+		Parser parser = new Parser(env, fileSource.getContent(), fileName);
 		if (devMode) {
-			env.addStringSource(fileStringSource);
+			env.addSource(fileSource);
 		}
 		Stat stat = parser.parse();
 		Template template = new Template(env, stat);
@@ -157,7 +160,7 @@ public class Engine {
 	/**
 	 * Get template by string content and do not cache the template
 	 * 
-	 * 重要：MemoryStringSource 中的 key = HashKit.md5(content)，也即 key
+	 * 重要：StringSource 中的 key = HashKit.md5(content)，也即 key
 	 *     与 content 有紧密的对应关系，当 content 发生变化时 key 值也相应变化
 	 *     因此，原先 key 所对应的 Template 缓存对象已无法被获取，当 getTemplateByString(String)
 	 *     的 String 参数的数量不确定时会引发内存泄漏
@@ -176,17 +179,17 @@ public class Engine {
 	 */
 	public Template getTemplateByString(String content, boolean cache) {
 		if (!cache) {
-			return buildTemplateByStringSource(new MemoryStringSource(content, cache));
+			return buildTemplateBySource(new StringSource(content, cache));
 		}
 		
 		String key = HashKit.md5(content);
 		Template template = templateCache.get(key);
 		if (template == null) {
-			template = buildTemplateByStringSource(new MemoryStringSource(content, cache));
+			template = buildTemplateBySource(new StringSource(content, cache));
 			templateCache.put(key, template);
 		} else if (devMode) {
 			if (template.isModified()) {
-				template = buildTemplateByStringSource(new MemoryStringSource(content, cache));
+				template = buildTemplateBySource(new StringSource(content, cache));
 				templateCache.put(key, template);
 			}
 		}
@@ -194,32 +197,32 @@ public class Engine {
 	}
 	
 	/**
-	 * Get template with implementation of IStringSource
+	 * Get template with implementation of ISource
 	 */
-	public Template getTemplate(IStringSource stringSource) {
-		String key = stringSource.getKey();
-		if (key == null) {	// key 为 null 则不缓存，详见 IStringSource.getKey() 注释
-			return buildTemplateByStringSource(stringSource);
+	public Template getTemplate(ISource source) {
+		String key = source.getKey();
+		if (key == null) {	// key 为 null 则不缓存，详见 ISource.getKey() 注释
+			return buildTemplateBySource(source);
 		}
 		
 		Template template = templateCache.get(key);
 		if (template == null) {
-			template = buildTemplateByStringSource(stringSource);
+			template = buildTemplateBySource(source);
 			templateCache.put(key, template);
 		} else if (devMode) {
 			if (template.isModified()) {
-				template = buildTemplateByStringSource(stringSource);
+				template = buildTemplateBySource(source);
 				templateCache.put(key, template);
 			}
 		}
 		return template;
 	}
 	
-	private Template buildTemplateByStringSource(IStringSource stringSource) {
+	private Template buildTemplateBySource(ISource source) {
 		Env env = new Env(config);
-		Parser parser = new Parser(env, stringSource.getContent(), null);
+		Parser parser = new Parser(env, source.getContent(), null);
 		if (devMode) {
-			env.addStringSource(stringSource);
+			env.addSource(source);
 		}
 		Stat stat = parser.parse();
 		Template template = new Template(env, stat);
@@ -235,10 +238,10 @@ public class Engine {
 	}
 	
 	/**
-	 * Add shared function by IStringSource
+	 * Add shared function by ISource
 	 */
-	public Engine addSharedFunction(IStringSource stringSource) {
-		config.addSharedFunction(stringSource);
+	public Engine addSharedFunction(ISource source) {
+		config.addSharedFunction(source);
 		return this;
 	}
 	

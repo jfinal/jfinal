@@ -109,7 +109,7 @@ public class ActiveRecordPlugin implements IPlugin {
 		return this;
 	}
 	
-	public ActiveRecordPlugin addSqlTemplate(com.jfinal.template.IStringSource sqlTemplate) {
+	public ActiveRecordPlugin addSqlTemplate(com.jfinal.template.source.ISource sqlTemplate) {
 		config.sqlKit.addSqlTemplate(sqlTemplate);
 		return this;
 	}

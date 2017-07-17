@@ -23,8 +23,8 @@ import java.util.Map;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.jfinal.template.Engine;
-import com.jfinal.template.IStringSource;
 import com.jfinal.template.Template;
+import com.jfinal.template.source.ISource;
 
 /**
  * SqlKit
@@ -79,7 +79,7 @@ public class SqlKit {
 		sqlSourceList.add(new SqlSource(sqlTemplate));
 	}
 	
-	public void addSqlTemplate(IStringSource sqlTemplate) {
+	public void addSqlTemplate(ISource sqlTemplate) {
 		if (sqlTemplate == null) {
 			throw new IllegalArgumentException("sqlTemplate can not be null");
 		}
@@ -89,7 +89,7 @@ public class SqlKit {
 	public synchronized void parseSqlTemplate() {
 		Map<String, Template> sqlTemplateMap = new HashMap<String, Template>();
 		for (SqlSource ss : sqlSourceList) {
-			Template template = ss.isFile() ? engine.getTemplate(ss.file) : engine.getTemplate(ss.stringSource);
+			Template template = ss.isFile() ? engine.getTemplate(ss.file) : engine.getTemplate(ss.source);
 			Map<Object, Object> data = new HashMap<Object, Object>();
 			data.put(SQL_TEMPLATE_MAP_KEY, sqlTemplateMap);
 			template.renderToString(data);

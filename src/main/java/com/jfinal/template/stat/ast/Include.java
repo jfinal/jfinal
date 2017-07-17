@@ -19,11 +19,11 @@ package com.jfinal.template.stat.ast;
 import java.io.Writer;
 import com.jfinal.template.EngineConfig;
 import com.jfinal.template.Env;
-import com.jfinal.template.FileStringSource;
 import com.jfinal.template.expr.ast.Assign;
 import com.jfinal.template.expr.ast.Const;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
+import com.jfinal.template.source.FileSource;
 import com.jfinal.template.stat.Ctrl;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ParseException;
@@ -87,11 +87,11 @@ public class Include extends Stat {
 	private void parseSubTemplate(Env env, String fileName, String parentFileName, Location location) {
 		String subFileName = getSubFileName(fileName, parentFileName);
 		EngineConfig config = env.getEngineConfig();
-		FileStringSource fileStringSource = new FileStringSource(config.getBaseTemplatePath(), subFileName, config.getEncoding());
+		FileSource fileSource = new FileSource(config.getBaseTemplatePath(), subFileName, config.getEncoding());
 		try {
-			Parser parser = new Parser(env, fileStringSource.getContent(), subFileName);
+			Parser parser = new Parser(env, fileSource.getContent(), subFileName);
 			if (config.isDevMode()) {
-				env.addStringSource(fileStringSource);
+				env.addSource(fileSource);
 			}
 			this.stat = parser.parse();
 		} catch (Exception e) {
