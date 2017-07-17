@@ -28,7 +28,9 @@ import com.jfinal.template.expr.ast.SharedMethodKit;
 import com.jfinal.template.ext.directive.*;
 import com.jfinal.template.ext.sharedmethod.Json;
 import com.jfinal.template.source.FileSource;
+import com.jfinal.template.source.FileSourceFactory;
 import com.jfinal.template.source.ISource;
+import com.jfinal.template.source.ISourceFactory;
 import com.jfinal.template.source.StringSource;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.Parser;
@@ -49,6 +51,7 @@ public class EngineConfig {
 	Map<String, Object> sharedObjectMap = null;
 	
 	private IOutputDirectiveFactory outputDirectiveFactory = OutputDirectiveFactory.me;
+	private ISourceFactory sourceFactory = new FileSourceFactory();
 	private Map<String, Stat> directiveMap = new HashMap<String, Stat>();
 	private SharedMethodKit sharedMethodKit = new SharedMethodKit();
 	
@@ -221,6 +224,20 @@ public class EngineConfig {
 	
 	public boolean isDevMode() {
 		return devMode;
+	}
+	
+	/**
+	 * Invoked by Engine only
+	 */
+	void setSourceFactory(ISourceFactory sourceFactory) {
+		if (sourceFactory == null) {
+			throw new IllegalArgumentException("sourceFactory can not be null");
+		}
+		this.sourceFactory = sourceFactory;
+	}
+	
+	public ISourceFactory getSourceFactory() {
+		return sourceFactory;
 	}
 	
 	public void setBaseTemplatePath(String baseTemplatePath) {
