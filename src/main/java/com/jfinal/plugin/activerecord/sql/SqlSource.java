@@ -1,6 +1,6 @@
 package com.jfinal.plugin.activerecord.sql;
 
-import com.jfinal.template.IStringSource;
+import com.jfinal.template.source.ISource;
 
 /**
  * 封装 sql 模板源
@@ -8,16 +8,16 @@ import com.jfinal.template.IStringSource;
 class SqlSource {
 	
 	String file;
-	IStringSource stringSource;
+	ISource source;
 	
 	SqlSource(String file) {
 		this.file = file;
-		this.stringSource = null;
+		this.source = null;
 	}
 	
-	SqlSource(IStringSource stringSource) {
+	SqlSource(ISource source) {
 		this.file = null;
-		this.stringSource = stringSource;
+		this.source = source;
 	}
 	
 	boolean isFile() {
