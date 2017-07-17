@@ -19,17 +19,15 @@ package com.jfinal.template.source;
 /**
  * ISourceFactory 用于为 engine 切换不同的 ISource 实现类
  * 
- * FileSourceFactory 将从指定的目录中加载模板文件
- * ClassPathSourceFactory 将从 class path 以及 jar 文件中加载模板文件
+ * FileSourceFactory 从指定的目录中加载模板文件
+ * ClassPathSourceFactory 从 class path 以及 jar 文件中加载模板文件
  * 
- * 配置实例：
+ * 配置示例：
  * engine.setSourceFactory(new ClassPathSourceFactory());
- * 
  */
 public interface ISourceFactory {
 	ISource getSource(String baseTemplatePath, String fileName, String encoding);
 }
-
 
 
 

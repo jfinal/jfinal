@@ -19,7 +19,7 @@ package com.jfinal.template.source;
 /**
  * FileSourceFactory 从指定的目录中加载模板文件
  * 
- * FileSourceFactory 为模板引擎默认配置
+ * FileSourceFactory 为模板引擎默认配置，无需进行配置
  */
 public class FileSourceFactory implements ISourceFactory {
 	
