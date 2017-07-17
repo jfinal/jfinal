@@ -25,7 +25,6 @@ import com.jfinal.template.Env;
 import com.jfinal.template.TemplateException;
 import com.jfinal.template.expr.ast.Assign;
 import com.jfinal.template.expr.ast.ExprList;
-import com.jfinal.template.source.FileSource;
 import com.jfinal.template.source.ISource;
 import com.jfinal.template.stat.Ctrl;
 import com.jfinal.template.stat.ParseException;
@@ -126,7 +125,8 @@ public class RenderDirective extends Directive {
 	
 	private StatInfo parseStatInfo(Env env, String subFileName) {
 		EngineConfig config = env.getEngineConfig();
-		FileSource fileSource = new FileSource(config.getBaseTemplatePath(), subFileName, config.getEncoding());
+		// FileSource fileSource = new FileSource(config.getBaseTemplatePath(), subFileName, config.getEncoding());
+		ISource fileSource = config.getSourceFactory().getSource(config.getBaseTemplatePath(), subFileName, config.getEncoding());
 		
 		try {
 			EnvSub envSub = new EnvSub(env);
