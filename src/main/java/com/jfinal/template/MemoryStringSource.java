@@ -18,12 +18,12 @@ package com.jfinal.template;
 
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
-import com.jfinal.template.source.IStringSource;
+import com.jfinal.template.source.ISource;
 
 /**
  * MemoryStringSource
  */
-public class MemoryStringSource implements IStringSource {
+public class MemoryStringSource implements ISource {
 	
 	private String key;
 	private StringBuilder content;

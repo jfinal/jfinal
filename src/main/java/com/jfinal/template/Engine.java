@@ -22,7 +22,7 @@ import java.util.Map;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.MethodKit;
-import com.jfinal.template.source.IStringSource;
+import com.jfinal.template.source.ISource;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Stat;
 
@@ -148,7 +148,7 @@ public class Engine {
 		Env env = new Env(config);
 		Parser parser = new Parser(env, fileStringSource.getContent(), fileName);
 		if (devMode) {
-			env.addStringSource(fileStringSource);
+			env.addSource(fileStringSource);
 		}
 		Stat stat = parser.parse();
 		Template template = new Template(env, stat);
@@ -177,17 +177,17 @@ public class Engine {
 	 */
 	public Template getTemplateByString(String content, boolean cache) {
 		if (!cache) {
-			return buildTemplateByStringSource(new MemoryStringSource(content, cache));
+			return buildTemplateBySource(new MemoryStringSource(content, cache));
 		}
 		
 		String key = HashKit.md5(content);
 		Template template = templateCache.get(key);
 		if (template == null) {
-			template = buildTemplateByStringSource(new MemoryStringSource(content, cache));
+			template = buildTemplateBySource(new MemoryStringSource(content, cache));
 			templateCache.put(key, template);
 		} else if (devMode) {
 			if (template.isModified()) {
-				template = buildTemplateByStringSource(new MemoryStringSource(content, cache));
+				template = buildTemplateBySource(new MemoryStringSource(content, cache));
 				templateCache.put(key, template);
 			}
 		}
@@ -195,32 +195,32 @@ public class Engine {
 	}
 	
 	/**
-	 * Get template with implementation of IStringSource
+	 * Get template with implementation of ISource
 	 */
-	public Template getTemplate(IStringSource stringSource) {
-		String key = stringSource.getKey();
-		if (key == null) {	// key 为 null 则不缓存，详见 IStringSource.getKey() 注释
-			return buildTemplateByStringSource(stringSource);
+	public Template getTemplate(ISource source) {
+		String key = source.getKey();
+		if (key == null) {	// key 为 null 则不缓存，详见 ISource.getKey() 注释
+			return buildTemplateBySource(source);
 		}
 		
 		Template template = templateCache.get(key);
 		if (template == null) {
-			template = buildTemplateByStringSource(stringSource);
+			template = buildTemplateBySource(source);
 			templateCache.put(key, template);
 		} else if (devMode) {
 			if (template.isModified()) {
-				template = buildTemplateByStringSource(stringSource);
+				template = buildTemplateBySource(source);
 				templateCache.put(key, template);
 			}
 		}
 		return template;
 	}
 	
-	private Template buildTemplateByStringSource(IStringSource stringSource) {
+	private Template buildTemplateBySource(ISource source) {
 		Env env = new Env(config);
-		Parser parser = new Parser(env, stringSource.getContent(), null);
+		Parser parser = new Parser(env, source.getContent(), null);
 		if (devMode) {
-			env.addStringSource(stringSource);
+			env.addSource(source);
 		}
 		Stat stat = parser.parse();
 		Template template = new Template(env, stat);
@@ -236,10 +236,10 @@ public class Engine {
 	}
 	
 	/**
-	 * Add shared function by IStringSource
+	 * Add shared function by ISource
 	 */
-	public Engine addSharedFunction(IStringSource stringSource) {
-		config.addSharedFunction(stringSource);
+	public Engine addSharedFunction(ISource source) {
+		config.addSharedFunction(source);
 		return this;
 	}
 	
