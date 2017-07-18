@@ -66,6 +66,24 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 	}
 	
 	/**
+	 * 设置 shared function 文件，多个文件用逗号分隔
+	 * 
+	 * 主要用于 Spring MVC 的 xml 配置方式
+	 * 
+	 * Spring Boot 的代码配置方式可使用 addSharedFunction(...) 进行配置
+	 */
+	public void setSharedFunction(String sharedFunctionFiles) {
+		if (StrKit.isBlank(sharedFunctionFiles)) {
+			throw new IllegalArgumentException("sharedFunctionFiles can not be blank");
+		}
+		
+		String[] fileArray = sharedFunctionFiles.split(",");
+		for (String fileName : fileArray) {
+			JFinalViewResolver.sharedFunctionFiles.add(fileName);
+		}
+	}
+	
+	/**
 	 * 添加 shared function 文件，可调用多次添加多个文件
 	 */
 	public void addSharedFunction(String fileName) {
