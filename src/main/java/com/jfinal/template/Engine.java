@@ -375,6 +375,10 @@ public class Engine {
 		return config;
 	}
 	
+	/**
+	 * 设置 true 为开发模式，支持模板文件热加载
+	 * 设置 false 为生产模式，不支持模板文件热加载，以达到更高的性能
+	 */
 	public Engine setDevMode(boolean devMode) {
 		this.devMode = devMode;
 		this.config.setDevMode(devMode);
