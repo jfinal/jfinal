@@ -392,6 +392,22 @@ public class Engine {
 		return devMode;
 	}
 	
+	/**
+	 * 设置 ISourceFactory 用于为 engine 切换不同的 ISource 实现类
+	 * ISource 用于从不同的来源加载模板内容
+	 * 
+	 * <pre>
+	 * 配置为 ClassPathSourceFactory 时特别注意：
+	 *    由于 JFinal 会在 configEngine(Engine me) 方法调用 “之前”，会默认调用一次如下方法：
+	 *       me.setBaseTemplatePath(PathKit.getWebRootPath())
+	 *    
+	 *    而 ClassPathSourceFactory 在以上默认值下不能工作，所以需要通过如下方式清掉该值：
+	 *       me.setBaseTemplatePath(null)
+	 *    
+	 *    或者配置上合理可用的 baseTemplatePath 值，例如在 Spring boot 中通常配置为：
+	 *       me.setBaseTemplatePath("templates");
+	 * </pre>
+	 */
 	public Engine setSourceFactory(ISourceFactory sourceFactory) {
 		this.config.setSourceFactory(sourceFactory);	// 放第一行先进行参数验证
 		this.sourceFactory = sourceFactory;
