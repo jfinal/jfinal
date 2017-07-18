@@ -27,6 +27,9 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 
 /**
+ * JFinalView
+ * 
+ * <pre>
  * 关键设置：
  * 1：setContentType("text/html;charset=UTF-8") 设置 content type 字符集为 UTF-8
  * 
@@ -40,6 +43,7 @@ import org.springframework.web.servlet.view.AbstractTemplateView;
  *      JFinalView.setExposeSessionAttributes(true) 可实现
  *      相似的功能，区别在于前者访问方式为 #(session.value) 而后者为
  *      #(value)，两种配置只选其一
+ * </pre>
  */
 public class JFinalView extends AbstractTemplateView {
 	
