@@ -17,7 +17,7 @@
 package com.jfinal.template.source;
 
 /**
- * ISource
+ * ISource 用于表示模板内容的来源
  */
 public interface ISource {
 	
