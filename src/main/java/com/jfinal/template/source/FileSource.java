@@ -21,11 +21,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import com.jfinal.template.EngineConfig;
 
 /**
- * FileSource
+ * FileSource 用于从普通文件中加载模板内容
  */
 public class FileSource implements ISource {
 	

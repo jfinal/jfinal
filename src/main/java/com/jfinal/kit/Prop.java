@@ -55,7 +55,7 @@ public class Prop {
 	public Prop(String fileName, String encoding) {
 		InputStream inputStream = null;
 		try {
-			inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);		// properties.load(Prop.class.getResourceAsStream(fileName));
+			inputStream = getClassLoader().getResourceAsStream(fileName);		// properties.load(Prop.class.getResourceAsStream(fileName));
 			if (inputStream == null) {
 				throw new IllegalArgumentException("Properties file not found in classpath: " + fileName);
 			}
@@ -67,6 +67,11 @@ public class Prop {
 		finally {
 			if (inputStream != null) try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
 		}
+	}
+	
+	private ClassLoader getClassLoader() {
+		ClassLoader ret = Thread.currentThread().getContextClassLoader();
+		return ret != null ? ret : getClass().getClassLoader();
 	}
 	
 	/**
