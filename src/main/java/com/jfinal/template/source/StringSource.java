@@ -21,7 +21,7 @@ import com.jfinal.kit.StrKit;
 import com.jfinal.template.EngineConfig;
 
 /**
- * StringSource
+ * StringSource 用于从 String 变量中加载模板内容
  */
 public class StringSource implements ISource {
 	

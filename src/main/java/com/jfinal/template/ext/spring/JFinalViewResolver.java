@@ -78,10 +78,10 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 	
 	public JFinalViewResolver() {
 		setViewClass(requiredViewClass());
-		// setOrder(0);
+		setOrder(0);
+		setContentType("text/html;charset=UTF-8");
 		// setPrefix("/view/");
 		// setSuffix(".html");
-        // setContentType("text/html;charset=UTF-8");
 	}
 	
 	@Override
