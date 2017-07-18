@@ -77,8 +77,9 @@ public class EngineConfig {
 	 * Add shared function with file
 	 */
 	public void addSharedFunction(String fileName) {
-		FileSource fileSource = new FileSource(baseTemplatePath, fileName, encoding);
-		doAddSharedFunction(fileSource, fileName);
+		// FileSource fileSource = new FileSource(baseTemplatePath, fileName, encoding);
+		ISource source = sourceFactory.getSource(baseTemplatePath, fileName, encoding);
+		doAddSharedFunction(source, fileName);
 	}
 	
 	private synchronized void doAddSharedFunction(ISource source, String fileName) {
