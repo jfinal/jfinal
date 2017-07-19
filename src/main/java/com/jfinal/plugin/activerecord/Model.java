@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -428,14 +427,14 @@ public abstract class Model<M extends Model> implements Serializable {
 		int result = 0;
 		try {
 			conn = config.getConnection();
-			if (config.dialect.isOracle())
+			if (config.dialect.isOracle()) {
 				pst = conn.prepareStatement(sql.toString(), table.getPrimaryKey());
-			else
+			} else {
 				pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
-			
+			}
 			config.dialect.fillStatement(pst, paras);
 			result = pst.executeUpdate();
-			getGeneratedKey(pst, table, config);
+			config.dialect.getModelGeneratedKey(this, pst, table, config);
 			getModifyFlag().clear();
 			return result >= 1;
 		} catch (Exception e) {
@@ -443,28 +442,6 @@ public abstract class Model<M extends Model> implements Serializable {
 		} finally {
 			config.close(pst, conn);
 		}
-	}
-	
-	/**
-	 * Get id after save method.
-	 */
-	private void getGeneratedKey(PreparedStatement pst, Table table, Config config) throws SQLException {
-		String[] pKeys = table.getPrimaryKey();
-		ResultSet rs = pst.getGeneratedKeys();
-		for (String pKey : pKeys) {
-			if (get(pKey) == null || config.dialect.isOracle()) {
-				if (rs.next()) {
-					Class colType = table.getColumnType(pKey);
-					if (colType == Integer.class || colType == int.class)
-						set(pKey, rs.getInt(1));
-					else if (colType == Long.class || colType == long.class)
-						set(pKey, rs.getLong(1));
-					else
-						set(pKey, rs.getObject(1));		// It returns Long object for int colType
-				}
-			}
-		}
-		rs.close();
 	}
 	
 	/**
