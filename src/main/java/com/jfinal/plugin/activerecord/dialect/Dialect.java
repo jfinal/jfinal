@@ -76,6 +76,44 @@ public abstract class Dialect {
 		return RecordBuilder.me.build(config, rs);
 	}
 	
+	/**
+	 * Get id after save method.
+	 */
+	public void getModelGeneratedKey(Model<?> model, PreparedStatement pst, Table table) throws SQLException {
+		String[] pKeys = table.getPrimaryKey();
+		ResultSet rs = pst.getGeneratedKeys();
+		for (String pKey : pKeys) {
+			if (model.get(pKey) == null || isOracle()) {
+				if (rs.next()) {
+					Class<?> colType = table.getColumnType(pKey);
+					if (colType == Integer.class || colType == int.class) {
+						model.set(pKey, rs.getInt(1));
+					} else if (colType == Long.class || colType == long.class) {
+						model.set(pKey, rs.getLong(1));
+					} else {
+						model.set(pKey, rs.getObject(1));		// It returns Long object for int colType
+					}
+				}
+			}
+		}
+		rs.close();
+	}
+	
+	/**
+	 * Get id after save record.
+	 */
+	public void getRecordGeneratedKey(PreparedStatement pst, Record record, String[] pKeys) throws SQLException {
+		ResultSet rs = pst.getGeneratedKeys();
+		for (String pKey : pKeys) {
+			if (record.get(pKey) == null || isOracle()) {
+				if (rs.next()) {
+					record.set(pKey, rs.getObject(1));
+				}
+			}
+		}
+		rs.close();
+	}
+	
 	public boolean isOracle() {
 		return false;
 	}
