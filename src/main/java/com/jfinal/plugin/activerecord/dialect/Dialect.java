@@ -99,6 +99,21 @@ public abstract class Dialect {
 		rs.close();
 	}
 	
+	/**
+	 * Get id after save record.
+	 */
+	public void getRecordGeneratedKey(PreparedStatement pst, Record record, String[] pKeys) throws SQLException {
+		ResultSet rs = pst.getGeneratedKeys();
+		for (String pKey : pKeys) {
+			if (record.get(pKey) == null || isOracle()) {
+				if (rs.next()) {
+					record.set(pKey, rs.getObject(1));
+				}
+			}
+		}
+		rs.close();
+	}
+	
 	public boolean isOracle() {
 		return false;
 	}

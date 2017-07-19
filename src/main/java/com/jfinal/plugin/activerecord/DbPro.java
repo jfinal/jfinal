@@ -580,28 +580,16 @@ public class DbPro {
 		config.dialect.forDbSave(tableName, pKeys, record, sql, paras);
 		
 		PreparedStatement pst;
-		if (config.dialect.isOracle())
+		if (config.dialect.isOracle()) {
 			pst = conn.prepareStatement(sql.toString(), pKeys);
-		else
+		} else {
 			pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
-			
+		}
 		config.dialect.fillStatement(pst, paras);
 		int result = pst.executeUpdate();
-		getGeneratedKey(pst, record, pKeys);
+		config.dialect.getRecordGeneratedKey(pst, record, pKeys);
 		DbKit.close(pst);
 		return result >= 1;
-	}
-	
-	/**
-	 * Get id after save record.
-	 */
-	private void getGeneratedKey(PreparedStatement pst, Record record, String[] pKeys) throws SQLException {
-		ResultSet rs = pst.getGeneratedKeys();
-		for (String pKey : pKeys)
-			if (record.get(pKey) == null || config.dialect.isOracle())
-				if (rs.next())
-					record.set(pKey, rs.getObject(1));
-		rs.close();
 	}
 	
 	/**
