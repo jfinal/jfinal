@@ -70,7 +70,7 @@ public class FileSource implements ISource {
 			throw new RuntimeException("File not found : " + finalFileName);
 		}
 		
-		// 极为重要，否则在模板文件被修改后会不断 reload 模板文件
+		// 极为重要，否则在开发模式下 isModified() 一直返回 true，缓存一直失效（原因是 lastModified 默认值为 0）
 		this.lastModified = file.lastModified();
 		
 		return loadFile(file, encoding);
