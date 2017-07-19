@@ -434,7 +434,7 @@ public abstract class Model<M extends Model> implements Serializable {
 			}
 			config.dialect.fillStatement(pst, paras);
 			result = pst.executeUpdate();
-			config.dialect.getModelGeneratedKey(this, pst, table, config);
+			config.dialect.getModelGeneratedKey(this, pst, table);
 			getModifyFlag().clear();
 			return result >= 1;
 		} catch (Exception e) {

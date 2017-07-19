@@ -79,11 +79,11 @@ public abstract class Dialect {
 	/**
 	 * Get id after save method.
 	 */
-	public void getModelGeneratedKey(Model<?> model, PreparedStatement pst, Table table, Config config) throws SQLException {
+	public void getModelGeneratedKey(Model<?> model, PreparedStatement pst, Table table) throws SQLException {
 		String[] pKeys = table.getPrimaryKey();
 		ResultSet rs = pst.getGeneratedKeys();
 		for (String pKey : pKeys) {
-			if (model.get(pKey) == null || config.getDialect().isOracle()) {
+			if (model.get(pKey) == null || isOracle()) {
 				if (rs.next()) {
 					Class<?> colType = table.getColumnType(pKey);
 					if (colType == Integer.class || colType == int.class) {
