@@ -202,14 +202,16 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Get attribute of mysql type: int, integer, tinyint(n) n > 1, smallint, mediumint
 	 */
 	public Integer getInt(String attr) {
-		return (Integer)attrs.get(attr);
+		Number n = (Number)attrs.get(attr);
+		return n != null ? n.intValue() : null;
 	}
 	
 	/**
 	 * Get attribute of mysql type: bigint, unsign int
 	 */
 	public Long getLong(String attr) {
-		return (Long)attrs.get(attr);
+		Number n = (Number)attrs.get(attr);
+		return n != null ? n.longValue() : null;
 	}
 	
 	/**
@@ -244,14 +246,21 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Get attribute of mysql type: real, double
 	 */
 	public Double getDouble(String attr) {
-		return (Double)attrs.get(attr);
+		Number n = (Number)attrs.get(attr);
+		return n != null ? n.doubleValue() : null;
 	}
 	
 	/**
 	 * Get attribute of mysql type: float
 	 */
 	public Float getFloat(String attr) {
-		return (Float)attrs.get(attr);
+		Number n = (Number)attrs.get(attr);
+		return n != null ? n.floatValue() : null;
+	}
+	
+	public Short getShort(String attr) {
+		Number n = (Number)attrs.get(attr);
+		return n != null ? n.shortValue() : null;
 	}
 	
 	/**
