@@ -174,35 +174,39 @@ public class DbPro {
 	}
 	
 	public Integer queryInt(String sql, Object... paras) {
-		return (Integer)queryColumn(sql, paras);
+		Number n = queryNumber(sql, paras);
+		return n != null ? n.intValue() : null;
 	}
 	
 	public Integer queryInt(String sql) {
-		return (Integer)queryColumn(sql, NULL_PARA_ARRAY);
+		return queryInt(sql, NULL_PARA_ARRAY);
 	}
 	
 	public Long queryLong(String sql, Object... paras) {
-		return (Long)queryColumn(sql, paras);
+		Number n = queryNumber(sql, paras);
+		return n != null ? n.longValue() : null;
 	}
 	
 	public Long queryLong(String sql) {
-		return (Long)queryColumn(sql, NULL_PARA_ARRAY);
+		return queryLong(sql, NULL_PARA_ARRAY);
 	}
 	
 	public Double queryDouble(String sql, Object... paras) {
-		return (Double)queryColumn(sql, paras);
+		Number n = queryNumber(sql, paras);
+		return n != null ? n.doubleValue() : null;
 	}
 	
 	public Double queryDouble(String sql) {
-		return (Double)queryColumn(sql, NULL_PARA_ARRAY);
+		return queryDouble(sql, NULL_PARA_ARRAY);
 	}
 	
 	public Float queryFloat(String sql, Object... paras) {
-		return (Float)queryColumn(sql, paras);
+		Number n = queryNumber(sql, paras);
+		return n != null ? n.floatValue() : null;
 	}
 	
 	public Float queryFloat(String sql) {
-		return (Float)queryColumn(sql, NULL_PARA_ARRAY);
+		return queryFloat(sql, NULL_PARA_ARRAY);
 	}
 	
 	public java.math.BigDecimal queryBigDecimal(String sql, Object... paras) {
@@ -254,11 +258,12 @@ public class DbPro {
 	}
 	
 	public Short queryShort(String sql, Object... paras) {
-		return (Short)queryColumn(sql, paras);
+		Number n = queryNumber(sql, paras);
+		return n != null ? n.shortValue() : null;
 	}
 	
 	public Short queryShort(String sql) {
-		return (Short)queryColumn(sql, NULL_PARA_ARRAY);
+		return queryShort(sql, NULL_PARA_ARRAY);
 	}
 	
 	public Number queryNumber(String sql, Object... paras) {
@@ -580,28 +585,16 @@ public class DbPro {
 		config.dialect.forDbSave(tableName, pKeys, record, sql, paras);
 		
 		PreparedStatement pst;
-		if (config.dialect.isOracle())
+		if (config.dialect.isOracle()) {
 			pst = conn.prepareStatement(sql.toString(), pKeys);
-		else
+		} else {
 			pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
-			
+		}
 		config.dialect.fillStatement(pst, paras);
 		int result = pst.executeUpdate();
-		getGeneratedKey(pst, record, pKeys);
+		config.dialect.getRecordGeneratedKey(pst, record, pKeys);
 		DbKit.close(pst);
 		return result >= 1;
-	}
-	
-	/**
-	 * Get id after save record.
-	 */
-	private void getGeneratedKey(PreparedStatement pst, Record record, String[] pKeys) throws SQLException {
-		ResultSet rs = pst.getGeneratedKeys();
-		for (String pKey : pKeys)
-			if (record.get(pKey) == null || config.dialect.isOracle())
-				if (rs.next())
-					record.set(pKey, rs.getObject(1));
-		rs.close();
 	}
 	
 	/**
