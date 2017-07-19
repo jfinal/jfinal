@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -203,14 +202,16 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Get attribute of mysql type: int, integer, tinyint(n) n > 1, smallint, mediumint
 	 */
 	public Integer getInt(String attr) {
-		return (Integer)attrs.get(attr);
+		Number n = (Number)attrs.get(attr);
+		return n != null ? n.intValue() : null;
 	}
 	
 	/**
 	 * Get attribute of mysql type: bigint, unsign int
 	 */
 	public Long getLong(String attr) {
-		return (Long)attrs.get(attr);
+		Number n = (Number)attrs.get(attr);
+		return n != null ? n.longValue() : null;
 	}
 	
 	/**
@@ -245,14 +246,21 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Get attribute of mysql type: real, double
 	 */
 	public Double getDouble(String attr) {
-		return (Double)attrs.get(attr);
+		Number n = (Number)attrs.get(attr);
+		return n != null ? n.doubleValue() : null;
 	}
 	
 	/**
 	 * Get attribute of mysql type: float
 	 */
 	public Float getFloat(String attr) {
-		return (Float)attrs.get(attr);
+		Number n = (Number)attrs.get(attr);
+		return n != null ? n.floatValue() : null;
+	}
+	
+	public Short getShort(String attr) {
+		Number n = (Number)attrs.get(attr);
+		return n != null ? n.shortValue() : null;
 	}
 	
 	/**
@@ -428,14 +436,14 @@ public abstract class Model<M extends Model> implements Serializable {
 		int result = 0;
 		try {
 			conn = config.getConnection();
-			if (config.dialect.isOracle())
+			if (config.dialect.isOracle()) {
 				pst = conn.prepareStatement(sql.toString(), table.getPrimaryKey());
-			else
+			} else {
 				pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
-			
+			}
 			config.dialect.fillStatement(pst, paras);
 			result = pst.executeUpdate();
-			getGeneratedKey(pst, table, config);
+			config.dialect.getModelGeneratedKey(this, pst, table);
 			getModifyFlag().clear();
 			return result >= 1;
 		} catch (Exception e) {
@@ -443,28 +451,6 @@ public abstract class Model<M extends Model> implements Serializable {
 		} finally {
 			config.close(pst, conn);
 		}
-	}
-	
-	/**
-	 * Get id after save method.
-	 */
-	private void getGeneratedKey(PreparedStatement pst, Table table, Config config) throws SQLException {
-		String[] pKeys = table.getPrimaryKey();
-		ResultSet rs = pst.getGeneratedKeys();
-		for (String pKey : pKeys) {
-			if (get(pKey) == null || config.dialect.isOracle()) {
-				if (rs.next()) {
-					Class colType = table.getColumnType(pKey);
-					if (colType == Integer.class || colType == int.class)
-						set(pKey, rs.getInt(1));
-					else if (colType == Long.class || colType == long.class)
-						set(pKey, rs.getLong(1));
-					else
-						set(pKey, rs.getObject(1));		// It returns Long object for int colType
-				}
-			}
-		}
-		rs.close();
 	}
 	
 	/**
