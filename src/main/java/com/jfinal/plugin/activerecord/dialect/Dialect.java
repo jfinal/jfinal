@@ -75,7 +75,7 @@ public abstract class Dialect {
 	public List<Record> buildRecordList(Config config, ResultSet rs) throws SQLException {
 		return RecordBuilder.me.build(config, rs);
 	}
-
+	
 	/**
 	 * Get id after save method.
 	 */
