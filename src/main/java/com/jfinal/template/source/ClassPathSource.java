@@ -35,14 +35,14 @@ import com.jfinal.template.EngineConfig;
  */
 public class ClassPathSource implements ISource {
 	
-	private String finalFileName;
-	private String fileName;
-	private String encoding;
+	protected String finalFileName;
+	protected String fileName;
+	protected String encoding;
 	
-	private boolean isInJar;
-	private long lastModified;
-	private ClassLoader classLoader;
-	private URL url;
+	protected boolean isInJar;
+	protected long lastModified;
+	protected ClassLoader classLoader;
+	protected URL url;
 	
 	public ClassPathSource(String fileName) {
 		this(null, fileName, EngineConfig.DEFAULT_ENCODING);
@@ -62,10 +62,10 @@ public class ClassPathSource implements ISource {
 			throw new IllegalArgumentException("File not found : \"" + finalFileName + "\"");
 		}
 		
-		processIsInJarAndLastModified();
+		processIsInJarAndlastModified();
 	}
 	
-	private void processIsInJarAndLastModified() {
+	protected void processIsInJarAndlastModified() {
 		try {
 			URLConnection conn = url.openConnection();
 			if ("jar".equals(url.getProtocol()) || conn instanceof JarURLConnection) {
@@ -80,12 +80,12 @@ public class ClassPathSource implements ISource {
 		}
 	}
 	
-	private ClassLoader getClassLoader() {
+	protected ClassLoader getClassLoader() {
 		ClassLoader ret = Thread.currentThread().getContextClassLoader();
 		return ret != null ? ret : getClass().getClassLoader();
 	}
 	
-	private String buildFinalFileName(String baseTemplatePath, String fileName) {
+	protected String buildFinalFileName(String baseTemplatePath, String fileName) {
 		String finalFileName;
 		if (baseTemplatePath != null) {
 			char firstChar = fileName.charAt(0);
@@ -113,7 +113,7 @@ public class ClassPathSource implements ISource {
 		return encoding;
 	}
 	
-	private long getLastModified() {
+	protected long getLastModified() {
 		try {
 			URLConnection conn = url.openConnection();
 			return conn.getLastModified();
@@ -130,8 +130,9 @@ public class ClassPathSource implements ISource {
 	}
 	
 	public StringBuilder getContent() {
-		// 如果模板文件不在 jar 包文件之中，则需要更新 lastModified 值，否则在模板文件被修改后会不断 reload 模板文件
-		if (!isInJar) {
+		// 与 FileSorce 不同，ClassPathSource 在构造方法中已经初始化了 lastModified
+		// 下面的代码可以去掉，在此仅为了避免继承类忘了在构造中初始化 lastModified 的防卫式代码
+		if (!isInJar) {		// 如果模板文件不在 jar 包文件之中，则需要更新 lastModified 值
 			lastModified = getLastModified();
 		}
 		
