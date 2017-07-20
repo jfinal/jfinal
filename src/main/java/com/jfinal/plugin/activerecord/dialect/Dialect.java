@@ -112,7 +112,7 @@ public abstract class Dialect {
 	 */
 	protected void processGeneratedBigIntegerKey(Model<?> model, String pKey, Object v) {
 		if (v instanceof BigInteger) {
-			model.set(pKey, v);
+			model.set(pKey, (BigInteger)v);
 		} else if (v instanceof Number) {
 			Number n = (Number)v;
 			model.set(pKey, BigInteger.valueOf(n.longValue()));
