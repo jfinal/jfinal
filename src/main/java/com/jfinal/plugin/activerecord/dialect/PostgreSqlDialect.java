@@ -222,12 +222,14 @@ public class PostgreSqlDialect extends Dialect {
 			if (model.get(pKey) == null || isOracle()) {
 				if (rs.next()) {
 					Class<?> colType = table.getColumnType(pKey);
-					if (colType == Integer.class || colType == int.class) {
-						model.set(pKey, rs.getInt(pKey));
-					} else if (colType == Long.class || colType == long.class) {
-						model.set(pKey, rs.getLong(pKey));
-					} else {
-						model.set(pKey, rs.getObject(pKey));
+					if (colType != null) {
+						if (colType == Integer.class || colType == int.class) {
+							model.set(pKey, rs.getInt(pKey));
+						} else if (colType == Long.class || colType == long.class) {
+							model.set(pKey, rs.getLong(pKey));
+						} else {
+							model.set(pKey, rs.getObject(pKey));
+						}
 					}
 				}
 			}

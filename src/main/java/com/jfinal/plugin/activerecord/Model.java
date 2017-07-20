@@ -195,7 +195,9 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Get attribute of mysql type: varchar, char, enum, set, text, tinytext, mediumtext, longtext
 	 */
 	public String getStr(String attr) {
-		return (String)attrs.get(attr);
+		// return (String)attrs.get(attr);
+		Object s = attrs.get(attr);
+		return s != null ? s.toString() : null;
 	}
 	
 	/**

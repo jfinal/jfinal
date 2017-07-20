@@ -166,11 +166,12 @@ public class DbPro {
 	}
 	
 	public String queryStr(String sql, Object... paras) {
-		return (String)queryColumn(sql, paras);
+		Object s = queryColumn(sql, paras);
+		return s != null ? s.toString() : null;
 	}
 	
 	public String queryStr(String sql) {
-		return (String)queryColumn(sql, NULL_PARA_ARRAY);
+		return queryStr(sql, NULL_PARA_ARRAY);
 	}
 	
 	public Integer queryInt(String sql, Object... paras) {

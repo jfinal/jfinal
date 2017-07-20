@@ -208,7 +208,9 @@ public class Record implements Serializable {
 	 * Get column of mysql type: varchar, char, enum, set, text, tinytext, mediumtext, longtext
 	 */
 	public String getStr(String column) {
-		return (String)getColumns().get(column);
+		// return (String)getColumns().get(column);
+		Object s = getColumns().get(column);
+		return s != null ? s.toString() : null;
 	}
 	
 	/**
