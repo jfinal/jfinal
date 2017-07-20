@@ -77,7 +77,8 @@ public abstract class Dialect {
 	}
 	
 	/**
-	 * Get id after save method.
+	 * 用于获取 Model.save() 以后自动生成的主键值，可通过覆盖此方法实现更精细的控制
+	 * 目前只有 PostgreSqlDialect，覆盖过此方法
 	 */
 	public void getModelGeneratedKey(Model<?> model, PreparedStatement pst, Table table) throws SQLException {
 		String[] pKeys = table.getPrimaryKey();
@@ -86,12 +87,14 @@ public abstract class Dialect {
 			if (model.get(pKey) == null || isOracle()) {
 				if (rs.next()) {
 					Class<?> colType = table.getColumnType(pKey);
-					if (colType == Integer.class || colType == int.class) {
-						model.set(pKey, rs.getInt(1));
-					} else if (colType == Long.class || colType == long.class) {
-						model.set(pKey, rs.getLong(1));
-					} else {
-						model.set(pKey, rs.getObject(1));		// It returns Long object for int colType
+					if (colType != null) {	// 支持没有主键的用法，有人将 model 改造成了支持无主键:济南-费小哥
+						if (colType == Integer.class || colType == int.class) {
+							model.set(pKey, rs.getInt(1));
+						} else if (colType == Long.class || colType == long.class) {
+							model.set(pKey, rs.getLong(1));
+						} else {
+							model.set(pKey, rs.getObject(1));	// It returns Long for int colType for mysql
+						}
 					}
 				}
 			}
@@ -100,14 +103,15 @@ public abstract class Dialect {
 	}
 	
 	/**
-	 * Get id after save record.
+	 * 用于获取 Db.save(tableName, record) 以后自动生成的主键值，可通过覆盖此方法实现更精细的控制
+	 * 目前只有 PostgreSqlDialect，覆盖过此方法
 	 */
 	public void getRecordGeneratedKey(PreparedStatement pst, Record record, String[] pKeys) throws SQLException {
 		ResultSet rs = pst.getGeneratedKeys();
 		for (String pKey : pKeys) {
 			if (record.get(pKey) == null || isOracle()) {
 				if (rs.next()) {
-					record.set(pKey, rs.getObject(1));
+					record.set(pKey, rs.getObject(1));	// It returns Long for int colType for mysql
 				}
 			}
 		}

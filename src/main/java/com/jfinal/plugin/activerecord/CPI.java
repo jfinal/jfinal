@@ -58,6 +58,10 @@ public abstract class CPI {
 		return record.getColumns();
 	} */
 	
+	public static void setColumnsMap(Record record, Map<String, Object> columns) {
+		record.setColumnsMap(columns);
+	}
+	
 	public static List<Record> find(Connection conn, String sql, Object... paras) throws SQLException {
 		return Db.find(DbKit.config, conn, sql, paras);
 	}

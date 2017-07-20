@@ -45,7 +45,7 @@ public class Record implements Serializable {
 		return this;
 	}
 	
-	// Only used by RecordBuilder
+	// 用于 RecordBuilder 中注入 Map。也可以通过调用 CPI.setColumnsMap(record, columns) 实现
 	void setColumnsMap(Map<String, Object> columns) {
 		this.columns = columns;
 	}
@@ -208,7 +208,9 @@ public class Record implements Serializable {
 	 * Get column of mysql type: varchar, char, enum, set, text, tinytext, mediumtext, longtext
 	 */
 	public String getStr(String column) {
-		return (String)getColumns().get(column);
+		// return (String)getColumns().get(column);
+		Object s = getColumns().get(column);
+		return s != null ? s.toString() : null;
 	}
 	
 	/**
