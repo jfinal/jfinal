@@ -28,10 +28,16 @@ import com.jfinal.template.EngineConfig;
 /**
  * ClassPathSource 用于从 class path 以及 jar 包之中加载模板内容
  * 
+ * <pre>
  * 注意：
  * 1：如果被加载的文件是 class path 中的普通文件，则该文件支持热加载
- * 2：如果被加载的文件处于 jar 包之中，则该文件不支持热加载
+ * 
+ * 2：如果被加载的文件处于 jar 包之中，则该文件不支持热加载，jar 包之中的文件在运行时通常不会被修改
+ *    在极少数情况下如果需要对 jar 包之中的模板文件进行热加载，可以通过继承 ClassPathSource
+ *    的方式进行扩展
+ * 
  * 3：JFinal Template Engine 开启热加载需要配置 engine.setDevMode(true)
+ * </pre>
  */
 public class ClassPathSource implements ISource {
 	
