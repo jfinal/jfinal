@@ -16,6 +16,7 @@
 
 package com.jfinal.plugin.activerecord.dialect;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -92,6 +93,8 @@ public abstract class Dialect {
 							model.set(pKey, rs.getInt(1));
 						} else if (colType == Long.class || colType == long.class) {
 							model.set(pKey, rs.getLong(1));
+						} else if (colType == BigInteger.class) {
+							processGeneratedBigIntegerKey(model, pKey, rs.getObject(1));
 						} else {
 							model.set(pKey, rs.getObject(1));	// It returns Long for int colType for mysql
 						}
@@ -100,6 +103,22 @@ public abstract class Dialect {
 			}
 		}
 		rs.close();
+	}
+	
+	/**
+	 * mysql 数据库的  bigint unsigned 对应的 java 类型为 BigInteger
+	 * 但是 rs.getObject(1) 返回值为 Long 型，造成 model.save() 以后
+	 * model.getId() 时的类型转换异常 
+	 */
+	protected void processGeneratedBigIntegerKey(Model<?> model, String pKey, Object v) {
+		if (v instanceof BigInteger) {
+			model.set(pKey, (BigInteger)v);
+		} else if (v instanceof Number) {
+			Number n = (Number)v;
+			model.set(pKey, BigInteger.valueOf(n.longValue()));
+		} else {
+			model.set(pKey, v);
+		}
 	}
 	
 	/**

@@ -16,6 +16,7 @@
 
 package com.jfinal.plugin.activerecord.dialect;
 
+import java.math.BigInteger;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -227,6 +228,8 @@ public class PostgreSqlDialect extends Dialect {
 							model.set(pKey, rs.getInt(pKey));
 						} else if (colType == Long.class || colType == long.class) {
 							model.set(pKey, rs.getLong(pKey));
+						} else if (colType == BigInteger.class) {
+							processGeneratedBigIntegerKey(model, pKey, rs.getObject(pKey));
 						} else {
 							model.set(pKey, rs.getObject(pKey));
 						}
