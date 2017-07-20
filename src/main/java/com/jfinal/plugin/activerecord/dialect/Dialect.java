@@ -86,12 +86,14 @@ public abstract class Dialect {
 			if (model.get(pKey) == null || isOracle()) {
 				if (rs.next()) {
 					Class<?> colType = table.getColumnType(pKey);
-					if (colType == Integer.class || colType == int.class) {
-						model.set(pKey, rs.getInt(1));
-					} else if (colType == Long.class || colType == long.class) {
-						model.set(pKey, rs.getLong(1));
-					} else {
-						model.set(pKey, rs.getObject(1));		// It returns Long object for int colType
+					if (colType != null) {	// 支持没有主键的用法，有人将 model 改造成了支持无主键:济南-费小哥
+						if (colType == Integer.class || colType == int.class) {
+							model.set(pKey, rs.getInt(1));
+						} else if (colType == Long.class || colType == long.class) {
+							model.set(pKey, rs.getLong(1));
+						} else {
+							model.set(pKey, rs.getObject(1));		// It returns Long object for int colType
+						}
 					}
 				}
 			}
