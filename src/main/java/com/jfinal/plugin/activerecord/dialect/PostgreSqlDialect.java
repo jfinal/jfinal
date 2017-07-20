@@ -213,7 +213,7 @@ public class PostgreSqlDialect extends Dialect {
 	 * 解决 PostgreSql 获取自增主键时 rs.getObject(1) 总是返回第一个字段的值，而非返回了 id 值
 	 * issue: https://www.oschina.net/question/2312705_2243354
 	 * 
-	 * 将 rs.getXxx(1) 改成了 rs.getXxx(pKey)
+	 * 相对于 Dialect 中的默认实现，仅将 rs.getXxx(1) 改成了 rs.getXxx(pKey)
 	 */
 	public void getModelGeneratedKey(Model<?> model, PreparedStatement pst, Table table) throws SQLException {
 		String[] pKeys = table.getPrimaryKey();
@@ -222,12 +222,14 @@ public class PostgreSqlDialect extends Dialect {
 			if (model.get(pKey) == null || isOracle()) {
 				if (rs.next()) {
 					Class<?> colType = table.getColumnType(pKey);
-					if (colType == Integer.class || colType == int.class) {
-						model.set(pKey, rs.getInt(pKey));
-					} else if (colType == Long.class || colType == long.class) {
-						model.set(pKey, rs.getLong(pKey));
-					} else {
-						model.set(pKey, rs.getObject(pKey));
+					if (colType != null) {
+						if (colType == Integer.class || colType == int.class) {
+							model.set(pKey, rs.getInt(pKey));
+						} else if (colType == Long.class || colType == long.class) {
+							model.set(pKey, rs.getLong(pKey));
+						} else {
+							model.set(pKey, rs.getObject(pKey));
+						}
 					}
 				}
 			}
@@ -239,7 +241,7 @@ public class PostgreSqlDialect extends Dialect {
 	 * 解决 PostgreSql 获取自增主键时 rs.getObject(1) 总是返回第一个字段的值，而非返回了 id 值
 	 * issue: https://www.oschina.net/question/2312705_2243354
 	 * 
-	 * 将 rs.getXxx(1) 改成了 rs.getXxx(pKey)
+	 * 相对于 Dialect 中的默认实现，仅将 rs.getXxx(1) 改成了 rs.getXxx(pKey)
 	 */
 	public void getRecordGeneratedKey(PreparedStatement pst, Record record, String[] pKeys) throws SQLException {
 		ResultSet rs = pst.getGeneratedKeys();
