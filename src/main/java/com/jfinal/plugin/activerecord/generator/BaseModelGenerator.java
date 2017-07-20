@@ -19,7 +19,9 @@ package com.jfinal.plugin.activerecord.generator;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import com.jfinal.kit.JavaKeyword;
 import com.jfinal.kit.StrKit;
 
@@ -57,7 +59,7 @@ public class BaseModelGenerator {
 	
 	protected String getterTemplate =
 			"\tpublic %s %s() {%n" +
-				"\t\treturn get(\"%s\");%n" +
+				"\t\treturn %s(\"%s\");%n" +
 			"\t}%n%n";
 	
 	protected String baseModelPackageName;
@@ -131,9 +133,31 @@ public class BaseModelGenerator {
 	
 	protected void genGetMethodName(ColumnMeta columnMeta, StringBuilder ret) {
 		String getterMethodName = "get" + StrKit.firstCharToUpperCase(columnMeta.attrName);
-		String getter = String.format(getterTemplate, columnMeta.javaType, getterMethodName, columnMeta.name);
+		String getterOfModel = getGetterOfModel(columnMeta.javaType);
+		String getter = String.format(getterTemplate, columnMeta.javaType, getterMethodName, getterOfModel, columnMeta.name);
 		ret.append(getter);
 	}
+	
+	/**
+	 * 针对 Model 中六种可以自动转换类型的 getter 方法，调用其具有确定类型返回值的 getter 方法
+	 * 享用自动类型转换的便利性，例如 getInt(String)、getStr(String)
+	 * 其它方法使用泛型返回值方法： get(String)
+	 * 注意：jfinal 3.2 及以上版本 Model 中的六种 getter 方法才具有类型转换功能
+	 */
+	protected String getGetterOfModel(String javaType) {
+		String ret = getterTypeMap.get(javaType);
+		return ret != null ? ret : "get";
+	}
+	
+	@SuppressWarnings("serial")
+	protected Map<String, String> getterTypeMap = new HashMap<String, String>() {{
+		put("java.lang.String", "getStr");
+		put("java.lang.Integer", "getInt");
+		put("java.lang.Long", "getLong");
+		put("java.lang.Double", "getDouble");
+		put("java.lang.Float", "getFloat");
+		put("java.lang.Short", "getShort");
+	}};
 	
 	protected void writeToFile(List<TableMeta> tableMetas) {
 		try {
