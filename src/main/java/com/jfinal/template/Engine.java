@@ -404,8 +404,8 @@ public class Engine {
 	 *    而 ClassPathSourceFactory 在以上默认值下不能工作，所以需要通过如下方式清掉该值：
 	 *       me.setBaseTemplatePath(null)
 	 *    
-	 *    或者配置上合理可用的 baseTemplatePath 值，例如在 Spring boot 中通常配置为：
-	 *       me.setBaseTemplatePath("templates");
+	 *    或者配置具体要用的 baseTemplatePath 值，例如：
+	 *       me.setBaseTemplatePath("view");
 	 * </pre>
 	 */
 	public Engine setSourceFactory(ISourceFactory sourceFactory) {
