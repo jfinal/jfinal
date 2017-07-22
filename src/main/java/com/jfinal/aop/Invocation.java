@@ -50,7 +50,7 @@ public class Invocation {
 		this.action = action;
 		this.inters = action.getInterceptors();
 		this.target = controller;
-		// this.args = action.getParameterGetter().get(controller);
+		this.args = action.getParameterGetter().get(controller);
 	}
 	
 	public Invocation(Object target, Method method, Object[] args, MethodProxy methodProxy, Interceptor[] inters) {
@@ -70,8 +70,6 @@ public class Invocation {
 			try {
 				// Invoke the action
 				if (action != null) {
-					// 延迟对 args 的获取，以便在拦截器中能让 inv.getController().setHttpServletRequest(...) 更好工作
-					args = action.getParameterGetter().get((Controller)target);
 					returnValue = action.getMethod().invoke(target, args);
 				}
 				// Invoke the method
