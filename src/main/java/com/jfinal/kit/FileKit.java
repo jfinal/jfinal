@@ -34,8 +34,8 @@ public class FileKit {
 						delete(files[i]);
 					}
 				}
+				file.delete();
 			}
-			file.delete();
 		}
 	}
 }
