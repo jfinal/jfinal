@@ -1158,7 +1158,7 @@ public class DbPro {
     	// the same as the iterator in Dialect.forModelSave() to ensure the order of the attrs
     	for (Entry<String, Object> e : attrs.entrySet()) {
     		String attr = e.getKey();
-    		if (config.dialect.isPrimaryKey(attr, pKeys) == false)
+    		if (config.dialect.isPrimaryKey(attr, pKeys) == false && table.hasColumnLabel(attr))
     			attrNames.add(attr);
     	}
     	for (String pKey : pKeys)

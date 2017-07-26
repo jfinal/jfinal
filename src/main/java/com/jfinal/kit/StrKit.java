@@ -79,7 +79,7 @@ public class StrKit {
 	}
 	
 	public static boolean notBlank(String... strings) {
-		if (strings == null) {
+		if (strings == null || strings.length == 0) {
 			return false;
 		}
 		for (String str : strings) {
