@@ -22,7 +22,7 @@ import com.jfinal.json.Json;
 
 /**
  * Kv ---> Key Value 
- * Kv 用于取代 JMap，前者输入量少，且输入更顺滑
+ * 注意：与 Ret 唯一的不同在于 stateLinkage 属性默认值为 false，而 Ret 为 true
  * 
  * 参数或者返回值封装，常用于业务层传参与返回值
  * 
@@ -39,8 +39,24 @@ import com.jfinal.json.Json;
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
 public class Kv extends HashMap {
 
-	private static final String STATUS_OK = "isOk";
-	private static final String STATUS_FAIL = "isFail";
+	private static final String STATE_OK = "isOk";
+	private static final String STATE_FAIL = "isFail";
+	
+	// 状态联动，与 Ret 不同，这里的默认值为 false
+	private static boolean stateLinkage = false;
+	
+	/**
+	 * 设置状态联动
+	 * <pre>
+	 * 1：设置为 true，则在 setOk() 与 setFail() 中，同时处理 isOk 与 isFail 两个状态
+	 * 2：设置为 false，则 setOk() 与 setFile() 只处理与其相关的一个状态
+	 * 3：设置为联动状态，有利于 javascript 中 if(isOk) 与 if(isFail) 的判断逻辑
+	 * 4：设置为非联动状态，有利于通信数据为 json 的 API 服务端项目，节省一个键值对的生成
+	 * </pre>
+	 */
+	public static void setStateLinkage(boolean stateLinkage) {
+		Kv.stateLinkage = stateLinkage;
+	}
 	
 	public Kv() {
 	}
@@ -70,24 +86,28 @@ public class Kv extends HashMap {
 	}
 	
 	public Kv setOk() {
-		super.put(STATUS_OK, Boolean.TRUE);
-		super.put(STATUS_FAIL, Boolean.FALSE);
+		super.put(STATE_OK, Boolean.TRUE);
+		if (stateLinkage) {
+			super.put(STATE_FAIL, Boolean.FALSE);
+		}
 		return this;
 	}
 	
 	public Kv setFail() {
-		super.put(STATUS_OK, Boolean.FALSE);
-		super.put(STATUS_FAIL, Boolean.TRUE);
+		super.put(STATE_FAIL, Boolean.TRUE);
+		if (stateLinkage) {
+			super.put(STATE_OK, Boolean.FALSE);
+		}
 		return this;
 	}
 	
 	public boolean isOk() {
-		Boolean isOk = (Boolean)get(STATUS_OK);
+		Boolean isOk = (Boolean)get(STATE_OK);
 		return isOk != null && isOk;
 	}
 	
 	public boolean isFail() {
-		Boolean isFail = (Boolean)get(STATUS_FAIL);
+		Boolean isFail = (Boolean)get(STATE_FAIL);
 		return isFail != null && isFail;
 	}
 	
