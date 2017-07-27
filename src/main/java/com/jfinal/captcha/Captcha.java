@@ -16,10 +16,13 @@
 
 package com.jfinal.captcha;
 
+import java.io.Serializable;
+
 /**
  * 验证码
  */
-public class Captcha {
+@SuppressWarnings("unchecked")
+public class Captcha implements Serializable {
 	
 	/**
 	 * 验证码默认过期时长 180 秒
@@ -61,6 +64,10 @@ public class Captcha {
 		this(key, value, DEFAULT_EXPIRE_TIME);
 	}
 	
+	public Captcha() {
+
+	}
+
 	public String getKey() {
 		return key;
 	}
