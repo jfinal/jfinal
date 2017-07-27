@@ -41,8 +41,14 @@ import com.jfinal.json.Json;
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
 public class Okv extends LinkedHashMap {
 
-	private static final String STATUS_OK = "isOk";
-	private static final String STATUS_FAIL = "isFail";
+	private static final String STATE_OK = "isOk";
+	private static final String STATE_FAIL = "isFail";
+	
+	private static boolean stateLinkage = false;
+	
+	public static void setStateLinkage(boolean stateLinkage) {
+		Okv.stateLinkage = stateLinkage;
+	}
 	
 	public Okv() {
 	}
@@ -72,24 +78,28 @@ public class Okv extends LinkedHashMap {
 	}
 	
 	public Okv setOk() {
-		super.put(STATUS_OK, Boolean.TRUE);
-		super.put(STATUS_FAIL, Boolean.FALSE);
+		super.put(STATE_OK, Boolean.TRUE);
+		if (stateLinkage) {
+			super.put(STATE_FAIL, Boolean.FALSE);
+		}
 		return this;
 	}
 	
 	public Okv setFail() {
-		super.put(STATUS_OK, Boolean.FALSE);
-		super.put(STATUS_FAIL, Boolean.TRUE);
+		super.put(STATE_FAIL, Boolean.TRUE);
+		if (stateLinkage) {
+			super.put(STATE_OK, Boolean.FALSE);
+		}
 		return this;
 	}
 	
 	public boolean isOk() {
-		Boolean isOk = (Boolean)get(STATUS_OK);
+		Boolean isOk = (Boolean)get(STATE_OK);
 		return isOk != null && isOk;
 	}
 	
 	public boolean isFail() {
-		Boolean isFail = (Boolean)get(STATUS_FAIL);
+		Boolean isFail = (Boolean)get(STATE_FAIL);
 		return isFail != null && isFail;
 	}
 	
