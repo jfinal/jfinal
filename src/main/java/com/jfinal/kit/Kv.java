@@ -22,7 +22,7 @@ import com.jfinal.json.Json;
 
 /**
  * Kv ---> Key Value 
- * 注意：与 Ret 唯一的不同在于 stateLinkage 属性默认值为 false，而 Ret 为 true
+ * Kv 用于取代 JMap，前者输入量少，且输入更顺滑
  * 
  * 参数或者返回值封装，常用于业务层传参与返回值
  * 
