@@ -44,8 +44,18 @@ public class Okv extends LinkedHashMap {
 	private static final String STATE_OK = "isOk";
 	private static final String STATE_FAIL = "isFail";
 	
+	// 状态联动，与 Ret 不同，这里的默认值为 false
 	private static boolean stateLinkage = false;
 	
+	/**
+	 * 设置状态联动
+	 * <pre>
+	 * 1：设置为 true，则在 setOk() 与 setFail() 中，同时处理 isOk 与 isFail 两个状态
+	 * 2：设置为 false，则 setOk() 与 setFile() 只处理与其相关的一个状态
+	 * 3：设置为联动状态，有利于 javascript 中 if(isOk) 与 if(isFail) 的判断逻辑
+	 * 4：设置为非联动状态，有利于通信数据为 json 的 API 服务端项目，节省一个键值对的生成
+	 * </pre>
+	 */
 	public static void setStateLinkage(boolean stateLinkage) {
 		Okv.stateLinkage = stateLinkage;
 	}
