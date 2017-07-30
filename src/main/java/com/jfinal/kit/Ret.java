@@ -25,22 +25,22 @@ import com.jfinal.json.Json;
  */
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
 public class Ret extends HashMap {
-
-	private static final String STATE_OK = "isOk";
-	private static final String STATE_FAIL = "isFail";
 	
-	// 状态联动
-	private static boolean stateLinkage = false;
+	private static final String STATE = "state";
+	private static final String STATE_OK = "ok";
+	private static final String STATE_FAIL = "fail";
+	
+	private static final String OLD_STATE_OK = "isOk";
+	private static final String OLD_STATE_FAIL = "isFail";
+	
+	// 默认为新工作模式
+	private static boolean newWorkMode = true;
 	
 	/**
-	 * 设置状态联动
-	 * <pre>
-	 * 1：设置为 true，则在 setOk() 与 setFail() 中，同时处理 isOk 与 isFail 两个状态
-	 * 2：设置为 false，则 setOk() 与 setFile() 只处理与其相关的一个状态
-	 * </pre>
+	 * 设置为旧工作模式，为了兼容 jfinal 3.2 之前的版本，在 jfinal 4.x 版本之后会移除对旧工作模式的支持
 	 */
-	public static void setStateLinkage(boolean stateLinkage) {
-		Ret.stateLinkage = stateLinkage;
+	public static void setToOldWorkMode() {
+		newWorkMode = false;
 	}
 	
 	public Ret() {
@@ -75,29 +75,69 @@ public class Ret extends HashMap {
 	}
 	
 	public Ret setOk() {
-		super.put(STATE_OK, Boolean.TRUE);
-		if (stateLinkage) {
-			super.put(STATE_FAIL, Boolean.FALSE);
+		if (newWorkMode) {
+			super.put(STATE, STATE_OK);
+		} else {
+			super.put(OLD_STATE_OK, Boolean.TRUE);
+			super.put(OLD_STATE_FAIL, Boolean.FALSE);
 		}
 		return this;
 	}
 	
 	public Ret setFail() {
-		super.put(STATE_FAIL, Boolean.TRUE);
-		if (stateLinkage) {
-			super.put(STATE_OK, Boolean.FALSE);
+		if (newWorkMode) {
+			super.put(STATE, STATE_FAIL);
+		} else {
+			super.put(OLD_STATE_FAIL, Boolean.TRUE);
+			super.put(OLD_STATE_OK, Boolean.FALSE);
 		}
 		return this;
 	}
 	
 	public boolean isOk() {
-		Boolean isOk = (Boolean)get(STATE_OK);
-		return isOk != null && isOk;
+		if (newWorkMode) {
+			Object state = get(STATE);
+			if (STATE_OK.equals(state)) {
+				return true;
+			}
+			if (STATE_FAIL.equals(state)) {
+				return false;
+			}
+		} else {
+			Boolean isOk = (Boolean)get(OLD_STATE_OK);
+			if (isOk != null) {
+				return isOk;
+			}
+			Boolean isFail = (Boolean)get(OLD_STATE_FAIL);
+			if (isFail != null) {
+				return !isFail;
+			}
+		}
+		
+		throw new IllegalStateException("调用 isOk() 之前，必须先调用 ok()、fail() 或者 setOk()、setFail() 方法");
 	}
 	
 	public boolean isFail() {
-		Boolean isFail = (Boolean)get(STATE_FAIL);
-		return isFail != null && isFail;
+		if (newWorkMode) {
+			Object state = get(STATE);
+			if (STATE_FAIL.equals(state)) {
+				return true;
+			}
+			if (STATE_OK.equals(state)) {
+				return false;
+			}
+		} else {
+			Boolean isFail = (Boolean)get(OLD_STATE_FAIL);
+			if (isFail != null) {
+				return isFail;
+			}
+			Boolean isOk = (Boolean)get(OLD_STATE_OK);
+			if (isOk != null) {
+				return !isOk;
+			}
+		}
+		
+		throw new IllegalStateException("调用 isFail() 之前，必须先调用 ok()、fail() 或者 setOk()、setFail() 方法");
 	}
 	
 	public Ret set(Object key, Object value) {
@@ -125,17 +165,24 @@ public class Ret extends HashMap {
 	}
 	
 	public String getStr(Object key) {
-		return (String)get(key);
+		Object s = get(key);
+		return s != null ? s.toString() : null;
 	}
-
+	
 	public Integer getInt(Object key) {
-		return (Integer)get(key);
+		Number n = (Number)get(key);
+		return n != null ? n.intValue() : null;
 	}
-
+	
 	public Long getLong(Object key) {
-		return (Long)get(key);
+		Number n = (Number)get(key);
+		return n != null ? n.longValue() : null;
 	}
-
+	
+	public Number getNumber(Object key) {
+		return (Number)get(key);
+	}
+	
 	public Boolean getBoolean(Object key) {
 		return (Boolean)get(key);
 	}
