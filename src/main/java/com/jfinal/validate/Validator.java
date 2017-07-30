@@ -44,6 +44,12 @@ public abstract class Validator implements Interceptor {
 	protected static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
 	protected static final String emailAddressPattern = "\\b(^['_A-Za-z0-9-]+(\\.['_A-Za-z0-9-]+)*@([A-Za-z0-9-])+(\\.[A-Za-z0-9-]+)*((\\.[A-Za-z0-9]{2,})|(\\.[A-Za-z0-9]{2,}\\.[A-Za-z0-9]{2,}))$)\\b";
 	
+	/**
+	 * 设置短路验证. 默认值为 false
+	 * 短路验证是指在验证过程中，只要碰到验证失败则立即停止后续验证并返回
+	 * 非短路验证是指验证操作一直持续到结束，无论中途有没有碰到验证失败
+	 * @param shortCircuit true 表示短路型验证
+	 */
 	protected void setShortCircuit(boolean shortCircuit) {
 		this.shortCircuit = shortCircuit;
 	}
