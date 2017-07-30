@@ -38,4 +38,20 @@ public class FileKit {
 			}
 		}
 	}
+	
+	public static String getFileExtension(String fileFullName) {
+	    if (StrKit.isBlank(fileFullName)) {
+            throw new RuntimeException("fileFullName is empty");
+        }
+	    return  getFileExtension(new File(fileFullName));
+	}
+	
+	public static String getFileExtension(File file) {
+	    if (null == file) {
+	        throw new NullPointerException();
+	    }
+	    String fileName = file.getName();
+	    int dotIdx = fileName.lastIndexOf('.');
+	    return (dotIdx == -1) ? "" : fileName.substring(dotIdx + 1);
+    }
 }

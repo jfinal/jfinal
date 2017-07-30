@@ -21,42 +21,17 @@ import java.util.Map;
 import com.jfinal.json.Json;
 
 /**
- * Okv ---> Ordered Key Value 
+ * Okv (Ordered Key Value) 
  * 
  * Okv 与 Kv 的唯一区别在于 Okv 继承自 LinkedHashMap，而 Kv 继承自 HashMap
  * 所以对 Okv 中的数据进行迭代输出的次序与数据插入的先后次序一致
  * 
- * 参数或者返回值封装，常用于业务层传参与返回值
- * 
  * Example：
- * 1：Okv para = Okv.by("id", 123);
+ *    Okv para = Okv.by("id", 123);
  *    User user = user.findFirst(getSqlPara("find", para));
- * 
- * 2：return Okv.fail("msg", "用户名或密码错误");	// 登录失败返回
- *   return Okv.ok("loginUser", user);			// 登录成功返回
- * 
- * 3：Okv okv = loginService.login(...);
- *   renderJson(okv);
  */
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
 public class Okv extends LinkedHashMap {
-
-	private static final String STATE_OK = "isOk";
-	private static final String STATE_FAIL = "isFail";
-	
-	// 状态联动，与 Ret 不同，这里的默认值为 false
-	private static boolean stateLinkage = false;
-	
-	/**
-	 * 设置状态联动
-	 * <pre>
-	 * 1：设置为 true，则在 setOk() 与 setFail() 中，同时处理 isOk 与 isFail 两个状态
-	 * 2：设置为 false，则 setOk() 与 setFile() 只处理与其相关的一个状态
-	 * </pre>
-	 */
-	public static void setStateLinkage(boolean stateLinkage) {
-		Okv.stateLinkage = stateLinkage;
-	}
 	
 	public Okv() {
 	}
@@ -67,48 +42,6 @@ public class Okv extends LinkedHashMap {
 	
 	public static Okv create() {
 		return new Okv();
-	}
-	
-	public static Okv ok() {
-		return new Okv().setOk();
-	}
-	
-	public static Okv ok(Object key, Object value) {
-		return ok().set(key, value);
-	}
-	
-	public static Okv fail() {
-		return new Okv().setFail();
-	}
-	
-	public static Okv fail(Object key, Object value) {
-		return fail().set(key, value);
-	}
-	
-	public Okv setOk() {
-		super.put(STATE_OK, Boolean.TRUE);
-		if (stateLinkage) {
-			super.put(STATE_FAIL, Boolean.FALSE);
-		}
-		return this;
-	}
-	
-	public Okv setFail() {
-		super.put(STATE_FAIL, Boolean.TRUE);
-		if (stateLinkage) {
-			super.put(STATE_OK, Boolean.FALSE);
-		}
-		return this;
-	}
-	
-	public boolean isOk() {
-		Boolean isOk = (Boolean)get(STATE_OK);
-		return isOk != null && isOk;
-	}
-	
-	public boolean isFail() {
-		Boolean isFail = (Boolean)get(STATE_FAIL);
-		return isFail != null && isFail;
 	}
 	
 	public Okv set(Object key, Object value) {
@@ -136,17 +69,24 @@ public class Okv extends LinkedHashMap {
 	}
 	
 	public String getStr(Object key) {
-		return (String)get(key);
+		Object s = get(key);
+		return s != null ? s.toString() : null;
 	}
-
+	
 	public Integer getInt(Object key) {
-		return (Integer)get(key);
+		Number n = (Number)get(key);
+		return n != null ? n.intValue() : null;
 	}
-
+	
 	public Long getLong(Object key) {
-		return (Long)get(key);
+		Number n = (Number)get(key);
+		return n != null ? n.longValue() : null;
 	}
-
+	
+	public Number getNumber(Object key) {
+		return (Number)get(key);
+	}
+	
 	public Boolean getBoolean(Object key) {
 		return (Boolean)get(key);
 	}
