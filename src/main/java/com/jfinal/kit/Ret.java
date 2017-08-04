@@ -21,7 +21,51 @@ import java.util.Map;
 import com.jfinal.json.Json;
 
 /**
- * 返回值封装，常用于业务层需要多个返回值
+ * Ret 用于返回值封装，也用于服务端与客户端的 json 数据通信
+ * 
+ * <pre>
+ * 一、主要应用场景：
+ * 1：业务层需要返回多个返回值，例如要返回业务状态以及数据
+ * 2：renderJson(ret) 响应 json 数据给客户端
+ * 
+ * 二、两种工作模式：
+ * 1：默认情况下即为新工作模式，当调用 ok()、fail()、setOk()、setFail() 方法之后
+ *    Ret 生成的 json 数据的状态属性为：state:ok 以及 state:fail
+ * 
+ * 2：通过调用 Ret.setToOldWorkMode() 可以切换到旧工作模式，与新工作模式的不同在于
+ *    Ret 生成的 json 数据的状态属性为：isOk:true/false 以及 isFail:true/false
+ * 
+ * 3：旧工作模式为了兼容 JFinal 3.2 之前的版本而保留，强烈建议使用新工作模式
+ *    新工作模式非常有利于使用 json 数据格式的 API 类型项目
+ * 
+ * 三、实例
+ * 1：服务端
+ *    Ret ret = service.justDoIt(paras);
+ *    renderJson(ret);
+ * 
+ * 2：javascript 客户端 ajax 回调函数通常这么用：
+ *    success: function(ret) {
+ *       if(ret.state == "ok") {
+ *       	...
+ *       }
+ *       
+ *       if (ret.state == "fail") {
+ *       	...
+ *       }
+ *    }
+ *  
+ * 3：普通应用程序通常这么用：
+ *   String json = HttpKit.readData(getRequest());
+ *   Ret ret = FastJson.getJson().parse(json, Ret.class);
+ *   if (ret.isOk()) {
+ *   	...
+ *   }
+ *   
+ *   if (ret.isFail()) {
+ *   	...
+ *   }
+ *   
+ * </pre>
  */
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
 public class Ret extends HashMap {
@@ -30,6 +74,7 @@ public class Ret extends HashMap {
 	private static final String STATE_OK = "ok";
 	private static final String STATE_FAIL = "fail";
 	
+	// 以下为旧工作模式下的常量名
 	private static final String OLD_STATE_OK = "isOk";
 	private static final String OLD_STATE_FAIL = "isFail";
 	
@@ -37,7 +82,7 @@ public class Ret extends HashMap {
 	private static boolean newWorkMode = true;
 	
 	/**
-	 * 设置为旧工作模式，为了兼容 jfinal 3.2 之前的版本，在 jfinal 4.x 版本之后会移除对旧工作模式的支持
+	 * 设置为旧工作模式，为了兼容 jfinal 3.2 之前的版本
 	 */
 	public static void setToOldWorkMode() {
 		newWorkMode = false;
