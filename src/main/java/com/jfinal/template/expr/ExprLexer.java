@@ -329,7 +329,7 @@ class ExprLexer {
 				radix = 16;						// 16 进制
 				c = next();
 				numStart = numStart + 2;
-			} else {
+			} else if (c != '.') {
 				radix = 8;						// 8 进制
 				// numStart = numStart + 1;		// 8 进制不用去掉前缀 0，可被正确转换，去除此行便于正确处理数字 0
 			}
