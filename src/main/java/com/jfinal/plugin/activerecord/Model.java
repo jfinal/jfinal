@@ -921,9 +921,12 @@ public abstract class Model<M extends Model> implements Serializable {
 		return com.jfinal.kit.JsonKit.toJson(attrs);
 	}
 	
-	private Class<? extends Model> getUsefulClass() {
+	protected Class<? extends Model> getUsefulClass() {
 		Class c = getClass();
-		return c.getName().indexOf("EnhancerByCGLIB") == -1 ? c : c.getSuperclass();	// com.demo.blog.Blog$$EnhancerByCGLIB$$69a17158
+		// guice : Model$$EnhancerByGuice$$40471411
+		// cglib : com.demo.blog.Blog$$EnhancerByCGLIB$$69a17158
+		// return c.getName().indexOf("EnhancerByCGLIB") == -1 ? c : c.getSuperclass();
+		return c.getName().indexOf("$$EnhancerBy") == -1 ? c : c.getSuperclass();
 	}
 	
 	/**
