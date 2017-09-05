@@ -71,7 +71,6 @@
 			<version>8.1.8.v20121106</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- cos -->
 		<dependency>
 			<groupId>com.mchange</groupId>
 			<artifactId>c3p0</artifactId>
@@ -126,6 +125,7 @@
 			<version>2.0</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- cos -->
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>cos</artifactId>
@@ -154,7 +154,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.20</version>
+			<version>5.1.44</version>
 			<scope>provided</scope>
 		</dependency>
 		-->
