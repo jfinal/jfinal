@@ -103,10 +103,14 @@ class JettyServer implements IServer {
 		persistSession(webApp);
 		
 		server.setHandler(webApp);
-		changeClassLoader(webApp);
 		
 		// configureScanner
 		if (scanIntervalSeconds > 0) {
+		    //fix jetty cannot access its superclass sun.reflect.ConstructorAccessorImpl errors
+		    webApp.setParentLoaderPriority(true);
+		    //only need to change classloader when scanIntervalSeconds > 0
+            changeClassLoader(webApp);
+            
 			Scanner scanner = new Scanner(PathKit.getRootClassPath(), scanIntervalSeconds) {
 				public void onChange() {
 					try {
