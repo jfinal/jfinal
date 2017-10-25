@@ -106,8 +106,6 @@ class JettyServer implements IServer {
 		
 		// configureScanner
 		if (scanIntervalSeconds > 0) {
-		    //fix jetty cannot access its superclass sun.reflect.ConstructorAccessorImpl errors
-		    webApp.setParentLoaderPriority(true);
 		    //only need to change classloader when scanIntervalSeconds > 0
             changeClassLoader(webApp);
             
