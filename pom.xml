@@ -196,7 +196,7 @@
 					<!-- **/* 写法，可以将各级子目录下的资源文件被打包 -->
 					<include>**/*.jf</include>
 				</includes>
-				<filtering>true</filtering>
+				<filtering>false</filtering>
 			</resource>
 		</resources>
 		
