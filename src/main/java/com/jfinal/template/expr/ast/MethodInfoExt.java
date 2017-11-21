@@ -26,7 +26,7 @@ public class MethodInfoExt extends MethodInfo {
 	
 	protected Object objectOfExtensionClass;
 	
-	public MethodInfoExt(Object objectOfExtensionClass, String key, Class<?> clazz, Method method) {
+	public MethodInfoExt(Object objectOfExtensionClass, Long key, Class<?> clazz, Method method) {
 		super(key, clazz, method);
 		this.objectOfExtensionClass = objectOfExtensionClass;
 		

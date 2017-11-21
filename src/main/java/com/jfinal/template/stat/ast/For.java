@@ -16,12 +16,12 @@
 
 package com.jfinal.template.stat.ast;
 
-import java.io.Writer;
 import java.util.Iterator;
 import com.jfinal.template.Env;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ForCtrl;
 import com.jfinal.template.expr.ast.Logic;
+import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.Ctrl;
 import com.jfinal.template.stat.Scope;
 
@@ -38,12 +38,12 @@ import com.jfinal.template.stat.Scope;
 public class For extends Stat {
 	
 	private ForCtrl forCtrl;
-	private StatList statList;
+	private Stat stat;
 	private Stat _else;
 	
 	public For(ForCtrl forCtrl, StatList statList, Stat _else) {
 		this.forCtrl = forCtrl;
-		this.statList = statList;
+		this.stat = statList.getActualStat();
 		this._else = _else;
 	}
 	
@@ -71,7 +71,7 @@ public class For extends Stat {
 		String itemName = forCtrl.getId();
 		while(it.hasNext()) {
 			scope.setLocal(itemName, it.next());
-			statList.exec(env, scope, writer);
+			stat.exec(env, scope, writer);
 			forIteratorStatus.nextState();
 			
 			if (ctrl.isJump()) {
@@ -108,7 +108,7 @@ public class For extends Stat {
 		ctrl.setLocalAssignment();
 		for (init.eval(scope); cond == null || Logic.isTrue(cond.eval(scope)); update.eval(scope)) {
 			ctrl.setWisdomAssignment();
-			statList.exec(env, scope, writer);
+			stat.exec(env, scope, writer);
 			ctrl.setLocalAssignment();
 			forLoopStatus.nextState();
 			

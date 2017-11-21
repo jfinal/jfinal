@@ -26,7 +26,9 @@ import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.SharedMethodKit;
 import com.jfinal.template.ext.directive.*;
-import com.jfinal.template.ext.sharedmethod.Json;
+import com.jfinal.template.ext.sharedmethod.SharedMethodLib;
+import com.jfinal.template.io.EncoderFactory;
+import com.jfinal.template.io.WriterBuffer;
 import com.jfinal.template.source.FileSource;
 import com.jfinal.template.source.FileSourceFactory;
 import com.jfinal.template.source.ISource;
@@ -36,7 +38,6 @@ import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Define;
 import com.jfinal.template.stat.ast.Output;
-import com.jfinal.template.stat.ast.Stat;
 
 /**
  * EngineConfig
@@ -45,6 +46,8 @@ public class EngineConfig {
 	
 	public static final String DEFAULT_ENCODING = "UTF-8";
 	
+	WriterBuffer writerBuffer = new WriterBuffer();
+	
 	private Map<String, Define> sharedFunctionMap = new HashMap<String, Define>();
 	private List<ISource> sharedFunctionSourceList = new ArrayList<ISource>();		// for devMode only
 	
@@ -52,7 +55,7 @@ public class EngineConfig {
 	
 	private IOutputDirectiveFactory outputDirectiveFactory = OutputDirectiveFactory.me;
 	private ISourceFactory sourceFactory = new FileSourceFactory();
-	private Map<String, Stat> directiveMap = new HashMap<String, Stat>();
+	private Map<String, Class<? extends Directive>> directiveMap = new HashMap<String, Class<? extends Directive>>();
 	private SharedMethodKit sharedMethodKit = new SharedMethodKit();
 	
 	private boolean devMode = false;
@@ -63,14 +66,16 @@ public class EngineConfig {
 	
 	public EngineConfig() {
 		// Add official directive of Template Engine
-		addDirective("render", new RenderDirective());
-		addDirective("date", new DateDirective());
-		addDirective("escape", new EscapeDirective());
-		addDirective("string", new StringDirective());
-		addDirective("random", new RandomDirective());
+		addDirective("render", RenderDirective.class);
+		addDirective("date", DateDirective.class);
+		addDirective("escape", EscapeDirective.class);
+		addDirective("string", StringDirective.class);
+		addDirective("random", RandomDirective.class);
+		addDirective("number", NumberDirective.class);
 		
 		// Add official shared method of Template Engine
-		addSharedMethod(new Json());
+		// addSharedMethod(new Json());
+		addSharedMethod(new SharedMethodLib());
 	}
 	
 	/**
@@ -268,6 +273,17 @@ public class EngineConfig {
 			throw new IllegalArgumentException("encoding can not be blank");
 		}
 		this.encoding = encoding;
+		
+		writerBuffer.setEncoding(encoding);		// 间接设置 EncoderFactory.encoding
+	}
+	
+	public void setEncoderFactory(EncoderFactory encoderFactory) {
+		writerBuffer.setEncoderFactory(encoderFactory);
+		writerBuffer.setEncoding(encoding);		// 间接设置 EncoderFactory.encoding
+	}
+	
+	public void setWriterBufferSize(int bufferSize) {
+		writerBuffer.setBufferSize(bufferSize);
 	}
 	
 	public String getEncoding() {
@@ -289,20 +305,25 @@ public class EngineConfig {
 		this.reloadModifiedSharedFunctionInDevMode = reloadModifiedSharedFunctionInDevMode;
 	}
 	
-	public synchronized void addDirective(String directiveName, Directive directive) {
+	@Deprecated
+	public void addDirective(String directiveName, Directive directive) {
+		addDirective(directiveName, directive.getClass());
+	}
+	
+	public synchronized void addDirective(String directiveName, Class<? extends Directive> directiveClass) {
 		if (StrKit.isBlank(directiveName)) {
 			throw new IllegalArgumentException("directive name can not be blank");
 		}
-		if (directive == null) {
-			throw new IllegalArgumentException("directive can not be null");
+		if (directiveClass == null) {
+			throw new IllegalArgumentException("directiveClass can not be null");
 		}
 		if (directiveMap.containsKey(directiveName)) {
 			throw new IllegalArgumentException("directive already exists : " + directiveName);
 		}
-		directiveMap.put(directiveName, directive);
+		directiveMap.put(directiveName, directiveClass);
 	}
 	
-	public Stat getDirective(String directiveName) {
+	public Class<? extends Directive> getDirective(String directiveName) {
 		return directiveMap.get(directiveName);
 	}
 	

@@ -16,7 +16,6 @@
 
 package com.jfinal.plugin.activerecord.sql;
 
-import java.io.Writer;
 import java.util.Map;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.Directive;
@@ -25,6 +24,7 @@ import com.jfinal.template.Template;
 import com.jfinal.template.expr.ast.Const;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
+import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.ParseException;
 import com.jfinal.template.stat.Scope;
 

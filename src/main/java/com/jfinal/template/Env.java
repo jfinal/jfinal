@@ -48,6 +48,10 @@ public class Env {
 		return engineConfig;
 	}
 	
+	public boolean isDevMode() {
+		return engineConfig.isDevMode();
+	}
+	
 	/**
 	 * Add template function
 	 */

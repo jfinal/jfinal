@@ -21,10 +21,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import com.jfinal.kit.HashKit;
 import com.jfinal.kit.ReflectKit;
 
 /**
@@ -32,27 +33,27 @@ import com.jfinal.kit.ReflectKit;
  */
 public class SharedMethodKit {
 	
-	private static final Set<String> excludedMethodKey = new HashSet<String>();
+	private static final Set<Long> excludedMethodKey = new HashSet<Long>();
 	
 	static {
 		Method[] methods = Object.class.getMethods();
 		for (Method method : methods) {
-			String key = getSharedMethodKey(method.getName(), method.getParameterTypes());
+			Long key = getSharedMethodKey(method.getName(), method.getParameterTypes());
 			excludedMethodKey.add(key);
 		}
 	}
 	
 	private final List<SharedMethodInfo> sharedMethodList = new ArrayList<SharedMethodInfo>();
-	private final ConcurrentHashMap<String, SharedMethodInfo> methodCache = new ConcurrentHashMap<String, SharedMethodInfo>();
+	private final HashMap<Long, SharedMethodInfo> methodCache = new HashMap<Long, SharedMethodInfo>();
 	
 	public SharedMethodInfo getSharedMethodInfo(String methodName, Object[] argValues) {
 		Class<?>[] argTypes = MethodKit.getArgTypes(argValues);
-		String key = getSharedMethodKey(methodName, argTypes);
+		Long key = getSharedMethodKey(methodName, argTypes);
 		SharedMethodInfo method = methodCache.get(key);
 		if (method == null) {
 			method = doGetSharedMethodInfo(methodName, argTypes);
 			if (method != null) {
-				methodCache.putIfAbsent(key, method);
+				methodCache.put(key, method);
 			}
 			// shared method 不支持 null safe，不缓存: methodCache.put(key, Boolean.FALSE)
 		}
@@ -110,7 +111,7 @@ public class SharedMethodKit {
 			SharedMethodInfo current = it.next();
 			String methodName = method.getName();
 			if (current.getName().equals(methodName)) {
-				String key = getSharedMethodKey(methodName, method.getParameterTypes());
+				Long key = getSharedMethodKey(methodName, method.getParameterTypes());
 				if (current.getKey().equals(key)) {
 					it.remove();
 				}
@@ -125,7 +126,7 @@ public class SharedMethodKit {
 		
 		Method[] methods = sharedClass.getMethods();
 		for (Method method : methods) {
-			String key = getSharedMethodKey(method.getName(), method.getParameterTypes());
+			Long key = getSharedMethodKey(method.getName(), method.getParameterTypes());
 			if (excludedMethodKey.contains(key)) {
 				continue ;
 			}
@@ -144,19 +145,27 @@ public class SharedMethodKit {
 		}
 	}
 	
-	private static String getSharedMethodKey(String methodName, Class<?>[] argTypes) {
-        StringBuilder key = new StringBuilder(64);
-        key.append(methodName);
-        if (argTypes != null && argTypes.length > 0) {
-        	MethodKit.createArgTypesDigest(argTypes, key);
+	private static Long getSharedMethodKey(String methodName, Class<?>[] argTypes) {
+		long hash = HashKit.FNV_OFFSET_BASIS_64;
+		hash ^= methodName.hashCode();
+		hash *= HashKit.FNV_PRIME_64;
+		
+		if (argTypes != null) {
+			for (int i=0; i<argTypes.length; i++) {
+				Class<?> type = argTypes[i];
+				if (type != null) {
+					hash ^= type.getName().hashCode();
+					hash *= HashKit.FNV_PRIME_64;
+				}
+			}
 		}
-        return key.toString();
-    }
+		return hash;
+	}
 	
 	static class SharedMethodInfo extends MethodInfo {
 		final Object target;
 		
-		private SharedMethodInfo(String key, Class<?> clazz, Method method, Object target) {
+		private SharedMethodInfo(Long key, Class<?> clazz, Method method, Object target) {
 			super(key, clazz, method);
 			this.target = target;
 		}

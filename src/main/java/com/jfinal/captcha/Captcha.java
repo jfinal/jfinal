@@ -16,10 +16,14 @@
 
 package com.jfinal.captcha;
 
+import java.io.Serializable;
+
 /**
  * 验证码
  */
-public class Captcha {
+public class Captcha implements Serializable {
+	
+	private static final long serialVersionUID = -2593323370708163022L;
 	
 	/**
 	 * 验证码默认过期时长 180 秒

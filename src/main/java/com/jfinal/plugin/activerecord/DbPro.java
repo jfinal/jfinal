@@ -267,6 +267,15 @@ public class DbPro {
 		return queryShort(sql, NULL_PARA_ARRAY);
 	}
 	
+	public Byte queryByte(String sql, Object... paras) {
+		Number n = queryNumber(sql, paras);
+		return n != null ? n.byteValue() : null;
+	}
+	
+	public Byte queryByte(String sql) {
+		return queryByte(sql, NULL_PARA_ARRAY);
+	}
+	
 	public Number queryNumber(String sql, Object... paras) {
 		return (Number)queryColumn(sql, paras);
 	}
@@ -471,6 +480,25 @@ public class DbPro {
 	public boolean delete(String tableName, Record record) {
 		String defaultPrimaryKey = config.dialect.getDefaultPrimaryKey();
 		return deleteById(tableName, defaultPrimaryKey, record.get(defaultPrimaryKey));
+	}
+	
+	/**
+	 * Execute delete sql statement.
+	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
+	 * @param paras the parameters of sql
+	 * @return the row count for <code>DELETE</code> statements, or 0 for SQL statements 
+     *         that return nothing
+	 */
+	public int delete(String sql, Object... paras) {
+		return update(sql, paras);
+	}
+	
+	/**
+	 * @see #delete(String, Object...)
+	 * @param sql an SQL statement
+	 */
+	public int delete(String sql) {
+		return update(sql);
 	}
 	
 	/**

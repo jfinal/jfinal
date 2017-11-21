@@ -60,11 +60,6 @@ public class ForIteratorStatus {
 	
 	@SuppressWarnings("unchecked")
 	private void init(Object target) {
-		if (target == null) {
-			size = 0;
-			iterator = NullIterator.me;
-			return ;
-		}
 		if (target instanceof Collection) {
 			size = ((Collection<?>)target).size();
 			iterator = ((Collection<?>)target).iterator();
@@ -73,6 +68,11 @@ public class ForIteratorStatus {
 		if (target instanceof Map<?, ?>) {
 			size = ((Map<?, ?>)target).size();
 			iterator = new MapIterator(((Map<Object, Object>)target).entrySet().iterator());
+			return ;
+		}
+		if (target == null) {	// 必须放在 target.getClass() 之前，避免空指针异常
+			size = 0;
+			iterator = NullIterator.me;
 			return ;
 		}
 		if (target.getClass().isArray()) {
@@ -148,6 +148,7 @@ public class ForIteratorStatus {
 class MapIterator implements Iterator<Entry<Object, Object>> {
 	
 	private Iterator<Entry<Object, Object>> iterator;
+	private ForEntry forEntry = new ForEntry();
 	
 	public MapIterator(Iterator<Entry<Object, Object>> iterator) {
 		this.iterator = iterator;
@@ -158,7 +159,8 @@ class MapIterator implements Iterator<Entry<Object, Object>> {
 	}
 	
 	public Entry<Object, Object> next() {
-		return new ForEntry((Entry<Object, Object>)iterator.next());
+		forEntry.init(iterator.next());
+		return forEntry;
 	}
 	
 	public void remove() {

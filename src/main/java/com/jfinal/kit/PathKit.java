@@ -21,7 +21,7 @@ import java.io.File;
 /**
  * new File("..\path\abc.txt") 中的三个方法获取路径的方法
  * 1： getPath() 获取相对路径，例如   ..\path\abc.txt
- * 2： getAbslutlyPath() 获取绝对路径，但可能包含 ".." 或 "." 字符，例如  D:\otherPath\..\path\abc.txt
+ * 2： getAbsolutePath() 获取绝对路径，但可能包含 ".." 或 "." 字符，例如  D:\otherPath\..\path\abc.txt
  * 3： getCanonicalPath() 获取绝对路径，但不包含 ".." 或 "." 字符，例如  D:\path\abc.txt
  */
 public class PathKit {
@@ -44,15 +44,29 @@ public class PathKit {
 	public static String getRootClassPath() {
 		if (rootClassPath == null) {
 			try {
-				String path = PathKit.class.getClassLoader().getResource("").toURI().getPath();
+				// String path = PathKit.class.getClassLoader().getResource("").toURI().getPath();
+				String path = getClassLoader().getResource("").toURI().getPath();
 				rootClassPath = new File(path).getAbsolutePath();
 			}
 			catch (Exception e) {
-				String path = PathKit.class.getClassLoader().getResource("").getPath();
+				// String path = PathKit.class.getClassLoader().getResource("").getPath();
+				String path = getClassLoader().getResource("").getPath();
 				rootClassPath = new File(path).getAbsolutePath();
 			}
 		}
 		return rootClassPath;
+	}
+	
+	/**
+	 * 优先使用 current thread 所使用的 ClassLoader 去获取路径
+	 * 否则在某些情况下会获取到 tomcat 的 ClassLoader，那么路径值将是
+	 * TOMCAT_HOME/lib
+	 * 
+	 * issue: https://gitee.com/jfinal/jfinal/issues/ID428#note_699360
+	 */
+	private static ClassLoader getClassLoader() {
+		ClassLoader ret = Thread.currentThread().getContextClassLoader();
+		return ret != null ? ret : PathKit.class.getClassLoader();
 	}
 	
 	public static void setRootClassPath(String rootClassPath) {

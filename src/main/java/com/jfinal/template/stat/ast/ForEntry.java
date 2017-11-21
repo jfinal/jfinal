@@ -25,7 +25,7 @@ public class ForEntry implements Entry<Object, Object> {
 	
 	private Entry<Object, Object> entry;
 	
-	public ForEntry(Entry<Object, Object> entry) {
+	public void init(Entry<Object, Object> entry) {
 		this.entry = entry;
 	}
 	

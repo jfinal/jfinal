@@ -45,6 +45,7 @@ public class JsonRender extends Render {
 			add("javax.servlet.request.ssl_session_mgr");
 			add("javax.servlet.request.key_size");
 			add("javax.servlet.request.cipher_suite");
+			add("_res");	// I18nInterceptor 中使用的 _res
 		}
 	};
 	

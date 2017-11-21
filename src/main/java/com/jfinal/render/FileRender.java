@@ -35,12 +35,12 @@ import com.jfinal.kit.StrKit;
  */
 public class FileRender extends Render {
 	
-	private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
+	protected static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
+	protected static String baseDownloadPath;
+	protected static ServletContext servletContext;
 	
-	private File file;
-	private static String baseDownloadPath;
-	private static ServletContext servletContext;
-	private String downloadFileName = null;
+	protected File file;
+	protected String downloadFileName = null;
 	
 	public FileRender(File file) {
 		if (file == null) {
@@ -161,7 +161,7 @@ public class FileRender extends Render {
 		}
 	}
 	
-	private void normalRender() {
+	protected void normalRender() {
 		response.setHeader("Content-Length", String.valueOf(file.length()));
 		InputStream inputStream = null;
         OutputStream outputStream = null;
@@ -173,8 +173,11 @@ public class FileRender extends Render {
                 outputStream.write(buffer, 0, len);
             }
             outputStream.flush();
+            outputStream.close();
         } catch (IOException e) {
-        	if (getDevMode()) {
+        	String n = e.getClass().getSimpleName();
+        	if (n.equals("ClientAbortException") || n.equals("EofException")) {
+        	} else {
         		throw new RenderException(e);
         	}
         } catch (Exception e) {
@@ -182,12 +185,10 @@ public class FileRender extends Render {
         } finally {
             if (inputStream != null)
                 try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
-            if (outputStream != null)
-            	try {outputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
         }
 	}
 	
-	private void rangeRender() {
+	protected void rangeRender() {
 		Long[] range = {null, null};
 		processRange(range);
 		
@@ -223,9 +224,14 @@ public class FileRender extends Render {
             	}
             }
             outputStream.flush();
+            outputStream.close();
         }
         catch (IOException e) {
-        	if (getDevMode())	throw new RenderException(e);
+        	String n = e.getClass().getSimpleName();
+        	if (n.equals("ClientAbortException") || n.equals("EofException")) {
+        	} else {
+        		throw new RenderException(e);
+        	}
         }
         catch (Exception e) {
         	throw new RenderException(e);
@@ -233,8 +239,6 @@ public class FileRender extends Render {
         finally {
             if (inputStream != null)
                 try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
-            if (outputStream != null)
-            	try {outputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
         }
 	}
 	
@@ -245,7 +249,7 @@ public class FileRender extends Render {
 	 * The final 500 bytes (byte offsets 9500-9999, inclusive): bytes=-500
 	 * 															Or bytes=9500-
 	 */
-	private void processRange(Long[] range) {
+	protected void processRange(Long[] range) {
 		String rangeStr = request.getHeader("Range");
 		int index = rangeStr.indexOf(',');
 		if (index != -1)

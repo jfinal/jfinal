@@ -16,8 +16,12 @@
 
 package com.jfinal.template;
 
+import java.io.OutputStream;
 import java.io.Writer;
 import java.util.Map;
+import com.jfinal.template.io.ByteWriter;
+import com.jfinal.template.io.CharWriter;
+import com.jfinal.template.io.FastStringWriter;
 import com.jfinal.template.stat.Scope;
 import com.jfinal.template.stat.ast.Stat;
 
@@ -43,26 +47,56 @@ public class Template {
 	}
 	
 	/**
+	 * 渲染到 OutputStream 中去
+	 */
+	public void render(Map<?, ?> data, OutputStream outputStream) {
+		ByteWriter byteWriter = env.engineConfig.writerBuffer.getByteWriter(outputStream);
+		try {
+			ast.exec(env, new Scope(data, env.engineConfig.sharedObjectMap), byteWriter);
+		} finally {
+			byteWriter.close();
+		}
+	}
+	
+	/**
+	 * 支持无 data 参数，渲染到 OutputStream 中去 <br>
+	 * 适用于数据在模板中通过表达式和语句直接计算得出等等应用场景
+	 */
+	public void render(OutputStream outputStream) {
+		render(null, outputStream);
+	}
+	
+	/**
 	 * 渲染到 Writer 中去
 	 */
 	public void render(Map<?, ?> data, Writer writer) {
-		ast.exec(env, new Scope(data, env.engineConfig.sharedObjectMap), writer);
+		CharWriter charWriter = env.engineConfig.writerBuffer.getCharWriter(writer);
+		try {
+			ast.exec(env, new Scope(data, env.engineConfig.sharedObjectMap), charWriter);
+		} finally {
+			charWriter.close();
+		}
 	}
 	
 	/**
 	 * 支持无 data 参数，渲染到 Writer 中去 <br>
-	 * 适用于数据在模板中通过表达式和语句直接计算得出等等应用场景<br>
-	 * 此外，其它所有 render 方法也支持传入 null 值 data 参数
+	 * 适用于数据在模板中通过表达式和语句直接计算得出等等应用场景
 	 */
 	public void render(Writer writer) {
-		ast.exec(env, new Scope(null, env.engineConfig.sharedObjectMap), writer);
+		render(null, writer);
 	}
 	
 	/**
-	 * 渲染到 FastStringWriter 中去
+	 * 渲染到 String 中去
 	 */
-	public void render(Map<?, ?> data, FastStringWriter fastStringWriter) {
-		ast.exec(env, new Scope(data, env.engineConfig.sharedObjectMap), fastStringWriter);
+	public String renderToString(Map<?, ?> data) {
+		FastStringWriter fsw = env.engineConfig.writerBuffer.getFastStringWriter();
+		try {
+			render(data, fsw);
+			return fsw.toString();
+		} finally {
+			fsw.close();
+		}
 	}
 	
 	/**
@@ -72,13 +106,6 @@ public class Template {
 		FastStringWriter fsw = new FastStringWriter();
 		render(data, fsw);
 		return fsw.getBuffer();
-	}
-	
-	/**
-	 * 渲染到 String 中去
-	 */
-	public String renderToString(Map<?, ?> data) {
-		return renderToStringBuilder(data).toString();
 	}
 	
 	public boolean isModified() {

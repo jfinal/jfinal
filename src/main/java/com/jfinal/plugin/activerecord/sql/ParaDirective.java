@@ -16,7 +16,6 @@
 
 package com.jfinal.plugin.activerecord.sql;
 
-import java.io.Writer;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
@@ -24,6 +23,8 @@ import com.jfinal.template.TemplateException;
 import com.jfinal.template.expr.ast.Const;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
+import com.jfinal.template.expr.ast.Id;
+import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.ParseException;
 import com.jfinal.template.stat.Scope;
 
@@ -64,8 +65,18 @@ import com.jfinal.template.stat.Scope;
 public class ParaDirective extends Directive {
 	
 	private int index = -1;
+	private String paraName = null;
+	private static boolean checkParaAssigned = true;
+	
+	public static void setCheckParaAssigned(boolean checkParaAssigned) {
+		ParaDirective.checkParaAssigned = checkParaAssigned;
+	}
 	
 	public void setExprList(ExprList exprList) {
+		if (exprList.length() == 0) {
+			throw new ParseException("The parameter of #para directive can not be blank", location);
+		}
+		
 		if (exprList.length() == 1) {
 			Expr expr = exprList.getExpr(0);
 			if (expr instanceof Const && ((Const)expr).isInt()) {
@@ -75,17 +86,29 @@ public class ParaDirective extends Directive {
 				}
 			}
 		}
+		
+		if (checkParaAssigned && exprList.getLastExpr() instanceof Id) {
+			Id id = (Id)exprList.getLastExpr();
+			paraName = id.getId();
+		}
+		
 		this.exprList = exprList;
 	}
 	
 	public void exec(Env env, Scope scope, Writer writer) {
 		SqlPara sqlPara = (SqlPara)scope.get(SqlKit.SQL_PARA_KEY);
 		if (sqlPara == null) {
-			throw new TemplateException("#para or #p directive invoked by getSqlPara(...) method only", location);
+			throw new TemplateException("#para directive invoked by getSqlPara(...) method only", location);
 		}
 		
 		write(writer, "?");
 		if (index == -1) {
+			// #para(paraName) 中的 paraName 没有赋值时抛出异常
+			// issue: http://www.jfinal.com/feedback/1832
+			if (checkParaAssigned && paraName != null && !scope.exists(paraName)) {
+				throw new TemplateException("The parameter \""+ paraName +"\" must be assigned", location);
+			}
+			
 			sqlPara.addPara(exprList.eval(scope));
 		} else {
 			Object[] paras = (Object[])scope.get(SqlKit.PARA_ARRAY_KEY);
