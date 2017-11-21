@@ -281,10 +281,22 @@ public class Engine {
 	
 	/**
 	 * Add directive
+	 * <pre>
+	 * 示例：
+	 * addDirective("now", NowDirective.class)
+	 * </pre>
 	 */
-	public Engine addDirective(String directiveName, Directive directive) {
-		config.addDirective(directiveName, directive);
+	public Engine addDirective(String directiveName, Class<? extends Directive> directiveClass) {
+		config.addDirective(directiveName, directiveClass);
 		return this;
+	}
+	
+	/**
+	 * 该方法已被 addDirective(String, Class<? extends Directive>) 所代替
+	 */
+	@Deprecated
+	public Engine addDirective(String directiveName, Directive directive) {
+		return addDirective(directiveName, directive.getClass());
 	}
 	
 	/**
@@ -445,6 +457,11 @@ public class Engine {
 		return config.getEncoding();
 	}
 	
+	public Engine setWriterBufferSize(int bufferSize) {
+		config.setWriterBufferSize(bufferSize);
+		return this;
+	}
+	
 	/**
 	 * Engine 独立设置为 devMode 可以方便模板文件在修改后立即生效，
 	 * 但如果在 devMode 之下并不希望对 addSharedFunction(...)，
@@ -466,7 +483,7 @@ public class Engine {
 	}
 	
 	public static void removeExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
-		MethodKit.removeExtensionMethod(targetClass, objectOfExtensionClass);;
+		MethodKit.removeExtensionMethod(targetClass, objectOfExtensionClass);
 	}
 	
 	public static void removeExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {

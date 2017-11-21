@@ -65,7 +65,7 @@ public class DataDictionaryGenerator {
 			generateTable(tableMeta, ret);
 		}
 		
-		writeToFile(ret);
+		writeToFile(ret.toString());
 	}
 	
 	protected void generateTable(TableMeta tableMeta, StringBuilder ret) {
@@ -214,7 +214,7 @@ public class DataDictionaryGenerator {
 	/**
 	 * _DataDictionary.txt 覆盖写入
 	 */
-	protected void writeToFile(StringBuilder ret) {
+	protected void writeToFile(String ret) {
 		FileWriter fw = null;
 		try {
 			File dir = new File(dataDictionaryOutputDir);
@@ -224,7 +224,7 @@ public class DataDictionaryGenerator {
 			
 			String target = dataDictionaryOutputDir + File.separator + dataDictionaryFileName;
 			fw = new FileWriter(target);
-			fw.write(ret.toString());
+			fw.write(ret);
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);

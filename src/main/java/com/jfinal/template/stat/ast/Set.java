@@ -16,11 +16,11 @@
 
 package com.jfinal.template.stat.ast;
 
-import java.io.Writer;
 import com.jfinal.template.Env;
 import com.jfinal.template.expr.ast.Assign;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
+import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ParseException;
 import com.jfinal.template.stat.Scope;
@@ -36,7 +36,7 @@ import com.jfinal.template.stat.Scope;
  */
 public class Set extends Stat {
 	
-	private ExprList exprList;
+	private Expr expr;
 	
 	public Set(ExprList exprList, Location location) {
 		if (exprList.length() == 0) {
@@ -48,12 +48,12 @@ public class Set extends Stat {
 				throw new ParseException("#set directive only supports assignment expressions", location);
 			}
 		}
-		this.exprList = exprList;
+		this.expr = exprList.getActualExpr();
 	}
 	
 	public void exec(Env env, Scope scope, Writer writer) {
 		scope.getCtrl().setWisdomAssignment();
-		exprList.eval(scope);
+		expr.eval(scope);
 	}
 }
 

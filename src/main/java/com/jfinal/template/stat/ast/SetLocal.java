@@ -16,11 +16,11 @@
 
 package com.jfinal.template.stat.ast;
 
-import java.io.Writer;
 import com.jfinal.template.Env;
 import com.jfinal.template.expr.ast.Assign;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
+import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.Ctrl;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ParseException;
@@ -34,7 +34,7 @@ import com.jfinal.template.stat.Scope;
  */
 public class SetLocal  extends Stat {
 	
-	final ExprList exprList;
+	final Expr expr;
 	
 	public SetLocal(ExprList exprList, Location location) {
 		if (exprList.length() == 0) {
@@ -46,14 +46,14 @@ public class SetLocal  extends Stat {
 				throw new ParseException("#setLocal directive only supports assignment expressions", location);
 			}
 		}
-		this.exprList = exprList;
+		this.expr = exprList.getActualExpr();
 	}
 	
 	public void exec(Env env, Scope scope, Writer writer) {
 		Ctrl ctrl = scope.getCtrl();
 		try {
 			ctrl.setLocalAssignment();
-			exprList.eval(scope);
+			expr.eval(scope);
 		} finally {
 			ctrl.setWisdomAssignment();
 		}

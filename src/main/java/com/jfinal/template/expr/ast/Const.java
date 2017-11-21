@@ -72,10 +72,6 @@ public class Const extends Expr {
 		return value;
 	}
 	
-	public String toString() {
-		return value.toString();
-	}
-	
 	public boolean isStr() {
 		return type == Sym.STR;
 	}
@@ -138,6 +134,10 @@ public class Const extends Expr {
 	
 	public Double getDouble() {
 		return (Double)value;
+	}
+	
+	public String toString() {
+		return value != null ? value.toString() : "null";
 	}
 }
 

@@ -96,7 +96,7 @@ public class Prop {
 		if (file == null) {
 			throw new IllegalArgumentException("File can not be null.");
 		}
-		if (file.isFile() == false) {
+		if (!file.isFile()) {
 			throw new IllegalArgumentException("File not found : " + file.getName());
 		}
 		
@@ -111,6 +111,53 @@ public class Prop {
 		finally {
 			if (inputStream != null) try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
 		}
+	}
+	
+	public Prop append(Prop prop) {
+		if (prop == null) {
+			throw new IllegalArgumentException("prop can not be null");
+		}
+		properties.putAll(prop.getProperties());
+		return this;
+	}
+	
+	public Prop append(String fileName, String encoding) {
+		return append(new Prop(fileName, encoding));
+	}
+	
+	public Prop append(String fileName) {
+		return append(fileName, Const.DEFAULT_ENCODING);
+	}
+	
+	public Prop appendIfExists(String fileName, String encoding) {
+		try {
+			return append(new Prop(fileName, encoding));
+		} catch (Exception e) {
+			return this;
+		}
+	}
+	
+	public Prop appendIfExists(String fileName) {
+		return appendIfExists(fileName, Const.DEFAULT_ENCODING);
+	}
+	
+	public Prop append(File file, String encoding) {
+		return append(new Prop(file, encoding));
+	}
+	
+	public Prop append(File file) {
+		return append(file, Const.DEFAULT_ENCODING);
+	}
+	
+	public Prop appendIfExists(File file, String encoding) {
+		if (file.exists()) {
+			append(new Prop(file, encoding));
+		}
+		return this;
+	}
+	
+	public Prop appendIfExists(File file) {
+		return appendIfExists(file, Const.DEFAULT_ENCODING);
 	}
 	
 	public String get(String key) {

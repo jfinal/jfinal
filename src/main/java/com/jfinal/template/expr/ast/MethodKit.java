@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import com.jfinal.kit.HashKit;
 import com.jfinal.kit.ReflectKit;
 import com.jfinal.template.ext.extensionmethod.ByteExt;
 import com.jfinal.template.ext.extensionmethod.DoubleExt;
@@ -42,7 +40,7 @@ public class MethodKit {
 	private static final Set<String> forbiddenMethods = new HashSet<String>();
 	private static final Set<Class<?>> forbiddenClasses = new HashSet<Class<?>>();
 	private static final Map<Class<?>, Class<?>> primitiveMap = new HashMap<Class<?>, Class<?>>();
-	private static final ConcurrentHashMap<String, Object> methodCache = new ConcurrentHashMap<String, Object>();
+	private static final HashMap<Long, Object> methodCache = new HashMap<Long, Object>();
 	
 	// 初始化在模板中调用 method 时所在的被禁止使用类
 	static {
@@ -105,12 +103,12 @@ public class MethodKit {
 	
 	public static MethodInfo getMethod(Class<?> targetClass, String methodName, Object[] argValues) {
 		Class<?>[] argTypes = getArgTypes(argValues);
-		String key = getMethodKey(targetClass, methodName, argTypes);
+		Long key = getMethodKey(targetClass, methodName, argTypes);
 		Object method = methodCache.get(key);
 		if (method == null) {
 			method = doGetMethod(key, targetClass, methodName, argTypes);
 			if (method != null) {
-				methodCache.putIfAbsent(key, method);
+				methodCache.put(key, method);
 			} else {
 				// 对于不存在的 Method，只进行一次获取操作，主要为了支持 null safe，未来需要考虑内存泄漏风险
 				methodCache.put(key, Boolean.FALSE);
@@ -123,12 +121,12 @@ public class MethodKit {
 	 * 获取 getter 方法
 	 * 使用与 Field 相同的 key，避免生成两次 key值
 	 */
-	public static MethodInfo getGetterMethod(String key, Class<?> targetClass, String methodName) {
+	public static MethodInfo getGetterMethod(Long key, Class<?> targetClass, String methodName) {
 		Object getterMethod = methodCache.get(key);
 		if (getterMethod == null) {
 			getterMethod = doGetMethod(key, targetClass, methodName, NULL_ARG_TYPES);
 			if (getterMethod != null) {
-				methodCache.putIfAbsent(key, getterMethod);
+				methodCache.put(key, getterMethod);
 			} else {
 				methodCache.put(key, Boolean.FALSE);
 			}
@@ -147,7 +145,7 @@ public class MethodKit {
 		return argTypes;
 	}
 	
-	private static MethodInfo doGetMethod(String key, Class<?> targetClass, String methodName, Class<?>[] argTypes) {
+	private static MethodInfo doGetMethod(Long key, Class<?> targetClass, String methodName, Class<?>[] argTypes) {
 		if (forbiddenClasses.contains(targetClass)) {
 			throw new RuntimeException("Forbidden class: " + targetClass.getName());
 		}
@@ -229,23 +227,8 @@ public class MethodKit {
 	/**
 	 * 获取方法用于缓存的 key
 	 */
-	private static String getMethodKey(Class<?> targetClass, String methodName, Class<?>[] argTypes) {
-        StringBuilder key = new StringBuilder(96);
-        key.append(targetClass.getName());
-        key.append('.').append(methodName);
-        if (argTypes != null && argTypes.length > 0) {
-        	createArgTypesDigest(argTypes, key);
-		}
-        return key.toString();
-    }
-	
-	static void createArgTypesDigest(Class<?>[] argTypes, StringBuilder key) {
-		StringBuilder argTypesDigest = new StringBuilder(64);
-		for (int i=0; i<argTypes.length; i++) {
-            Class<?> type = argTypes[i];
-            argTypesDigest.append(type != null ? type.getName() : "null");
-        }
-		key.append(HashKit.md5(argTypesDigest.toString()));
+	private static Long getMethodKey(Class<?> targetClass, String methodName, Class<?>[] argTypes) {
+		return MethodKeyBuilder.instance.getMethodKey(targetClass, methodName, argTypes);
 	}
 	
 	// 以下代码实现 extension method 功能 --------------------
@@ -290,7 +273,7 @@ public class MethodKit {
 					throw new RuntimeException("Extension method \"" + methodName + "\" is already exists in class \"" + targetClass.getName() + "\"");
 				}
 			} catch (NoSuchMethodException e) {		// Method 找不到才能添加该扩展方法
-				String key = MethodKit.getMethodKey(targetClass, methodName, toBoxedType(targetParaTypes));
+				Long key = MethodKit.getMethodKey(targetClass, methodName, toBoxedType(targetParaTypes));
 				if (methodCache.containsKey(key)) {
 					throw new RuntimeException(buildMethodSignatureForException("The extension method is already exists: " + extensionClass.getName() + ".", methodName, targetParaTypes));
 				}
@@ -319,7 +302,7 @@ public class MethodKit {
 			Class<?>[] targetParaTypes = new Class<?>[extensionMethodParaTypes.length - 1];
 			System.arraycopy(extensionMethodParaTypes, 1, targetParaTypes, 0, targetParaTypes.length);
 			
-			String key = MethodKit.getMethodKey(targetClass, methodName, toBoxedType(targetParaTypes));
+			Long key = MethodKit.getMethodKey(targetClass, methodName, toBoxedType(targetParaTypes));
 			methodCache.remove(key);
 		}
 	}

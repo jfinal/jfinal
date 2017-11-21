@@ -57,30 +57,45 @@ public class Enhancer {
 	}
 	
 	public static <T> T enhance(String singletonKey, Class<T> targetClass) {
-		Object target = singleton.get(singletonKey);
-		if (target == null) {
-			target = enhance(targetClass);
-			singleton.put(singletonKey, target);
+		Object ret = singleton.get(singletonKey);
+		if (ret == null) {
+			synchronized (Enhancer.class) {
+				ret = singleton.get(singletonKey);
+				if (ret == null) {
+					ret = enhance(targetClass);
+					singleton.put(singletonKey, ret);
+				}
+			}
 		}
-		return (T)target;
+		return (T)ret;
 	}
 	
 	public static <T> T enhance(String singletonKey, Class<T> targetClass, Interceptor... injectInters) {
-		Object target = singleton.get(singletonKey);
-		if (target == null) {
-			target = enhance(targetClass, injectInters);
-			singleton.put(singletonKey, target);
+		Object ret = singleton.get(singletonKey);
+		if (ret == null) {
+			synchronized (Enhancer.class) {
+				ret = singleton.get(singletonKey);
+				if (ret == null) {
+					ret = enhance(targetClass, injectInters);
+					singleton.put(singletonKey, ret);
+				}
+			}
 		}
-		return (T)target;
+		return (T)ret;
 	}
 	
 	public static <T> T enhance(String singletonKey, Class<T> targetClass, Class<? extends Interceptor>... injectIntersClasses) {
-		Object target = singleton.get(singletonKey);
-		if (target == null) {
-			target = enhance(targetClass, injectIntersClasses);
-			singleton.put(singletonKey, target);
+		Object ret = singleton.get(singletonKey);
+		if (ret == null) {
+			synchronized (Enhancer.class) {
+				ret = singleton.get(singletonKey);
+				if (ret == null) {
+					ret = enhance(targetClass, injectIntersClasses);
+					singleton.put(singletonKey, ret);
+				}
+			}
 		}
-		return (T)target;
+		return (T)ret;
 	}
 	
 	public static <T> T enhance(Object target) {
@@ -108,43 +123,50 @@ public class Enhancer {
 	}
 	
 	public static <T> T enhance(String singletonKey, Object target) {
-		Object result = singleton.get(singletonKey);
-		if (result == null) {
-			result = enhance(target);
-			singleton.put(singletonKey, result);
+		Object ret = singleton.get(singletonKey);
+		if (ret == null) {
+			synchronized (Enhancer.class) {
+				ret = singleton.get(singletonKey);
+				if (ret == null) {
+					ret = enhance(target);
+					singleton.put(singletonKey, ret);
+				}
+			}
 		}
-		return (T)result;
+		return (T)ret;
 	}
 	
 	public static <T> T enhance(String singletonKey, Object target, Interceptor... injectInters) {
-		Object result = singleton.get(singletonKey);
-		if (result == null) {
-			result = enhance(target, injectInters);
-			singleton.put(singletonKey, result);
+		Object ret = singleton.get(singletonKey);
+		if (ret == null) {
+			synchronized (Enhancer.class) {
+				ret = singleton.get(singletonKey);
+				if (ret == null) {
+					ret = enhance(target, injectInters);
+					singleton.put(singletonKey, ret);
+				}
+			}
 		}
-		return (T)result;
+		return (T)ret;
 	}
 	
 	public static <T> T enhance(String singletonKey, Object target, Class<? extends Interceptor>... injectIntersClasses) {
-		Object result = singleton.get(singletonKey);
-		if (result == null) {
-			result = enhance(target, injectIntersClasses);
-			singleton.put(singletonKey, result);
+		Object ret = singleton.get(singletonKey);
+		if (ret == null) {
+			synchronized (Enhancer.class) {
+				ret = singleton.get(singletonKey);
+				if (ret == null) {
+					ret = enhance(target, injectIntersClasses);
+					singleton.put(singletonKey, ret);
+				}
+			}
 		}
-		return (T)result;
+		return (T)ret;
 	}
 	
 	private static Interceptor[] createInjectInters(Class<? extends Interceptor>... injectInterClasses) {
 		return InterceptorManager.me().createInterceptor(injectInterClasses);
 	}
-	
-	/**
-	 * Add global service interceptor, the same as me.addGlobalServiceInterceptor(...)
-	 * in YourJFinalConfig.configInterceptor(Interceptors me)
-	 */
-	// public static void addGlobalServiceInterceptor(Interceptor... inters) {
-		// InterceptorManager.me().addGlobalServiceInterceptor(inters);
-	// }
 }
 
 

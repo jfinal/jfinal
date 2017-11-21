@@ -14,17 +14,31 @@
  * limitations under the License.
  */
 
-package com.jfinal.template.ext.sharedmethod;
+package com.jfinal.template.io;
+
+import java.nio.charset.Charset;
+import com.jfinal.template.EngineConfig;
 
 /**
- * Json shared method
+ * EncoderFactory
  */
-public class Json {
+public class EncoderFactory {
 	
-	private com.jfinal.json.Json json = com.jfinal.json.Json.getJson(); 
+	protected Charset charset = Charset.forName(EngineConfig.DEFAULT_ENCODING);
 	
-	public String toJson(Object target) {
-		return json.toJson(target);
+	void setEncoding(String encoding) {
+		charset = Charset.forName(encoding);
+	}
+	
+	public Encoder getEncoder() {
+		if (Charset.forName("UTF-8").equals(charset)) {
+			return Utf8Encoder.me;
+		} else {
+			return new JdkEncoder(charset);
+		}
 	}
 }
+
+
+
 

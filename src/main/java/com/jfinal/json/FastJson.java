@@ -17,12 +17,19 @@
 package com.jfinal.json;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializeConfig;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.jfinal.plugin.activerecord.Record;
 
 /**
  * Json 转换 fastjson 实现.
  */
 public class FastJson extends Json {
+	
+	static {
+		// 支持序列化 ActiveRecord 的 Record 类型
+		SerializeConfig.getGlobalInstance().put(Record.class, new FastJsonRecordSerializer());
+	}
 	
 	public static FastJson getJson() {
 		return new FastJson();

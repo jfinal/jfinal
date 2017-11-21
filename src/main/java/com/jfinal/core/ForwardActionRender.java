@@ -21,7 +21,7 @@ import com.jfinal.render.Render;
 /**
  * ForwardActionRender
  */
-class ForwardActionRender extends Render {
+public class ForwardActionRender extends Render {
 	
 	private String actionUrl;
 	

@@ -16,10 +16,11 @@
 
 package com.jfinal.template.ext.directive;
 
-import java.io.Writer;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
-import com.jfinal.template.FastStringWriter;
+import com.jfinal.template.io.CharWriter;
+import com.jfinal.template.io.FastStringWriter;
+import com.jfinal.template.io.Writer;
 import com.jfinal.template.expr.ast.Const;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
@@ -68,8 +69,14 @@ public class StringDirective extends Directive {
 	}
 	
 	public void exec(Env env, Scope scope, Writer writer) {
+		CharWriter charWriter = new CharWriter(64);
 		FastStringWriter fsw = new FastStringWriter();
-		stat.exec(env, scope, fsw);
+		charWriter.init(fsw);
+		try {
+			stat.exec(env, scope, charWriter);
+		} finally {
+			charWriter.close();
+		}
 		
 		if (this.isLocalAssignment) {
 			scope.setLocal(name, fsw.toString());

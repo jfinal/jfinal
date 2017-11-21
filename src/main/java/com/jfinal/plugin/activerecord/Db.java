@@ -216,6 +216,14 @@ public class Db {
 		return MAIN.queryShort(sql);
 	}
 	
+	public static Byte queryByte(String sql, Object... paras) {
+		return MAIN.queryByte(sql, paras);
+	}
+	
+	public static Byte queryByte(String sql) {
+		return MAIN.queryByte(sql);
+	}
+	
 	public static Number queryNumber(String sql, Object... paras) {
 		return MAIN.queryNumber(sql, paras);
 	}
@@ -371,6 +379,25 @@ public class Db {
 	 */
 	public static boolean delete(String tableName, Record record) {
 		return MAIN.delete(tableName, record);
+	}
+	
+	/**
+	 * Execute delete sql statement.
+	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
+	 * @param paras the parameters of sql
+	 * @return the row count for <code>DELETE</code> statements, or 0 for SQL statements 
+	 *         that return nothing
+	 */
+	public static int delete(String sql, Object... paras) {
+		return MAIN.delete(sql, paras);
+	}
+	
+	/**
+	 * @see #delete(String, Object...)
+	 * @param sql an SQL statement
+	 */
+	public static int delete(String sql) {
+		return MAIN.delete(sql);
 	}
 	
 	static Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {

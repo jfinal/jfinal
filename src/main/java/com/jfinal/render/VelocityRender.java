@@ -58,6 +58,14 @@ public class VelocityRender extends Render {
 	
 	static void init(ServletContext servletContext) {
 		String webPath = servletContext.getRealPath("/");
+		if (webPath == null) {
+			try {
+				// 支持 weblogic: http://www.jfinal.com/feedback/1994
+				webPath = servletContext.getResource("/").getPath();
+			} catch (java.net.MalformedURLException e) {
+				com.jfinal.kit.LogKit.error(e.getMessage(), e);
+			}
+		}
 		properties.setProperty(Velocity.FILE_RESOURCE_LOADER_PATH, webPath);
 		properties.setProperty(Velocity.ENCODING_DEFAULT, getEncoding()); 
 		properties.setProperty(Velocity.INPUT_ENCODING, getEncoding()); 

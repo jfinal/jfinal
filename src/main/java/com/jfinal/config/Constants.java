@@ -22,6 +22,7 @@ import com.jfinal.captcha.CaptchaManager;
 import com.jfinal.captcha.ICaptchaCache;
 import com.jfinal.core.ActionReporter;
 import com.jfinal.core.Const;
+import com.jfinal.core.ControllerFactory;
 import com.jfinal.i18n.I18n;
 import com.jfinal.json.IJsonFactory;
 import com.jfinal.json.JsonManager;
@@ -51,6 +52,7 @@ final public class Constants {
 	private int freeMarkerTemplateUpdateDelay = Const.DEFAULT_FREEMARKER_TEMPLATE_UPDATE_DELAY;	// just for not devMode
 	
 	private ITokenCache tokenCache = null;
+	private ControllerFactory controllerFactory = null;
 	
 	/**
 	 * Set development mode.
@@ -116,6 +118,14 @@ final public class Constants {
 	
 	public String getEncoding() {
 		return encoding;
+	}
+	
+	public void setControllerFactory(ControllerFactory controllerFactory) {
+		this.controllerFactory = controllerFactory;
+	}
+	
+	public ControllerFactory getControllerFactory() {
+		return controllerFactory;
 	}
 	
 	/**

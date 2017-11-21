@@ -26,14 +26,14 @@ import java.lang.reflect.Modifier;
  */
 public class MethodInfo {
 	
-	protected final String key;
+	protected final Long key;
 	protected final Class<?> clazz;
 	protected final Method method;
 	
 	protected final boolean isVarArgs;
 	protected final Class<?>[] paraTypes;
 	
-	public MethodInfo(String key, Class<?> clazz, Method method) {
+	public MethodInfo(Long key, Class<?> clazz, Method method) {
 		this.key = key;
 		this.clazz = clazz;
 		this.method = method;
@@ -64,7 +64,7 @@ public class MethodInfo {
 		return method.invoke(target, finalArgValues);
 	}
 	
-	public String getKey() {
+	public Long getKey() {
 		return key;
 	}
 	

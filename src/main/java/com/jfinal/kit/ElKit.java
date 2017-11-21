@@ -16,12 +16,12 @@
 
 package com.jfinal.kit;
 
-import java.io.Writer;
 import java.util.Map;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Engine;
 import com.jfinal.template.Env;
 import com.jfinal.template.Template;
+import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.Scope;
 
 /**
@@ -42,7 +42,7 @@ public class ElKit {
 	private static final String RETURN_VALUE_KEY = "_RETURN_VALUE_";
 	
 	static {
-		engine.addDirective("eval", new InnerEvalDirective());
+		engine.addDirective("eval", InnerEvalDirective.class);
 	}
 	
 	public Engine getEngine() {
@@ -57,7 +57,7 @@ public class ElKit {
 	public static <T> T eval(String expr, Map<?, ?> data) {
 		String stringTemplate = "#eval(" + expr + ")";
 		Template template = engine.getTemplateByString(stringTemplate);
-		template.render(data, null);
+		template.render(data, (java.io.Writer)null);
 		return (T)data.get(RETURN_VALUE_KEY);
 	}
 	

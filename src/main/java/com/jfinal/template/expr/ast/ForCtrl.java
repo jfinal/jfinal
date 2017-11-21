@@ -58,10 +58,10 @@ public class ForCtrl extends Expr {
 	/**
 	 * exprList? ';' expr? ';' exprList?
 	 */
-	public ForCtrl(Expr init, Expr cond, Expr update, Location location) {
-		this.init = init;
+	public ForCtrl(ExprList init, Expr cond, ExprList update, Location location) {
+		this.init = init.getActualExpr();
 		this.cond = cond;
-		this.update = update;
+		this.update = update.getActualExpr();
 		this.id = null;
 		this.expr = null;
 		this.location = location;
