@@ -16,7 +16,7 @@
 
 package com.jfinal.template.ext.spring;
 
-import java.io.Writer;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,9 +56,8 @@ public class JFinalView extends AbstractTemplateView {
 			}
 		}
 		
-		Writer writer = response.getWriter();
-		JFinalViewResolver.engine.getTemplate(getUrl()).render(model, writer);
-		writer.flush();
+		OutputStream os = response.getOutputStream();
+		JFinalViewResolver.engine.getTemplate(getUrl()).render(model, os);
 	}
 }
 

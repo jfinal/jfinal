@@ -25,7 +25,7 @@ import com.jfinal.template.Engine;
 /**
  * JFinalConfig.
  * <p>
- * Config order: configConstant(), configRoute(), configEngine(), configPlugin(), configInterceptor(), configHandler()
+ * Config order: configConstant(), configPlugin(), configRoute(), configEngine(), configInterceptor(), configHandler()
  */
 public abstract class JFinalConfig {
 	
@@ -62,12 +62,12 @@ public abstract class JFinalConfig {
 	/**
 	 * Call back after JFinal start
 	 */
-	public void afterJFinalStart(){};
+	public void afterJFinalStart(){}
 	
 	/**
 	 * Call back before JFinal stop
 	 */
-	public void beforeJFinalStop(){};
+	public void beforeJFinalStop(){}
 	
 	protected Prop prop = null;
 	

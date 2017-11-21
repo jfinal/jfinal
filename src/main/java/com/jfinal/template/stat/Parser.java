@@ -18,6 +18,7 @@ package com.jfinal.template.stat;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
 import com.jfinal.template.expr.ExprParser;
 import com.jfinal.template.expr.ast.ExprList;
@@ -84,10 +85,10 @@ public class Parser {
 		throw new ParseException("Can not match the #end of directive #" + name.value(), getLocation(name.row));
 	}
 	
-	public Stat parse() {
+	public StatList parse() {
 		tokenList = new Lexer(content, fileName).scan();
 		tokenList.add(EOF);
-		Stat statList = statList();
+		StatList statList = statList();
 		if (peek() != EOF) {
 			throw new ParseException("Syntax error: can not match " + peek().value(), getLocation(peek().row));
 		}
@@ -122,7 +123,7 @@ public class Parser {
 		switch (name.symbol) {
 		case TEXT:
 			move();
-			return new Text(((TextToken)name).getContent()).setLocation(getLocation(name.row));
+			return new Text(((TextToken)name).getContent(), env.getEngineConfig().getEncoding()).setLocation(getLocation(name.row));
 		case OUTPUT:
 			move();
 			Token para = matchPara(name);
@@ -171,9 +172,9 @@ public class Parser {
 			String functionName = name.value();
 			move();
 			para = matchPara(name);
-			Stat stat = statList();
+			statList = statList();
 			matchEnd(name);
-			return new Define(functionName, parseExprList(para), stat, getLocation(name.row));
+			return new Define(functionName, parseExprList(para), statList, getLocation(name.row));
 		case CALL:
 			functionName = name.value();
 			move();
@@ -206,7 +207,7 @@ public class Parser {
 			move();
 			return Return.me;
 		case ID:
-			Stat dire = env.getEngineConfig().getDirective(name.value());
+			Class<? extends Directive> dire = env.getEngineConfig().getDirective(name.value());
 			if (dire == null) {
 				throw new ParseException("Directive not found: #" + name.value(), getLocation(name.row));
 			}
@@ -215,9 +216,9 @@ public class Parser {
 			para = matchPara(name);
 			ret.setExprList(parseExprList(para));
 			
-			if (dire.hasEnd()) {
+			if (ret.hasEnd()) {
 				statList = statList();
-				ret.setStat(statList);
+				ret.setStat(statList.getActualStat());
 				matchEnd(name);
 			}
 			return ret;
@@ -236,9 +237,9 @@ public class Parser {
 		return new Location(fileName, row);
 	}
 	
-	private Stat createDirective(Stat dire, Token name) {
+	private Stat createDirective(Class<? extends Directive> dire, Token name) {
 		try {
-			return dire.getClass().newInstance();
+			return dire.newInstance();
 		} catch (Exception e) {
 			throw new ParseException(e.getMessage(), getLocation(name.row), e);
 		}

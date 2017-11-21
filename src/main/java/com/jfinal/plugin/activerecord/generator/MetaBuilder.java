@@ -226,23 +226,32 @@ public class MetaBuilder {
 			ColumnMeta cm = new ColumnMeta();
 			cm.name = rsmd.getColumnName(i);
 			
-			String colClassName = rsmd.getColumnClassName(i);
-			String typeStr = typeMapping.getType(colClassName);
-			if (typeStr != null) {
-				cm.javaType = typeStr;
-			}
-			else {
+			String typeStr = null;
+			if (dialect.isKeepByteAndShort()) {
 				int type = rsmd.getColumnType(i);
-				if (type == Types.BINARY || type == Types.VARBINARY || type == Types.BLOB) {
-					cm.javaType = "byte[]";
-				}
-				else if (type == Types.CLOB || type == Types.NCLOB) {
-					cm.javaType = "java.lang.String";
-				}
-				else {
-					cm.javaType = "java.lang.String";
+				if (type == Types.TINYINT) {
+					typeStr = "java.lang.Byte";
+				} else if (type == Types.SMALLINT) {
+					typeStr = "java.lang.Short";
 				}
 			}
+			
+			if (typeStr == null) {
+				String colClassName = rsmd.getColumnClassName(i);
+				typeStr = typeMapping.getType(colClassName);
+			}
+			
+			if (typeStr == null) {
+				int type = rsmd.getColumnType(i);
+				if (type == Types.BINARY || type == Types.VARBINARY || type == Types.LONGVARBINARY || type == Types.BLOB) {
+					typeStr = "byte[]";
+				} else if (type == Types.CLOB || type == Types.NCLOB) {
+					typeStr = "java.lang.String";
+				} else {
+					typeStr = "java.lang.String";
+				}
+			}
+			cm.javaType = typeStr;
 			
 			// 构造字段对应的属性名 attrName
 			cm.attrName = buildAttrName(cm.name);

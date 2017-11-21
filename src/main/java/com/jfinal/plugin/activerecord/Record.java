@@ -278,6 +278,11 @@ public class Record implements Serializable {
 		return n != null ? n.shortValue() : null;
 	}
 	
+	public Byte getByte(String column) {
+		Number n = getNumber(column);
+		return n != null ? n.byteValue() : null;
+	}
+	
 	/**
 	 * Get column of mysql type: bit, tinyint(1)
 	 */

@@ -31,14 +31,21 @@ import com.jfinal.render.RenderManager;
  */
 public class ActionHandler extends Handler {
 	
-	private final boolean devMode;
-	private final ActionMapping actionMapping;
-	private static final RenderManager renderManager = RenderManager.me();
+	protected boolean devMode;
+	protected ActionMapping actionMapping;
+	protected ControllerFactory controllerFactory;
+	protected static final RenderManager renderManager = RenderManager.me();
 	private static final Log log = Log.getLog(ActionHandler.class);
 	
-	public ActionHandler(ActionMapping actionMapping, Constants constants) {
+	protected void init(ActionMapping actionMapping, Constants constants) {
 		this.actionMapping = actionMapping;
 		this.devMode = constants.getDevMode();
+		
+		if (constants.getControllerFactory() != null) {
+			controllerFactory = constants.getControllerFactory();
+		} else {
+			controllerFactory = new ControllerFactory();
+		}
 	}
 	
 	/**
@@ -47,7 +54,7 @@ public class ActionHandler extends Handler {
 	 * 2: new Invocation(...).invoke()
 	 * 3: render(...)
 	 */
-	public final void handle(String target, HttpServletRequest request, HttpServletResponse response, boolean[] isHandled) {
+	public void handle(String target, HttpServletRequest request, HttpServletResponse response, boolean[] isHandled) {
 		if (target.indexOf('.') != -1) {
 			return ;
 		}
@@ -65,9 +72,11 @@ public class ActionHandler extends Handler {
 			return ;
 		}
 		
+		Controller controller = null;
 		try {
-			Controller controller = action.getControllerClass().newInstance();
-			controller.init(request, response, urlPara[0]);
+			// Controller controller = action.getControllerClass().newInstance();
+			controller = controllerFactory.getController(action.getControllerClass());
+			controller.init(action, request, response, urlPara[0]);
 			
 			if (devMode) {
 				if (ActionReporter.isReportAfterInvocation(request)) {
@@ -135,6 +144,10 @@ public class ActionHandler extends Handler {
 				log.error(qs == null ? target : target + "?" + qs, e);
 			}
 			renderManager.getRenderFactory().getErrorRender(500).setContext(request, response, action.getViewPath()).render();
+		} finally {
+			if (controller != null) {
+				controller.clear();
+			}
 		}
 	}
 }

@@ -100,6 +100,8 @@ public class ExprParser {
 	
 	public ForCtrl parseForCtrl() {
 		Expr forCtrl = parse(false);
+		
+		// 可能返回 ExprList.NULL_EXPR_LIST，必须做判断
 		if (forCtrl instanceof ForCtrl) {
 			return (ForCtrl)forCtrl;
 		} else {
@@ -124,7 +126,7 @@ public class ExprParser {
 	/**
 	 * exprList : expr (',' expr)*
 	 */
-	Expr exprList() {
+	ExprList exprList() {
 		List<Expr> exprList = new ArrayList<Expr>();
 		while (true) {
 			Expr stat = expr();
@@ -346,7 +348,7 @@ public class ExprParser {
 				return new StaticMethod(clazz, memberName, location);
 			}
 			
-			ExprList exprList = (ExprList)exprList();
+			ExprList exprList = exprList();
 			match(Sym.RPAREN);
 			return new StaticMethod(clazz, memberName, exprList, location);
 		}
@@ -383,7 +385,7 @@ public class ExprParser {
 			return indexMethodField(sharedMethod);
 		}
 		
-		ExprList exprList = (ExprList)exprList();
+		ExprList exprList = exprList();
 		SharedMethod sharedMethod = new SharedMethod(engineConfig.getSharedMethodKit(), tok.value(), exprList, location);
 		match(Sym.RPAREN);
 		return indexMethodField(sharedMethod);
@@ -433,7 +435,7 @@ public class ExprParser {
 			}
 			
 			// expr '.' ID '(' exprList ')'
-			ExprList exprList = (ExprList)exprList();
+			ExprList exprList = exprList();
 			match(Sym.RPAREN);
 			expr = new Method(expr, tok.value(), exprList, location);
 		}
@@ -498,7 +500,7 @@ public class ExprParser {
 			move();
 			return new Array(ExprList.NULL_EXPR_ARRAY, location);
 		}
-		ExprList exprList = (ExprList)exprList();
+		ExprList exprList = exprList();
 		if (exprList.length() == 1 && peek().sym == Sym.RANGE) {
 			move();
 			Expr end = expr();
@@ -560,13 +562,13 @@ public class ExprParser {
 	/**
 	 * forControl : ID : expr | exprList? ';' expr? ';' exprList?
 	 */
-	Expr forCtrl() {
-		ExprList exprList = (ExprList)exprList();
+	ForCtrl forCtrl() {
+		ExprList exprList = exprList();
 		if (peek().sym == Sym.SEMICOLON) {
 			move();
 			Expr cond = expr();
 			match(Sym.SEMICOLON);
-			Expr update = exprList();
+			ExprList update = exprList();
 			return new ForCtrl(exprList, cond, update, location);
 		}
 		

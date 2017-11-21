@@ -58,10 +58,15 @@ public class PropKit {
 	public static Prop use(String fileName, String encoding) {
 		Prop result = map.get(fileName);
 		if (result == null) {
-			result = new Prop(fileName, encoding);
-			map.put(fileName, result);
-			if (PropKit.prop == null) {
-				PropKit.prop = result;
+			synchronized (PropKit.class) {
+				result = map.get(fileName);
+				if (result == null) {
+					result = new Prop(fileName, encoding);
+					map.put(fileName, result);
+					if (PropKit.prop == null) {
+						PropKit.prop = result;
+					}
+				}
 			}
 		}
 		return result;
@@ -88,10 +93,15 @@ public class PropKit {
 	public static Prop use(File file, String encoding) {
 		Prop result = map.get(file.getName());
 		if (result == null) {
-			result = new Prop(file, encoding);
-			map.put(file.getName(), result);
-			if (PropKit.prop == null) {
-				PropKit.prop = result;
+			synchronized (PropKit.class) {
+				result = map.get(file.getName());
+				if (result == null) {
+					result = new Prop(file, encoding);
+					map.put(file.getName(), result);
+					if (PropKit.prop == null) {
+						PropKit.prop = result;
+					}
+				}
 			}
 		}
 		return result;
@@ -108,6 +118,56 @@ public class PropKit {
 	public static void clear() {
 		prop = null;
 		map.clear();
+	}
+	
+	public static Prop append(Prop prop) {
+		synchronized (PropKit.class) {
+			if (PropKit.prop != null) {
+				PropKit.prop.append(prop);
+			} else {
+				PropKit.prop = prop;
+			}
+			return PropKit.prop;
+		}
+	}
+	
+	public static Prop append(String fileName, String encoding) {
+		return append(new Prop(fileName, encoding));
+	}
+	
+	public static Prop append(String fileName) {
+		return append(fileName, Const.DEFAULT_ENCODING);
+	}
+	
+	public static Prop appendIfExists(String fileName, String encoding) {
+		try {
+			return append(new Prop(fileName, encoding));
+		} catch (Exception e) {
+			return PropKit.prop;
+		}
+	}
+	
+	public static Prop appendIfExists(String fileName) {
+		return appendIfExists(fileName, Const.DEFAULT_ENCODING);
+	}
+	
+	public static Prop append(File file, String encoding) {
+		return append(new Prop(file, encoding));
+	}
+	
+	public static Prop append(File file) {
+		return append(file, Const.DEFAULT_ENCODING);
+	}
+	
+	public static Prop appendIfExists(File file, String encoding) {
+		if (file.exists()) {
+			append(new Prop(file, encoding));
+		}
+		return PropKit.prop;
+	}
+	
+	public static Prop appendIfExists(File file) {
+		return appendIfExists(file, Const.DEFAULT_ENCODING);
 	}
 	
 	public static Prop getProp() {

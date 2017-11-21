@@ -16,7 +16,6 @@
 
 package com.jfinal.template.stat.ast;
 
-import java.io.Writer;
 import com.jfinal.template.Env;
 import com.jfinal.template.TemplateException;
 import com.jfinal.template.stat.Location;
@@ -25,6 +24,7 @@ import com.jfinal.template.stat.Scope;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.Id;
+import com.jfinal.template.io.Writer;
 
 /**
  * Define 定义模板函数：
@@ -50,10 +50,10 @@ public class Define extends Stat {
 	private String[] parameterNames;
 	private Stat stat;
 	
-	public Define(String functionName, ExprList exprList, Stat stat, Location location) {
+	public Define(String functionName, ExprList exprList, StatList statList, Location location) {
 		setLocation(location);
 		this.functionName = functionName;
-		this.stat = stat;
+		this.stat = statList.getActualStat();
 		
 		Expr[] exprArray = exprList.getExprArray();
 		if (exprArray.length == 0) {
