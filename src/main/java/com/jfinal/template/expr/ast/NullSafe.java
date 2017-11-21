@@ -49,17 +49,21 @@ public class NullSafe extends Expr {
 		Ctrl ctrl = scope.getCtrl();
 		boolean oldNullSafeValue = ctrl.isNullSafe();
 		
-		Object ret;
 		try {
 			ctrl.setNullSafe(true);
-			ret = left.eval(scope);
+			Object ret = left.eval(scope);
+			if (ret != null) {
+				return ret;
+			}
 		} finally {
 			ctrl.setNullSafe(oldNullSafeValue);
 		}
 		
-		return ret == null && right != null ? right.eval(scope) : ret;
+		// right 表达式处于 null safe 区域之外
+		return right != null ? right.eval(scope) : null;
 	}
 }
+
 
 
 

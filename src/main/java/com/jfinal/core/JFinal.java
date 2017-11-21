@@ -78,7 +78,12 @@ public final class JFinal {
 	}
 	
 	private void initHandler() {
-		Handler actionHandler = new ActionHandler(actionMapping, constants);
+		ActionHandler actionHandler = Config.getHandlers().getActionHandler();
+		if (actionHandler == null) {
+			actionHandler = new ActionHandler();
+		}
+		
+		actionHandler.init(actionMapping, constants);
 		handler = HandlerFactory.getHandler(Config.getHandlers().getHandlerList(), actionHandler);
 	}
 	
@@ -96,7 +101,7 @@ public final class JFinal {
 	}
 	
 	private void initActionMapping() {
-		actionMapping = new ActionMapping(Config.getRoutes(), Config.getInterceptors());
+		actionMapping = new ActionMapping(Config.getRoutes());
 		actionMapping.buildActionMapping();
 		Config.getRoutes().clear();
 	}

@@ -16,8 +16,8 @@
 
 package com.jfinal.template.stat.ast;
 
-import java.io.Writer;
 import com.jfinal.template.Env;
+import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.Scope;
 
 /**
@@ -27,8 +27,8 @@ public class Else extends Stat {
 	
 	private Stat stat;
 	
-	public Else(Stat stat) {
-		this.stat = stat;
+	public Else(StatList statList) {
+		this.stat = statList.getActualStat();
 	}
 	
 	public void exec(Env env, Scope scope, Writer writer) {

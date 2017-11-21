@@ -94,9 +94,11 @@ public class Compare extends Expr {
 			case Arith.FLOAT:
 				// 此法仅适用于两个对象类型相同的情况，升级为 BigDecimal 后精度会再高几个数量级
 				// return Float.floatToIntBits(l.floatValue()) == Float.floatToIntBits(r.floatValue());
+				return l.floatValue() == r.floatValue();
 			case Arith.DOUBLE:
 				// 此法仅适用于两个对象类型相同的情况，升级为 BigDecimal 后精度会再高几个数量级
 				// return Double.doubleToLongBits(l.doubleValue()) == Double.doubleToLongBits(r.doubleValue());
+				return l.doubleValue() == r.doubleValue();
 			case Arith.BIGDECIMAL:
 				BigDecimal[] bd = toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) == 0;
@@ -120,8 +122,10 @@ public class Compare extends Expr {
 				return l.longValue() > r.longValue();
 			case Arith.FLOAT:
 				// return Float.floatToIntBits(l.floatValue()) > Float.floatToIntBits(r.floatValue());
+				return l.floatValue() > r.floatValue();
 			case Arith.DOUBLE:
 				// return Double.doubleToLongBits(l.doubleValue()) > Double.doubleToLongBits(r.doubleValue());
+				return l.doubleValue() > r.doubleValue();
 			case Arith.BIGDECIMAL:
 				BigDecimal[] bd = toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) > 0;
@@ -150,8 +154,10 @@ public class Compare extends Expr {
 				return l.longValue() >= r.longValue();
 			case Arith.FLOAT:
 				// return Float.floatToIntBits(l.floatValue()) >= Float.floatToIntBits(r.floatValue());
+				return l.floatValue() >= r.floatValue();
 			case Arith.DOUBLE:
 				// return Double.doubleToLongBits(l.doubleValue()) >= Double.doubleToLongBits(r.doubleValue());
+				return l.doubleValue() >= r.doubleValue();
 			case Arith.BIGDECIMAL:
 				BigDecimal[] bd = toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) >= 0;
@@ -180,8 +186,10 @@ public class Compare extends Expr {
 				return l.longValue() < r.longValue();
 			case Arith.FLOAT:
 				// return Float.floatToIntBits(l.floatValue()) < Float.floatToIntBits(r.floatValue());
+				return l.floatValue() < r.floatValue();
 			case Arith.DOUBLE:
 				// return Double.doubleToLongBits(l.doubleValue()) < Double.doubleToLongBits(r.doubleValue());
+				return l.doubleValue() < r.doubleValue();
 			case Arith.BIGDECIMAL:
 				BigDecimal[] bd = toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) < 0;
@@ -210,8 +218,10 @@ public class Compare extends Expr {
 				return l.longValue() <= r.longValue();
 			case Arith.FLOAT:
 				// return Float.floatToIntBits(l.floatValue()) <= Float.floatToIntBits(r.floatValue());
+				return l.floatValue() <= r.floatValue();
 			case Arith.DOUBLE:
 				// return Double.doubleToLongBits(l.doubleValue()) <= Double.doubleToLongBits(r.doubleValue());
+				return l.doubleValue() <= r.doubleValue();
 			case Arith.BIGDECIMAL:
 				BigDecimal[] bd = toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) <= 0;

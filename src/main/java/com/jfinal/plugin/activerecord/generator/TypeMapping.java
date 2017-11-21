@@ -75,6 +75,9 @@ public class TypeMapping {
 		
 		// short
 		put("java.lang.Short", "java.lang.Short");
+		
+		// byte
+		put("java.lang.Byte", "java.lang.Byte");
 	}};
 	
 	public String getType(String typeString) {

@@ -16,24 +16,28 @@
 
 package com.jfinal.template.ext.directive;
 
-import java.io.Writer;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
+import java.util.Date;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
 import com.jfinal.template.TemplateException;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
+import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.ParseException;
 import com.jfinal.template.stat.Scope;
 
 /**
- * 不带参时，按默认 pattern 输出当前日期
+ * #date 日期格式化输出指令
  * 
- * #date() 指令支持无参时获取当前指令，第一个参数 string 当成是 pattern
+ * 三种用法：
+ * 1：#date(createAt) 用默认 datePattern 配置，输出 createAt 变量中的日期值
+ * 2：#date(createAt, "yyyy-MM-dd HH:mm:ss") 用第二个参数指定的 datePattern，输出 createAt 变量中的日期值
+ * 3：#date() 用默认 datePattern 配置，输出 “当前” 日期值
  * 
- * 日期输出指令，第一个参数是被输出的 java.util.Date 对象或其子类对象
- * 无第二个参数时按默认 patter 输出，第二个参数为 expr 表达式，表示 pattern
- * 第二个为 date 时，表示当第一个为 null 时的默认值
+ * 注意：
+ * 1：#date 指令中的参数可以是变量，例如：#date(d, p) 中的 d 与 p 可以全都是变量
+ * 2：默认 datePattern 可通过 Engine.setDatePattern(...) 进行配置
  */
 public class DateDirective extends Directive {
 	
@@ -51,34 +55,32 @@ public class DateDirective extends Directive {
 			this.valueExpr = null;
 			this.datePatternExpr = null;
 		} else if (paraNum == 1) {
-			this.valueExpr = exprList.getExprArray()[0];
+			this.valueExpr = exprList.getExpr(0);
 			this.datePatternExpr = null;
 		} else if (paraNum == 2) {
-			this.valueExpr = exprList.getExprArray()[0];
-			this.datePatternExpr = exprList.getExprArray()[1];
+			this.valueExpr = exprList.getExpr(0);
+			this.datePatternExpr = exprList.getExpr(1);
 		}
 	}
 	
 	public void exec(Env env, Scope scope, Writer writer) {
-		if (paraNum == 0) {
-			outputToday(env, writer);
-		} else if (paraNum == 1) {
+		if (paraNum == 1) {
 			outputWithoutDatePattern(env, scope, writer);
 		} else if (paraNum == 2) {
 			outputWithDatePattern(env, scope, writer);
+		} else {
+			outputToday(env, writer);
 		}
 	}
 	
 	private void outputToday(Env env, Writer writer) {
-		Object value = format(new java.util.Date(), env.getEngineConfig().getDatePattern());
-		write(writer, value.toString());
+		write(writer, new Date(), env.getEngineConfig().getDatePattern());
 	}
 	
 	private void outputWithoutDatePattern(Env env, Scope scope, Writer writer) {
 		Object value = valueExpr.eval(scope);
 		if (value != null) {
-			value = format(value, env.getEngineConfig().getDatePattern());
-			write(writer, value.toString());
+			write(writer, (Date)value, env.getEngineConfig().getDatePattern());
 		}
 	}
 	
@@ -88,18 +90,18 @@ public class DateDirective extends Directive {
 			return ;
 		}
 		
-		Object dp = this.datePatternExpr.eval(scope);
-		if ( !(dp instanceof String) ) {
-			throw new TemplateException("The sencond parameter dataPattern of #date directive must be String", location);
+		Object datePattern = this.datePatternExpr.eval(scope);
+		if ( !(datePattern instanceof String) ) {
+			throw new TemplateException("The sencond parameter datePattern of #date directive must be String", location);
 		}
-		value = format(value, (String)dp);
-		write(writer, value.toString());
+		
+		write(writer, (Date)value, (String)datePattern);
 	}
 	
-	private String format(Object value, String datePattern) {
+	private void write(Writer writer, Date date, String datePattern) {
 		try {
-			return new SimpleDateFormat(datePattern).format(value);
-		} catch (Exception e) {
+			writer.write(date, datePattern);
+		} catch (IOException e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}
 	}

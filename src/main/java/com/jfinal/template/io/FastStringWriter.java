@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-package com.jfinal.template;
+package com.jfinal.template.io;
 
-import java.io.IOException;
 import java.io.Writer;
 
 /**
  * FastStringWriter
  * 
- * 由 JDK 中 StringWriter 改造而成，将 StringBuffer 属性替换为
- * StringBuilder，避免 StringBuffer 的 synchronized 操作
+ * <pre>
+ * 由 JDK 中 StringWriter 改造而来，在其基础之上做了如下改变：
+ * 1：StringBuffer 属性改为 StringBuilder，避免了前者的 synchronized 操作
+ * 2：添加了 MAX_SIZE 属性
+ * 3：去掉了 close() 方法声明中的 throws IOException，并添加了代码，原先该方法中无任何代码
+ * </pre>
  */
 public class FastStringWriter extends Writer {
 	
@@ -94,8 +97,20 @@ public class FastStringWriter extends Writer {
     	
     }
     
-    public void close() throws IOException {
-    	
+    static int MAX_SIZE = 1024 * 128;
+    
+    /**
+     * 由 StringWriter.close() 改造而来，原先该方法中无任何代码 ，改造如下：
+     * 1：去掉 throws IOException
+     * 2：添加 buf 空间释放处理逻辑
+     * 3：添加 buf.setLength(0)，以便于配合 ThreadLocal 回收利用
+     */
+    public void close() {
+    	if (buf.length() > MAX_SIZE) {
+    		buf = new StringBuilder();	// 释放空间占用过大的 buf
+		} else {
+			buf.setLength(0);
+		}
     }
 }
 

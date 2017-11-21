@@ -265,6 +265,11 @@ public abstract class Model<M extends Model> implements Serializable {
 		return n != null ? n.shortValue() : null;
 	}
 	
+	public Byte getByte(String attr) {
+		Number n = (Number)attrs.get(attr);
+		return n != null ? n.byteValue() : null;
+	}
+	
 	/**
 	 * Get attribute of mysql type: bit, tinyint(1)
 	 */

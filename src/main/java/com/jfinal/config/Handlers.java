@@ -18,6 +18,7 @@ package com.jfinal.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.jfinal.core.ActionHandler;
 import com.jfinal.handler.Handler;
 
 /**
@@ -25,6 +26,7 @@ import com.jfinal.handler.Handler;
  */
 final public class Handlers {
 	
+	private ActionHandler actionHandler = null;
 	private final List<Handler> handlerList = new ArrayList<Handler>();
 	
 	public Handlers add(Handler handler) {
@@ -35,7 +37,16 @@ final public class Handlers {
 		return this;
 	}
 	
+	public Handlers setActionHandler(ActionHandler actionHandler) {
+		this.actionHandler = actionHandler;
+		return this;
+	}
+	
 	public List<Handler> getHandlerList() {
 		return handlerList;
+	}
+	
+	public ActionHandler getActionHandler() {
+		return actionHandler;
 	}
 }

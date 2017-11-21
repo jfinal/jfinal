@@ -60,6 +60,12 @@ public class DruidStatViewHandler extends Handler {
 		if (target.startsWith(visitPath)) {
 			isHandled[0] = true;
 			
+			// 支持 context path
+			String ctx = request.getContextPath();
+			if (ctx != null && !"".equals(ctx) && !"/".equals(ctx)) {
+				target = ctx + target;
+			}
+			
 			if (target.equals(visitPath) && !target.endsWith("/index.html")) {
 				HandlerKit.redirect(target += "/index.html", request, response, isHandled);
 				return ;

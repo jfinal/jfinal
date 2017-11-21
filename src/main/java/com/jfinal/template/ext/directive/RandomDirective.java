@@ -16,9 +16,9 @@
 
 package com.jfinal.template.ext.directive;
 
-import java.io.Writer;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
+import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.Scope;
 
 /**

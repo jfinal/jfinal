@@ -95,7 +95,7 @@ class Lexer {
 		StringBuilder para = null;
 		Token idToken = null;
 		Token paraToken = null;
-		while(true) {
+		while (true) {
 			switch (state) {
 			case 0:
 				if (peek() == '#') {					// #
@@ -139,6 +139,14 @@ class Lexer {
 				if (symbol == Symbol.DEFINE) {
 					state = 12;
 					continue ;
+				}
+				
+				// 在支持 #seleif 的基础上，支持 #else if
+				if (symbol == Symbol.ELSE) {
+					if (foundFollowingIf()) {
+						id = "else if";
+						symbol = Symbol.ELSEIF;
+					}
 				}
 				
 				// 无参关键字指令
@@ -197,6 +205,22 @@ class Lexer {
 				return fail();
 			}
 		}
+	}
+	
+	boolean foundFollowingIf() {
+		int p = forward;
+		while (CharTable.isBlank(buf[p])) {p++;}
+		if (buf[p++] == 'i') {
+			if (buf[p++] == 'f') {
+				while (CharTable.isBlank(buf[p])) {p++;}
+				// 要求出现 '(' 才认定解析成功，为了支持这种场景: #else if you ...
+				if (buf[p] == '(') {
+					forward = p;
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -405,7 +429,7 @@ class Lexer {
 	}
 	
 	void skipBlanks() {
-		while(CharTable.isBlank(buf[forward])) {
+		while (CharTable.isBlank(buf[forward])) {
 			next();
 		}
 	}

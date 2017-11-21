@@ -17,6 +17,7 @@
 package com.jfinal.template.expr.ast;
 
 import java.lang.reflect.Array;
+import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Record;
@@ -40,6 +41,7 @@ public class Field extends Expr {
 	private Expr expr;
 	private String fieldName;
 	private String getterName;
+	private long getterNameHash;
 	
 	public Field(Expr expr, String fieldName, Location location) {
 		if (expr == null) {
@@ -48,6 +50,8 @@ public class Field extends Expr {
 		this.expr = expr;
 		this.fieldName = fieldName;
 		this.getterName = "get" + StrKit.firstCharToUpperCase(fieldName);
+		// fnv1a64 hash 到比 String.hashCode() 更大的 long 值范围
+		this.getterNameHash = HashKit.fnv1a64(getterName);
 		this.location = location;
 	}
 	
@@ -65,7 +69,8 @@ public class Field extends Expr {
 		}
 		
 		Class<?> targetClass = target.getClass();
-		String key = FieldKit.getFieldKey(targetClass, getterName);
+		Long key = buildFieldKey(targetClass);
+		
 		MethodInfo getter;
 		try {
 			getter = MethodKit.getGetterMethod(key, targetClass, getterName);
@@ -111,6 +116,10 @@ public class Field extends Expr {
 			throw new TemplateException("Field not found: \"" + id + "." + fieldName + "\" and getter method not found: \"" + id + "." + getterName + "()\"", location);
 		}
 		throw new TemplateException("Field not found: \"" + fieldName + "\" and getter method not found: \"" + getterName + "()\"", location);
+	}
+	
+	private Long buildFieldKey(Class<?> targetClass) {
+		return targetClass.getName().hashCode() ^ getterNameHash;
 	}
 }
 

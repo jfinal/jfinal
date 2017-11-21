@@ -18,7 +18,9 @@ package com.jfinal.template.ext.spring;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import javax.servlet.ServletContext;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.Directive;
@@ -54,6 +56,15 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 	static boolean sessionInView = false;
 	static boolean createSession = true;
 	
+	private static JFinalViewResolver me = null;
+	
+	/**
+	 * me 会保存在第一次被创建对象
+	 */
+	public static JFinalViewResolver me() {
+		return me;
+	}
+	
 	public Engine getEngine() {
 		return engine;
 	}
@@ -84,6 +95,24 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 	}
 	
 	/**
+	 * 通过 List 配置多个 shared function file
+	 * <pre>
+	 * 配置示例：
+	 * 	<property name="sharedFunctionList">
+	 *     	<list>
+	 *     		<value>_layout.html</value>
+	 *     		<value>_paginate.html</value>
+	 *     	</list>
+	 * 	</property>
+	 * </pre>
+	 */
+	public void setSharedFunctionList(List<String> sharedFunctionList) {
+		if (sharedFunctionList != null) {
+			JFinalViewResolver.sharedFunctionFiles.addAll(sharedFunctionList);
+		}
+	}
+	
+	/**
 	 * 添加 shared function 文件，可调用多次添加多个文件
 	 */
 	public void addSharedFunction(String fileName) {
@@ -94,8 +123,16 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 	/**
 	 * 添加自定义指令
 	 */
+	public void addDirective(String directiveName, Class<? extends Directive> directiveClass) {
+		engine.addDirective(directiveName, directiveClass);
+	}
+	
+	/**
+	 * 添加自定义指令，已被 addDirective(String, Class<? extends Directive>) 方法取代
+	 */
+	@Deprecated
 	public void addDirective(String directiveName, Directive directive) {
-		engine.addDirective(directiveName, directive);
+		addDirective(directiveName, directive.getClass());
 	}
 	
 	/**
@@ -196,6 +233,12 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 	// ---------------------------------------------------------------
 	
 	public JFinalViewResolver() {
+		synchronized(JFinalViewResolver.class) {
+			if (me == null) {
+				me = this;
+			}
+		}
+		
 		setViewClass(requiredViewClass());
 		setOrder(0);
 		setContentType("text/html;charset=UTF-8");
@@ -209,11 +252,29 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 	}
 	
 	/**
+	 * 支持 jfinal enjoy、jsp、freemarker、velocity 四类模板共存于一个项目中
+	 * 
+	 * 注意：这里采用识别 ".jsp"、".ftl"、".vm" 模板后缀名的方式来实现功能
+	 *     所以 jfinal enjoy 模板不要采用上述三种后缀名，否则功能将失效
+	 *     还要注意与 jsp、freemarker、velocity 以外类型模板共存使用时
+	 *     需要改造该方法
+	 */
+	protected View loadView(String viewName, Locale locale) throws Exception {
+		String suffix = getSuffix();
+		if (".jsp".equals(suffix) || ".ftl".equals(suffix) || ".vm".equals(suffix)) {
+			return null;
+		} else {
+			return super.loadView(viewName, locale);
+		}
+	}
+	
+	/**
 	 * spring 回调，利用 ServletContext 做必要的初始化工作
 	 */
 	@Override
 	protected void initServletContext(ServletContext servletContext) {
 		super.initServletContext(servletContext);
+		super.setExposeRequestAttributes(true);
 		
 		initBaseTemplatePath(servletContext);
 		initSharedFunction();

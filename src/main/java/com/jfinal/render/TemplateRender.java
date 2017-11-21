@@ -16,7 +16,7 @@
 
 package com.jfinal.render;
 
-import java.io.Writer;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,9 +56,8 @@ public class TemplateRender extends Render {
 		}
 		
         try {
-        	Writer writer = response.getWriter();
-        	engine.getTemplate(view).render(data, writer);
-        	writer.flush();
+        	OutputStream os = response.getOutputStream();
+        	engine.getTemplate(view).render(data, os);
 		} catch (Exception e) {
 			throw new RenderException(e);
 		}

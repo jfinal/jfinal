@@ -16,13 +16,13 @@
 
 package com.jfinal.template.stat.ast;
 
-import java.io.Writer;
 import com.jfinal.template.EngineConfig;
 import com.jfinal.template.Env;
 import com.jfinal.template.expr.ast.Assign;
 import com.jfinal.template.expr.ast.Const;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
+import com.jfinal.template.io.Writer;
 import com.jfinal.template.source.ISource;
 import com.jfinal.template.stat.Ctrl;
 import com.jfinal.template.stat.Location;
@@ -94,7 +94,7 @@ public class Include extends Stat {
 			if (config.isDevMode()) {
 				env.addSource(fileSource);
 			}
-			this.stat = parser.parse();
+			this.stat = parser.parse().getActualStat();
 		} catch (Exception e) {
 			// 文件路径不正确抛出异常时添加 location 信息
 			throw new ParseException(e.getMessage(), location, e);
