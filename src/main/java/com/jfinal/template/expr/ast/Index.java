@@ -43,8 +43,8 @@ public class Index extends Expr {
 	
 	@SuppressWarnings("rawtypes")
 	public Object eval(Scope scope) {
-		Object array = expr.eval(scope);
-		if (array == null) {
+		Object target = expr.eval(scope);
+		if (target == null) {
 			if (scope.getCtrl().isNullSafe()) {
 				return null;
 			}
@@ -56,25 +56,30 @@ public class Index extends Expr {
 			if (scope.getCtrl().isNullSafe()) {
 				return null;
 			}
-			throw new TemplateException("The index of list/array and the key of map can not be null", location);
-		}
-		
-		if (array instanceof List) {
-			if (idx instanceof Integer) {
-				return ((List<?>)array).get((Integer)idx);
+			
+			if (target instanceof java.util.Map) {
+				// Map 的 key 可以是 null，不能抛异常
+			} else {
+				throw new TemplateException("The index of list and array can not be null", location);
 			}
-			throw new TemplateException("The index of list can only be integer", location);
 		}
 		
-		if (array instanceof java.util.Map) {
-			return ((java.util.Map)array).get(idx);
-		}
-		
-		if (array.getClass().isArray()) {
+		if (target instanceof List) {
 			if (idx instanceof Integer) {
-				return java.lang.reflect.Array.get(array, (Integer)idx);
+				return ((List<?>)target).get((Integer)idx);
 			}
-			throw new TemplateException("The index of array can only be integer", location);
+			throw new TemplateException("The index of list must be integer", location);
+		}
+		
+		if (target instanceof java.util.Map) {
+			return ((java.util.Map)target).get(idx);
+		}
+		
+		if (target.getClass().isArray()) {
+			if (idx instanceof Integer) {
+				return java.lang.reflect.Array.get(target, (Integer)idx);
+			}
+			throw new TemplateException("The index of array must be integer", location);
 		}
 		
 		throw new TemplateException("Only the list array and map is supported by index access", location);
