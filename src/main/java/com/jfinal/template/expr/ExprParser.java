@@ -469,7 +469,7 @@ public class ExprParser {
 	
 	/**
 	 * mapEntry : (ID | STR | INT | LONG | FLOAT | DOUBLE | TRUE | FALSE | NULL) ':' expr
-	 * 设计目标为 map 定义与实始化，所以 ID 仅当成 STR 不进行求值
+	 * 设计目标为 map 定义与初始化，所以 ID 仅当成 STR 不进行求值
 	 */
 	void buildMapEntry(LinkedHashMap<Object, Expr> map) {
 		Expr keyExpr = expr();
