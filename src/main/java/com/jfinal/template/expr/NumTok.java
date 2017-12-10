@@ -43,7 +43,7 @@ import com.jfinal.template.stat.ParseException;
  */
 public class NumTok extends Tok {
 	
-	private Object value;
+	private Number value;
 	
 	NumTok(Sym sym, String s, int radix, boolean isScientificNotation, Location location) {
 		super(sym, location.getRow());
@@ -101,3 +101,8 @@ public class NumTok extends Tok {
 		return sym.value() + " : " + value;
 	}
 }
+
+
+
+
+
