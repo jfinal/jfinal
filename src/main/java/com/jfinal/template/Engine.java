@@ -22,6 +22,7 @@ import java.util.Map;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.MethodKit;
+import com.jfinal.template.source.ClassPathSourceFactory;
 import com.jfinal.template.source.ISource;
 import com.jfinal.template.source.ISourceFactory;
 import com.jfinal.template.source.StringSource;
@@ -424,6 +425,13 @@ public class Engine {
 		this.config.setSourceFactory(sourceFactory);	// 放第一行先进行参数验证
 		this.sourceFactory = sourceFactory;
 		return this;
+	}
+	
+	/**
+	 * 设置为 ClassPathSourceFactory 的快捷方法
+	 */
+	public Engine setToClassPathSourceFactory() {
+		return setSourceFactory(new ClassPathSourceFactory());
 	}
 	
 	public ISourceFactory getSourceFactory() {

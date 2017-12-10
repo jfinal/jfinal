@@ -292,7 +292,7 @@ public class ExprParser {
 		case ADD:
 		case SUB:
 			move();
-			return new Unary(tok.sym, unary(), location);
+			return new Unary(tok.sym, unary(), location).toConstIfPossible();
 		case INC:
 		case DEC:
 			move();
@@ -468,21 +468,26 @@ public class ExprParser {
 	}
 	
 	/**
-	 * mapEntry : (ID | STR) ':' expr
+	 * mapEntry : (ID | STR | INT | LONG | FLOAT | DOUBLE | TRUE | FALSE | NULL) ':' expr
+	 * 设计目标为 map 定义与实始化，所以 ID 仅当成 STR 不进行求值
 	 */
 	void buildMapEntry(LinkedHashMap<Object, Expr> map) {
-		Tok tok = peek();
-		if (tok.sym == Sym.ID || tok.sym == Sym.STR) {
-			move();
-			match(Sym.COLON);
-			Expr value = expr();
-			if (value == null) {
-				throw new ParseException("Expression error: the value on the right side of map entry can not be blank", location);
-			}
-			map.put(tok.value(), value);
-			return ;
+		Expr keyExpr = expr();
+		Object key;
+		if (keyExpr instanceof Id) {
+			key = ((Id)keyExpr).getId();
+		} else if (keyExpr instanceof Const) {
+			key = ((Const)keyExpr).getValue();
+		} else {
+			throw new ParseException("Expression error: the value of map key must be identifier, String, Boolean, null or Number", location);
 		}
-		throw new ParseException("Expression error: the value of map key must be identifier or String", location);
+		
+		match(Sym.COLON);
+		Expr value = expr();
+		if (value == null) {
+			throw new ParseException("Expression error: the value on the right side of map entry can not be blank", location);
+		}
+		map.put(key, value);
 	}
 	
 	/**
@@ -528,12 +533,14 @@ public class ExprParser {
 			move();
 			return new Id(tok.value());
 		case STR:
+			move();
+			return new Const(tok.sym, tok.value());
 		case INT:
 		case LONG:
 		case FLOAT:
 		case DOUBLE:
 			move();
-			return new Const(tok.sym, tok.value());
+			return new Const(tok.sym, ((NumTok)tok).getNumberValue());
 		case TRUE:
 			move();
 			return Const.TRUE;

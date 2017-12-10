@@ -20,52 +20,23 @@ import com.jfinal.template.expr.Sym;
 import com.jfinal.template.stat.Scope;
 
 /**
- * STR INT LONG FLOAT DOUBLE true false null
+ * STR INT LONG FLOAT DOUBLE TRUE FALSE NULL
  */
 public class Const extends Expr {
 	
-	public static final Const TRUE = new Const(Boolean.TRUE, Sym.TRUE);
-	public static final Const FALSE = new Const(Boolean.FALSE, Sym.FALSE);
-	public static final Const NULL = new Const(null, Sym.NULL);
+	public static final Const TRUE = new Const(Sym.TRUE, Boolean.TRUE);
+	public static final Const FALSE = new Const(Sym.FALSE, Boolean.FALSE);
+	public static final Const NULL = new Const(Sym.NULL, null);
 	
-	private Sym type;
-	private Object value;
+	private final Sym type;
+	private final Object value;
 	
 	/**
-	 * 构造 TRUE FALSE NULL 常量，无需对 value 进行转换
+	 * INT LONG FLOAT DOUBLE 常量已在 NumTok 中转换成了确切的类型，无需再次转换
 	 */
-	private Const(Object value, Sym type) {
+	public Const(Sym type, Object value) {
 		this.type = type;
 		this.value = value;
-	}
-	
-	public Const(Sym type, String value) {
-		this.type = type;
-		this.value = typeConvert(type, value);
-	}
-	
-	private Object typeConvert(Sym type, String value) {
-		switch (type) {
-		case STR:
-			return value;
-		case INT:
-			return Integer.parseInt(value);
-		case LONG:
-			return Long.parseLong(value);
-		case FLOAT:
-			return Float.parseFloat(value);
-		case DOUBLE:
-			return Double.parseDouble(value);
-		/*
-		case TRUE:
-		case FALSE:
-			return Boolean.parseBoolean(value);
-		case NULL:
-			return null;
-		*/
-		default:
-			throw new RuntimeException("never happend");
-		}
 	}
 	
 	public Object eval(Scope scope) {
@@ -108,6 +79,10 @@ public class Const extends Expr {
 		return type == Sym.DOUBLE;
 	}
 	
+	public boolean isNumber() {
+		return value instanceof Number;
+	}
+	
 	public Object getValue() {
 		return value;
 	}
@@ -134,6 +109,10 @@ public class Const extends Expr {
 	
 	public Double getDouble() {
 		return (Double)value;
+	}
+	
+	public Number getNumber() {
+		return (Number)value;
 	}
 	
 	public String toString() {
