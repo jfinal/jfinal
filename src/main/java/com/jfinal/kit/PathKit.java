@@ -110,7 +110,7 @@ public class PathKit {
 		}
 	}
 	
-	public static boolean isAbsolutelyPath(String path) {
+	public static boolean isAbsolutePath(String path) {
 		return path.startsWith("/") || path.indexOf(':') == 1;
 	}
 	

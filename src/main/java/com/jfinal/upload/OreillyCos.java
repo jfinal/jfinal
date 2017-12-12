@@ -51,7 +51,7 @@ public class OreillyCos {
 		uploadPath = uploadPath.replaceAll("\\\\", "/");
 		
 		String baseUploadPath;
-		if (PathKit.isAbsolutelyPath(uploadPath)) {
+		if (PathKit.isAbsolutePath(uploadPath)) {
 			baseUploadPath = uploadPath;
 		} else {
 			baseUploadPath = PathKit.getWebRootPath() + File.separator + uploadPath;
