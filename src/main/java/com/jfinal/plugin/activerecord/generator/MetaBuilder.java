@@ -247,6 +247,11 @@ public class MetaBuilder {
 					typeStr = "byte[]";
 				} else if (type == Types.CLOB || type == Types.NCLOB) {
 					typeStr = "java.lang.String";
+				}
+				// 支持 oracle 的 TIMESTAMP、DATE 字段类型，其中 Types.DATE 值并不会出现
+				// 保留对 Types.DATE 的判断，一是为了逻辑上的正确性、完备性，二是其它类型的数据库可能用得着
+				else if (type == Types.TIMESTAMP || type == Types.DATE) {
+					typeStr = "java.util.Date";
 				} else {
 					typeStr = "java.lang.String";
 				}

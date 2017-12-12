@@ -65,6 +65,12 @@ public class Captcha implements Serializable {
 		this(key, value, DEFAULT_EXPIRE_TIME);
 	}
 	
+	/**
+	 * redis 反序列化需要默认构造方法
+	 */
+	public Captcha() {
+	}
+	
 	public String getKey() {
 		return key;
 	}

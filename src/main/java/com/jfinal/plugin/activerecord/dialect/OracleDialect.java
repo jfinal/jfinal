@@ -24,11 +24,18 @@ import java.util.Map.Entry;
 import java.util.Set;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.Table;
+import com.jfinal.plugin.activerecord.builder.TimestampProcessedModelBuilder;
+import com.jfinal.plugin.activerecord.builder.TimestampProcessedRecordBuilder;
 
 /**
  * OracleDialect.
  */
 public class OracleDialect extends Dialect {
+	
+	public OracleDialect() {
+		this.modelBuilder = TimestampProcessedModelBuilder.me;
+		this.recordBuilder = TimestampProcessedRecordBuilder.me;
+	}
 	
 	public String forTableBuilderDoBuild(String tableName) {
 		return "select * from " + tableName + " where rownum < 1";
