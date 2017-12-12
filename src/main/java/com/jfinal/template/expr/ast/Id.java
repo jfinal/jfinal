@@ -23,7 +23,7 @@ import com.jfinal.template.stat.Scope;
  */
 public class Id extends Expr {
 	
-	private String id;
+	private final String id;
 	
 	public Id(String id) {
 		this.id = id;

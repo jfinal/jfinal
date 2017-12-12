@@ -122,7 +122,7 @@ public class RenderManager {
 		
 		String baseDownloadPath;
 		// 如果为绝对路径则直接使用，否则把 downloadPath 参数作为项目根路径的相对路径
-		if (PathKit.isAbsolutelyPath(downloadPath)) {
+		if (PathKit.isAbsolutePath(downloadPath)) {
 			baseDownloadPath = downloadPath;
 		} else {
 			baseDownloadPath = PathKit.getWebRootPath() + File.separator + downloadPath;
