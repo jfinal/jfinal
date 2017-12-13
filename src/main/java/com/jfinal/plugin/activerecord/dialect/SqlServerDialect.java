@@ -24,11 +24,18 @@ import java.util.Map.Entry;
 import java.util.Set;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.Table;
+import com.jfinal.plugin.activerecord.builder.TimestampProcessedModelBuilder;
+import com.jfinal.plugin.activerecord.builder.TimestampProcessedRecordBuilder;
 
 /**
  * SqlServerDialect 为OSC 网友战五渣贡献代码：http://www.oschina.net/question/2333909_234198
  */
 public class SqlServerDialect extends Dialect {
+	
+	public SqlServerDialect() {
+		this.modelBuilder = TimestampProcessedModelBuilder.me;
+		this.recordBuilder = TimestampProcessedRecordBuilder.me;
+	}
 	
 	public String forTableBuilderDoBuild(String tableName) {
 		return "select * from " + tableName + " where 1 = 2";
