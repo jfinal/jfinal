@@ -137,6 +137,10 @@ class JFinalSession extends HashMap implements HttpSession {
 	public void setMaxInactiveInterval(int maxInactiveInterval) {
 		session.setMaxInactiveInterval(maxInactiveInterval);
 	}
+	
+	public String toString() {
+		return session != null ? session.toString() : "null";
+	}
 }
 
 /*
