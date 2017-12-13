@@ -299,7 +299,7 @@ public abstract class Dialect {
 			} else if (value instanceof java.util.Date) {	// 该分支放在最后，否则另外两项将无意义
 				// Oracle、SqlServer 中的 TIMESTAMP、DATE 支持 new Date() 给值
 				java.util.Date d = (java.util.Date)value;
-				pst.setTimestamp(i, new java.sql.Timestamp(d.getTime()));
+				pst.setTimestamp(i + 1, new java.sql.Timestamp(d.getTime()));
 			} else {
 				pst.setObject(i + 1, value);
 			}
