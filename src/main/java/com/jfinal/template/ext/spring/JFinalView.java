@@ -155,6 +155,10 @@ class InnerSession extends HashMap<Object, Object> implements HttpSession {
 	public void setMaxInactiveInterval(int maxInactiveInterval) {
 		session.setMaxInactiveInterval(maxInactiveInterval);
 	}
+	
+	public String toString() {
+		return session != null ? session.toString() : "null";
+	}
 }
 
 
