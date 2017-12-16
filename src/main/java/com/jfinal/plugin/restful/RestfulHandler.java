@@ -24,7 +24,7 @@ public class RestfulHandler extends Handler {
         List<String> actionKeys = jf.getAllActionKeys();
         String[] empty = new String[]{null};
         for (String k : actionKeys) {
-            if (!k.startsWith("@")) {
+            if (!k.startsWith("/@")) {
                 continue;
             }
             actionTreeMap.put(k, jf.getAction(k, empty));
@@ -49,7 +49,7 @@ public class RestfulHandler extends Handler {
     }
 
     private String matchActionKey(String url, String method) {
-        Action action = actionTreeMap.get("@" + method + url);// @GET/v1/company/:companyId/staff/:staffId
+        Action action = actionTreeMap.get("/@" + method + url);// /@GET/v1/company/:companyId/staff/:staffId
         if (action == null) {
             return null;
         }
