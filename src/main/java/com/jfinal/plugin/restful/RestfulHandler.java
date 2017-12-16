@@ -16,22 +16,23 @@ import java.util.TreeMap;
  */
 public class RestfulHandler extends Handler {
     private TreeMap<String, Action> actionTreeMap;
-
-    public RestfulHandler() {
-        actionTreeMap = new TreeMap<String, Action>(new RestfulKeyComparator());
-        JFinal jf = JFinal.me();
-        List<String> actionKeys = jf.getAllActionKeys();
-        String[] empty = new String[]{null};
-        for (String k : actionKeys) {
-            if (!k.startsWith("@")) {
-                continue;
-            }
-            actionTreeMap.put(k, jf.getAction(k, empty));
-        }
-    }
+    private boolean init;
 
     @Override
     public void handle(String target, HttpServletRequest request, HttpServletResponse response, boolean[] isHandled) {
+        if (!init) {
+            actionTreeMap = new TreeMap<String, Action>(new RestfulKeyComparator());
+            JFinal jf = JFinal.me();
+            List<String> actionKeys = jf.getAllActionKeys();
+            String[] empty = new String[]{null};
+            for (String k : actionKeys) {
+                if (!k.startsWith("@")) {
+                    continue;
+                }
+                actionTreeMap.put(k, jf.getAction(k, empty));
+            }
+            init = true;
+        }
         String actionKey = matchActionKey(target, request.getMethod());
 
         if (actionKey != null) {
