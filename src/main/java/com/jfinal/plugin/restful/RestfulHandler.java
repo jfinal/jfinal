@@ -38,18 +38,19 @@ public class RestfulHandler extends Handler {
             init();
         }
 
-        String actionKey = matchActionKey(target, request.getMethod());
+        String url = "/@" + request.getMethod() + target;// /@GET/v1/company/:companyId/staff/:staffId
+        String actionKey = matchActionKey(url);
 
         if (actionKey != null) {
-            parseUrlPara(target, actionKey, request);
+            parseUrlPara(url, actionKey, request);
             target = actionKey;
         }
 
         next.handle(target, request, response, isHandled);
     }
 
-    private String matchActionKey(String url, String method) {
-        Action action = actionTreeMap.get("/@" + method + url);// /@GET/v1/company/:companyId/staff/:staffId
+    private String matchActionKey(String url) {
+        Action action = actionTreeMap.get(url);
         if (action == null) {
             return null;
         }
