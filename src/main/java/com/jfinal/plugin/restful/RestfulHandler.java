@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.TreeMap;
 
 /**
- * 拦截所有匹配routes的请求，根据target及method匹配Action后，重设target使ActionHandler可正确匹配该Action。
+ * 拦截所有匹配actionTreeMap的请求，根据target及method匹配Action后，重设target使ActionHandler可正确匹配该Action。
  * 尝试用种优雅的方式让JFinal支持多参数Restful Url，减少对JFinal核心逻辑的侵入或破坏。
  * 需特别按照多参数Restful Url处理时，使用@ActionKey("@GET/v1/company/:companyId/staff/:staffId")形式注解
  */
