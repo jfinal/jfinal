@@ -17,7 +17,7 @@ import java.util.TreeMap;
 public class RestfulHandler extends Handler {
     private TreeMap<String, Action> actionTreeMap;
 
-    private RestfulHandler() {
+    public RestfulHandler() {
         actionTreeMap = new TreeMap<String, Action>(new RestfulKeyComparator());
         JFinal jf = JFinal.me();
         List<String> actionKeys = jf.getAllActionKeys();
