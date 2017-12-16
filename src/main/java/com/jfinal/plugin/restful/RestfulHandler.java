@@ -16,8 +16,9 @@ import java.util.TreeMap;
  */
 public class RestfulHandler extends Handler {
     private TreeMap<String, Action> actionTreeMap;
+    private boolean initialized;
 
-    public RestfulHandler() {
+    public void init() {
         actionTreeMap = new TreeMap<String, Action>(new RestfulKeyComparator());
         JFinal jf = JFinal.me();
         List<String> actionKeys = jf.getAllActionKeys();
@@ -28,10 +29,15 @@ public class RestfulHandler extends Handler {
             }
             actionTreeMap.put(k, jf.getAction(k, empty));
         }
+        initialized = true;
     }
 
     @Override
     public void handle(String target, HttpServletRequest request, HttpServletResponse response, boolean[] isHandled) {
+        if (!initialized) {
+            init();
+        }
+
         String actionKey = matchActionKey(target, request.getMethod());
 
         if (actionKey != null) {
