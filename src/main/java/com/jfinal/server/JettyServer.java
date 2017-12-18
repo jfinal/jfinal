@@ -25,6 +25,7 @@ import org.eclipse.jetty.server.SessionManager;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.util.resource.ResourceCollection;
 import org.eclipse.jetty.webapp.WebAppContext;
 import com.jfinal.core.Const;
 import com.jfinal.kit.FileKit;
@@ -37,7 +38,6 @@ import com.jfinal.kit.StrKit;
  * Jetty version 8.1.8
  */
 class JettyServer implements IServer {
-	
 	private String webAppDir;
 	private int port;
 	private String context;
@@ -97,7 +97,9 @@ class JettyServer implements IServer {
 		webApp = new WebAppContext();
 		webApp.setThrowUnavailableOnStartupException(true);	// 在启动过程中允许抛出异常终止启动并退出 JVM
 		webApp.setContextPath(context);
-		webApp.setResourceBase(webAppDir);	// webApp.setWar(webAppDir);
+		ResourceCollection resources = new ResourceCollection();
+		resources.setResourcesAsCSV(webAppDir);
+		webApp.setBaseResource(resources);	// webApp.setWar(webAppDir);
 		webApp.setInitParameter("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
 		webApp.setInitParameter("org.eclipse.jetty.servlet.Default.useFileMappedBuffer", "false");	// webApp.setInitParams(Collections.singletonMap("org.mortbay.jetty.servlet.Default.useFileMappedBuffer", "false"));
 		persistSession(webApp);
