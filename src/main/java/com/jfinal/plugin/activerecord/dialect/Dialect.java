@@ -272,14 +272,16 @@ public abstract class Dialect {
 	protected void fillStatementHandleDateType(PreparedStatement pst, List<Object> paras) throws SQLException {
 		for (int i=0, size=paras.size(); i<size; i++) {
 			Object value = paras.get(i);
-			if (value instanceof java.sql.Date) {
-				pst.setDate(i + 1, (java.sql.Date)value);
-			} else if (value instanceof java.sql.Timestamp) {
-				pst.setTimestamp(i + 1, (java.sql.Timestamp)value);
-			} else if (value instanceof java.util.Date) {	// 该分支放在最后，否则另外两项将无意义
-				// Oracle、SqlServer 中的 TIMESTAMP、DATE 支持 new Date() 给值
-				java.util.Date d = (java.util.Date)value;
-				pst.setTimestamp(i + 1, new java.sql.Timestamp(d.getTime()));
+			if (value instanceof java.util.Date) {
+				if (value instanceof java.sql.Date) {
+					pst.setDate(i + 1, (java.sql.Date)value);
+				} else if (value instanceof java.sql.Timestamp) {
+					pst.setTimestamp(i + 1, (java.sql.Timestamp)value);
+				} else {
+					// Oracle、SqlServer 中的 TIMESTAMP、DATE 支持 new Date() 给值
+					java.util.Date d = (java.util.Date)value;
+					pst.setTimestamp(i + 1, new java.sql.Timestamp(d.getTime()));
+				}
 			} else {
 				pst.setObject(i + 1, value);
 			}
@@ -292,14 +294,16 @@ public abstract class Dialect {
 	protected void fillStatementHandleDateType(PreparedStatement pst, Object... paras) throws SQLException {
 		for (int i=0; i<paras.length; i++) {
 			Object value = paras[i];
-			if (value instanceof java.sql.Date) {
-				pst.setDate(i + 1, (java.sql.Date)value);
-			} else if (value instanceof java.sql.Timestamp) {
-				pst.setTimestamp(i + 1, (java.sql.Timestamp)value);
-			} else if (value instanceof java.util.Date) {	// 该分支放在最后，否则另外两项将无意义
-				// Oracle、SqlServer 中的 TIMESTAMP、DATE 支持 new Date() 给值
-				java.util.Date d = (java.util.Date)value;
-				pst.setTimestamp(i + 1, new java.sql.Timestamp(d.getTime()));
+			if (value instanceof java.util.Date) {
+				if (value instanceof java.sql.Date) {
+					pst.setDate(i + 1, (java.sql.Date)value);
+				} else if (value instanceof java.sql.Timestamp) {
+					pst.setTimestamp(i + 1, (java.sql.Timestamp)value);
+				} else {
+					// Oracle、SqlServer 中的 TIMESTAMP、DATE 支持 new Date() 给值
+					java.util.Date d = (java.util.Date)value;
+					pst.setTimestamp(i + 1, new java.sql.Timestamp(d.getTime()));
+				}
 			} else {
 				pst.setObject(i + 1, value);
 			}
