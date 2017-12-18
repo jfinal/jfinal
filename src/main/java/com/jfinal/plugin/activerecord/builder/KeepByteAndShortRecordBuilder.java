@@ -57,20 +57,30 @@ public class KeepByteAndShortRecordBuilder extends RecordBuilder {
 			Map<String, Object> columns = record.getColumns();
 			for (int i=1; i<=columnCount; i++) {
 				Object value;
-				if (types[i] == Types.TINYINT)
-					value = rs.getByte(i);
-				else if (types[i] == Types.SMALLINT)
-					value = rs.getShort(i);
-				else if (types[i] < Types.BLOB)
-					value = rs.getObject(i);
-				else if (types[i] == Types.CLOB)
-					value = ModelBuilder.me.handleClob(rs.getClob(i));
-				else if (types[i] == Types.NCLOB)
-					value = ModelBuilder.me.handleClob(rs.getNClob(i));
-				else if (types[i] == Types.BLOB)
-					value = ModelBuilder.me.handleBlob(rs.getBlob(i));
-				else
-					value = rs.getObject(i);
+				int t = types[i];
+				if (t < Types.DATE) {
+					if (t == Types.TINYINT) {
+						value = rs.getByte(i);
+					} else if (t == Types.SMALLINT) {
+						value = rs.getShort(i);
+					} else {
+						value = rs.getObject(i);
+					}
+				} else {
+					if (t == Types.TIMESTAMP) {
+						value = rs.getTimestamp(i);
+					} else if (t == Types.DATE) {
+						value = rs.getDate(i);
+					} else if (t == Types.CLOB) {
+						value = ModelBuilder.me.handleClob(rs.getClob(i));
+					} else if (t == Types.NCLOB) {
+						value = ModelBuilder.me.handleClob(rs.getNClob(i));
+					} else if (t == Types.BLOB) {
+						value = ModelBuilder.me.handleBlob(rs.getBlob(i));
+					} else {
+						value = rs.getObject(i);
+					}
+				}
 				
 				columns.put(labelNames[i], value);
 			}
