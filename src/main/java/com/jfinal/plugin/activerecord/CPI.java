@@ -39,7 +39,7 @@ public abstract class CPI {
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static final Set<String> getModifyFlag(Model model) {
-		return model.getModifyFlag();
+		return model._getModifyFlag();
 	}
 	
 	public static <T> List<T> query(Connection conn, String sql, Object... paras) throws SQLException {
