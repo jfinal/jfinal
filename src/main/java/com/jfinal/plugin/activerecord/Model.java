@@ -45,18 +45,19 @@ public abstract class Model<M extends Model> implements Serializable {
 	public static final int FILTER_BY_SAVE = 0;
 	public static final int FILTER_BY_UPDATE = 1;
 	
-	public M dao() {
-		attrs = DaoContainerFactory.daoMap;
-		modifyFlag = DaoContainerFactory.daoSet;
-		return (M)this;
-	}
+	private String configName;
+	
+	/**
+	 * Flag of column has been modified. update need this flag
+	 */
+	private Set<String> modifyFlag;
 	
 	/**
 	 * Attributes of this model
 	 */
-	private Map<String, Object> attrs = getAttrsMap();	// getConfig().containerFactory.getAttrsMap();	// new HashMap<String, Object>();
+	private Map<String, Object> attrs = createAttrsMap();	// getConfig().containerFactory.getAttrsMap();	// new HashMap<String, Object>();
 	
-	private Map<String, Object> getAttrsMap() {
+	private Map<String, Object> createAttrsMap() {
 		Config config = _getConfig();
 		if (config == null)
 			return DbKit.brokenConfig.containerFactory.getAttrsMap();
@@ -64,9 +65,95 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	/**
-	 * Flag of column has been modified. update need this flag
+	 * 将本 model 对象转化为线程安全的 dao 对象.
+	 * 
+	 * 为保障线程安全，转化为线程安全的 dao 对象，只能调用线程安全方法，
+	 * 也即只能调用其 find 系列、paginate 系列、deleteBy 系列方法，
+	 * 不能再调用其 set 系列以及 get 系列方法，更不能再调用其 save()、
+	 * update()、delete() 等方法，否则会抛出异常进行防护
+	 * 
+	 * <pre>
+	 * 强烈建议通过 static 修饰过的 dao 对象都要调用一次 dao() 方法，
+	 * 以免新手误用造成线程安全问题，示例如下：
+	 * 
+	 * public class UserService {
+	 * 
+	 * 	private static User dao = new User().dao();
+	 * 		
+	 * 	public User getUserById(long userId) {
+	 * 		return dao.findFirst("select * from `user` where id = ? limit 1", userId);
+	 * 	}
+	 * }
+	 * </pre>
 	 */
-	private Set<String> modifyFlag;
+	public M dao() {
+		attrs = DaoContainerFactory.daoMap;
+		modifyFlag = DaoContainerFactory.daoSet;
+		return (M)this;
+	}
+	
+	/**
+	 * filter () 方法将被 save()、update() 两个方法回调，
+	 * 子类可通过覆盖此方法，实现类似于过滤 XSS 攻击脚本的功能
+	 * 
+	 * @param filterBy 0 表示当前正被 save() 调用, 1 表示当前正被 update() 调用
+	 */
+	protected void filter(int filterBy) {
+		
+	}
+	
+	/**
+	 * Return attribute Map.
+	 * <p>
+	 * Danger! The update method will ignore the attribute if you change it directly.
+	 * You must use set method to change attribute that update method can handle it.
+	 */
+	protected Map<String, Object> _getAttrs() {
+		return attrs;
+	}
+	
+	/**
+	 * Return attribute Set.
+	 */
+	public Set<Entry<String, Object>> _getAttrsEntrySet() {
+		return attrs.entrySet();
+	}
+	
+	/**
+	 * Return attribute names of this model.
+	 */
+	public String[] _getAttrNames() {
+		Set<String> attrNameSet = attrs.keySet();
+		return attrNameSet.toArray(new String[attrNameSet.size()]);
+	}
+	
+	/**
+	 * Return attribute values of this model.
+	 */
+	public Object[] _getAttrValues() {
+		java.util.Collection<Object> attrValueCollection = attrs.values();
+		return attrValueCollection.toArray(new Object[attrValueCollection.size()]);
+	}
+	
+	/**
+	 * Set attributes with other model.
+	 * @param model the Model
+	 * @return this Model
+	 */
+	public M _setAttrs(M model) {
+		return (M)_setAttrs(model._getAttrs());
+	}
+	
+	/**
+	 * Set attributes with Map.
+	 * @param attrs attributes of this model
+	 * @return this Model
+	 */
+	public M _setAttrs(Map<String, Object> attrs) {
+		for (Entry<String, Object> e : attrs.entrySet())
+			set(e.getKey(), e.getValue());
+		return (M)this;
+	}
 	
 	/*
 	private Set<String> getModifyFlag() {
@@ -75,7 +162,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		return modifyFlag;
 	}*/
 	
-	Set<String> getModifyFlag() {
+	protected Set<String> _getModifyFlag() {
 		if (modifyFlag == null) {
 			Config config = _getConfig();
 			if (config == null)
@@ -86,20 +173,10 @@ public abstract class Model<M extends Model> implements Serializable {
 		return modifyFlag;
 	}
 	
-	private String configName = null;
-	
-	/**
-	 * Switching data source, dialect and all config by configName
-	 */
-	public M use(String configName) {
-		this.configName = configName;
-		return (M)this;
-	}
-	
 	protected Config _getConfig() {
 		if (configName != null)
 			return DbKit.getConfig(configName);
-		return DbKit.getConfig(getUsefulClass());
+		return DbKit.getConfig(_getUsefulClass());
 	}
 	
 	/*
@@ -107,8 +184,24 @@ public abstract class Model<M extends Model> implements Serializable {
 		return DbKit.getConfig(getUsefulClass());
 	}*/
 	
-	private Table getTable() {
-		return TableMapping.me().getTable(getUsefulClass());
+	protected Table _getTable() {
+		return TableMapping.me().getTable(_getUsefulClass());
+	}
+	
+	protected Class<? extends Model> _getUsefulClass() {
+		Class c = getClass();
+		// guice : Model$$EnhancerByGuice$$40471411
+		// cglib : com.demo.blog.Blog$$EnhancerByCGLIB$$69a17158
+		// return c.getName().indexOf("EnhancerByCGLIB") == -1 ? c : c.getSuperclass();
+		return c.getName().indexOf("$$EnhancerBy") == -1 ? c : c.getSuperclass();
+	}
+	
+	/**
+	 * Switching data source, dialect and all config by configName
+	 */
+	public M use(String configName) {
+		this.configName = configName;
+		return (M)this;
 	}
 	
 	/**
@@ -119,13 +212,13 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @throws ActiveRecordException if the attribute is not exists of the model
 	 */
 	public M set(String attr, Object value) {
-		Table table = getTable();	// table 为 null 时用于未启动 ActiveRecordPlugin 的场景
+		Table table = _getTable();	// table 为 null 时用于未启动 ActiveRecordPlugin 的场景
 		if (table != null && !table.hasColumnLabel(attr)) {
 			throw new ActiveRecordException("The attribute name does not exist: \"" + attr + "\"");
 		}
 		
 		attrs.put(attr, value);
-		getModifyFlag().add(attr);	// Add modify flag, update() need this flag.
+		_getModifyFlag().add(attr);	// Add modify flag, update() need this flag.
 		return (M)this;
 	}
 	
@@ -350,7 +443,7 @@ public abstract class Model<M extends Model> implements Serializable {
 			throw new ActiveRecordException("pageNumber and pageSize must more than 0");
 		}
 		if (config.dialect.isTakeOverModelPaginate()) {
-			return config.dialect.takeOverModelPaginate(conn, getUsefulClass(), pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
+			return config.dialect.takeOverModelPaginate(conn, _getUsefulClass(), pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
 		}
 		
 		List result = Db.query(config, conn, totalRowSql, paras);
@@ -407,30 +500,13 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	/**
-	 * Return attribute Map.
-	 * <p>
-	 * Danger! The update method will ignore the attribute if you change it directly.
-	 * You must use set method to change attribute that update method can handle it.
-	 */
-	protected Map<String, Object> _getAttrs() {
-		return attrs;
-	}
-	
-	/**
-	 * Return attribute Set.
-	 */
-	public Set<Entry<String, Object>> _getAttrsEntrySet() {
-		return attrs.entrySet();
-	}
-	
-	/**
 	 * Save model.
 	 */
 	public boolean save() {
 		filter(FILTER_BY_SAVE);
 		
 		Config config = _getConfig();
-		Table table = getTable();
+		Table table = _getTable();
 		
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();
@@ -451,7 +527,7 @@ public abstract class Model<M extends Model> implements Serializable {
 			config.dialect.fillStatement(pst, paras);
 			result = pst.executeUpdate();
 			config.dialect.getModelGeneratedKey(this, pst, table);
-			getModifyFlag().clear();
+			_getModifyFlag().clear();
 			return result >= 1;
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
@@ -464,7 +540,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Delete model.
 	 */
 	public boolean delete() {
-		Table table = getTable();
+		Table table = _getTable();
 		String[] pKeys = table.getPrimaryKey();
 		Object[] ids = new Object[pKeys.length];
 		for (int i=0; i<pKeys.length; i++) {
@@ -483,7 +559,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	public boolean deleteById(Object idValue) {
 		if (idValue == null)
 			throw new IllegalArgumentException("idValue can not be null");
-		return deleteById(getTable(), idValue);
+		return deleteById(_getTable(), idValue);
 	}
 	
 	/**
@@ -492,7 +568,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return true if delete succeed otherwise false
 	 */
 	public boolean deleteById(Object... idValues) {
-		Table table = getTable();
+		Table table = _getTable();
 		if (idValues == null || idValues.length != table.getPrimaryKey().length)
 			throw new IllegalArgumentException("Primary key nubmer must equals id value number and can not be null");
 		
@@ -519,11 +595,11 @@ public abstract class Model<M extends Model> implements Serializable {
 	public boolean update() {
 		filter(FILTER_BY_UPDATE);
 		
-		if (getModifyFlag().isEmpty()) {
+		if (_getModifyFlag().isEmpty()) {
 			return false;
 		}
 		
-		Table table = getTable();
+		Table table = _getTable();
 		String[] pKeys = table.getPrimaryKey();
 		for (String pKey : pKeys) {
 			Object id = attrs.get(pKey);
@@ -534,7 +610,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		Config config = _getConfig();
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();
-		config.dialect.forModelUpdate(table, attrs, getModifyFlag(), sql, paras);
+		config.dialect.forModelUpdate(table, attrs, _getModifyFlag(), sql, paras);
 		
 		if (paras.size() <= 1) {	// Needn't update
 			return false;
@@ -546,7 +622,7 @@ public abstract class Model<M extends Model> implements Serializable {
 			conn = config.getConnection();
 			int result = Db.update(config, conn, sql.toString(), paras.toArray());
 			if (result >= 1) {
-				getModifyFlag().clear();
+				_getModifyFlag().clear();
 				return true;
 			}
 			return false;
@@ -565,7 +641,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		PreparedStatement pst = conn.prepareStatement(sql);
 		config.dialect.fillStatement(pst, paras);
 		ResultSet rs = pst.executeQuery();
-		List<M> result = config.dialect.buildModelList(rs, getUsefulClass());	// ModelBuilder.build(rs, getUsefulClass());
+		List<M> result = config.dialect.buildModelList(rs, _getUsefulClass());	// ModelBuilder.build(rs, getUsefulClass());
 		DbKit.close(rs, pst);
 		return result;
 	}
@@ -662,7 +738,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @param columns the specific columns to load
 	 */
 	public M findByIdLoadColumns(Object[] idValues, String columns) {
-		Table table = getTable();
+		Table table = _getTable();
 		if (table.getPrimaryKey().length != idValues.length)
 			throw new IllegalArgumentException("id values error, need " + table.getPrimaryKey().length + " id value");
 		
@@ -672,33 +748,13 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	/**
-	 * Set attributes with other model.
-	 * @param model the Model
-	 * @return this Model
-	 */
-	public M _setAttrs(M model) {
-		return (M)_setAttrs(model._getAttrs());
-	}
-	
-	/**
-	 * Set attributes with Map.
-	 * @param attrs attributes of this model
-	 * @return this Model
-	 */
-	public M _setAttrs(Map<String, Object> attrs) {
-		for (Entry<String, Object> e : attrs.entrySet())
-			set(e.getKey(), e.getValue());
-		return (M)this;
-	}
-	
-	/**
 	 * Remove attribute of this model.
 	 * @param attr the attribute name of the model
 	 * @return this model
 	 */
 	public M remove(String attr) {
 		attrs.remove(attr);
-		getModifyFlag().remove(attr);
+		_getModifyFlag().remove(attr);
 		return (M)this;
 	}
 	
@@ -711,7 +767,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		if (attrs != null)
 			for (String a : attrs) {
 				this.attrs.remove(a);
-				this.getModifyFlag().remove(a);
+				this._getModifyFlag().remove(a);
 			}
 		return (M)this;
 	}
@@ -725,7 +781,7 @@ public abstract class Model<M extends Model> implements Serializable {
 			Entry<String, Object> e = it.next();
 			if (e.getValue() == null) {
 				it.remove();
-				getModifyFlag().remove(e.getKey());
+				_getModifyFlag().remove(e.getKey());
 			}
 		}
 		return (M)this;
@@ -744,7 +800,7 @@ public abstract class Model<M extends Model> implements Serializable {
 			for (String a : attrs) {
 				if (this.attrs.containsKey(a))	// prevent put null value to the newColumns
 					newAttrs.put(a, this.attrs.get(a));
-				if (this.getModifyFlag().contains(a))
+				if (this._getModifyFlag().contains(a))
 					newModifyFlag.add(a);
 			}
 			this.attrs = newAttrs;
@@ -752,7 +808,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		}
 		else {
 			this.attrs.clear();
-			this.getModifyFlag().clear();
+			this._getModifyFlag().clear();
 		}
 		return (M)this;
 	}
@@ -765,16 +821,16 @@ public abstract class Model<M extends Model> implements Serializable {
 	public M keep(String attr) {
 		if (attrs.containsKey(attr)) {	// prevent put null value to the newColumns
 			Object keepIt = attrs.get(attr);
-			boolean keepFlag = getModifyFlag().contains(attr);
+			boolean keepFlag = _getModifyFlag().contains(attr);
 			attrs.clear();
-			getModifyFlag().clear();
+			_getModifyFlag().clear();
 			attrs.put(attr, keepIt);
 			if (keepFlag)
-				getModifyFlag().add(attr);
+				_getModifyFlag().add(attr);
 		}
 		else {
 			attrs.clear();
-			getModifyFlag().clear();
+			_getModifyFlag().clear();
 		}
 		return (M)this;
 	}
@@ -785,7 +841,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	public M clear() {
 		attrs.clear();
-		getModifyFlag().clear();
+		_getModifyFlag().clear();
 		return (M)this;
 	}
 	
@@ -811,7 +867,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	public boolean equals(Object o) {
 		if (!(o instanceof Model))
             return false;
-		if (getUsefulClass() != ((Model)o).getUsefulClass())
+		if (_getUsefulClass() != ((Model)o)._getUsefulClass())
 			return false;
 		if (o == this)
 			return true;
@@ -819,7 +875,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	public int hashCode() {
-		return (attrs == null ? 0 : attrs.hashCode()) ^ (getModifyFlag() == null ? 0 : getModifyFlag().hashCode());
+		return (attrs == null ? 0 : attrs.hashCode()) ^ (_getModifyFlag() == null ? 0 : _getModifyFlag().hashCode());
 	}
 	
 	/**
@@ -904,42 +960,10 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	/**
-	 * Return attribute names of this model.
-	 */
-	public String[] _getAttrNames() {
-		Set<String> attrNameSet = attrs.keySet();
-		return attrNameSet.toArray(new String[attrNameSet.size()]);
-	}
-	
-	/**
-	 * Return attribute values of this model.
-	 */
-	public Object[] _getAttrValues() {
-		java.util.Collection<Object> attrValueCollection = attrs.values();
-		return attrValueCollection.toArray(new Object[attrValueCollection.size()]);
-	}
-	
-	/**
 	 * Return json string of this model.
 	 */
 	public String toJson() {
 		return com.jfinal.kit.JsonKit.toJson(attrs);
-	}
-	
-	protected Class<? extends Model> getUsefulClass() {
-		Class c = getClass();
-		// guice : Model$$EnhancerByGuice$$40471411
-		// cglib : com.demo.blog.Blog$$EnhancerByCGLIB$$69a17158
-		// return c.getName().indexOf("EnhancerByCGLIB") == -1 ? c : c.getSuperclass();
-		return c.getName().indexOf("$$EnhancerBy") == -1 ? c : c.getSuperclass();
-	}
-	
-	/**
-	 * filter () 方法将被 save()、update() 调用，可用于过滤类似于 XSS 攻击脚本
-	 * @param filterBy 0 表示当前正被 save() 调用, 1 表示当前正被 update() 调用
-	 */
-	protected void filter(int filterBy) {
-		
 	}
 	
 	public String getSql(String key) {

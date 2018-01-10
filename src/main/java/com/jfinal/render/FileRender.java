@@ -174,9 +174,9 @@ public class FileRender extends Render {
             }
             outputStream.flush();
             outputStream.close();
-        } catch (IOException e) {
-        	String n = e.getClass().getSimpleName();
-        	if (n.equals("ClientAbortException") || n.equals("EofException")) {
+        } catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
+        	String name = e.getClass().getSimpleName();
+        	if (name.equals("ClientAbortException") || name.equals("EofException")) {
         	} else {
         		throw new RenderException(e);
         	}
@@ -226,9 +226,9 @@ public class FileRender extends Render {
             outputStream.flush();
             outputStream.close();
         }
-        catch (IOException e) {
-        	String n = e.getClass().getSimpleName();
-        	if (n.equals("ClientAbortException") || n.equals("EofException")) {
+        catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
+        	String name = e.getClass().getSimpleName();
+        	if (name.equals("ClientAbortException") || name.equals("EofException")) {
         	} else {
         		throw new RenderException(e);
         	}

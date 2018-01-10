@@ -525,7 +525,7 @@ public class DbPro {
 		return doPaginate(pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
 	}
 	
-	private Page<Record> doPaginate(int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+	protected Page<Record> doPaginate(int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
@@ -540,7 +540,7 @@ public class DbPro {
 		}
 	}
 	
-	private Page<Record> doPaginateByFullSql(Config config, Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, StringBuilder findSql, Object... paras) throws SQLException {
+	protected Page<Record> doPaginateByFullSql(Config config, Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, StringBuilder findSql, Object... paras) throws SQLException {
 		if (pageNumber < 1 || pageSize < 1) {
 			throw new ActiveRecordException("pageNumber and pageSize must more than 0");
 		}
@@ -586,7 +586,7 @@ public class DbPro {
 		return doPaginateByFullSql(config, conn, pageNumber, pageSize, null, totalRowSql, findSql, paras);
 	}
 	
-	private Page<Record> doPaginateByFullSql(int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, String findSql, Object... paras) {
+	protected Page<Record> doPaginateByFullSql(int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, String findSql, Object... paras) {
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
@@ -877,7 +877,7 @@ public class DbPro {
 		return doPaginateByCache(cacheName, key, pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
 	}
 	
-	private Page<Record> doPaginateByCache(String cacheName, Object key, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+	protected Page<Record> doPaginateByCache(String cacheName, Object key, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
 		ICache cache = config.getCache();
 		Page<Record> result = cache.get(cacheName, key);
 		if (result == null) {
@@ -887,7 +887,7 @@ public class DbPro {
 		return result;
 	}
 	
-	private int[] batch(Config config, Connection conn, String sql, Object[][] paras, int batchSize) throws SQLException {
+	protected int[] batch(Config config, Connection conn, String sql, Object[][] paras, int batchSize) throws SQLException {
 		if (paras == null || paras.length == 0)
 			return new int[0];
 		if (batchSize < 1)
@@ -901,16 +901,20 @@ public class DbPro {
 		for (int i=0; i<paras.length; i++) {
 			for (int j=0; j<paras[i].length; j++) {
 				Object value = paras[i][j];
-				if (config.dialect.isOracle()) {
-					if (value instanceof java.sql.Date)
+				if (value instanceof java.util.Date) {
+					if (value instanceof java.sql.Date) {
 						pst.setDate(j + 1, (java.sql.Date)value);
-					else if (value instanceof java.sql.Timestamp)
+					} else if (value instanceof java.sql.Timestamp) {
 						pst.setTimestamp(j + 1, (java.sql.Timestamp)value);
-					else
-						pst.setObject(j + 1, value);
+					} else {
+						// Oracle、SqlServer 中的 TIMESTAMP、DATE 支持 new Date() 给值
+						java.util.Date d = (java.util.Date)value;
+						pst.setTimestamp(j + 1, new java.sql.Timestamp(d.getTime()));
+					}
 				}
-				else
+				else {
 					pst.setObject(j + 1, value);
+				}
 			}
 			pst.addBatch();
 			if (++counter >= batchSize) {
@@ -959,7 +963,7 @@ public class DbPro {
 		}
 	}
 	
-	private int[] batch(Config config, Connection conn, String sql, String columns, List list, int batchSize) throws SQLException {
+	protected int[] batch(Config config, Connection conn, String sql, String columns, List list, int batchSize) throws SQLException {
 		if (list == null || list.size() == 0)
 			return new int[0];
 		Object element = list.get(0);
@@ -983,16 +987,20 @@ public class DbPro {
 			Map map = isModel ? ((Model)list.get(i))._getAttrs() : ((Record)list.get(i)).getColumns();
 			for (int j=0; j<columnArray.length; j++) {
 				Object value = map.get(columnArray[j]);
-				if (config.dialect.isOracle()) {
-					if (value instanceof java.sql.Date)
+				if (value instanceof java.util.Date) {
+					if (value instanceof java.sql.Date) {
 						pst.setDate(j + 1, (java.sql.Date)value);
-					else if (value instanceof java.sql.Timestamp)
+					} else if (value instanceof java.sql.Timestamp) {
 						pst.setTimestamp(j + 1, (java.sql.Timestamp)value);
-					else
-						pst.setObject(j + 1, value);
+					} else {
+						// Oracle、SqlServer 中的 TIMESTAMP、DATE 支持 new Date() 给值
+						java.util.Date d = (java.util.Date)value;
+						pst.setTimestamp(j + 1, new java.sql.Timestamp(d.getTime()));
+					}
 				}
-				else
+				else {
 					pst.setObject(j + 1, value);
+				}
 			}
 			pst.addBatch();
 			if (++counter >= batchSize) {
@@ -1043,7 +1051,7 @@ public class DbPro {
 		}
 	}
 	
-	private int[] batch(Config config, Connection conn, List<String> sqlList, int batchSize) throws SQLException {
+	protected int[] batch(Config config, Connection conn, List<String> sqlList, int batchSize) throws SQLException {
 		if (sqlList == null || sqlList.size() == 0)
 			return new int[0];
 		if (batchSize < 1)
