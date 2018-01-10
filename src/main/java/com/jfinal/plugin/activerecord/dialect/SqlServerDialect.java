@@ -199,39 +199,11 @@ public class SqlServerDialect extends Dialect {
 	}
 	
 	public void fillStatement(PreparedStatement pst, List<Object> paras) throws SQLException {
-		for (int i=0, size=paras.size(); i<size; i++) {
-			Object value = paras.get(i);
-			if (value instanceof java.sql.Date) {
-				pst.setDate(i + 1, (java.sql.Date)value);
-			} else if (value instanceof java.sql.Timestamp) {
-				pst.setTimestamp(i + 1, (java.sql.Timestamp)value);
-			} else if (value instanceof java.util.Date) {
-				// 相对于 Dialect 中多出来的一个 if 分支
-				// issue: http://www.jfinal.com/feedback/2667#replyContent
-				java.util.Date d = (java.util.Date)value;
-				pst.setTimestamp(i + 1, new java.sql.Timestamp(d.getTime()));
-			} else {
-				pst.setObject(i + 1, value);
-			}
-		}
+		fillStatementHandleDateType(pst, paras);
 	}
 	
 	public void fillStatement(PreparedStatement pst, Object... paras) throws SQLException {
-		for (int i=0; i<paras.length; i++) {
-			Object value = paras[i];
-			if (value instanceof java.sql.Date) {
-				pst.setDate(i + 1, (java.sql.Date)value);
-			} else if (value instanceof java.sql.Timestamp) {
-				pst.setTimestamp(i + 1, (java.sql.Timestamp)value);
-			} else if (value instanceof java.util.Date) {
-				// 相对于 Dialect 中多出来的一个 if 分支
-				// issue: http://www.jfinal.com/feedback/2667#replyContent
-				java.util.Date d = (java.util.Date)value;
-				pst.setTimestamp(i + 1, new java.sql.Timestamp(d.getTime()));
-			} else {
-				pst.setObject(i + 1, value);
-			}
-		}
+		fillStatementHandleDateType(pst, paras);
 	}
 }
 

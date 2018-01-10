@@ -9,6 +9,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -104,7 +105,13 @@ public class QrCodeRender extends Render {
 
 			// 经测试 200 X 200 大小的二维码使用 "png" 格式只有 412B，而 "jpg" 却达到 15KB
 			MatrixToImageWriter.writeToStream(bitMatrix, "png", response.getOutputStream());    // format: "jpg"、"png"
-		}catch (Exception e) {
+		} catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
+			String name = e.getClass().getSimpleName();
+        	if ("ClientAbortException".equals(name) || "EofException".equals(name)) {
+        	} else {
+        		throw new RenderException(e);
+        	}
+		} catch (Exception e) {
 			throw new RenderException(e);
 		}
 	}

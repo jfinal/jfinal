@@ -34,6 +34,8 @@ import com.jfinal.plugin.activerecord.ModelBuilder;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.Table;
+import com.jfinal.plugin.activerecord.builder.TimestampProcessedModelBuilder;
+import com.jfinal.plugin.activerecord.builder.TimestampProcessedRecordBuilder;
 
 /**
  * AnsiSqlDialect. Try to use ANSI SQL dialect with ActiveRecordPlugin.
@@ -41,6 +43,11 @@ import com.jfinal.plugin.activerecord.Table;
  * A clever person solves a problem. A wise person avoids it.
  */
 public class AnsiSqlDialect extends Dialect {
+	
+	public AnsiSqlDialect() {
+		this.modelBuilder = TimestampProcessedModelBuilder.me;
+		this.recordBuilder = TimestampProcessedRecordBuilder.me;
+	}
 	
 	public String forTableBuilderDoBuild(String tableName) {
 		return "select * from " + tableName + " where 1 = 2";
