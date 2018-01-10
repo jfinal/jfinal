@@ -1148,6 +1148,28 @@ public class Cache {
 		finally {close(jedis);}
 	}
 	
+	/**
+	 * 删除当前 db 所有数据
+	 */
+	public String flushDB() {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.flushDB();
+		}
+		finally {close(jedis);}
+	}
+	
+	/**
+	 * 删除所有 db 的所有数据
+	 */
+	public String flushAll() {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.flushAll();
+		}
+		finally {close(jedis);}
+	}
+	
 	// ---------
 	
 	protected byte[] keyToBytes(Object key) {
