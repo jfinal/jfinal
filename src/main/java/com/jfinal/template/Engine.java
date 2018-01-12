@@ -162,6 +162,13 @@ public class Engine {
 	
 	/**
 	 * Get template by string content and do not cache the template
+	 */
+	public Template getTemplateByString(String content) {
+		return getTemplateByString(content, false);
+	}
+	
+	/**
+	 * Get template by string content
 	 * 
 	 * 重要：StringSource 中的 key = HashKit.md5(content)，也即 key
 	 *     与 content 有紧密的对应关系，当 content 发生变化时 key 值也相应变化
@@ -170,13 +177,7 @@ public class Engine {
 	 *     
 	 *     当 getTemplateByString(String, boolean) 中的 String 参数的
 	 *     数量可控并且确定时，才可对其使用缓存 
-	 */
-	public Template getTemplateByString(String content) {
-		return getTemplateByString(content, false);
-	}
-	
-	/**
-	 * Get template by string content
+	 *     
 	 * @param content 模板内容
 	 * @param cache true 则缓存 Template，否则不缓存
 	 */
