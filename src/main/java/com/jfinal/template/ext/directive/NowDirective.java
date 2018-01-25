@@ -32,7 +32,7 @@ import com.jfinal.template.stat.Scope;
  */
 public class NowDirective extends Directive {
 	
-	public void setExrpList(ExprList exprList) {
+	public void setExprList(ExprList exprList) {
 		if (exprList.length() > 1) {
 			throw new ParseException("#now directive support one parameter only", location);	
 		}

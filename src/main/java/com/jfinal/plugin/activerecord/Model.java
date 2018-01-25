@@ -795,6 +795,9 @@ public abstract class Model<M extends Model> implements Serializable {
 	public M keep(String... attrs) {
 		if (attrs != null && attrs.length > 0) {
 			Config config = _getConfig();
+			if (config == null) {	// 支持无数据库连接场景
+				config = DbKit.brokenConfig;
+			}
 			Map<String, Object> newAttrs = config.containerFactory.getAttrsMap();	// new HashMap<String, Object>(attrs.length);
 			Set<String> newModifyFlag = config.containerFactory.getModifyFlagSet();	// new HashSet<String>();
 			for (String a : attrs) {
