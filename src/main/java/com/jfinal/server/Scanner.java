@@ -36,8 +36,8 @@ public abstract class Scanner {
 	private int interval;
 	private boolean running = false;
 	
-	private final Map<String,TimeSize> preScan = new HashMap<String,TimeSize> ();
-	private final Map<String,TimeSize> curScan = new HashMap<String,TimeSize> ();
+	private Map<String,TimeSize> preScan = new HashMap<String,TimeSize> ();
+	private Map<String,TimeSize> curScan = new HashMap<String,TimeSize> ();
 	
 	public Scanner(String rootDir, int interval) {
 		if (StrKit.isBlank(rootDir))
@@ -56,8 +56,13 @@ public abstract class Scanner {
 		scan(rootDir);
 		compare();
 		
-		preScan.clear();
-		preScan.putAll(curScan);
+		// 优化性能
+		// preScan.clear();
+		// preScan.putAll(curScan);
+		// curScan.clear();
+		Map<String,TimeSize> temp = preScan;
+		preScan = curScan;
+		curScan = temp;
 		curScan.clear();
 	}
 	
@@ -81,11 +86,13 @@ public abstract class Scanner {
 	}
 	
 	private void compare() {
-		if (preScan.size() == 0)
+		if (preScan.size() == 0) {
 			return;
+		}
 		
-		if (!preScan.equals(curScan))
+		if (!preScan.equals(curScan)) {
 			onChange();
+		}
 	}
 	
 	public void start() {
