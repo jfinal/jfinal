@@ -252,6 +252,10 @@ public class MetaBuilder {
 				// 保留对 Types.DATE 的判断，一是为了逻辑上的正确性、完备性，二是其它类型的数据库可能用得着
 				else if (type == Types.TIMESTAMP || type == Types.DATE) {
 					typeStr = "java.util.Date";
+				}
+				// 支持 PostgreSql 的 jsonb json
+				else if (type == Types.JAVA_OBJECT || type == Types.OTHER) {
+					typeStr = "java.lang.Object";
 				} else {
 					typeStr = "java.lang.String";
 				}
