@@ -99,7 +99,7 @@ class TableBuilder {
 					table.setColumnType(colName, java.sql.Date.class);
 				}
 				// 支持 PostgreSql 的 jsonb json
-				else if (type == Types.JAVA_OBJECT || type == Types.OTHER) {
+				else if (type == Types.JAVA_OBJECT) {
 					table.setColumnType(colName, Object.class);
 				}
 				else {
