@@ -254,7 +254,7 @@ public class MetaBuilder {
 					typeStr = "java.util.Date";
 				}
 				// 支持 PostgreSql 的 jsonb json
-				else if (type == Types.JAVA_OBJECT) {
+				else if (type == Types.OTHER) {
 					typeStr = "java.lang.Object";
 				} else {
 					typeStr = "java.lang.String";
