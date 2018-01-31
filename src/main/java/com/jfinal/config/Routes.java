@@ -37,6 +37,8 @@ public abstract class Routes {
 	private List<Route> routeItemList = new ArrayList<Route>();
 	private List<Interceptor> injectInters = new ArrayList<Interceptor>();
 	
+	private boolean clearAfterMapping = true;
+	
 	/**
 	 * Implement this method to add route, add interceptor and set baseViewPath
 	 */
@@ -117,12 +119,24 @@ public abstract class Routes {
 				InterceptorManager.NULL_INTERS;
 	}
 	
+	/**
+	 * 配置是否在路由映射完成之后清除内部数据，以回收内存，默认值为 true.
+	 * 
+	 * 设置为 false 通常用于在系统启动之后，仍然要使用 Routes 的场景，
+	 * 例如希望拿到 Routes 生成用于控制访问权限的数据
+	 */
+	public void setClearAfterMapping(boolean clearAfterMapping) {
+		this.clearAfterMapping = clearAfterMapping;
+	}
+	
 	public void clear() {
-		routesList = null;
-		controllerKeySet = null;
-		baseViewPath = null;
-		routeItemList = null;
-		injectInters = null;
+		if (clearAfterMapping) {
+			routesList = null;
+			controllerKeySet = null;
+			baseViewPath = null;
+			routeItemList = null;
+			injectInters = null;
+		}
 	}
 	
 	public static class Route {
