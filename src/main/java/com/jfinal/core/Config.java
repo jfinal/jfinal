@@ -48,11 +48,27 @@ class Config {
 	 */
 	static void configJFinal(JFinalConfig jfinalConfig) {
 		jfinalConfig.configConstant(constants);			initLogFactory();	initEngine();
-		jfinalConfig.configPlugin(plugins);				startPlugins();		// very important!!!
+		
+		configPluginWithOrder(1, jfinalConfig);
 		jfinalConfig.configRoute(routes);
+		
+		configPluginWithOrder(2, jfinalConfig);
 		jfinalConfig.configEngine(engine);
+		
+		configPluginWithOrder(3, jfinalConfig);
 		jfinalConfig.configInterceptor(interceptors);
+		
+		configPluginWithOrder(4, jfinalConfig);
 		jfinalConfig.configHandler(handlers);
+		
+		configPluginWithOrder(5, jfinalConfig);
+	}
+	
+	private static void configPluginWithOrder(int order, JFinalConfig jfinalConfig) {
+		if (order == constants.getConfigPluginOrder()) {
+			jfinalConfig.configPlugin(plugins);
+			startPlugins();		// very important!!!
+		}
 	}
 	
 	/**

@@ -53,6 +53,7 @@ final public class Constants {
 	
 	private ITokenCache tokenCache = null;
 	private ControllerFactory controllerFactory = null;
+	private int configPluginOrder = 2;
 	
 	/**
 	 * Set development mode.
@@ -64,6 +65,27 @@ final public class Constants {
 	
 	public boolean getDevMode() {
 		return devMode;
+	}
+	
+	/**
+	 * 配置 configPlugin(Plugins me) 在 JFinalConfig 中被调用的次序.
+	 * 
+	 * 取值 1、2、3、4、5 分别表示在 configConstant(..)、configRoute(..)、
+	 * configEngine(..)、configInterceptor(..)、configHandler(...)
+	 * 之后被调用
+	 * 
+	 * 默认值为 2，那么 configPlugin(..) 将在 configRoute(...) 调用之后被调用
+	 * @param 取值只能是 1、2、3、4、5
+	 */
+	public void setConfigPluginOrder(int configPluginOrder) {
+		if (configPluginOrder < 1 || configPluginOrder > 5) {
+			throw new IllegalArgumentException("configPluginOrder 只能取值为：1、2、3、4、5");
+		}
+		this.configPluginOrder = configPluginOrder;
+	}
+	
+	public int getConfigPluginOrder() {
+		return configPluginOrder;
 	}
 	
 	/**
