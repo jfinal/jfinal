@@ -36,8 +36,24 @@ public class Converters {
 	public static class IntegerConverter implements IConverter<Integer> {
 		// mysql type: int, integer, tinyint(n) n > 1, smallint, mediumint
 		@Override
-		public Integer convert(String s)  {
+		public Integer convert(String s) {
 			return Integer.parseInt(s);
+		}
+	}
+	
+	// 支持需要保持 short 而非转成 int 的场景
+	public static class ShortConverter implements IConverter<Short> {
+		@Override
+		public Short convert(String s) {
+			return Short.parseShort(s);
+		}
+	}
+	
+	// 支持需要保持 byte 而非转成 int 的场景
+	public static class ByteConverter implements IConverter<Byte> {
+		@Override
+		public Byte convert(String s) {
+			return Byte.parseByte(s);
 		}
 	}
 	
@@ -65,7 +81,7 @@ public class Converters {
 		}
 	}
 	
-	public static class ByteConverter implements IConverter<byte[]> {
+	public static class ByteArrayConverter implements IConverter<byte[]> {
 		// mysql type: binary, varbinary, tinyblob, blob, mediumblob, longblob. I have not finished the test.
 		@Override
 		public byte[] convert(String s) {

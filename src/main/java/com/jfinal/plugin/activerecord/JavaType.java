@@ -70,6 +70,11 @@ public class JavaType {
 		// binary, varbinary, tinyblob, blob, mediumblob, longblob
 		// qjd project: print_info.content varbinary(61800);
 		put("[B", byte[].class);
+		
+		// 支持需要保持 short 与 byte 而非转成 int 的场景
+		// 目前作用于Controller.getModel()/getBean()
+		put("java.lang.Short", java.lang.Short.class);
+		put("java.lang.Byte", java.lang.Byte.class);
 	}};
 	
 	public Class<?> getType(String typeString) {
