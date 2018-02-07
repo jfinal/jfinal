@@ -43,6 +43,14 @@ public class ShortExt {
 	public Double toDouble(Short self) {
 		return self.doubleValue();
 	}
+	
+	public Short toShort(Short self) {
+		return self;
+	}
+	
+	public Byte toByte(Short self) {
+		return self.byteValue();
+	}
 }
 
 
