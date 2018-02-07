@@ -79,6 +79,14 @@ public class StringExt {
 	public Double toDouble(String self) {
 		return StrKit.isBlank(self) ? null : Double.parseDouble(self);
 	}
+	
+	public Short toShort(String self) {
+		return StrKit.isBlank(self) ? null : Short.parseShort(self);
+	}
+	
+	public Byte toByte(String self) {
+		return StrKit.isBlank(self) ? null : Byte.parseByte(self);
+	}
 }
 
 

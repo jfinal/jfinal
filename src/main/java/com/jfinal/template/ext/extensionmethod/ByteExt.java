@@ -43,6 +43,14 @@ public class ByteExt {
 	public Double toDouble(Byte self) {
 		return self.doubleValue();
 	}
+	
+	public Short toShort(Byte self) {
+		return self.shortValue();
+	}
+	
+	public Byte toByte(Byte self) {
+		return self;
+	}
 }
 
 
