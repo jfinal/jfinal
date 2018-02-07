@@ -43,6 +43,14 @@ public class LongExt {
 	public Double toDouble(Long self) {
 		return self.doubleValue();
 	}
+	
+	public Short toShort(Long self) {
+		return self.shortValue();
+	}
+	
+	public Byte toByte(Long self) {
+		return self.byteValue();
+	}
 }
 
 
