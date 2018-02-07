@@ -43,6 +43,14 @@ public class FloatExt {
 	public Double toDouble(Float self) {
 		return self.doubleValue();
 	}
+	
+	public Short toShort(Float self) {
+		return self.shortValue();
+	}
+	
+	public Byte toByte(Float self) {
+		return self.byteValue();
+	}
 }
 
 

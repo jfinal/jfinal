@@ -63,6 +63,14 @@ public class IntegerExt {
 	public Double toDouble(Integer self) {
 		return self.doubleValue();
 	}
+	
+	public Short toShort(Integer self) {
+		return self.shortValue();
+	}
+	
+	public Byte toByte(Integer self) {
+		return self.byteValue();
+	}
 }
 
 
