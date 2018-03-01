@@ -51,9 +51,10 @@ final public class Constants {
 	private int maxPostSize = Const.DEFAULT_MAX_POST_SIZE;
 	private int freeMarkerTemplateUpdateDelay = Const.DEFAULT_FREEMARKER_TEMPLATE_UPDATE_DELAY;	// just for not devMode
 	
+	private ControllerFactory controllerFactory = Const.DEFAULT_CONTROLLER_FACTORY;
+	private int configPluginOrder = Const.DEFAULT_CONFIG_PLUGIN_ORDER;
+	
 	private ITokenCache tokenCache = null;
-	private ControllerFactory controllerFactory = null;
-	private int configPluginOrder = 2;
 	
 	/**
 	 * Set development mode.
@@ -135,6 +136,9 @@ final public class Constants {
 	 * @param encoding the encoding
 	 */
 	public void setEncoding(String encoding) {
+		if (StrKit.isBlank(encoding)) {
+			throw new IllegalArgumentException("encoding can not be blank.");
+		}
 		this.encoding = encoding;
 	}
 	
@@ -143,6 +147,9 @@ final public class Constants {
 	}
 	
 	public void setControllerFactory(ControllerFactory controllerFactory) {
+		if (controllerFactory == null) {
+			throw new IllegalArgumentException("controllerFactory can not be null.");
+		}
 		this.controllerFactory = controllerFactory;
 	}
 	

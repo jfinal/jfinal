@@ -40,12 +40,7 @@ public class ActionHandler extends Handler {
 	protected void init(ActionMapping actionMapping, Constants constants) {
 		this.actionMapping = actionMapping;
 		this.devMode = constants.getDevMode();
-		
-		if (constants.getControllerFactory() != null) {
-			controllerFactory = constants.getControllerFactory();
-		} else {
-			controllerFactory = new ControllerFactory();
-		}
+		this.controllerFactory = constants.getControllerFactory();
 	}
 	
 	/**

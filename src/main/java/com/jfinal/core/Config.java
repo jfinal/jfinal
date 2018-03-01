@@ -24,6 +24,7 @@ import com.jfinal.config.Plugins;
 import com.jfinal.config.Handlers;
 import com.jfinal.config.Interceptors;
 import com.jfinal.kit.PathKit;
+import com.jfinal.kit.StrKit;
 import com.jfinal.log.Log;
 import com.jfinal.log.LogManager;
 import com.jfinal.plugin.IPlugin;
@@ -77,7 +78,11 @@ class Config {
 	 */
 	private static void initEngine() {
 		engine.setDevMode(constants.getDevMode());
-		engine.setBaseTemplatePath(PathKit.getWebRootPath());
+		
+		// 避免在某些环境下 webRootPath 值为 blank 时无法启动项目
+		if (StrKit.notBlank(PathKit.getWebRootPath())) {
+			engine.setBaseTemplatePath(PathKit.getWebRootPath());
+		}
 	}
 	
 	public static final Constants getConstants() {
