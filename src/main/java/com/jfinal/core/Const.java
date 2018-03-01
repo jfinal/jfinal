@@ -23,7 +23,7 @@ import com.jfinal.render.ViewType;
  */
 public interface Const {
 	
-	String JFINAL_VERSION = "3.3";
+	String JFINAL_VERSION = "3.4";
 	
 	ViewType DEFAULT_VIEW_TYPE = ViewType.JFINAL_TEMPLATE;
 	
@@ -50,5 +50,9 @@ public interface Const {
 	int DEFAULT_SECONDS_OF_TOKEN_TIME_OUT = 900;			// 900 seconds ---> 15 minutes
 	
 	int MIN_SECONDS_OF_TOKEN_TIME_OUT = 300;				// 300 seconds ---> 5 minutes
+	
+	int DEFAULT_CONFIG_PLUGIN_ORDER = 2;
+	
+	ControllerFactory DEFAULT_CONTROLLER_FACTORY = new ControllerFactory();
 }
 
