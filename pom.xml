@@ -15,7 +15,7 @@
 	
 	<issueManagement>
 		<system>Github Issue</system>
-		<url>http://git.oschina.net/jfinal/jfinal/issues</url>
+		<url>https://gitee.com/jfinal/jfinal/issues</url>
 	</issueManagement>
 	<licenses>
 		<license>
@@ -32,9 +32,9 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:git:git@git.oschina.net:jfinal/jfinal.git</connection>
-		<developerConnection>scm:git:git@git.oschina.net:jfinal/jfinal.git</developerConnection>
-		<url>git@git.oschina.net:jfinal/jfinal.git</url>
+		<connection>scm:git:git@gitee.com:jfinal/jfinal.git</connection>
+		<developerConnection>scm:git:git@gitee.com:jfinal/jfinal.git</developerConnection>
+		<url>git@gitee.com:jfinal/jfinal.git</url>
 	</scm>
 	
 	<parent>
