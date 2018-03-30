@@ -45,7 +45,7 @@ public class ElKit {
 		engine.addDirective("eval", InnerEvalDirective.class);
 	}
 	
-	public Engine getEngine() {
+	public static Engine getEngine() {
 		return engine;
 	}
 	
