@@ -25,7 +25,7 @@ import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.Scope;
 
 /**
- * Text 输出纯文本块以及使用 "#[[" 与 "]]#" 指定的非解析块 
+ * Text 输出纯文本块以及使用 "#[[" 与 "]]#" 定义的原样输出块 
  */
 public class Text extends Stat implements IWritable {
 	
