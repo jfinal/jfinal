@@ -24,13 +24,13 @@ import com.jfinal.kit.Kv;
 import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.Engine;
-import com.jfinal.template.source.ClassPathSourceFactory;
 
 /**
  * MappingKit 文件生成器
  */
 public class MappingKitGenerator {
 	
+	protected Engine engine;
 	protected String template = "/com/jfinal/plugin/activerecord/generator/mapping_kit_template.jf";
 	
 	protected String mappingKitPackageName;
@@ -40,6 +40,14 @@ public class MappingKitGenerator {
 	public MappingKitGenerator(String mappingKitPackageName, String mappingKitOutputDir) {
 		this.mappingKitPackageName = mappingKitPackageName;
 		this.mappingKitOutputDir = mappingKitOutputDir;
+		
+		initEngine();
+	}
+	
+	protected void initEngine() {
+		engine = new Engine();
+		engine.setToClassPathSourceFactory();
+		engine.addSharedMethod(new StrKit());
 	}
 	
 	/**
@@ -70,10 +78,6 @@ public class MappingKitGenerator {
 	public void generate(List<TableMeta> tableMetas) {
 		System.out.println("Generate MappingKit file ...");
 		System.out.println("MappingKit Output Dir: " + mappingKitOutputDir);
-		
-		Engine engine = Engine.create("forMappingKit");
-		engine.setSourceFactory(new ClassPathSourceFactory());
-		engine.addSharedMethod(new StrKit());
 		
 		Kv data = Kv.by("mappingKitPackageName", mappingKitPackageName);
 		data.set("mappingKitClassName", mappingKitClassName);
