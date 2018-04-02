@@ -57,22 +57,20 @@ public class Text extends Stat implements IWritable {
 			return bytes;
 		}
 		
-		if (content != null) {
-			synchronized (this) {
-				if (content != null) {
-					bytes = content.toString().getBytes(charset);
-					content = null;
-					return bytes;
-				}
+		synchronized (this) {
+			if (bytes != null) {
+				return bytes;
+			}
+			
+			if (content != null) {
+				bytes = content.toString().getBytes(charset);
+				content = null;
+				return bytes;
+			} else {
+				bytes = new String(chars).getBytes(charset);
+				return bytes;
 			}
 		}
-		
-		if (bytes != null) {
-			return bytes;
-		}
-		
-		bytes = new String(chars).getBytes(charset);
-		return bytes;
 	}
 	
 	public char[] getChars() {
@@ -80,27 +78,25 @@ public class Text extends Stat implements IWritable {
 			return chars;
 		}
 		
-		if (content != null) {
-			synchronized (this) {
-				if (content != null) {
-					char[] charsTemp = new char[content.length()];
-					content.getChars(0, content.length(), charsTemp, 0);
-					chars = charsTemp;
-					content = null;
-					return chars;
-				}
+		synchronized (this) {
+			if (chars != null) {
+				return chars;
+			}
+			
+			if (content != null) {
+				char[] charsTemp = new char[content.length()];
+				content.getChars(0, content.length(), charsTemp, 0);
+				chars = charsTemp;
+				content = null;
+				return chars;
+			} else {
+				String strTemp = new String(bytes, charset);
+				char[] charsTemp = new char[strTemp.length()];
+				strTemp.getChars(0, strTemp.length(), charsTemp, 0);
+				chars = charsTemp;
+				return chars;
 			}
 		}
-		
-		if (chars != null) {
-			return chars;
-		}
-		
-		String strTemp = new String(bytes, charset);
-		char[] charsTemp = new char[strTemp.length()];
-		strTemp.getChars(0, strTemp.length(), charsTemp, 0);
-		chars = charsTemp;
-		return chars;
 	}
 	
 	public boolean isEmpty() {
