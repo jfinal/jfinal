@@ -67,6 +67,10 @@ public class Text extends Stat implements IWritable {
 			}
 		}
 		
+		if (bytes != null) {
+			return bytes;
+		}
+		
 		bytes = new String(chars).getBytes(charset);
 		return bytes;
 	}
@@ -86,6 +90,10 @@ public class Text extends Stat implements IWritable {
 					return chars;
 				}
 			}
+		}
+		
+		if (chars != null) {
+			return chars;
 		}
 		
 		String strTemp = new String(bytes, charset);
