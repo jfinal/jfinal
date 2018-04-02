@@ -41,8 +41,9 @@ public class CacheInterceptor implements Interceptor {
 	
 	private ReentrantLock getLock(String key) {
 		ReentrantLock lock = lockMap.get(key);
-		if (lock != null)
+		if (lock != null) {
 			return lock;
+		}
 		
 		lock = new ReentrantLock();
 		ReentrantLock previousLock = lockMap.putIfAbsent(key, lock);
