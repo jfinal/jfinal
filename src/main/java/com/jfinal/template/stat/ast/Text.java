@@ -58,9 +58,13 @@ public class Text extends Stat implements IWritable {
 		}
 		
 		if (content != null) {
-			bytes = content.toString().getBytes(charset);
-			content = null;
-			return bytes;
+			synchronized (this) {
+				if (content != null) {
+					bytes = content.toString().getBytes(charset);
+					content = null;
+					return bytes;
+				}
+			}
 		}
 		
 		bytes = new String(chars).getBytes(charset);
@@ -73,11 +77,15 @@ public class Text extends Stat implements IWritable {
 		}
 		
 		if (content != null) {
-			char[] charsTemp = new char[content.length()];
-			content.getChars(0, content.length(), charsTemp, 0);
-			chars = charsTemp;
-			content = null;
-			return chars;
+			synchronized (this) {
+				if (content != null) {
+					char[] charsTemp = new char[content.length()];
+					content.getChars(0, content.length(), charsTemp, 0);
+					chars = charsTemp;
+					content = null;
+					return chars;
+				}
+			}
 		}
 		
 		String strTemp = new String(bytes, charset);
