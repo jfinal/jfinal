@@ -29,6 +29,7 @@ import com.jfinal.aop.Interceptor;
  */
 public class ActionReporter {
 	
+	private static final String title = "\nJFinal-" + Const.JFINAL_VERSION + " action report -------- ";
 	private static boolean reportAfterInvocation = true;
 	private static int maxOutputLengthOfParaValue = 512;
 	private static Writer writer = new SystemOutWriter();
@@ -74,7 +75,7 @@ public class ActionReporter {
 	 * Report the action
 	 */
 	public static final void report(String target, Controller controller, Action action) {
-		StringBuilder sb = new StringBuilder("\nJFinal action report -------- ").append(sdf.get().format(new Date())).append(" ------------------------------\n");
+		StringBuilder sb = new StringBuilder(title).append(sdf.get().format(new Date())).append(" --------------------------\n");
 		sb.append("Url         : ").append(controller.getRequest().getMethod()).append(" ").append(target).append("\n");
 		Class<? extends Controller> cc = action.getControllerClass();
 		sb.append("Controller  : ").append(cc.getName()).append(".(").append(cc.getSimpleName()).append(".java:1)");
