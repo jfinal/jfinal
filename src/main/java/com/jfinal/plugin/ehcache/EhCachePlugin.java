@@ -64,8 +64,9 @@ public class EhCachePlugin implements IPlugin {
 	}
 	
 	private void createCacheManager() {
-		if (cacheManager != null)
+		if (cacheManager != null) {
 			return ;
+		}
 		
 		if (configurationFileName != null) {
 			cacheManager = CacheManager.create(configurationFileName);
@@ -92,6 +93,7 @@ public class EhCachePlugin implements IPlugin {
 	
 	public boolean stop() {
 		cacheManager.shutdown();
+		cacheManager = null;
 		return true;
 	}
 }

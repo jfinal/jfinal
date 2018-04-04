@@ -48,13 +48,20 @@ public class CaptchaRender extends Render {
 	protected static final char[] charArray = "3456789ABCDEFGHJKMNPQRSTUVWXY".toCharArray();
 	// 验证码字体
 	protected static final Font[] RANDOM_FONT = new Font[] {
+		new Font(Font.DIALOG, Font.BOLD, 33),
+		new Font(Font.DIALOG_INPUT, Font.BOLD, 34),
+		new Font(Font.SERIF, Font.BOLD, 33),
+		new Font(Font.SANS_SERIF, Font.BOLD, 34),
+		new Font(Font.MONOSPACED, Font.BOLD, 34)
+	};
+	/*protected static final Font[] RANDOM_FONT = new Font[] {
 		new Font("nyala", Font.BOLD, 38),
 		new Font("Arial", Font.BOLD, 32),
 		new Font("Bell MT", Font.BOLD, 32),
 		new Font("Credit valley", Font.BOLD, 34),
 		new Font("Impact", Font.BOLD, 32),
 		new Font(Font.MONOSPACED, Font.BOLD, 40)
-	};
+	};*/
 	
 	/**
 	 * 设置 captchaName
