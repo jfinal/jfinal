@@ -106,7 +106,11 @@ public class Table {
 	}
 	
 	public Set<Entry<String, Class<?>>> getColumnTypeMapEntrySet() {
-		return columnTypeMap.entrySet();
+		return Collections.unmodifiableSet(columnTypeMap.entrySet());
+	}
+	
+	public Set<String> getColumnNameSet() {
+		return Collections.unmodifiableSet(columnTypeMap.keySet());
 	}
 }
 

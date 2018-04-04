@@ -28,7 +28,6 @@ import net.sf.ehcache.Element;
 public class CacheKit {
 	
 	private static CacheManager cacheManager;
-	private static Object locker = new Object();
 	private static final Log log = Log.getLog(CacheKit.class);
 	
 	static void init(CacheManager cacheManager) {
@@ -42,7 +41,7 @@ public class CacheKit {
 	static Cache getOrAddCache(String cacheName) {
 		Cache cache = cacheManager.getCache(cacheName);
 		if (cache == null) {
-			synchronized(locker) {
+			synchronized(CacheKit.class) {
 				cache = cacheManager.getCache(cacheName);
 				if (cache == null) {
 					log.warn("Could not find cache config [" + cacheName + "], using default.");

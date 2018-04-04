@@ -23,13 +23,13 @@ import java.util.List;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.Engine;
-import com.jfinal.template.source.ClassPathSourceFactory;
 
 /**
  * Model 生成器
  */
 public class ModelGenerator {
 	
+	protected Engine engine;
 	protected String template = "/com/jfinal/plugin/activerecord/generator/model_template.jf";
 	
 	protected String modelPackageName;
@@ -57,6 +57,14 @@ public class ModelGenerator {
 		this.modelPackageName = modelPackageName;
 		this.baseModelPackageName = baseModelPackageName;
 		this.modelOutputDir = modelOutputDir;
+		
+		initEngine();
+	}
+	
+	protected void initEngine() {
+		engine = new Engine();
+		engine.setToClassPathSourceFactory();
+		engine.addSharedMethod(new StrKit());
 	}
 	
 	/**
@@ -74,10 +82,6 @@ public class ModelGenerator {
 		System.out.println("Generate model ...");
 		System.out.println("Model Output Dir: " + modelOutputDir);
 		
-		Engine engine = Engine.create("forModel");
-		engine.setSourceFactory(new ClassPathSourceFactory());
-		engine.addSharedMethod(new StrKit());
-		
 		for (TableMeta tableMeta : tableMetas) {
 			genModelContent(tableMeta);
 		}
@@ -90,7 +94,7 @@ public class ModelGenerator {
 		data.set("generateDaoInModel", generateDaoInModel);
 		data.set("tableMeta", tableMeta);
 		
-		String ret = Engine.use("forModel").getTemplate(template).renderToString(data);
+		String ret = engine.getTemplate(template).renderToString(data);
 		tableMeta.modelContent = ret;
 	}
 	

@@ -26,13 +26,13 @@ import com.jfinal.kit.JavaKeyword;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.Engine;
-import com.jfinal.template.source.ClassPathSourceFactory;
 
 /**
  * Base model 生成器
  */
 public class BaseModelGenerator {
 	
+	protected Engine engine;
 	protected String template = "/com/jfinal/plugin/activerecord/generator/base_model_template.jf";
 	
 	protected String baseModelPackageName;
@@ -71,6 +71,16 @@ public class BaseModelGenerator {
 		
 		this.baseModelPackageName = baseModelPackageName;
 		this.baseModelOutputDir = baseModelOutputDir;
+		
+		initEngine();
+	}
+	
+	protected void initEngine() {
+		engine = new Engine();
+		engine.setToClassPathSourceFactory();	// 从 class path 内读模板文件
+		engine.addSharedMethod(new StrKit());
+		engine.addSharedObject("getterTypeMap", getterTypeMap);
+		engine.addSharedObject("javaKeyword", javaKeyword);
 	}
 	
 	/**
@@ -88,12 +98,6 @@ public class BaseModelGenerator {
 		System.out.println("Generate base model ...");
 		System.out.println("Base Model Output Dir: " + baseModelOutputDir);
 		
-		Engine engine = Engine.create("forBaseModel");
-		engine.setSourceFactory(new ClassPathSourceFactory());
-		engine.addSharedMethod(new StrKit());
-		engine.addSharedObject("getterTypeMap", getterTypeMap);
-		engine.addSharedObject("javaKeyword", javaKeyword);
-		
 		for (TableMeta tableMeta : tableMetas) {
 			genBaseModelContent(tableMeta);
 		}
@@ -105,7 +109,6 @@ public class BaseModelGenerator {
 		data.set("generateChainSetter", generateChainSetter);
 		data.set("tableMeta", tableMeta);
 		
-		Engine engine = Engine.use("forBaseModel");
 		tableMeta.baseModelContent = engine.getTemplate(template).renderToString(data);
 	}
 	

@@ -77,6 +77,9 @@ public class FileSource implements ISource {
 	}
 	
 	private String buildFinalFileName(String baseTemplatePath, String fileName) {
+		if (baseTemplatePath == null) {
+			return fileName;
+		}
 		char firstChar = fileName.charAt(0);
 		String finalFileName;
 		if (firstChar == '/' || firstChar == '\\') {
