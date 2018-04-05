@@ -75,7 +75,7 @@ public class Method extends Expr {
 			if (scope.getCtrl().isNullSafe()) {
 				return null;
 			}
-			throw new TemplateException(buildMethodNotFoundSignature("Method not found: " + target.getClass().getName() + ".", methodName, argValues), location);
+			throw new TemplateException(buildMethodNotFoundSignature("public method not found: " + target.getClass().getName() + ".", methodName, argValues), location);
 		}
 		
 		try {
