@@ -113,9 +113,9 @@ public class Field extends Expr {
 		
 		if (expr instanceof Id) {
 			String id = ((Id)expr).getId();
-			throw new TemplateException("Field not found: \"" + id + "." + fieldName + "\" and getter method not found: \"" + id + "." + getterName + "()\"", location);
+			throw new TemplateException("public field not found: \"" + id + "." + fieldName + "\" and public getter method not found: \"" + id + "." + getterName + "()\"", location);
 		}
-		throw new TemplateException("Field not found: \"" + fieldName + "\" and getter method not found: \"" + getterName + "()\"", location);
+		throw new TemplateException("public field not found: \"" + fieldName + "\" and public getter method not found: \"" + getterName + "()\"", location);
 	}
 	
 	private Long buildFieldKey(Class<?> targetClass) {
