@@ -196,7 +196,7 @@ public abstract class Controller {
 	 */
 	public Integer[] getParaValuesToInt(String name) {
 		String[] values = request.getParameterValues(name);
-		if (values == null) {
+		if (values == null || values.length == 0) {
 			return null;
 		}
 		Integer[] result = new Integer[values.length];
@@ -208,7 +208,7 @@ public abstract class Controller {
 	
 	public Long[] getParaValuesToLong(String name) {
 		String[] values = request.getParameterValues(name);
-		if (values == null) {
+		if (values == null || values.length == 0) {
 			return null;
 		}
 		Long[] result = new Long[values.length];
