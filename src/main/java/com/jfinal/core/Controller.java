@@ -196,21 +196,25 @@ public abstract class Controller {
 	 */
 	public Integer[] getParaValuesToInt(String name) {
 		String[] values = request.getParameterValues(name);
-		if (values == null)
+		if (values == null) {
 			return null;
+		}
 		Integer[] result = new Integer[values.length];
-		for (int i=0; i<result.length; i++)
-			result[i] = Integer.parseInt(values[i]);
+		for (int i=0; i<result.length; i++) {
+			result[i] = StrKit.isBlank(values[i]) ? null : Integer.parseInt(values[i]);
+		}
 		return result;
 	}
 	
 	public Long[] getParaValuesToLong(String name) {
 		String[] values = request.getParameterValues(name);
-		if (values == null)
+		if (values == null) {
 			return null;
+		}
 		Long[] result = new Long[values.length];
-		for (int i=0; i<result.length; i++)
-			result[i] = Long.parseLong(values[i]);
+		for (int i=0; i<result.length; i++) {
+			result[i] = StrKit.isBlank(values[i]) ? null : Long.parseLong(values[i]);
+		}
 		return result;
 	}
 	
