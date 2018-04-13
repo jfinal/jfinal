@@ -30,7 +30,7 @@ public abstract class Json {
 	 * jfinal 2.1 版本暂定 defaultDatePattern 值为 null，即 jackson、fastjson
 	 * 默认使用自己的 date 转换策略
 	 */
-	private static String defaultDatePattern = null;
+	private static String defaultDatePattern = "yyyy-MM-dd HH:mm:ss";	// null;
 	
 	/**
 	 * Json 继承类优先使用对象级的属性 datePattern, 然后才是全局性的 defaultDatePattern
