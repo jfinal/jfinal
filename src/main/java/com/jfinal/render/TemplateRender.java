@@ -28,7 +28,7 @@ import com.jfinal.template.Engine;
  */
 public class TemplateRender extends Render {
 	
-	private static Engine engine;
+	protected static Engine engine;
 	
 	private static final String contentType = "text/html; charset=" + getEncoding();
 	
