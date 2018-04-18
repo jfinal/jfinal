@@ -87,6 +87,9 @@ public abstract class MethodKeyBuilder {
 					if (type != null) {
 						hash ^= type.getName().hashCode();
 						hash *= HashKit.FNV_PRIME_64;
+					} else {
+						hash ^= "null".hashCode();
+						hash *= HashKit.FNV_PRIME_64;
 					}
 				}
 			}
@@ -110,6 +113,8 @@ public abstract class MethodKeyBuilder {
 					Class<?> type = argTypes[i];
 					if (type != null) {
 						hash = fnv1a64(hash, type.getName());
+					} else {
+						hash = fnv1a64(hash, "null");
 					}
 				}
 			}
