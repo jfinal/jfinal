@@ -156,6 +156,9 @@ public class SharedMethodKit {
 				if (type != null) {
 					hash ^= type.getName().hashCode();
 					hash *= HashKit.FNV_PRIME_64;
+				} else {
+					hash ^= "null".hashCode();
+					hash *= HashKit.FNV_PRIME_64;
 				}
 			}
 		}

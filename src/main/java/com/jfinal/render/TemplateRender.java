@@ -18,9 +18,11 @@ package com.jfinal.render;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import com.jfinal.kit.LogKit;
 import com.jfinal.template.Engine;
 
 /**
@@ -67,6 +69,11 @@ public class TemplateRender extends Render {
 					return ;
 				}
 			}
+			
+			if (outputRenderExceptionToClient) {
+				outputRenderExceptionToClient(e);
+			}
+			
 			throw e;
 		} catch (IOException e) {
 			throw new RenderException(e);
@@ -75,6 +82,28 @@ public class TemplateRender extends Render {
 	
 	public String toString() {
 		return view;
+	}
+	
+	protected static boolean outputRenderExceptionToClient = false;
+	
+	/**
+	 * 设置输出渲染异常到客户端，建议只在开发模式下设置为 true
+	 */
+	public static void setOutputRenderExceptionToClient(boolean outputRenderExceptionToClient) {
+		TemplateRender.outputRenderExceptionToClient = outputRenderExceptionToClient;
+	}
+	
+	/**
+	 * 输出渲染异常到客户端
+	 */
+	protected void outputRenderExceptionToClient(RuntimeException e) {
+		try {
+			OutputStreamWriter osw = new OutputStreamWriter(response.getOutputStream());
+			osw.write(e.getMessage());
+			osw.flush();
+		} catch (IOException ioe) {
+			LogKit.logNothing(ioe);
+		}
 	}
 }
 
