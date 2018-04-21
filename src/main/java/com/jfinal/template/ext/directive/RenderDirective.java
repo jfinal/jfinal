@@ -70,7 +70,7 @@ public class RenderDirective extends Directive {
 		if (len > 1) {
 			for (int i = 1; i < len; i++) {
 				if (!(exprList.getExpr(i) instanceof Assign)) {
-					throw new ParseException("The " + i + "th parameter of #render directive must be an assignment expression", location);
+					throw new ParseException("The " + (i + 1) + "th parameter of #render directive must be an assignment expression", location);
 				}
 			}
 		}
