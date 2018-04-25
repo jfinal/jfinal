@@ -49,7 +49,7 @@ public class JFinalJson extends Json {
 	
 	protected int convertDepth = defaultConvertDepth;
 	protected String timestampPattern = "yyyy-MM-dd HH:mm:ss";
-	protected String datePattern = "yyyy-MM-dd";
+	// protected String datePattern = "yyyy-MM-dd";
 	
 	/**
 	 * 设置全局性默认转换深度

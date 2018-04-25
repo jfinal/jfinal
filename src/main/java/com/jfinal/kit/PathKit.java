@@ -17,6 +17,7 @@
 package com.jfinal.kit;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 
 /**
  * new File("..\path\abc.txt") 中的三个方法获取路径的方法
@@ -50,8 +51,19 @@ public class PathKit {
 			}
 			catch (Exception e) {
 				// String path = PathKit.class.getClassLoader().getResource("").getPath();
-				String path = getClassLoader().getResource("").getPath();
-				rootClassPath = new File(path).getAbsolutePath();
+				// String path = getClassLoader().getResource("").getPath();
+				// rootClassPath = new File(path).getAbsolutePath();
+				
+				try {
+					String path = PathKit.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					path = java.net.URLDecoder.decode(path, "UTF-8");
+					if (path.endsWith(File.separator)) {
+						path = path.substring(0, path.length() - 1);
+					}
+					rootClassPath = path;
+				} catch (UnsupportedEncodingException e1) {
+					throw new RuntimeException(e1);
+				}
 			}
 		}
 		return rootClassPath;

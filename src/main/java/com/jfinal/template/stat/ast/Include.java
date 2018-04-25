@@ -75,7 +75,7 @@ public class Include extends Stat {
 		if (len > 1) {
 			for (int i = 1; i < len; i++) {
 				if (!(exprList.getExpr(i) instanceof Assign)) {
-					throw new ParseException("The " + i + "th parameter of #include directive must be an assignment expression", location);
+					throw new ParseException("The " + (i + 1) + "th parameter of #include directive must be an assignment expression", location);
 				}
 			}
 		}
