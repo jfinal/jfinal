@@ -33,6 +33,11 @@ public class SqlPara {
 		return this;
 	}
 	
+	public SqlPara setParaList(List<Object> paraList) {
+		this.paraList = paraList;
+		return this;
+	}
+	
 	public SqlPara addPara(Object para) {
 		if (paraList == null) {
 			paraList = new ArrayList<Object>();
