@@ -17,6 +17,7 @@ package com.jfinal.core.paragetter;
 
 import java.text.ParseException;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 import com.jfinal.core.converter.Converters.SqlDateConverter;
 import com.jfinal.kit.StrKit;
@@ -28,7 +29,7 @@ public class SqlDateGetter extends ParaGetter<java.sql.Date> {
 	}
 
 	@Override
-	public java.sql.Date get(Controller c) {
+	public java.sql.Date get(Action action, Controller c) {
 		String value = c.getPara(this.getParameterName());
 		if(StrKit.notBlank(value)){
 			return to(value);

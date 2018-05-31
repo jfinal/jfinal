@@ -15,6 +15,7 @@
  */
 package com.jfinal.core.paragetter;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 
 public class NullGetter extends ParaGetter<Object> {
@@ -24,7 +25,7 @@ public class NullGetter extends ParaGetter<Object> {
 	}
 
 	@Override
-	public Object get(Controller c) {
+	public Object get(Action action, Controller c) {
 		return null;
 	}
 

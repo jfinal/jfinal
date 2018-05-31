@@ -15,6 +15,7 @@
  */
 package com.jfinal.core.paragetter;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 
 public class BeanGetter<T> extends ParaGetter<T> {
@@ -24,7 +25,7 @@ public class BeanGetter<T> extends ParaGetter<T> {
 		this.modelClass = modelClass;
 	}
 	@Override
-	public T get(Controller c) {
+	public T get(Action action, Controller c) {
 		return c.getBean(modelClass, this.getParameterName(),true);
 	}
 	

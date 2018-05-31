@@ -15,8 +15,9 @@
  */
 package com.jfinal.core.paragetter;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 
 public interface IParaGetter<T> {
-	public T get(Controller c);
+	public T get(Action action, Controller c);
 }

@@ -15,6 +15,7 @@
  */
 package com.jfinal.core.paragetter;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 
@@ -25,7 +26,7 @@ public class IntegerGetter extends ParaGetter<Integer> {
 	}
 
 	@Override
-	public Integer get(Controller c) {
+	public Integer get(Action action, Controller c) {
 		return c.getParaToInt(getParameterName(),getDefaultValue());
 	}
 

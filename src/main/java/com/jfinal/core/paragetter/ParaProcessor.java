@@ -18,6 +18,7 @@ package com.jfinal.core.paragetter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 
 public class ParaProcessor implements IParaGetter<Object[]>{
@@ -45,11 +46,12 @@ public class ParaProcessor implements IParaGetter<Object[]>{
 		}
 	}
 	@Override
-	public Object[] get(Controller c) {
+	public Object[] get(Action action, Controller c) {
 		if(this.paraGetters != null){
 			List<Object> parameters = new ArrayList<Object>(this.paraGetters.size());
 			for(IParaGetter<?> paraGetter : this.paraGetters ){
-				parameters.add(paraGetter.get(c));
+			    Object obj = paraGetter.get(action,c);
+				parameters.add(obj);
 			}
 			return parameters.toArray();
 		}else{

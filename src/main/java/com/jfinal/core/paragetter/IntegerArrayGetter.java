@@ -18,6 +18,7 @@ package com.jfinal.core.paragetter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 
@@ -28,7 +29,7 @@ public class IntegerArrayGetter extends ParaGetter<Integer[]> {
 	}
 
 	@Override
-	public Integer[] get(Controller c) {
+	public Integer[] get(Action action, Controller c) {
 		Integer[] ret = c.getParaValuesToInt(getParameterName());
 		if( null == ret) {
 			ret =  this.getDefaultValue();

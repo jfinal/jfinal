@@ -15,6 +15,7 @@
  */
 package com.jfinal.core.paragetter;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
@@ -27,7 +28,7 @@ public class ShortGetter extends ParaGetter<Short> {
 	}
 
 	@Override
-	public Short get(Controller c) {
+	public Short get(Action action, Controller c) {
 		String value = c.getPara(this.getParameterName());
 		try {
 			if (StrKit.isBlank(value))
