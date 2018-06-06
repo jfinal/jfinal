@@ -29,7 +29,13 @@ import com.jfinal.core.Const;
  */
 public class Prop {
 	
-	private Properties properties = null;
+	protected Properties properties = null;
+	
+	/**
+	 * protected 构造方法便于子类扩展
+	 */
+	protected Prop() {
+	}
 	
 	/**
 	 * Prop constructor.

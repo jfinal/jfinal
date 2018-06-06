@@ -79,6 +79,8 @@ public class ActionMapping {
 					continue ;
 				if (sonOfController && !Modifier.isPublic(method.getModifiers()))
 					continue ;
+				if (method.getAnnotation(NotAction.class) != null)
+					continue ;
 				
 				Interceptor[] actionInters = interMan.buildControllerActionInterceptor(routes.getInterceptors(), controllerInters, controllerClass, method);
 				String controllerKey = route.getControllerKey();

@@ -26,6 +26,7 @@ import com.jfinal.template.source.ClassPathSourceFactory;
 import com.jfinal.template.source.ISource;
 import com.jfinal.template.source.ISourceFactory;
 import com.jfinal.template.source.StringSource;
+import com.jfinal.template.stat.OutputDirectiveFactory;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Stat;
 
@@ -276,7 +277,7 @@ public class Engine {
 	/**
 	 * Set output directive factory
 	 */
-	public Engine setOutputDirectiveFactory(IOutputDirectiveFactory outputDirectiveFactory) {
+	public Engine setOutputDirectiveFactory(OutputDirectiveFactory outputDirectiveFactory) {
 		config.setOutputDirectiveFactory(outputDirectiveFactory);
 		return this;
 	}
