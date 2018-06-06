@@ -255,7 +255,7 @@
 				  </execution>
 				</executions>
 				<configuration>
-					<skip>false</skip>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 
