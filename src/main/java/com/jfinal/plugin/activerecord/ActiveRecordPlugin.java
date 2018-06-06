@@ -34,13 +34,13 @@ import com.jfinal.plugin.activerecord.sql.SqlKit;
  */
 public class ActiveRecordPlugin implements IPlugin {
 	
-	private IDataSourceProvider dataSourceProvider = null;
-	private Boolean devMode = null;
+	protected IDataSourceProvider dataSourceProvider = null;
+	protected Boolean devMode = null;
 	
-	private Config config = null;
+	protected Config config = null;
 	
-	private volatile boolean isStarted = false;
-	private List<Table> tableList = new ArrayList<Table>();
+	protected volatile boolean isStarted = false;
+	protected List<Table> tableList = new ArrayList<Table>();
 	
 	public ActiveRecordPlugin(String configName, DataSource dataSource, int transactionLevel) {
 		if (StrKit.isBlank(configName)) {

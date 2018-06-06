@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.jfinal.template;
+package com.jfinal.core;
 
-import com.jfinal.template.expr.ast.ExprList;
-import com.jfinal.template.stat.Location;
-import com.jfinal.template.stat.ast.Output;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * OutputDirectiveFactory
+ * NotAction is used to configure the method in controller is not an action
  */
-public class OutputDirectiveFactory implements IOutputDirectiveFactory {
-	
-	public static final OutputDirectiveFactory me = new OutputDirectiveFactory();
-	
-	public Output getOutputDirective(ExprList exprList, Location location) {
-		return new Output(exprList, location);
-	}
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface NotAction {
 }
+
 
