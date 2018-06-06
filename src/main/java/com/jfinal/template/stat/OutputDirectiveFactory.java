@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.jfinal.template;
+package com.jfinal.template.stat;
 
 import com.jfinal.template.expr.ast.ExprList;
-import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ast.Output;
 
 /**
- * IOutputDirectiveFactory
+ * OutputDirectiveFactory
  * 用于定制自定义输出指令，替换系统默认输出指令，满足个性化需求
  * 
  * 用法：
@@ -32,12 +31,15 @@ import com.jfinal.template.stat.ast.Output;
  *   }
  *   
  *   public void exec(Env env, Scope scope, Writer writer) {
- *     write(writer, exprList.eval(scope));
+ *     Object value = exprList.eval(scope);
+ *     if (value != null) {
+ *     	  write(writer, value.toString());
+ *     }
  *   }
  * }
  * 
  * 2：定义 MyOutputDirectiveFactory
- * public class MyOutputDirectiveFactory implements IOutputDirectiveFactory {
+ * public class MyOutputDirectiveFactory extends OutputDirectiveFactory {
  *   public Output getOutputDirective(ExprList exprList) {
  *     return new MyOutput(exprList);
  *   }
@@ -46,11 +48,13 @@ import com.jfinal.template.stat.ast.Output;
  * 3：配置
  * engine.setOutputDirectiveFactory(new MyOutputDirectiveFactory())
  */
-public interface IOutputDirectiveFactory {
+public class OutputDirectiveFactory {
 	
-	public Output getOutputDirective(ExprList exprList, Location location);
+	public static final OutputDirectiveFactory me = new OutputDirectiveFactory();
 	
+	public Output getOutputDirective(ExprList exprList, Location location) {
+		return new Output(exprList, location);
+	}
 }
-
 
 
