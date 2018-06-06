@@ -27,7 +27,7 @@ import com.jfinal.kit.LogKit;
 public class ParaProcessorBuilder {
 
 	private final static ParaProcessorBuilder me = new ParaProcessorBuilder();
-	private Map<Class<?>, Holder> typeMap = new HashMap<Class<?>, Holder>();
+	private Map<String, Holder> typeMap = new HashMap<String, Holder>();
 
 	private ParaProcessorBuilder() {
 		regist(short.class, ShortGetter.class, "0");
@@ -70,7 +70,7 @@ public class ParaProcessorBuilder {
 	 * @param defaultValue，默认值，比如int的默认值为0， java.lang.Integer的默认值为null
 	 */
 	public <T> void regist(Class<T> typeClass, Class<? extends ParaGetter<T>> pgClass, String defaultValue){
-		this.typeMap.put(typeClass, new Holder(pgClass, defaultValue));
+		this.typeMap.put(typeClass.getName(), new Holder(pgClass, defaultValue));
 	}
 
 	public ParaProcessor build(Class<? extends Controller> controllerClass, Method method) {
@@ -108,7 +108,7 @@ public class ParaProcessorBuilder {
 				defaultValue = null;
 			}
 		}
-		Holder holder = typeMap.get(typeClass);
+		Holder holder = typeMap.get(typeClass.getName());
 		if (holder != null) {
 			if (null == defaultValue) {
 				defaultValue = holder.getDefaultValue();

@@ -15,6 +15,7 @@
  */
 package com.jfinal.core.paragetter;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 
 public class StringGetter extends ParaGetter<String> {
@@ -24,7 +25,7 @@ public class StringGetter extends ParaGetter<String> {
 	}
 
 	@Override
-	public String get(Controller c) {
+	public String get(Action action, Controller c) {
 		return c.getPara(getParameterName(), getDefaultValue());
 	}
 

@@ -17,6 +17,7 @@ package com.jfinal.core.paragetter;
 
 import java.text.ParseException;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 import com.jfinal.core.converter.Converters.TimeConverter;
 import com.jfinal.kit.StrKit;
@@ -28,7 +29,7 @@ public class TimeGetter extends ParaGetter<java.sql.Time> {
 	}
 
 	@Override
-	public java.sql.Time get(Controller c) {
+	public java.sql.Time get(Action action, Controller c) {
 		String value = c.getPara(this.getParameterName());
 		if(StrKit.notBlank(value)){
 			return to(value);

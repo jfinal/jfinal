@@ -17,6 +17,7 @@ package com.jfinal.core.paragetter;
 
 import java.math.BigDecimal;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
@@ -29,7 +30,7 @@ public class BigDecimalGetter extends ParaGetter<BigDecimal> {
 	}
 
 	@Override
-	public BigDecimal get(Controller c) {
+	public BigDecimal get(Action action, Controller c) {
 		String value = c.getPara(this.getParameterName());
 		try {
 			if (StrKit.isBlank(value))

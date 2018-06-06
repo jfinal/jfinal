@@ -15,6 +15,7 @@
  */
 package com.jfinal.core.paragetter;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 
@@ -25,7 +26,7 @@ public class LongGetter extends ParaGetter<Long> {
 	}
 
 	@Override
-	public Long get(Controller c) {
+	public Long get(Action action, Controller c) {
 		return c.getParaToLong(getParameterName(),getDefaultValue());
 	}
 

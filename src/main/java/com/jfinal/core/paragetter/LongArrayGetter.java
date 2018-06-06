@@ -18,6 +18,7 @@ package com.jfinal.core.paragetter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 
@@ -28,7 +29,7 @@ public class LongArrayGetter extends ParaGetter<Long[]> {
 	}
 
 	@Override
-	public Long[] get(Controller c) {
+	public Long[] get(Action action, Controller c) {
 		Long[] ret =  c.getParaValuesToLong(getParameterName());
 		if( null == ret) {
 			ret =  this.getDefaultValue();
