@@ -24,6 +24,13 @@ import java.io.UnsupportedEncodingException;
  * 1： getPath() 获取相对路径，例如   ..\path\abc.txt
  * 2： getAbsolutePath() 获取绝对路径，但可能包含 ".." 或 "." 字符，例如  D:\otherPath\..\path\abc.txt
  * 3： getCanonicalPath() 获取绝对路径，但不包含 ".." 或 "." 字符，例如  D:\path\abc.txt
+ * 
+ * 2018-05-12 新测试：
+ * 1：PathKit.class.getResource("/") 将获取 class path 根目录，例如：/Users/james/workspace/jfinal/webapp/WEB-INF/classes
+ * 2：PathKit.class.getResource("") 将获取 PathKit 这个 class 所在的目录，即：rootClassPath + "/com/jfinal/kit"
+ * 
+ * 3：ClassLoader.getResource("/") 将获取到 null 值，该用法无意义
+ * 4：ClassLoader.getResource("") 将获取 class path 根目录，与 PathKit.class.getResource("/") 一样
  */
 public class PathKit {
 	

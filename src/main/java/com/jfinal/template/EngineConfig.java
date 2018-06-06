@@ -35,6 +35,7 @@ import com.jfinal.template.source.ISource;
 import com.jfinal.template.source.ISourceFactory;
 import com.jfinal.template.source.StringSource;
 import com.jfinal.template.stat.Location;
+import com.jfinal.template.stat.OutputDirectiveFactory;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Define;
 import com.jfinal.template.stat.ast.Output;
@@ -53,7 +54,7 @@ public class EngineConfig {
 	
 	Map<String, Object> sharedObjectMap = null;
 	
-	private IOutputDirectiveFactory outputDirectiveFactory = OutputDirectiveFactory.me;
+	private OutputDirectiveFactory outputDirectiveFactory = OutputDirectiveFactory.me;
 	private ISourceFactory sourceFactory = new FileSourceFactory();
 	private Map<String, Class<? extends Directive>> directiveMap = new HashMap<String, Class<? extends Directive>>();
 	private SharedMethodKit sharedMethodKit = new SharedMethodKit();
@@ -210,7 +211,7 @@ public class EngineConfig {
 	/**
 	 * Set output directive factory
 	 */
-	public void setOutputDirectiveFactory(IOutputDirectiveFactory outputDirectiveFactory) {
+	public void setOutputDirectiveFactory(OutputDirectiveFactory outputDirectiveFactory) {
 		if (outputDirectiveFactory == null) {
 			throw new IllegalArgumentException("outputDirectiveFactory can not be null");
 		}

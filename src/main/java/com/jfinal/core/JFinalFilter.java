@@ -43,8 +43,21 @@ public class JFinalFilter implements Filter {
 	private static Log log;
 	private int contextPathLength;
 	
+	public JFinalFilter() {
+		this.jfinalConfig = null;
+	}
+	
+	/**
+	 * 支持 web 项目无需 web.xml 配置文件，便于嵌入式整合 jetty、undertow
+	 */
+	public JFinalFilter(JFinalConfig jfinalConfig) {
+		this.jfinalConfig = jfinalConfig;
+	}
+	
 	public void init(FilterConfig filterConfig) throws ServletException {
-		createJFinalConfig(filterConfig.getInitParameter("configClass"));
+		if (jfinalConfig == null) {
+			createJFinalConfig(filterConfig.getInitParameter("configClass"));
+		}
 		
 		jfinal.init(jfinalConfig, filterConfig.getServletContext());
 		
