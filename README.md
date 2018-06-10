@@ -117,5 +117,6 @@ public class BlogInterceptor implements Interceptor {
 ## 更多支持
 - JFinal 官方网站  [http://www.jfinal.com](http://www.jfinal.com/) 
 - 扫码关注官方微信公众号，第一时间尊享最新动向  
+
 ![JFinal](http://www.jfinal.com/assets/img/jfinal_weixin_service_qr_code_150.jpg) 
 
