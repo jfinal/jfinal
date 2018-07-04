@@ -16,13 +16,15 @@
 
 package com.jfinal.plugin.activerecord.generator;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * TableMeta
  */
-public class TableMeta {
+@SuppressWarnings("serial")
+public class TableMeta implements Serializable {
 	
 	public String name;					// 表名
 	public String remarks;				// 表备注

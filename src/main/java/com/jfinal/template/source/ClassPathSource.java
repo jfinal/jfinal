@@ -17,12 +17,11 @@
 package com.jfinal.template.source;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.JarURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import com.jfinal.template.EngineConfig;
 
 /**
@@ -72,17 +71,12 @@ public class ClassPathSource implements ISource {
 	}
 	
 	protected void processIsInJarAndlastModified() {
-		try {
-			URLConnection conn = url.openConnection();
-			if ("jar".equals(url.getProtocol()) || conn instanceof JarURLConnection) {
-				isInJar = true;
-				lastModified = -1;
-			} else {
-				isInJar = false;
-				lastModified = conn.getLastModified();
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+		if ("file".equalsIgnoreCase(url.getProtocol())) {
+			isInJar = false;
+			lastModified = new File(url.getFile()).lastModified();
+		} else {	
+			isInJar = true;
+			lastModified = -1;
 		}
 	}
 	
@@ -120,12 +114,7 @@ public class ClassPathSource implements ISource {
 	}
 	
 	protected long getLastModified() {
-		try {
-			URLConnection conn = url.openConnection();
-			return conn.getLastModified();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		return new File(url.getFile()).lastModified();
 	}
 	
 	/**
