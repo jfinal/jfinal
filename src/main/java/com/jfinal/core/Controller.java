@@ -55,6 +55,7 @@ public abstract class Controller {
 	
 	private String urlPara;
 	private String[] urlParaArray;
+	private String rawData;
 	
 	private Render render;
 	
@@ -79,6 +80,14 @@ public abstract class Controller {
 		urlPara = null;
 		urlParaArray = null;
 		render = null;
+		rawData = null;
+	}
+	
+	public String getRawData() {
+		if (rawData == null) {
+			rawData = com.jfinal.kit.HttpKit.readData(request);
+		}
+		return rawData;
 	}
 	
 	public String getControllerKey() {
