@@ -17,8 +17,9 @@
 package com.jfinal.plugin.activerecord.generator;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.List;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.LogKit;
@@ -91,23 +92,23 @@ public class MappingKitGenerator {
 	 * _MappingKit.java 覆盖写入
 	 */
 	protected void writeToFile(String ret) {
-		FileWriter fw = null;
+		File dir = new File(mappingKitOutputDir);
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		
+		String target = mappingKitOutputDir + File.separator + mappingKitClassName + ".java";
+		OutputStreamWriter osw = null;
 		try {
-			File dir = new File(mappingKitOutputDir);
-			if (!dir.exists()) {
-				dir.mkdirs();
-			}
-			
-			String target = mappingKitOutputDir + File.separator + mappingKitClassName + ".java";
-			fw = new FileWriter(target);
-			fw.write(ret);
+			osw = new OutputStreamWriter(new FileOutputStream(target), "UTF-8");
+			osw.write(ret);
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 		finally {
-			if (fw != null) {
-				try {fw.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
+			if (osw != null) {
+				try {osw.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
 			}
 		}
 	}
