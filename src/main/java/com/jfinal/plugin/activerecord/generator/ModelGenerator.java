@@ -17,8 +17,9 @@
 package com.jfinal.plugin.activerecord.generator;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.List;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.StrKit;
@@ -124,13 +125,28 @@ public class ModelGenerator {
 			return ;	// 若 Model 存在，不覆盖
 		}
 		
-		FileWriter fw = new FileWriter(file);
+		OutputStreamWriter osw = null;
 		try {
-			fw.write(tableMeta.modelContent);
+			osw = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+			osw.write(tableMeta.modelContent);
 		}
 		finally {
-			fw.close();
+			if (osw != null) {
+				osw.close();
+			}
 		}
+	}
+	
+	public String getModelPackageName() {
+		return modelPackageName;
+	}
+	
+	public String getBaseModelPackageName() {
+		return baseModelPackageName;
+	}
+	
+	public String getModelOutputDir() {
+		return modelOutputDir;
 	}
 }
 
