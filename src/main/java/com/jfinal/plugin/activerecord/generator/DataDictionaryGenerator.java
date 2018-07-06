@@ -50,10 +50,18 @@ public class DataDictionaryGenerator {
 		}
 	}
 	
+	public String getDataDictionaryOutputDir() {
+		return dataDictionaryOutputDir;
+	}
+	
 	public void setDataDictionaryFileName(String dataDictionaryFileName) {
 		if (StrKit.notBlank(dataDictionaryFileName)) {
 			this.dataDictionaryFileName = dataDictionaryFileName;
 		}
+	}
+	
+	public String getDataDictionaryFileName() {
+		return dataDictionaryFileName;
 	}
 	
 	public void generate(List<TableMeta> tableMetas) {

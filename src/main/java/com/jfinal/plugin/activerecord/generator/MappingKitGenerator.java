@@ -64,16 +64,28 @@ public class MappingKitGenerator {
 		}
 	}
 	
+	public String getMappingKitOutputDir() {
+		return mappingKitOutputDir;
+	}
+	
 	public void setMappingKitPackageName(String mappingKitPackageName) {
 		if (StrKit.notBlank(mappingKitPackageName)) {
 			this.mappingKitPackageName = mappingKitPackageName;
 		}
 	}
 	
+	public String getMappingKitPackageName() {
+		return mappingKitPackageName;
+	}
+	
 	public void setMappingKitClassName(String mappingKitClassName) {
 		if (StrKit.notBlank(mappingKitClassName)) {
 			this.mappingKitClassName = StrKit.firstCharToUpperCase(mappingKitClassName);
 		}
+	}
+	
+	public String getMappingKitClassName() {
+		return mappingKitClassName;
 	}
 	
 	public void generate(List<TableMeta> tableMetas) {
