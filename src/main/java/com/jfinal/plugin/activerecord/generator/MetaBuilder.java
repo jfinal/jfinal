@@ -96,6 +96,7 @@ public class MetaBuilder {
 				buildPrimaryKey(tableMeta);
 				buildColumnMetas(tableMeta);
 			}
+			removeNoPrimaryKeyTable(ret);
 			return ret;
 		}
 		catch (SQLException e) {
@@ -108,6 +109,17 @@ public class MetaBuilder {
 		}
 	}
 	
+	// 移除没有主键的 table
+	protected void removeNoPrimaryKeyTable(List<TableMeta> ret) {
+		for (java.util.Iterator<TableMeta> it = ret.iterator(); it.hasNext();) {
+			TableMeta tm = it.next();
+			if (StrKit.isBlank(tm.primaryKey)) {
+				it.remove();
+				System.err.println("Skip table " + tm.name + " because there is no primary key");
+			}
+		}
+	}
+
 	/**
 	 * 通过继承并覆盖此方法，跳过一些不希望处理的 table，定制更加灵活的 table 过滤规则
 	 * @return 返回 true 时将跳过当前 tableName 的处理
@@ -196,9 +208,12 @@ public class MetaBuilder {
 			}
 			primaryKey += rs.getString("COLUMN_NAME");
 		}
-		if (StrKit.isBlank(primaryKey)) {
-			throw new RuntimeException("primaryKey of table \"" + tableMeta.name + "\" required by active record pattern");
-		}
+		
+		// 无主键的 table 将在后续的 removeNoPrimaryKeyTable() 中被移除，不再抛出异常
+		// if (StrKit.isBlank(primaryKey)) {
+			// throw new RuntimeException("primaryKey of table \"" + tableMeta.name + "\" required by active record pattern");
+		// }
+		
 		tableMeta.primaryKey = primaryKey;
 		rs.close();
 	}
