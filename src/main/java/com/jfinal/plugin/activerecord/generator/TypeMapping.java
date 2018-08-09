@@ -29,7 +29,7 @@ import java.util.Map;
 public class TypeMapping {
 	
 	@SuppressWarnings("serial")
-	protected Map<String, String> map = new HashMap<String, String>() {{
+	protected Map<String, String> map = new HashMap<String, String>(32) {{
 		// java.util.Data can not be returned
 		// java.sql.Date, java.sql.Time, java.sql.Timestamp all extends java.util.Data so getDate can return the three types data
 		// put("java.util.Date", "java.util.Date");

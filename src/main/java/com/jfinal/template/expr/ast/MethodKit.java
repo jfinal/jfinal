@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import com.jfinal.kit.ReflectKit;
+import com.jfinal.kit.SyncWriteMap;
 import com.jfinal.template.ext.extensionmethod.ByteExt;
 import com.jfinal.template.ext.extensionmethod.DoubleExt;
 import com.jfinal.template.ext.extensionmethod.FloatExt;
@@ -37,10 +38,10 @@ import com.jfinal.template.ext.extensionmethod.StringExt;
 public class MethodKit {
 	
 	private static final Class<?>[] NULL_ARG_TYPES = new Class<?>[0];
-	private static final Set<String> forbiddenMethods = new HashSet<String>();
-	private static final Set<Class<?>> forbiddenClasses = new HashSet<Class<?>>();
-	private static final Map<Class<?>, Class<?>> primitiveMap = new HashMap<Class<?>, Class<?>>();
-	private static final HashMap<Long, Object> methodCache = new HashMap<Long, Object>();
+	private static final Set<String> forbiddenMethods = new HashSet<String>(64);
+	private static final Set<Class<?>> forbiddenClasses = new HashSet<Class<?>>(64);
+	private static final Map<Class<?>, Class<?>> primitiveMap = new HashMap<Class<?>, Class<?>>(64);
+	private static final Map<Long, Object> methodCache = new SyncWriteMap<Long, Object>(2048, 0.25F);
 	
 	// 初始化在模板中调用 method 时所在的被禁止使用类
 	static {
@@ -307,7 +308,7 @@ public class MethodKit {
 		}
 	}
 	
-	private static final Map<Class<?>, Class<?>> primitiveToBoxedMap = new HashMap<Class<?>, Class<?>>();
+	private static final Map<Class<?>, Class<?>> primitiveToBoxedMap = new HashMap<Class<?>, Class<?>>(64);
 	
 	// 初始化 primitive type 到 boxed type 的映射
 	static {

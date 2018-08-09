@@ -37,12 +37,15 @@ public class Call extends Stat {
 	private ExprList exprList;
 	private boolean callIfDefined;
 	
+	private Define function;
+	
 	public Call(String funcName, ExprList exprList, boolean callIfDefined) {
 		this.funcName = funcName;
 		this.exprList = exprList;
 		this.callIfDefined = callIfDefined;
 	}
 	
+	/*
 	public void exec(Env env, Scope scope, Writer writer) {
 		Define function = env.getFunction(funcName);
 		if (function != null) {
@@ -51,6 +54,26 @@ public class Call extends Stat {
 			return ;
 		} else {
 			throw new TemplateException("Template function not defined: " + funcName, location);
+		}
+	}*/
+	
+	public void exec(Env env, Scope scope, Writer writer) {
+		if (function == null) {
+			Define temp = env.getFunction(funcName);
+			if (temp == null) {
+				temp = NullFunction.me;
+			}
+			function = temp;
+		}
+		
+		if (function instanceof NullFunction) {
+			if (callIfDefined) {
+				return ;
+			} else {
+				throw new TemplateException("Template function not defined: " + funcName, location);
+			}
+		} else {
+			function.call(env, scope, exprList, writer);
 		}
 	}
 }

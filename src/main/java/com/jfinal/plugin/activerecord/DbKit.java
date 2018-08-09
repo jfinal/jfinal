@@ -42,7 +42,7 @@ public final class DbKit {
 	 */
 	static Config brokenConfig = Config.createBrokenConfig();
 	
-	private static Map<Class<? extends Model>, Config> modelToConfig = new HashMap<Class<? extends Model>, Config>();
+	private static Map<Class<? extends Model>, Config> modelToConfig = new HashMap<Class<? extends Model>, Config>(512, 0.5F);
 	private static Map<String, Config> configNameToConfig = new HashMap<String, Config>();
 	
 	static final Object[] NULL_PARA_ARRAY = new Object[0];

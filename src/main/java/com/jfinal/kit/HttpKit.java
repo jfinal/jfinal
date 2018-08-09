@@ -279,11 +279,12 @@ public class HttpKit {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		/* 去掉 close() 否则后续 ActionReporter 中的 getPara() 在部分 tomcat 中会报 IOException : Stream closed
 		finally {
 			if (br != null) {
 				try {br.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
 			}
-		}
+		}*/
 	}
 	
 	@Deprecated

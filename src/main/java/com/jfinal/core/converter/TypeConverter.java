@@ -62,7 +62,7 @@ import com.jfinal.core.converter.Converters.TimestampConverter;
  */
 public class TypeConverter {
 	
-	private final Map<Class<?>, IConverter<?>> converterMap = new HashMap<Class<?>, IConverter<?>>();
+	private final Map<Class<?>, IConverter<?>> converterMap = new HashMap<Class<?>, IConverter<?>>(64);
 	private static TypeConverter me = new TypeConverter();
 	
 	private TypeConverter() {

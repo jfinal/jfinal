@@ -20,7 +20,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * FastControllerFactory
+ * FastControllerFactory 用于回收使用 Controller 对象，提升性能
+ * 
+ * 由于 Controller 会被回收利用，所以使用之前一定要确保 controller
+ * 对象中的属性值没有线程安全问题
+ * 
+ * 警告：如果用户自己的 Controller 或者 BaseController 之中声明了属性，
+ *      并且这些属性不能被多线程共享，则不能直接使用 FastControllerFactory，
+ *      否则会有线程安全问题
+ *      
+ *      jfinal 3.5 版本可以通过覆盖 Controller._clear_() 方法来消除这个限制，
+ *      大至代码如下：
+ *      protected void _clear_() {
+ *          super._clear_();		// 调用父类的清除方法清掉父类中的属性值
+ *          this.xxx = null;		// 清除本类中声明的属性的值
+ *      }
+ *      
  */
 public class FastControllerFactory extends ControllerFactory {
 	
@@ -37,6 +52,17 @@ public class FastControllerFactory extends ControllerFactory {
 			buffers.get().put(controllerClass, ret);
 		}
 		return ret;
+	}
+	
+	/**
+	 * 返回 true，告知 ActionHandler 该 ControllerFactory 实现类
+	 * 需要回收使用 Controller 对象，则 ActionHandler 会在
+	 * finally 块中调用 Controller._clear_() 方法，确保下一个
+	 * 线程在使用被回收的 controller 时，其中的状态已被清除
+	 */
+	@Override
+	public boolean recycleController() {
+		return true;
 	}
 }
 

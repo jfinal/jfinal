@@ -33,12 +33,12 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class CPI {
 	
-	public static void init(Controller controller, Action action, HttpServletRequest request, HttpServletResponse response, String urlPara) {
-		controller.init(action, request, response, urlPara);
+	public static void _init_(Controller controller, Action action, HttpServletRequest request, HttpServletResponse response, String urlPara) {
+		controller._init_(action, request, response, urlPara);
 	}
 	
-	public static void clear(Controller controller) {
-		controller.clear();
+	public static void _clear_(Controller controller) {
+		controller._clear_();
 	}
 }
 

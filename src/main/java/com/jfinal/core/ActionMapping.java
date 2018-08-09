@@ -38,7 +38,7 @@ public class ActionMapping {
 	protected static final String SLASH = "/";
 	
 	protected Routes routes;
-	protected Map<String, Action> mapping = new HashMap<String, Action>();
+	protected Map<String, Action> mapping = new HashMap<String, Action>(2048, 0.5F);
 	
 	public ActionMapping(Routes routes) {
 		this.routes = routes;

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
+import com.jfinal.kit.SyncWriteMap;
 import com.jfinal.template.expr.ast.MethodKit;
 import com.jfinal.template.source.ClassPathSourceFactory;
 import com.jfinal.template.source.ISource;
@@ -42,7 +43,7 @@ public class Engine {
 	public static final String MAIN_ENGINE_NAME = "main";
 	
 	private static Engine MAIN_ENGINE;
-	private static Map<String, Engine> engineMap = new HashMap<String, Engine>();
+	private static Map<String, Engine> engineMap = new HashMap<String, Engine>(64, 0.5F);
 	
 	// Create main engine
 	static {
@@ -55,7 +56,7 @@ public class Engine {
 	private EngineConfig config = new EngineConfig();
 	private ISourceFactory sourceFactory = config.getSourceFactory();
 	
-	private Map<String, Template> templateCache = new HashMap<String, Template>();
+	private Map<String, Template> templateCache = new SyncWriteMap<String, Template>(2048, 0.5F);
 	
 	/**
 	 * Create engine without management of JFinal 

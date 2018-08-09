@@ -64,7 +64,7 @@ public abstract class Controller {
 	private static final String[] NULL_URL_PARA_ARRAY = new String[0];
 	private static final String URL_PARA_SEPARATOR = Config.getConstants().getUrlParaSeparator();
 	
-	void init(Action action, HttpServletRequest request, HttpServletResponse response, String urlPara) {
+	void _init_(Action action, HttpServletRequest request, HttpServletResponse response, String urlPara) {
 		this.action = action;
 		this.request = request;
 		this.response = response;
@@ -73,7 +73,14 @@ public abstract class Controller {
 		render = null;
 	}
 	
-	void clear() {
+	/**
+	 * 在对 Controller 回收使用场景下，如果继承类中声明了属性，则必须要
+	 * 覆盖此方法，调用父类的 clear() 方法并清掉自身的属性，例如：
+	 * 
+	 * super._clear_();
+	 * this.xxx = null;
+	 */
+	protected void _clear_() {
 		action = null;
 		request = null;
 		response = null;
