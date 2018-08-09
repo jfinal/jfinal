@@ -27,6 +27,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.ReflectKit;
+import com.jfinal.kit.SyncWriteMap;
 
 /**
  * SharedMethodKit
@@ -44,7 +45,7 @@ public class SharedMethodKit {
 	}
 	
 	private final List<SharedMethodInfo> sharedMethodList = new ArrayList<SharedMethodInfo>();
-	private final HashMap<Long, SharedMethodInfo> methodCache = new HashMap<Long, SharedMethodInfo>();
+	private final HashMap<Long, SharedMethodInfo> methodCache = new SyncWriteMap<Long, SharedMethodInfo>(512, 0.5F);
 	
 	public SharedMethodInfo getSharedMethodInfo(String methodName, Object[] argValues) {
 		Class<?>[] argTypes = MethodKit.getArgTypes(argValues);

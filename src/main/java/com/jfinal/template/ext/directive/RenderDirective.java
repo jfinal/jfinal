@@ -16,8 +16,8 @@
 
 package com.jfinal.template.ext.directive;
 
-import java.util.HashMap;
 import java.util.Map;
+import com.jfinal.kit.SyncWriteMap;
 import com.jfinal.template.Directive;
 import com.jfinal.template.EngineConfig;
 import com.jfinal.template.Env;
@@ -60,7 +60,7 @@ import com.jfinal.template.stat.ast.StatList;
 public class RenderDirective extends Directive {
 	
 	private String parentFileName;
-	private Map<String, StatInfo> statInfoCache = new HashMap<String,StatInfo>();
+	private Map<String, StatInfo> statInfoCache = new SyncWriteMap<String,StatInfo>(16, 0.5F);
 	
 	public void setExprList(ExprList exprList) {
 		int len = exprList.length();

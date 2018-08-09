@@ -79,23 +79,25 @@ public class DateDirective extends Directive {
 	
 	private void outputWithoutDatePattern(Env env, Scope scope, Writer writer) {
 		Object value = valueExpr.eval(scope);
-		if (value != null) {
+		if (value instanceof Date) {
 			write(writer, (Date)value, env.getEngineConfig().getDatePattern());
+		} else if (value != null) {
+			throw new TemplateException("The first parameter date of #date directive must be Date type", location);
 		}
 	}
 	
 	private void outputWithDatePattern(Env env, Scope scope, Writer writer) {
 		Object value = valueExpr.eval(scope);
-		if (value == null) {
-			return ;
+		if (value instanceof Date) {
+			Object datePattern = this.datePatternExpr.eval(scope);
+			if (datePattern instanceof String) {
+				write(writer, (Date)value, (String)datePattern);
+			} else {
+				throw new TemplateException("The sencond parameter datePattern of #date directive must be String", location);
+			}
+		} else if (value != null) {
+			throw new TemplateException("The first parameter date of #date directive must be Date type", location);
 		}
-		
-		Object datePattern = this.datePatternExpr.eval(scope);
-		if ( !(datePattern instanceof String) ) {
-			throw new TemplateException("The sencond parameter datePattern of #date directive must be String", location);
-		}
-		
-		write(writer, (Date)value, (String)datePattern);
 	}
 	
 	private void write(Writer writer, Date date, String datePattern) {

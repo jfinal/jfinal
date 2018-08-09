@@ -71,7 +71,7 @@ public class ActionHandler extends Handler {
 		try {
 			// Controller controller = action.getControllerClass().newInstance();
 			controller = controllerFactory.getController(action.getControllerClass());
-			controller.init(action, request, response, urlPara[0]);
+			controller._init_(action, request, response, urlPara[0]);
 			
 			if (devMode) {
 				if (ActionReporter.isReportAfterInvocation(request)) {
@@ -140,8 +140,8 @@ public class ActionHandler extends Handler {
 			}
 			renderManager.getRenderFactory().getErrorRender(500).setContext(request, response, action.getViewPath()).render();
 		} finally {
-			if (controller != null) {
-				controller.clear();
+			if (controllerFactory.recycleController() && controller != null) {
+				controller._clear_();
 			}
 		}
 	}

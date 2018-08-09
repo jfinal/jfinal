@@ -18,13 +18,14 @@ package com.jfinal.template.expr.ast;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import com.jfinal.kit.SyncWriteMap;
 
 /**
  * FieldKit
  */
 public class FieldKit {
 	
-	private static final HashMap<Long, Object> fieldCache = new HashMap<Long, Object>();
+	private static final HashMap<Long, Object> fieldCache = new SyncWriteMap<Long, Object>(512, 0.5F);
 	
 	public static Field getField(Long key, Class<?> targetClass, String fieldName) {
 		Object field = fieldCache.get(key);

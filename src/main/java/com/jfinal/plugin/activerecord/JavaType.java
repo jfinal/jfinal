@@ -28,7 +28,7 @@ import java.util.Map;
 public class JavaType {
 	
 	@SuppressWarnings("serial")
-	private Map<String, Class<?>> strToType = new HashMap<String, Class<?>>() {{
+	private Map<String, Class<?>> strToType = new HashMap<String, Class<?>>(32) {{
 		
 		// varchar, char, enum, set, text, tinytext, mediumtext, longtext
 		put("java.lang.String", java.lang.String.class);

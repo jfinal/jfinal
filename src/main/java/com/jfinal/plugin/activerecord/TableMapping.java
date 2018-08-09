@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class TableMapping {
 	
-	private final Map<Class<? extends Model<?>>, Table> modelToTableMap = new HashMap<Class<? extends Model<?>>, Table>();
+	private final Map<Class<? extends Model<?>>, Table> modelToTableMap = new HashMap<Class<? extends Model<?>>, Table>(512, 0.5F);
 	
 	private static TableMapping me = new TableMapping(); 
 	

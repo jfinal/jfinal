@@ -24,6 +24,27 @@ public class ControllerFactory {
 	public Controller getController(Class<? extends Controller> controllerClass) throws InstantiationException, IllegalAccessException {
 		return controllerClass.newInstance();
 	}
+	
+	/**
+	 * 判断是否回收 Controller 对象，如果回收的话就需要 return true，
+	 * 那么 ActionHandler 就会调用 controller._clear_() 用于
+	 * 清除属性，可以回收使用 Controller 对象
+	 * 
+	 * 如果用户自已的 controller 或者 BaseController 中声明了属性，
+	 * 并且希望回收使用 controller 对象，那么就必须覆盖 controller
+	 * 的 _clear_() 方法，大致方法如下：
+	 * 
+	 * protected void _clear_() {
+	 *    super._clear_();	// 清除父类属性中的值
+	 *    xxx = null;		// 清除自身属性中的值
+	 * }
+	 * 
+	 * 回收使用 Controller 除了要注意上述说明中的 _clear_() 用法以外，
+	 * 其实现方式见 FastControllerFactory
+	 */
+	public boolean recycleController() {
+		return false;
+	}
 }
 
 
