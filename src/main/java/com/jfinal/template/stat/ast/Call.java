@@ -45,7 +45,6 @@ public class Call extends Stat {
 		this.callIfDefined = callIfDefined;
 	}
 	
-	/*
 	public void exec(Env env, Scope scope, Writer writer) {
 		Define function = env.getFunction(funcName);
 		if (function != null) {
@@ -55,8 +54,9 @@ public class Call extends Stat {
 		} else {
 			throw new TemplateException("Template function not defined: " + funcName, location);
 		}
-	}*/
+	}
 	
+	/*
 	public void exec(Env env, Scope scope, Writer writer) {
 		if (function == null) {
 			Define temp = env.getFunction(funcName);
@@ -75,6 +75,6 @@ public class Call extends Stat {
 		} else {
 			function.call(env, scope, exprList, writer);
 		}
-	}
+	}*/
 }
 
