@@ -30,10 +30,8 @@ public class NullFunction extends Define {
 	
 	public static final NullFunction me = new NullFunction();
 	
-	private static final StatList NULL_EXPR_LIST = new StatList(new ArrayList<Stat>(0));
-	
 	private NullFunction() {
-		super("NullFunction can not be call", ExprList.NULL_EXPR_LIST, NULL_EXPR_LIST, null);
+		super("NullFunction can not be call", ExprList.NULL_EXPR_LIST, new StatList(new ArrayList<Stat>(0)), null);
 	}
 	
 	@Override
