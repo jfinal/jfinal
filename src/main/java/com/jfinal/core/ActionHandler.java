@@ -125,7 +125,7 @@ public class ActionHandler extends Handler {
 	}
 	
 	/**
-	 * 抽取出该方法是为了缩短 handle 方法中的代码量，便于获得 JIT 优化，
+	 * 抽取出该方法是为了缩短 handle 方法中的代码量，确保获得 JIT 优化，
 	 * 方法长度超过 8000 个字节码时，将不会被 JIT 编译成二进制码
 	 * 
 	 * 通过开启 java 的 -XX:+PrintCompilation 启动参数得知，handle(...) 
@@ -138,7 +138,7 @@ public class ActionHandler extends Handler {
 		if (errorCode == 404) {
 			msg = "404 Not Found: ";
 		} else if (errorCode == 400) {
-			msg = "40 Bad request: ";
+			msg = "400 Bad request: ";
 		} else if (errorCode == 401) {
 			msg = "401 Unauthorized: ";
 		} else if (errorCode == 403) {
