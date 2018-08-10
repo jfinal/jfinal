@@ -138,7 +138,7 @@ public class ActionHandler extends Handler {
 		if (errorCode == 404) {
 			msg = "404 Not Found: ";
 		} else if (errorCode == 400) {
-			msg = "400 Bad request: ";
+			msg = "400 Bad Request: ";
 		} else if (errorCode == 401) {
 			msg = "401 Unauthorized: ";
 		} else if (errorCode == 403) {
