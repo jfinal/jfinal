@@ -140,7 +140,7 @@ public class ActionHandler extends Handler {
 			}
 			renderManager.getRenderFactory().getErrorRender(500).setContext(request, response, action.getViewPath()).render();
 		} finally {
-			if (controllerFactory.recycleController() && controller != null) {
+			if (controller != null) {
 				controller._clear_();
 			}
 		}

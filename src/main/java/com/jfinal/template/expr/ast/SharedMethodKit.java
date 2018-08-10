@@ -45,7 +45,7 @@ public class SharedMethodKit {
 	}
 	
 	private final List<SharedMethodInfo> sharedMethodList = new ArrayList<SharedMethodInfo>();
-	private final HashMap<Long, SharedMethodInfo> methodCache = new SyncWriteMap<Long, SharedMethodInfo>(512, 0.5F);
+	private final HashMap<Long, SharedMethodInfo> methodCache = new SyncWriteMap<Long, SharedMethodInfo>(512, 0.25F);
 	
 	public SharedMethodInfo getSharedMethodInfo(String methodName, Object[] argValues) {
 		Class<?>[] argTypes = MethodKit.getArgTypes(argValues);
