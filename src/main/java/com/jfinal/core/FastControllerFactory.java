@@ -53,17 +53,6 @@ public class FastControllerFactory extends ControllerFactory {
 		}
 		return ret;
 	}
-	
-	/**
-	 * 返回 true，告知 ActionHandler 该 ControllerFactory 实现类
-	 * 需要回收使用 Controller 对象，则 ActionHandler 会在
-	 * finally 块中调用 Controller._clear_() 方法，确保下一个
-	 * 线程在使用被回收的 controller 时，其中的状态已被清除
-	 */
-	@Override
-	public boolean recycleController() {
-		return true;
-	}
 }
 
 
