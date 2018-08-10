@@ -109,29 +109,7 @@ public class ActionHandler extends Handler {
 			}
 		}
 		catch (ActionException e) {
-			int errorCode = e.getErrorCode();
-			String msg = null;
-			if (errorCode == 404) {
-				msg = "404 Not Found: ";
-			} else if (errorCode == 401) {
-				msg = "401 Unauthorized: ";
-			} else if (errorCode == 403) {
-				msg = "403 Forbidden: ";
-			}
-			
-			if (msg != null) {
-				if (log.isWarnEnabled()) {
-					String qs = request.getQueryString();
-					log.warn(msg + (qs == null ? target : target + "?" + qs));
-				}
-			} else {
-				if (log.isErrorEnabled()) {
-					String qs = request.getQueryString();
-					log.error(qs == null ? target : target + "?" + qs, e);
-				}
-			}
-			
-			e.getErrorRender().setContext(request, response, action.getViewPath()).render();
+			handleActionException(target, request, response, action, e);
 		}
 		catch (Exception e) {
 			if (log.isErrorEnabled()) {
@@ -144,6 +122,36 @@ public class ActionHandler extends Handler {
 				controller._clear_();
 			}
 		}
+	}
+	
+	/**
+	 * 抽取出该方法是为了缩短 handle 方法中的代码量，便于获得 JIT 优化，
+	 * 方法长度超过 8000 个字节码时，将不会被 JIT 编译成二进制码
+	 */
+	private void handleActionException(String target, HttpServletRequest request, HttpServletResponse response, Action action, ActionException e) {
+		int errorCode = e.getErrorCode();
+		String msg = null;
+		if (errorCode == 404) {
+			msg = "404 Not Found: ";
+		} else if (errorCode == 401) {
+			msg = "401 Unauthorized: ";
+		} else if (errorCode == 403) {
+			msg = "403 Forbidden: ";
+		}
+		
+		if (msg != null) {
+			if (log.isWarnEnabled()) {
+				String qs = request.getQueryString();
+				log.warn(msg + (qs == null ? target : target + "?" + qs));
+			}
+		} else {
+			if (log.isErrorEnabled()) {
+				String qs = request.getQueryString();
+				log.error(qs == null ? target : target + "?" + qs, e);
+			}
+		}
+		
+		e.getErrorRender().setContext(request, response, action.getViewPath()).render();
 	}
 }
 
