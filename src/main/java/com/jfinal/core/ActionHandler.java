@@ -137,6 +137,8 @@ public class ActionHandler extends Handler {
 		String msg = null;
 		if (errorCode == 404) {
 			msg = "404 Not Found: ";
+		} else if (errorCode == 400) {
+			msg = "40 Bad request: ";
 		} else if (errorCode == 401) {
 			msg = "401 Unauthorized: ";
 		} else if (errorCode == 403) {
