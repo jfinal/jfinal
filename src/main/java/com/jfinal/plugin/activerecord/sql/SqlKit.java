@@ -87,7 +87,7 @@ public class SqlKit {
 	}
 	
 	public synchronized void parseSqlTemplate() {
-		Map<String, Template> sqlTemplateMap = new HashMap<String, Template>();
+		Map<String, Template> sqlTemplateMap = new HashMap<String, Template>(512, 0.5F);
 		for (SqlSource ss : sqlSourceList) {
 			Template template = ss.isFile() ? engine.getTemplate(ss.file) : engine.getTemplate(ss.source);
 			Map<Object, Object> data = new HashMap<Object, Object>();
