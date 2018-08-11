@@ -148,12 +148,16 @@ public class ActionHandler extends Handler {
 		if (msg != null) {
 			if (log.isWarnEnabled()) {
 				String qs = request.getQueryString();
-				log.warn(msg + (qs == null ? target : target + "?" + qs));
+				msg = msg + (qs == null ? target : target + "?" + qs);
+				if (e.getMessage() != null) {
+					msg = msg + "\n" + e.getMessage();
+				}
+				log.warn(msg);
 			}
 		} else {
 			if (log.isErrorEnabled()) {
 				String qs = request.getQueryString();
-				log.error(qs == null ? target : target + "?" + qs, e);
+				log.error(errorCode + " Error: " + (qs == null ? target : target + "?" + qs), e);
 			}
 		}
 		
