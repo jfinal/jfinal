@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @SuppressWarnings("unchecked")
 public class Enhancer {
 	
-	private static final ConcurrentHashMap<String, Object> singleton = new ConcurrentHashMap<String, Object>();
+	private static final ConcurrentHashMap<String, Object> singleton = new ConcurrentHashMap<String, Object>(32, 0.5F);
 	
 	private Enhancer(){}
 

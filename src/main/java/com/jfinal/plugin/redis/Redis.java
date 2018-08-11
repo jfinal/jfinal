@@ -33,7 +33,7 @@ public class Redis {
 	
 	static Cache mainCache = null;
 	
-	private static final ConcurrentHashMap<String, Cache> cacheMap = new ConcurrentHashMap<String, Cache>();
+	private static final ConcurrentHashMap<String, Cache> cacheMap = new ConcurrentHashMap<String, Cache>(32, 0.5F);
 	
 	public static void addCache(Cache cache) {
 		if (cache == null)
