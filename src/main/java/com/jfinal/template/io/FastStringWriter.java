@@ -97,7 +97,7 @@ public class FastStringWriter extends Writer {
     	
     }
     
-    static int MAX_SIZE = 1024 * 128;
+    static int MAX_SIZE = 1024 * 64;
     
     /**
      * 由 StringWriter.close() 改造而来，原先该方法中无任何代码 ，改造如下：
@@ -107,7 +107,7 @@ public class FastStringWriter extends Writer {
      */
     public void close() {
     	if (buf.length() > MAX_SIZE) {
-    		buf = new StringBuilder();	// 释放空间占用过大的 buf
+    		buf = new StringBuilder(MAX_SIZE / 2);	// 释放空间占用过大的 buf
 		} else {
 			buf.setLength(0);
 		}
