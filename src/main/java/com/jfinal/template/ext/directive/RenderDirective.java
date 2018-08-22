@@ -60,7 +60,7 @@ import com.jfinal.template.stat.ast.StatList;
 public class RenderDirective extends Directive {
 	
 	private String parentFileName;
-	private Map<String, StatInfo> statInfoCache = new SyncWriteMap<String,StatInfo>(16, 0.5F);
+	private Map<String, SubStat> subStatCache = new SyncWriteMap<String, SubStat>(16, 0.5F);
 	
 	public void setExprList(ExprList exprList) {
 		int len = exprList.length();
@@ -108,42 +108,42 @@ public class RenderDirective extends Directive {
 		}
 		
 		String subFileName = Include.getSubFileName((String)value, parentFileName);
-		StatInfo statInfo = statInfoCache.get(subFileName);
-		if (statInfo == null) {
-			statInfo = parseStatInfo(env, subFileName);
-			statInfoCache.put(subFileName, statInfo);
+		SubStat subStat = subStatCache.get(subFileName);
+		if (subStat == null) {
+			subStat = parseSubStat(env, subFileName);
+			subStatCache.put(subFileName, subStat);
 		} else if (env.isDevMode()) {
-			// statInfo.env.isSourceListModified() 逻辑可以支持 #render 子模板中的 #include 过来的子模板在 devMode 下在修改后可被重加载
-			if (statInfo.source.isModified() || statInfo.env.isSourceListModified()) {
-				statInfo = parseStatInfo(env, subFileName);
-				statInfoCache.put(subFileName, statInfo);
+			// subStat.env.isSourceListModified() 逻辑可以支持 #render 子模板中的 #include 过来的子模板在 devMode 下在修改后可被重加载
+			if (subStat.source.isModified() || subStat.env.isSourceListModified()) {
+				subStat = parseSubStat(env, subFileName);
+				subStatCache.put(subFileName, subStat);
 			}
 		}
 		
-		statInfo.stat.exec(statInfo.env, scope, writer);
+		subStat.stat.exec(subStat.env, scope, writer);
 		scope.getCtrl().setJumpNone();
 	}
 	
-	private StatInfo parseStatInfo(Env env, String subFileName) {
+	private SubStat parseSubStat(Env env, String subFileName) {
 		EngineConfig config = env.getEngineConfig();
-		// FileSource fileSource = new FileSource(config.getBaseTemplatePath(), subFileName, config.getEncoding());
-		ISource fileSource = config.getSourceFactory().getSource(config.getBaseTemplatePath(), subFileName, config.getEncoding());
+		// FileSource subFileSource = new FileSource(config.getBaseTemplatePath(), subFileName, config.getEncoding());
+		ISource subFileSource = config.getSourceFactory().getSource(config.getBaseTemplatePath(), subFileName, config.getEncoding());
 		
 		try {
-			EnvSub envSub = new EnvSub(env);
-			StatList statList = new Parser(envSub, fileSource.getContent(), subFileName).parse();
-			return new StatInfo(envSub, statList.getActualStat(), fileSource);
+			SubEnv subEnv = new SubEnv(env);
+			StatList subStatList = new Parser(subEnv, subFileSource.getContent(), subFileName).parse();
+			return new SubStat(subEnv, subStatList.getActualStat(), subFileSource);
 		} catch (Exception e) {
 			throw new ParseException(e.getMessage(), location, e);
 		}
 	}
 	
-	private static class StatInfo {
-		EnvSub env;
+	private static class SubStat {
+		SubEnv env;
 		Stat stat;
 		ISource source;
 		
-		StatInfo(EnvSub env, Stat stat, ISource source) {
+		SubStat(SubEnv env, Stat stat, ISource source) {
 			this.env = env;
 			this.stat = stat;
 			this.source = source;
@@ -151,19 +151,19 @@ public class RenderDirective extends Directive {
 	}
 	
 	/**
-	 * EnvSub 用于将子模板与父模板中的模板函数隔离开来，
+	 * SubEnv 用于将子模板与父模板中的模板函数隔离开来，
 	 * 否则在子模板被修改并被重新解析时会再次添加子模板中的
 	 * 模板函数，从而抛出异常
 	 * 
-	 * EnvSub 也可以使子模板中定义的模板函数不与上层产生冲突，
+	 * SubEnv 也可以使子模板中定义的模板函数不与上层产生冲突，
 	 * 有利于动态型模板渲染的模块化
 	 * 
-	 * 注意： #render 子模板中定义的模板函数无法被上层调用
+	 * 注意： #render 子模板中定义的模板函数无法在父模板中调用
 	 */
-	private static class EnvSub extends Env {
+	private static class SubEnv extends Env {
 		Env parentEnv;
 		
-		public EnvSub(Env parentEnv) {
+		public SubEnv(Env parentEnv) {
 			super(parentEnv.getEngineConfig());
 			this.parentEnv = parentEnv;
 		}
