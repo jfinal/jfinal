@@ -120,7 +120,8 @@ public class RenderDirective extends Directive {
 			}
 		}
 		
-		subStat.stat.exec(subStat.env, scope, writer);
+		subStat.exec(null, scope, writer);	// subStat.stat.exec(subStat.env, scope, writer);
+		
 		scope.getCtrl().setJumpNone();
 	}
 	
@@ -138,15 +139,20 @@ public class RenderDirective extends Directive {
 		}
 	}
 	
-	private static class SubStat {
-		SubEnv env;
-		Stat stat;
-		ISource source;
+	public static class SubStat extends Stat {
+		public SubEnv env;
+		public Stat stat;
+		public ISource source;
 		
-		SubStat(SubEnv env, Stat stat, ISource source) {
+		public SubStat(SubEnv env, Stat stat, ISource source) {
 			this.env = env;
 			this.stat = stat;
 			this.source = source;
+		}
+		
+		@Override
+		public void exec(Env env, Scope scope, Writer writer) {
+			stat.exec(this.env, scope, writer);
 		}
 	}
 	
@@ -160,8 +166,8 @@ public class RenderDirective extends Directive {
 	 * 
 	 * 注意： #render 子模板中定义的模板函数无法在父模板中调用
 	 */
-	private static class SubEnv extends Env {
-		Env parentEnv;
+	public static class SubEnv extends Env {
+		public Env parentEnv;
 		
 		public SubEnv(Env parentEnv) {
 			super(parentEnv.getEngineConfig());
@@ -171,6 +177,7 @@ public class RenderDirective extends Directive {
 		/**
 		 * 接管父类 getFunction()，先从子模板中找模板函数，找不到再去父模板中找
 		 */
+		@Override
 		public Define getFunction(String functionName) {
 			Define func = functionMap.get(functionName);
 			return func != null ? func : parentEnv.getFunction(functionName);
