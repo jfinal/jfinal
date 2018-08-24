@@ -21,7 +21,7 @@ package com.jfinal.core;
  */
 public class ControllerFactory {
 	
-	public Controller getController(Class<? extends Controller> controllerClass) throws InstantiationException, IllegalAccessException {
+	public Controller getController(Class<? extends Controller> controllerClass) throws ReflectiveOperationException {
 		return controllerClass.newInstance();
 	}
 }

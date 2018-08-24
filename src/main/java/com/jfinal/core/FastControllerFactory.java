@@ -45,7 +45,7 @@ public class FastControllerFactory extends ControllerFactory {
 		}
 	};
 	
-	public Controller getController(Class<? extends Controller> controllerClass) throws InstantiationException, IllegalAccessException {
+	public Controller getController(Class<? extends Controller> controllerClass) throws ReflectiveOperationException {
 		Controller ret = buffers.get().get(controllerClass);
 		if (ret == null) {
 			ret = controllerClass.newInstance();
