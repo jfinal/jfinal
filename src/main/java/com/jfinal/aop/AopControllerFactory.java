@@ -70,7 +70,7 @@ public class AopControllerFactory extends ControllerFactory {
 	@Override
 	public Controller getController(Class<? extends Controller> controllerClass) throws ReflectiveOperationException {
 		Controller c = controllerClass.newInstance();
-		// Aop.getAopProxy().inject((Class)controllerClass, c);
+		// Aop.getAopFactory().inject((Class)controllerClass, c);
 		return Aop.inject(c);
 	}
 }
