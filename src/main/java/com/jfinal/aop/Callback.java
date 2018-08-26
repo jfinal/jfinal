@@ -87,7 +87,7 @@ class Callback implements MethodInterceptor {
 		}
 		else {
 			Class<?> targetClass = target.getClass();
-			if (targetClass.getName().indexOf("$$EnhancerByCGLIB") != -1) {
+			if (targetClass.getName().indexOf("$$EnhancerBy") != -1) {
 				targetClass = targetClass.getSuperclass();
 			}
 			Interceptor[] finalInters = interMan.buildServiceMethodInterceptor(injectInters, targetClass, method);

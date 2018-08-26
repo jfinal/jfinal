@@ -5,9 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.jfinal.aop.Enhancer;
 
 /**
- * AopProxy 是工具类 Aop 功能的具体实现，详细用法见 Aop
+ * AopFactory 是工具类 Aop 功能的具体实现，详细用法见 Aop
  */
-public class AopProxy {
+public class AopFactory {
 	
 	// 单例缓存
 	protected ConcurrentHashMap<Class<?>, Object> singletonCache = new ConcurrentHashMap<Class<?>, Object>();
@@ -154,7 +154,7 @@ public class AopProxy {
 	/**
 	 * 设置被注入的对象是否被增强，可使用 @Inject(enhance = YesOrNo.NO) 覆盖此默认值
 	 */
-	public AopProxy setEnhance(boolean enhance) {
+	public AopFactory setEnhance(boolean enhance) {
 		this.enhance = enhance ? YesOrNo.YES : YesOrNo.NO;
 		return this;
 	}
@@ -166,7 +166,7 @@ public class AopProxy {
 	/**
 	 * 设置被注入的对象是否为单例，可使用 @Inject(singleton = YesOrNo.NO) 覆盖此默认值 
 	 */
-	public AopProxy setSingleton(boolean singleton) {
+	public AopFactory setSingleton(boolean singleton) {
 		this.singleton = singleton ? YesOrNo.YES : YesOrNo.NO;
 		return this;
 	}
@@ -178,7 +178,7 @@ public class AopProxy {
 	/**
 	 * 设置注入深度，避免被注入类在具有循环依赖时造成无限循环
 	 */
-	public AopProxy setInjectDepth(int injectDepth) {
+	public AopFactory setInjectDepth(int injectDepth) {
 		if (injectDepth <= 0) {
 			throw new IllegalArgumentException("注入层数必须大于 0");
 		}

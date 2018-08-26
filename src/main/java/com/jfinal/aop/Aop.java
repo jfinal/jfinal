@@ -73,74 +73,74 @@ package com.jfinal.aop;
  */
 public class Aop {
 	
-	private static AopProxy aopProxy = new AopProxy();
+	private static AopFactory aopFactory = new AopFactory();
 	
 	public static <T> T get(Class<T> targetClass) {
-		return aopProxy.get(targetClass);
+		return aopFactory.get(targetClass);
 	}
 	
 	public static <T> T inject(T targetObject) {
-		return aopProxy.inject(targetObject);
+		return aopFactory.inject(targetObject);
 	}
 	
 	public static <T> T inject(T targetObject, int injectDepth) {
-		return aopProxy.inject(targetObject, injectDepth);
+		return aopFactory.inject(targetObject, injectDepth);
 	}
 	
-	/* 通过 Aop.getAopProxy().inject(...) 可调用如下两个方法，不直接开放出来
+	/* 通过 Aop.getAopFactory().inject(...) 可调用如下两个方法，不直接开放出来
 	public static void inject(Class<?> targetClass, Object targetObject) throws ReflectiveOperationException {
-		aopProxy.inject(targetClass, targetObject);
+		aopFactory.inject(targetClass, targetObject);
 	}
 	
 	public static void inject(Class<?> targetClass, Object targetObject, int injectDepth) throws ReflectiveOperationException {
-		aopProxy.inject(targetClass, targetObject, injectDepth);
+		aopFactory.inject(targetClass, targetObject, injectDepth);
 	}*/
 	
 	/**
-	 * 设置 AopProxy，便于扩展自己的 AopProxy 实现
+	 * 设置 AopFactory，便于扩展自己的 AopFactory 实现
 	 */
-	public static void setAopProxy(AopProxy aopProxy) {
-		if (aopProxy == null) {
-			throw new IllegalArgumentException("aopProxy can not be null");
+	public static void setAopFactory(AopFactory aopFactory) {
+		if (aopFactory == null) {
+			throw new IllegalArgumentException("aopFactory can not be null");
 		}
-		Aop.aopProxy = aopProxy;
+		Aop.aopFactory = aopFactory;
 	}
 	
-	public static AopProxy getAopProxy() {
-		return aopProxy;
+	public static AopFactory getAopFactory() {
+		return aopFactory;
 	}
 	
 	/**
 	 * 设置被注入的对象是否被增强，可使用 @Inject(enhance = YesOrNo.NO) 覆盖此默认值
 	 */
 	public static void setEnhance(boolean enhance) {
-		aopProxy.setEnhance(enhance);
+		aopFactory.setEnhance(enhance);
 	}
 	
 	public static boolean isEnhance() {
-		return aopProxy.isEnhance();
+		return aopFactory.isEnhance();
 	}
 	
 	/**
 	 * 设置被注入的对象是否为单例，可使用 @Inject(singleton = YesOrNo.NO) 覆盖此默认值 
 	 */
 	public static void setSingleton(boolean singleton) {
-		aopProxy.setSingleton(singleton);
+		aopFactory.setSingleton(singleton);
 	}
 	
 	public static boolean isSingleton() {
-		return aopProxy.isSingleton();
+		return aopFactory.isSingleton();
 	}
 	
 	/**
 	 * 设置注入深度，避免被注入类在具有循环依赖时造成无限循环
 	 */
 	public static void setInjectDepth(int injectDepth) {
-		aopProxy.setInjectDepth(injectDepth);
+		aopFactory.setInjectDepth(injectDepth);
 	}
 	
 	public static int getInjectDepth() {
-		return aopProxy.getInjectDepth();
+		return aopFactory.getInjectDepth();
 	}
 }
 
