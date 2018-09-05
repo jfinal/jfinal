@@ -24,9 +24,9 @@ import com.jfinal.core.JFinal;
  */
 public class RedirectRender extends Render {
 	
-	private String url;
-	private boolean withQueryString;
-	private static final String contextPath = getContxtPath();
+	protected String url;
+	protected boolean withQueryString;
+	protected static final String contextPath = getContxtPath();
 	
 	static String getContxtPath() {
 		String cp = JFinal.me().getContextPath();

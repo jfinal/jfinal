@@ -25,10 +25,10 @@ import java.io.PrintWriter;
 public class TextRender extends Render {
 	
 	// 与 encoding 与 contentType 在 render() 方法中分开设置，效果相同
-	private static final String DEFAULT_CONTENT_TYPE = "text/plain";
+	protected static final String DEFAULT_CONTENT_TYPE = "text/plain";
 	
-	private String text;
-	private String contentType;
+	protected String text;
+	protected String contentType;
 	
 	public TextRender(String text) {
 		this.text = text;
