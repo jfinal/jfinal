@@ -10,11 +10,11 @@ package com.jfinal.aop;
  * 
  * 3：Aop.inject(...) 与 Aop.get(...) 的区别是前者只针对传入的对象之中的属性进行注入。
  *    而后者先要使用 Class 去创建对象，创建完对象以后对该对象之中的属性进行注入。
- *    简单一句话：get(...) 比 inject(...) 多了一个对象创建的过程
+ *    简单一句话：get(...) 比 inject(...) 多了一个目标对象的创建过程
  *    
- * 4：是否要 enhance 与 singleton 根据 Aop.setEhnace(...)、Aop.setSingleton(...) 配置来操作
+ * 4：是否要 singleton 与 enhance 根据 Aop.setSingleton(...)、Aop.setEhnace(...) 配置来操作
  * 
- * 5：在 @Inject(...) 指定 enhance 与 singleton 的配置可以覆盖掉默认配置
+ * 5：在目标类上使用注解 Singleton 与注解 Enhance 可以覆盖掉上面的默认配置
  * 
  * 
  * 基本用法：
@@ -40,7 +40,7 @@ package com.jfinal.aop;
  * 2：只进行注入，对象自己创建
  *    Service srv = Aop.inject(new Service());
  *    srv.doIt();
- *    Aop.injectd(...) 会对 OtherService otherSrv 进行注入，并且对 otherSrv 进行 ehnace，
+ *    Aop.inject(...) 会对 OtherService otherSrv 进行注入，并且对 otherSrv 进行 ehnace，
  *    所以 OtherService.doOther() 方法上的 Bbb 拦截器会生效
  *    
  * 3：创建对象并注入
@@ -52,6 +52,9 @@ package com.jfinal.aop;
  * 4：以上两点中的 enhance 还取决于配置
  *    Aop.setEnhance(false) 配置以后，只注入对象，但被注入对象不进行 enhance， Aaa、Bbb 拦截器都不会生效
  *    
+ *    
+ * 注意：后续的 jfinal 3.6 版本将根据目标类是否配置了拦截器而进行增强，会去除一切与 enhance 有关的配置与代码
+ *      这里与 enhance 有关的配置仅为 jfinal 3.5 到 jfinal 3.6 的过渡
  * 
  * 
  * 
@@ -60,16 +63,17 @@ package com.jfinal.aop;
  *    @Inject(UserServiceImpl.class)			// 此处的 UserServiceImpl 为 UserService 的子类或实现类
  *    UserService userService;
  * 
- * 2：被注入对象默认会被 enhance 增强，可以通过 Aop.setEnhance(false) 配置默认不增强
+ * 2：被注入对象默认是 singleton 单例，可以通过 Aop.setSingleton(false) 配置默认不为单例
  * 
- * 3：被注入对象默认是 singleton 单例，可以通过 Aop.setSingleton(false) 配置默认不为单例
+ * 3：被注入对象默认会被 enhance 增强，可以通过 Aop.setEnhance(false) 配置默认不增强
  * 
- * 4：可以在 @Inject 注解中直接配置 enhance 增强与 singleton 单例：
- *    @Inject(enhance=YesOrNo.NO, singleton=YesOrNo.YES)
- *    注意：如上在 @Inject 直接配置会覆盖掉 2、3 中 setEnhance()/setSingleton() 方法配置的默认值
+ * 4：可以在目标类中中直接配置注解 Singleton 与注解 Enhance：
+ *    @Singleton(false)
+ *    @Enhance(false) 
+ *    注意：如上在配置会覆盖掉 2、3 中 setSingleton()/setEnhance() 方法配置的默认值
  * 
- * 5：如上 2、3、4 中的配置，建议的用法是：先用 setEnhance()/setSingleton() 配置大多数情况，然后在个别
- *    违反上述配置的情况下在 @Inject 中直接 enhance、singleton 来覆盖默认配置，这样可以节省大量代码
+ * 5：如上 2、3、4 中的配置，建议的用法是：先用 /setSingleton()/setEnhance() 配置大多数情况，然后在个别
+ *    违反上述配置的情况下使用 Singleton 注解与 Enhance 注解来覆盖默认配置，这样可以节省大量代码
  */
 public class Aop {
 	
@@ -111,18 +115,18 @@ public class Aop {
 	}
 	
 	/**
-	 * 设置被注入的对象是否被增强，可使用 @Inject(enhance = YesOrNo.NO) 覆盖此默认值
+	 * 设置被注入的对象是否被增强，可使用 @Enhace(boolean) 覆盖此默认值
+	 * 
+	 * 由于下一版本的 jfinal 3.6 将根据目标类中是否存在 Before 注解
+	 * 来决定是否增强，所以该 setEnhance 方法仅仅是一个过渡功能，不建议使用
 	 */
+	@Deprecated
 	public static void setEnhance(boolean enhance) {
 		aopFactory.setEnhance(enhance);
 	}
 	
-	public static boolean isEnhance() {
-		return aopFactory.isEnhance();
-	}
-	
 	/**
-	 * 设置被注入的对象是否为单例，可使用 @Inject(singleton = YesOrNo.NO) 覆盖此默认值 
+	 * 设置被注入的对象是否为单例，可在目标类上使用 @Singleton(boolean) 覆盖此默认值 
 	 */
 	public static void setSingleton(boolean singleton) {
 		aopFactory.setSingleton(singleton);

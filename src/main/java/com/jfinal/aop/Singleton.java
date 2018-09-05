@@ -7,12 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Inject is used to inject dependent object
+ * Singleton 用于配置被注入对象是否为单例
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD})
-public @interface Inject {
-	Class<?> value() default Void.class;					// 被注入类的类型
+@Target({ElementType.TYPE})
+public @interface Singleton {
+	boolean value();				// 是否单例
 }
-

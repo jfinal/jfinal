@@ -50,6 +50,13 @@ class JFinalClassLoader extends WebAppClassLoader {
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Class loadClass(String name) throws ClassNotFoundException {
 		try {
+			
+			// 使用 WebAppContext.addSystemClass("sun.") 代替下面的方案更高效
+			// java.lang.IllegalAccessError: class sun.reflect.GeneratedConstructorAccessor2 cannot access its superclass sun.reflect.ConstructorAccessorImpl
+			// if (name.startsWith("sun.") || name.startsWith("com.sun.")) {
+				// return getParent().loadClass(name);
+			// }
+			
 			return loadClass(name, false);
 		}
 		catch (NoClassDefFoundError e) {

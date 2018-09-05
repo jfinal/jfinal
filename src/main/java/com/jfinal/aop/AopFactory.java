@@ -2,7 +2,6 @@ package com.jfinal.aop;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
-import com.jfinal.aop.Enhancer;
 
 /**
  * AopFactory 是工具类 Aop 功能的具体实现，详细用法见 Aop
@@ -12,10 +11,10 @@ public class AopFactory {
 	// 单例缓存
 	protected ConcurrentHashMap<Class<?>, Object> singletonCache = new ConcurrentHashMap<Class<?>, Object>();
 	
-	protected static int MAX_INJECT_DEPTH = 7;			// 最大注入深度 
+	protected static int MAX_INJECT_DEPTH = 7;			// 最大注入深度
 	
-	protected YesOrNo enhance = YesOrNo.YES;				// 默认增强
-	protected YesOrNo singleton = YesOrNo.YES;			// 默认单例
+	protected boolean singleton = true;					// 默认单例
+	protected boolean enhance = true;					// 默认增强
 	protected int injectDepth = 3;						// 默认注入深度
 	
 	@SuppressWarnings("unchecked")
@@ -24,9 +23,12 @@ public class AopFactory {
 			// Aop.get(obj.getClass()) 可以用 Aop.inject(obj)，所以注掉下一行代码 
 			// targetClass = (Class<T>)getUsefulClass(targetClass);
 			
+			Singleton si = targetClass.getAnnotation(Singleton.class);
+			boolean singleton = (si != null ? si.value() : this.singleton);
+			
 			Object ret;
-			if (singleton == YesOrNo.NO) {
-				ret = createObject(targetClass, enhance);
+			if ( ! singleton ) {
+				ret = createObject(targetClass);
 				inject(targetClass, ret, injectDepth);
 				return (T)ret;
 			}
@@ -36,12 +38,13 @@ public class AopFactory {
 				synchronized (targetClass) {
 					ret = singletonCache.get(targetClass);
 					if (ret == null) {
-						ret = createObject(targetClass, enhance);
+						ret = createObject(targetClass);
 						inject(targetClass, ret, injectDepth);
 						singletonCache.put(targetClass, ret);
 					}
 				}
 			}
+			
 			return (T)ret;
 		}
 		catch (ReflectiveOperationException e) {
@@ -94,17 +97,10 @@ public class AopFactory {
 				fieldInjectedClass = field.getType();
 			}
 			
-			YesOrNo enhance = inject.enhance();
-			if (enhance == YesOrNo.DEFAULT) {
-				enhance = this.enhance;
-			}
+			Singleton si = fieldInjectedClass.getAnnotation(Singleton.class);
+			boolean singleton = (si != null ? si.value() : this.singleton);
 			
-			YesOrNo singleton = inject.singleton();
-			if (singleton == YesOrNo.DEFAULT) {
-				singleton = this.singleton;
-			}
-			
-			Object fieldInjectedObject = getOrCreateObject(fieldInjectedClass, enhance, singleton);
+			Object fieldInjectedObject = getOrCreateObject(fieldInjectedClass, singleton);
 			field.setAccessible(true);
 			field.set(targetObject, fieldInjectedObject);
 			
@@ -113,9 +109,9 @@ public class AopFactory {
 		}
 	}
 	
-	protected Object getOrCreateObject(Class<?> targetClass, YesOrNo enhance, YesOrNo singleton) throws ReflectiveOperationException {
-		if (singleton == YesOrNo.NO) {
-			return createObject(targetClass, enhance);
+	protected Object getOrCreateObject(Class<?> targetClass, boolean singleton) throws ReflectiveOperationException {
+		if ( ! singleton ) {
+			return createObject(targetClass);
 		}
 		
 		Object ret = singletonCache.get(targetClass);
@@ -123,7 +119,7 @@ public class AopFactory {
 			synchronized (targetClass) {
 				ret = singletonCache.get(targetClass);
 				if (ret == null) {
-					ret = createObject(targetClass, enhance);
+					ret = createObject(targetClass);
 					singletonCache.put(targetClass, ret);
 				}
 			}
@@ -135,8 +131,12 @@ public class AopFactory {
 	/**
 	 * 由于上层已经处理过 singleton，所以 Enhancer.enhance() 方法中不必关心 singleton
 	 */
-	protected Object createObject(Class<?> targetClass, YesOrNo enhance) throws ReflectiveOperationException {
-		return (enhance == YesOrNo.YES) ? Enhancer.enhance(targetClass) : targetClass.newInstance();
+	@SuppressWarnings("deprecation")
+	protected Object createObject(Class<?> targetClass) throws ReflectiveOperationException {
+		Enhance en = targetClass.getAnnotation(Enhance.class);
+		boolean enhance = (en != null ? en.value() : this.enhance);
+		
+		return enhance ? com.jfinal.aop.Enhancer.enhance(targetClass) : targetClass.newInstance();
 	}
 	
 	/**
@@ -152,27 +152,27 @@ public class AopFactory {
 	}
 	
 	/**
-	 * 设置被注入的对象是否被增强，可使用 @Inject(enhance = YesOrNo.NO) 覆盖此默认值
+	 * 设置被注入的对象是否被增强，可使用 @Enhace(boolean) 覆盖此默认值
+	 * 
+	 * 由于下一版本的 jfinal 3.6 将根据目标类中是否配置了拦截器来决定是否增强，
+	 * 所以该 setEnhance 方法仅仅是一个过渡功能，不建议使用
 	 */
+	@Deprecated
 	public AopFactory setEnhance(boolean enhance) {
-		this.enhance = enhance ? YesOrNo.YES : YesOrNo.NO;
+		this.enhance = enhance;
 		return this;
 	}
 	
-	public boolean isEnhance() {
-		return enhance == YesOrNo.YES;
-	}
-	
 	/**
-	 * 设置被注入的对象是否为单例，可使用 @Inject(singleton = YesOrNo.NO) 覆盖此默认值 
+	 * 设置被注入的对象是否为单例，可使用 @Singleton(boolean) 覆盖此默认值 
 	 */
 	public AopFactory setSingleton(boolean singleton) {
-		this.singleton = singleton ? YesOrNo.YES : YesOrNo.NO;
+		this.singleton = singleton;
 		return this;
 	}
 	
 	public boolean isSingleton() {
-		return singleton == YesOrNo.YES;
+		return singleton;
 	}
 	
 	/**
