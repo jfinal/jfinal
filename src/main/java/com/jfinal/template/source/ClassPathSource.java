@@ -105,7 +105,7 @@ public class ClassPathSource implements ISource {
 		return finalFileName;
 	}
 	
-	public String getKey() {
+	public String getCacheKey() {
 		return fileName;
 	}
 	
