@@ -25,7 +25,7 @@ import com.jfinal.template.EngineConfig;
  */
 public class StringSource implements ISource {
 	
-	private String key;
+	private String cacheKey;
 	private StringBuilder content;
 	
 	/**
@@ -38,7 +38,7 @@ public class StringSource implements ISource {
 			throw new IllegalArgumentException("content can not be blank");
 		}
 		this.content = new StringBuilder(content);
-		this.key = cache ? HashKit.md5(content) : null;	// 不缓存只要将 key 值赋为 null 即可
+		this.cacheKey = cache ? HashKit.md5(content) : null;	// 不缓存只要将 cacheKey 值赋为 null 即可
 	}
 	
 	public StringSource(StringBuilder content, boolean cache) {
@@ -46,15 +46,15 @@ public class StringSource implements ISource {
 			throw new IllegalArgumentException("content can not be blank");
 		}
 		this.content = content;
-		this.key = cache ? HashKit.md5(content.toString()) : null;	// 不缓存只要将 key 值赋为 null 即可
+		this.cacheKey = cache ? HashKit.md5(content.toString()) : null;	// 不缓存只要将 cacheKey 值赋为 null 即可
 	}
 	
 	public boolean isModified() {
 		return false;
 	}
 	
-	public String getKey() {
-		return key;
+	public String getCacheKey() {
+		return cacheKey;
 	}
 	
 	public StringBuilder getContent() {
@@ -67,8 +67,8 @@ public class StringSource implements ISource {
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Key : ").append(key).append("\n");
-		sb.append("Content : ").append(content).append("\n");
+		sb.append("cacheKey : ").append(cacheKey).append("\n");
+		sb.append("content : ").append(content).append("\n");
 		return sb.toString();
 	}
 }

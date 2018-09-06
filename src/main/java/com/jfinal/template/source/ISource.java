@@ -27,12 +27,12 @@ public interface ISource {
 	boolean isModified();
 	
 	/**
-	 * key used to cache, return null if do not cache the template
+	 * cache key used to cache, return null if do not cache the template
 	 * 
 	 * 注意：如果不希望缓存从该 ISource 解析出来的 Template 对象
-	 *      让 getKey() 返回 null 值即可  
+	 *      让 getCacheKey() 返回 null 值即可  
 	 */
-	String getKey();
+	String getCacheKey();
 	
 	/**
 	 * content of ISource

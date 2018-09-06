@@ -126,7 +126,7 @@ public class Engine {
 	}
 	
 	/**
-	 * Get template with file name
+	 * Get template by file name
 	 */
 	public Template getTemplate(String fileName) {
 		if (fileName.charAt(0) != '/') {
@@ -172,9 +172,9 @@ public class Engine {
 	/**
 	 * Get template by string content
 	 * 
-	 * 重要：StringSource 中的 key = HashKit.md5(content)，也即 key
-	 *     与 content 有紧密的对应关系，当 content 发生变化时 key 值也相应变化
-	 *     因此，原先 key 所对应的 Template 缓存对象已无法被获取，当 getTemplateByString(String)
+	 * 重要：StringSource 中的 cacheKey = HashKit.md5(content)，也即 cacheKey
+	 *     与 content 有紧密的对应关系，当 content 发生变化时 cacheKey 值也相应变化
+	 *     因此，原先 cacheKey 所对应的 Template 缓存对象已无法被获取，当 getTemplateByString(String)
 	 *     的 String 参数的数量不确定时会引发内存泄漏
 	 *     
 	 *     当 getTemplateByString(String, boolean) 中的 String 参数的
@@ -188,37 +188,37 @@ public class Engine {
 			return buildTemplateBySource(new StringSource(content, cache));
 		}
 		
-		String key = HashKit.md5(content);
-		Template template = templateCache.get(key);
+		String cacheKey = HashKit.md5(content);
+		Template template = templateCache.get(cacheKey);
 		if (template == null) {
 			template = buildTemplateBySource(new StringSource(content, cache));
-			templateCache.put(key, template);
+			templateCache.put(cacheKey, template);
 		} else if (devMode) {
 			if (template.isModified()) {
 				template = buildTemplateBySource(new StringSource(content, cache));
-				templateCache.put(key, template);
+				templateCache.put(cacheKey, template);
 			}
 		}
 		return template;
 	}
 	
 	/**
-	 * Get template with implementation of ISource
+	 * Get template by implementation of ISource
 	 */
 	public Template getTemplate(ISource source) {
-		String key = source.getKey();
-		if (key == null) {	// key 为 null 则不缓存，详见 ISource.getKey() 注释
+		String cacheKey = source.getCacheKey();
+		if (cacheKey == null) {	// cacheKey 为 null 则不缓存，详见 ISource.getCacheKey() 注释
 			return buildTemplateBySource(source);
 		}
 		
-		Template template = templateCache.get(key);
+		Template template = templateCache.get(cacheKey);
 		if (template == null) {
 			template = buildTemplateBySource(source);
-			templateCache.put(key, template);
+			templateCache.put(cacheKey, template);
 		} else if (devMode) {
 			if (template.isModified()) {
 				template = buildTemplateBySource(source);
-				templateCache.put(key, template);
+				templateCache.put(cacheKey, template);
 			}
 		}
 		return template;
@@ -236,7 +236,7 @@ public class Engine {
 	}
 	
 	/**
-	 * Add shared function with file
+	 * Add shared function by file
 	 */
 	public Engine addSharedFunction(String fileName) {
 		config.addSharedFunction(fileName);
@@ -252,7 +252,7 @@ public class Engine {
 	}
 	
 	/**
-	 * Add shared function with files
+	 * Add shared function by files
 	 */
 	public Engine addSharedFunction(String... fileNames) {
 		config.addSharedFunction(fileNames);
@@ -336,7 +336,7 @@ public class Engine {
 	}
 	
 	/**
-	 * Remove shared Method with method name
+	 * Remove shared Method by method name
 	 */
 	public Engine removeSharedMethod(String methodName) {
 		config.removeSharedMethod(methodName);
@@ -360,10 +360,10 @@ public class Engine {
 	}
 	
 	/**
-	 * Remove template cache with template key
+	 * Remove template cache by cache key
 	 */
-	public void removeTemplateCache(String templateKey) {
-		templateCache.remove(templateKey);
+	public void removeTemplateCache(String cacheKey) {
+		templateCache.remove(cacheKey);
 	}
 	
 	/**
