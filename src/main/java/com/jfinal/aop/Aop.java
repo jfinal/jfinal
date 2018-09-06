@@ -91,6 +91,84 @@ public class Aop {
 		return aopFactory.inject(targetObject, injectDepth);
 	}
 	
+	/**
+	 * 添加单例对象
+	 * 
+	 * 由于 Aop 创建对象时不支持为构造方法传递参数，故添加此方法
+	 * 
+	 * <pre>
+	 * 示例：
+	 * // Service 类的构造方法中传入了两个参数
+	 * Service service = new Service(paraAaa, paraBbb);
+	 * Aop.addSingletonObject(service);
+	 * 
+	 * // 上面代码添加完成以后，可以在任何地方通过下面的方式获取单例对象 
+	 * service = Aop.get(Service.class);
+	 * 
+	 * // 被添加进去的对象还可以用于注入
+	 * @Inject
+	 * Service service;
+	 * 
+	 * // 在添加为单例对象之前还可以先为其注入依赖对象
+	 * Service service = new Service(paraAaa, paraBbb);
+	 * Aop.inject(service);		// 这里是对 Service 进行依赖注入
+	 * Aop.addSingletonObject(service);
+	 * </pre>
+	 */
+	public static void addSingletonObject(Object singletonObject) {
+		aopFactory.addSingletonObject(singletonObject);
+	}
+	
+	/**
+	 * 添加父类到子类的映射，或者接口到实现类的映射。
+	 * 
+	 * 该方法用于为父类、抽象类、或者接口注入子类或者实现类
+	 * 
+	 * <pre>
+	 * 示例：
+	 * // 定义接口
+	 * public interface IService {
+	 *    public void justDoIt();
+	 * }
+	 * 
+	 * // 定义接口的实现类
+	 * public class MyService implements IService {
+	 *   public void justDoIt() {
+	 *      ...
+	 *   }
+	 * }
+	 * 
+	 * // 添加接口与实现类的映射关系
+	 * Aop.addMapping(IService.class, MyService.class)
+	 * 
+	 * public class MyController {
+	 * 
+	 *    // 由于前面添加了接口与实现类的关系，所以下面将被注入实现类 MyService 对象
+	 *    @Inject
+	 *    IService service
+	 *    
+	 *    public action() {
+	 *       service.justDoIt();
+	 *    }
+	 * }
+	 * 
+	 * 如上所示，通过建立了 IService 与 MyService 的映射关系，在 @Inject 注入的时候
+	 * 就会注入映射好的实现类，当然也可以通过在 @Inject 注解中指定实现类来实现：
+	 * 
+	 * @Inject(MyService.class)
+	 * IService service
+	 * 
+	 * 但是上面的的方法是写死在代码中的，不方便改变实现类
+	 * 
+	 * </pre>
+	 * 
+	 * @param from 父类或者接口
+	 * @param to 父类的子类或者接口的实现类
+	 */
+	public static <T> void addMapping(Class<T> from, Class<? extends T> to) {
+		aopFactory.addMapping(from, to);
+	}
+	
 	/* 通过 Aop.getAopFactory().inject(...) 可调用如下两个方法，不直接开放出来
 	public static void inject(Class<?> targetClass, Object targetObject) throws ReflectiveOperationException {
 		aopFactory.inject(targetClass, targetObject);

@@ -1,6 +1,7 @@
 package com.jfinal.aop;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -10,6 +11,9 @@ public class AopFactory {
 	
 	// 单例缓存
 	protected ConcurrentHashMap<Class<?>, Object> singletonCache = new ConcurrentHashMap<Class<?>, Object>();
+	
+	// 父类到子类、接口到实现类之间的映射关系
+	protected HashMap<Class<?>, Class<?>> mapping = null;
 	
 	protected static int MAX_INJECT_DEPTH = 7;			// 最大注入深度
 	
@@ -22,6 +26,8 @@ public class AopFactory {
 		try {
 			// Aop.get(obj.getClass()) 可以用 Aop.inject(obj)，所以注掉下一行代码 
 			// targetClass = (Class<T>)getUsefulClass(targetClass);
+			
+			targetClass = (Class<T>)getMappingClass(targetClass);
 			
 			Singleton si = targetClass.getAnnotation(Singleton.class);
 			boolean singleton = (si != null ? si.value() : this.singleton);
@@ -95,6 +101,7 @@ public class AopFactory {
 			Class<?> fieldInjectedClass = inject.value();
 			if (fieldInjectedClass == Void.class) {
 				fieldInjectedClass = field.getType();
+				fieldInjectedClass = getMappingClass(fieldInjectedClass);
 			}
 			
 			Singleton si = fieldInjectedClass.getAnnotation(Singleton.class);
@@ -192,6 +199,51 @@ public class AopFactory {
 	
 	public int getInjectDepth() {
 		return injectDepth;
+	}
+	
+	public AopFactory addSingletonObject(Object singletonObject) {
+		if (singletonObject == null) {
+			throw new IllegalArgumentException("singletonObject can not be null");
+		}
+		if (singletonObject instanceof Class) {
+			throw new IllegalArgumentException("singletonObject can not be Class type");
+		}
+		
+		Class<?> type = getUsefulClass(singletonObject.getClass());
+		if (singletonCache.putIfAbsent(type, singletonObject) != null) {
+			throw new RuntimeException("Singleton object already exists for type : " + type.getName());
+		}
+		
+		return this;
+	}
+	
+	public synchronized <T> AopFactory addMapping(Class<T> from, Class<? extends T> to) {
+		if (from == null || to == null) {
+			throw new IllegalArgumentException("The parameter from and to can not be null");
+		}
+		
+		if (mapping == null) {
+			mapping = new HashMap<Class<?>, Class<?>>(128, 0.25F);
+		} else if (mapping.containsKey(from)) {
+			throw new RuntimeException("Class already mapped : " + from.getName());
+		}
+		
+		mapping.put(from, to);
+		return this;
+	}
+	
+	/**
+	 * 获取父类到子类的映射值，或者接口到实现类的映射值
+	 * @param from 父类或者接口 
+	 * @return 如果映射存在则返回映射值，否则返回参数 from 的值
+	 */
+	public Class<?> getMappingClass(Class<?> from) {
+		if (mapping != null) {
+			Class<?> ret = mapping.get(from);
+			return ret != null ? ret : from;
+		} else {
+			return from;
+		}
 	}
 }
 

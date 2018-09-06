@@ -22,7 +22,7 @@ package com.jfinal.template.io;
 public class WriterBuffer {
 	
 	private static final int MIN_BUFFER_SIZE = 64;					// 缓冲区最小 64 字节
-	private static final int MAX_BUFFER_SIZE = 1024 * 1024 * 10;	// 缓冲区最大 10M 字节
+	private static final int MAX_BUFFER_SIZE = 1024 * 1024 * 10;		// 缓冲区最大 10M 字节
 	
 	private int bufferSize = 2048;									// 缓冲区大小
 	
