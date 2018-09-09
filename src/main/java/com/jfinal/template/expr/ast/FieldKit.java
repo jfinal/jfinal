@@ -35,7 +35,7 @@ public class FieldKit {
 				fieldCache.put(key, field);
 			} else {
 				// 对于不存在的 Field，只进行一次获取操作，主要为了支持 null safe，未来需要考虑内存泄漏风险
-				fieldCache.put(key, Boolean.FALSE);
+				fieldCache.put(key, Void.class);
 			}
 		}
 		return field instanceof Field ? (Field)field : null;

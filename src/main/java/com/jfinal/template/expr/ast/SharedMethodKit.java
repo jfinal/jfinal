@@ -56,7 +56,7 @@ public class SharedMethodKit {
 			if (method != null) {
 				methodCache.put(key, method);
 			}
-			// shared method 不支持 null safe，不缓存: methodCache.put(key, Boolean.FALSE)
+			// shared method 不支持 null safe，不缓存: methodCache.put(key, Void.class)
 		}
 		return method;
 	}

@@ -169,6 +169,24 @@ public class Aop {
 		aopFactory.addMapping(from, to);
 	}
 	
+	/**
+	 * 功能与 addMapping(Class<T> from, Class<? extends T> to) 相同，仅仅是第二个参数
+	 * 由 Class 改为 String 类型，便于从外部配置文件传递 String 参数过来
+	 * 
+	 * <pre>
+	 * 示例：
+	 * Aop.addMapping(IService.class, "com.xxx.MyService")
+	 * 
+	 * 以上代码的参数 "com.xxx.MyService" 可通过外部配置文件传入，便于通过配置文件切换接口的
+	 * 实现类：
+	 * Aop.addMapping(IService.class, PropKit.get("ServiceImpl");
+	 * 
+	 * </pre>
+	 */
+	public static <T> void addMapping(Class<T> from, String to) {
+		aopFactory.addMapping(from, to);
+	}
+	
 	/* 通过 Aop.getAopFactory().inject(...) 可调用如下两个方法，不直接开放出来
 	public static void inject(Class<?> targetClass, Object targetObject) throws ReflectiveOperationException {
 		aopFactory.inject(targetClass, targetObject);
