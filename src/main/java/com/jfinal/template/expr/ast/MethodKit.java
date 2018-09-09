@@ -112,7 +112,7 @@ public class MethodKit {
 				methodCache.put(key, method);
 			} else {
 				// 对于不存在的 Method，只进行一次获取操作，主要为了支持 null safe，未来需要考虑内存泄漏风险
-				methodCache.put(key, Boolean.FALSE);
+				methodCache.put(key, Void.class);
 			}
 		}
 		return method instanceof MethodInfo ? (MethodInfo)method : null;
@@ -129,7 +129,7 @@ public class MethodKit {
 			if (getterMethod != null) {
 				methodCache.put(key, getterMethod);
 			} else {
-				methodCache.put(key, Boolean.FALSE);
+				methodCache.put(key, Void.class);
 			}
 		}
 		return getterMethod instanceof MethodInfo ? (MethodInfo)getterMethod : null;

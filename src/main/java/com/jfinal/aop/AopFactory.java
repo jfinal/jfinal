@@ -76,6 +76,7 @@ public class AopFactory {
 		}
 	}
 	
+	// 方法原型的参数测试过可以是：Class<? super T> targetClass, T targetObject
 	public <T> T inject(Class<T> targetClass, T targetObject) throws ReflectiveOperationException {
 		inject(targetClass, targetObject, injectDepth);
 		return targetObject;
@@ -230,6 +231,20 @@ public class AopFactory {
 		
 		mapping.put(from, to);
 		return this;
+	}
+	
+	public <T> AopFactory addMapping(Class<T> from, String to) {
+		try {
+			@SuppressWarnings("unchecked")
+			Class<T> toClass = (Class<T>)Class.forName(to);
+			if (from.isAssignableFrom(toClass)) {
+				return addMapping(from, toClass);
+			} else {
+				throw new IllegalArgumentException("The parameter \"to\" must be the subclass or implementation of the parameter \"from\"");
+			}
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	/**
