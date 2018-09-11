@@ -42,7 +42,7 @@ public class ParaProcessorBuilder {
 		regist(java.lang.Float.class, FloatGetter.class, null);
 		regist(java.lang.Double.class, DoubleGetter.class, null);
 		regist(java.lang.Boolean.class, BooleanGetter.class, null);
-		regist(java.lang.String.class, StringGetter.class, null);
+		regist(java.lang.String.class, StringGetter.class, "");
 		regist(java.util.Date.class, DateGetter.class, null);
 		regist(java.sql.Date.class, SqlDateGetter.class, null);
 		regist(java.sql.Time.class, TimeGetter.class, null);
