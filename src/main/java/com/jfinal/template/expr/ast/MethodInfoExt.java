@@ -16,7 +16,6 @@
 
 package com.jfinal.template.expr.ast;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -37,7 +36,7 @@ public class MethodInfoExt extends MethodInfo {
 		// this.paraTypes = newParaTypes;
 	}
 	
-	public Object invoke(Object target, Object... args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public Object invoke(Object target, Object... args) throws ReflectiveOperationException {
 		Object[] finalArgs = new Object[args.length + 1];
 		finalArgs[0] = target;
 		

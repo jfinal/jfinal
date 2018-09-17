@@ -22,6 +22,9 @@ import java.util.Map;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.kit.SyncWriteMap;
+import com.jfinal.template.expr.ast.FieldGetter;
+import com.jfinal.template.expr.ast.FieldKeyBuilder;
+import com.jfinal.template.expr.ast.FieldKit;
 import com.jfinal.template.expr.ast.MethodKit;
 import com.jfinal.template.source.ClassPathSourceFactory;
 import com.jfinal.template.source.ISource;
@@ -499,6 +502,45 @@ public class Engine {
 	
 	public static void removeExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {
 		MethodKit.removeExtensionMethod(targetClass, extensionClass);
+	}
+	
+	/**
+	 * 添加 FieldGetter 实现类到指定的位置
+	 * 
+	 * 系统当前默认 FieldGetter 实现类及其位置如下：
+	 * GetterMethodFieldGetter  ---> 调用 getter 方法取值
+	 * ModelFieldGetter			---> 调用 Model.get(String) 方法取值
+	 * RecordFieldGetter			---> 调用 Record.get(String) 方法取值
+	 * MapFieldGetter			---> 调用 Map.get(String) 方法取值 
+	 * RealFieldGetter			---> 直接获取 public 型的 object.field 值
+	 * ArrayLengthGetter			---> 获取数组长度
+	 * 
+	 * 根据以上次序，如果要插入 IsMethodFieldGetter 到 GetterMethodFieldGetter
+	 * 之后的代码如下：
+	 * Engine.addFieldGetter(1, new IsMethodFieldGetter());
+	 * 
+	 * 注：IsMethodFieldGetter 系统已经提供，只是默认没有启用。该实现类通过调用
+	 *    target.isXxx() 方法获取 target.xxx 表达式的值，其中 xxx 字段必须是
+	 *    Boolean/boolean 类型
+	 */
+	public static void addFieldGetter(int index, FieldGetter fieldGetter) {
+		FieldKit.addFieldGetter(index, fieldGetter);
+	}
+	
+	public static void addFieldGetterToLast(FieldGetter fieldGetter) {
+		FieldKit.addFieldGetterToLast(fieldGetter);
+	}
+	
+	public static void addFieldGetterToFirst(FieldGetter fieldGetter) {
+		FieldKit.addFieldGetterToFirst(fieldGetter);
+	}
+	
+	public static void removeFieldGetter(Class<? extends FieldGetter> fieldGetterClass) {
+		FieldKit.removeFieldGetter(fieldGetterClass);
+	}
+	
+	public static void setToFastFieldKeyBuilder() {
+		FieldKeyBuilder.setToFastFieldKeyBuilder();
 	}
 }
 

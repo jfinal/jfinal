@@ -163,12 +163,21 @@ public final class JFinal {
 	}
 	
 	/**
+	 * jfinal 3.5 更新(2018-09-01)：
+	 * 		由于 jfinal 3.5 解决了 IDEA 下 JFinal.start(四个参数) 无法启动的问题，
+	 * 		此方法已被废弃，建议使用 JFinal.start(四个参数) 带四个参数的 start()
+	 * 		方法来启动项目，IDEA 下也支持热加载，注意要先配置自动编译，jfinal 是
+	 * 		通过监测被编译的 class 文件的修改来触发热加载的
+	 * 
+	 * 
+	 * 
 	 * 用于在 IDEA 中，通过创建 main 方法的方式启动项目，不支持热加载
 	 * 本方法存在的意义在于此方法启动的速度比 maven 下的 jetty 插件要快得多
 	 * 
 	 * 注意：不支持热加载。建议通过 Ctrl + F5 快捷键，来快速重新启动项目，速度并不会比 eclipse 下的热加载慢多少
 	 *     实际操作中是先通过按 Alt + 5 打开 debug 窗口，才能按 Ctrl + F5 重启项目
 	 */
+	@Deprecated
 	public static void start(String webAppDir, int port, String context) {
 		server = new JettyServerForIDEA(webAppDir, port, context);
 		server.start();

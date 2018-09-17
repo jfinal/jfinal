@@ -33,11 +33,20 @@ import com.jfinal.kit.PathKit;
 import com.jfinal.kit.StrKit;
 
 /**
+ * jfinal 3.5 更新(2018-09-01)：
+ * 		由于 jfinal 3.5 解决了 IDEA 下 JFinal.start(四个参数) 无法启动的问题，
+ * 		此类已被废弃，建议使用 JFinal.start(四个参数) 带四个参数的 start()
+ * 		方法来启动项目，IDEA 下也支持热加载，注意要先配置自动编译，jfinal 是
+ * 		通过监测被编译的 class 文件的修改来触发热加载的
+ * 
+ * 
+ * 
  * IDEA 专用于在 IDEA 之下用 main 方法启动，原启动方式在 IDEA 下会报异常
  * 注意：用此方法启动对热加载支持不完全，只支持方法内部修改的热加载，不支持添加、删除方法
  *      不支持添加类文件热加载，建议开发者在 IDEA 下使用 jrebel 或者 maven 下的 jetty
  *      插件支持列为完全的热加载
  */
+@Deprecated
 public class JettyServerForIDEA implements IServer {
 	
 	private String webAppDir;

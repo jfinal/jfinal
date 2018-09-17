@@ -853,32 +853,37 @@ public abstract class Model<M extends Model> implements Serializable {
 		sb.append('{');
 		boolean first = true;
 		for (Entry<String, Object> e : attrs.entrySet()) {
-			if (first)
+			if (first) {
 				first = false;
-			else
+			} else {
 				sb.append(", ");
-			
+			}
 			Object value = e.getValue();
-			if (value != null)
+			if (value != null) {
 				value = value.toString();
+			}
 			sb.append(e.getKey()).append(':').append(value);
 		}
 		sb.append('}');
 		return sb.toString();
 	}
 	
+	// set 方法在影响 modifyFloag 的同时也会影响 attrs，所以比较 attrs 即可
 	public boolean equals(Object o) {
 		if (!(o instanceof Model))
-            return false;
-		if (_getUsefulClass() != ((Model)o)._getUsefulClass())
 			return false;
 		if (o == this)
 			return true;
-		return this.attrs.equals(((Model)o).attrs);
+		Model mo = (Model)o;
+		if (getClass() != mo.getClass())
+			return false;
+		return attrs.equals(mo.attrs);
 	}
 	
+	// hashCode 用于在容器中定位落桶，确保有较好的散列值分布即可，没必要用上所有字段
 	public int hashCode() {
-		return (attrs == null ? 0 : attrs.hashCode()) ^ (_getModifyFlag() == null ? 0 : _getModifyFlag().hashCode());
+		// return (attrs == null ? 0 : attrs.hashCode()) ^ (_getModifyFlag() == null ? 0 : _getModifyFlag().hashCode());
+		return attrs.hashCode();
 	}
 	
 	/**

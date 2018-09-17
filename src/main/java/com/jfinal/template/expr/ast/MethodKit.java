@@ -41,7 +41,7 @@ public class MethodKit {
 	private static final Set<String> forbiddenMethods = new HashSet<String>(64);
 	private static final Set<Class<?>> forbiddenClasses = new HashSet<Class<?>>(64);
 	private static final Map<Class<?>, Class<?>> primitiveMap = new HashMap<Class<?>, Class<?>>(64);
-	private static final Map<Long, Object> methodCache = new SyncWriteMap<Long, Object>(2048, 0.25F);
+	private static final SyncWriteMap<Long, Object> methodCache = new SyncWriteMap<Long, Object>(2048, 0.25F);
 	
 	// 初始化在模板中调用 method 时所在的被禁止使用类
 	static {
@@ -94,6 +94,10 @@ public class MethodKit {
 		return forbiddenClasses.contains(clazz);
 	}
 	
+	public static void addForbiddenClass(Class<?> clazz) {
+		forbiddenClasses.add(clazz);
+	}
+	
 	public static boolean isForbiddenMethod(String methodName) {
 		return forbiddenMethods.contains(methodName);
 	}
@@ -109,10 +113,10 @@ public class MethodKit {
 		if (method == null) {
 			method = doGetMethod(key, targetClass, methodName, argTypes);
 			if (method != null) {
-				methodCache.put(key, method);
+				methodCache.putIfAbsent(key, method);
 			} else {
 				// 对于不存在的 Method，只进行一次获取操作，主要为了支持 null safe，未来需要考虑内存泄漏风险
-				methodCache.put(key, Void.class);
+				methodCache.putIfAbsent(key, Void.class);
 			}
 		}
 		return method instanceof MethodInfo ? (MethodInfo)method : null;
@@ -121,19 +125,19 @@ public class MethodKit {
 	/**
 	 * 获取 getter 方法
 	 * 使用与 Field 相同的 key，避免生成两次 key值
-	 */
+	 * ---> jfinal 3.5 已将此功能转移至 FieldKit
 	public static MethodInfo getGetterMethod(Long key, Class<?> targetClass, String methodName) {
 		Object getterMethod = methodCache.get(key);
 		if (getterMethod == null) {
 			getterMethod = doGetMethod(key, targetClass, methodName, NULL_ARG_TYPES);
 			if (getterMethod != null) {
-				methodCache.put(key, getterMethod);
+				methodCache.putIfAbsent(key, getterMethod);
 			} else {
-				methodCache.put(key, Void.class);
+				methodCache.putIfAbsent(key, Void.class);
 			}
 		}
 		return getterMethod instanceof MethodInfo ? (MethodInfo)getterMethod : null;
-	}
+	} */
 	
 	static Class<?>[] getArgTypes(Object[] argValues) {
 		if (argValues == null || argValues.length == 0) {
@@ -280,7 +284,7 @@ public class MethodKit {
 				}
 				
 				MethodInfoExt mie = new MethodInfoExt(objectOfExtensionClass, key, extensionClass/* targetClass */, method);
-				methodCache.put(key, mie);
+				methodCache.putIfAbsent(key, mie);
 			}
 		}
 	}

@@ -16,41 +16,126 @@
 
 package com.jfinal.template.expr.ast;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import com.jfinal.kit.SyncWriteMap;
+import com.jfinal.template.expr.ast.FieldGetters.*;
 
 /**
  * FieldKit
  */
 public class FieldKit {
 	
-	private static final HashMap<Long, Object> fieldCache = new SyncWriteMap<Long, Object>(512, 0.5F);
+	private static FieldGetter[] getters = init();
 	
-	public static Field getField(Long key, Class<?> targetClass, String fieldName) {
-		Object field = fieldCache.get(key);
-		if (field == null) {
-			field = doGetField(targetClass, fieldName);
-			if (field != null) {
-				fieldCache.put(key, field);
-			} else {
-				// 对于不存在的 Field，只进行一次获取操作，主要为了支持 null safe，未来需要考虑内存泄漏风险
-				fieldCache.put(key, Void.class);
-			}
-		}
-		return field instanceof Field ? (Field)field : null;
+	private static final HashMap<Object, FieldGetter> fieldGetterCache = new SyncWriteMap<Object, FieldGetter>(1024, 0.25F);
+	
+	/**
+	 * 初始化官方默认 FieldGetter
+	 * 
+	 * 注意：
+	 * 默认不启用 IsMethodFieldGetter，用户可以通过下面的代码启用：
+	 * Engine.addLastFieldGetter(new FieldGetters.IsMethodFieldGetter());
+	 * 
+	 * 也可以通过直接调用 target.isXxx() 方法来达到与 target.xxx 表达式相同的目的
+	 */
+	private static FieldGetter[] init() {
+		LinkedList<FieldGetter> ret = new LinkedList<FieldGetter>();
+		
+		ret.addLast(new GetterMethodFieldGetter(null));
+		ret.addLast(new ModelFieldGetter());
+		ret.addLast(new RecordFieldGetter());
+		ret.addLast(new MapFieldGetter());
+		ret.addLast(new RealFieldGetter(null));
+		ret.addLast(new ArrayLengthGetter());
+		
+		return ret.toArray(new FieldGetter[ret.size()]);
 	}
 	
-	private static Field doGetField(Class<?> targetClass, String fieldName) {
-		Field[] fs = targetClass.getFields();
-		for (Field f : fs) {
-			if (f.getName().equals(fieldName)) {
-				return f;
+	public static FieldGetter getFieldGetter(Object key, Class<?> targetClass, String fieldName) {
+		FieldGetter fieldGetter = fieldGetterCache.get(key);
+		if (fieldGetter == null) {
+			fieldGetter = doGetFieldGetter(targetClass, fieldName);	// 已确保不会返回 null
+			fieldGetterCache.putIfAbsent(key, fieldGetter);
+		}
+		return fieldGetter;
+	}
+	
+	private static FieldGetter doGetFieldGetter(Class<?> targetClass, String fieldName) {
+		FieldGetter ret;
+		for (FieldGetter fg : getters) {
+			ret = fg.takeOver(targetClass, fieldName);
+			if (ret != null) {
+				return ret;
 			}
 		}
-		return null;
+		return NullFieldGetter.me;
+	}
+	
+	public static void addFieldGetter(int index, FieldGetter fieldGetter) {
+		addFieldGetter(fieldGetter, index, true);
+	}
+	
+	public static void addFieldGetterToLast(FieldGetter fieldGetter) {
+		addFieldGetter(fieldGetter, null, true);
+	}
+	
+	public static void addFieldGetterToFirst(FieldGetter fieldGetter) {
+		addFieldGetter(fieldGetter, null, false);
+	}
+	
+	// 当 Integer index 不为 null 时，boolean addLast 为无效参数
+	private static synchronized void addFieldGetter(FieldGetter fieldGetter, Integer index, boolean addLast) {
+		checkParameter(fieldGetter);
+		
+		LinkedList<FieldGetter> ret = getCurrentFieldGetters();
+		if (index != null) {
+			ret.add(index, fieldGetter);
+		} else {
+			if (addLast) {
+				ret.addLast(fieldGetter);
+			} else {
+				ret.addFirst(fieldGetter);
+			}
+		}
+		getters = ret.toArray(new FieldGetter[ret.size()]);
+	}
+	
+	private static LinkedList<FieldGetter> getCurrentFieldGetters() {
+		LinkedList<FieldGetter> ret = new LinkedList<FieldGetter>();
+		for (FieldGetter fieldGetter : getters) {
+			ret.add(fieldGetter);
+		}
+		return ret;
+	}
+	
+	private static void checkParameter(FieldGetter fieldGetter) {
+		if (fieldGetter == null) {
+			throw new IllegalArgumentException("The parameter fieldGetter can not be null");
+		}
+		for (FieldGetter fg : getters) {
+			if (fg.getClass() == fieldGetter.getClass()) {
+				throw new RuntimeException("FieldGetter already exists : " + fieldGetter.getClass().getName());
+			}
+		}
+	}
+	
+	public static synchronized void removeFieldGetter(Class<? extends FieldGetter> fieldGetterClass) {
+		LinkedList<FieldGetter> ret = getCurrentFieldGetters();
+		
+		for (Iterator<FieldGetter> it = ret.iterator(); it.hasNext();) {
+			if (it.next().getClass() == fieldGetterClass) {
+				it.remove();
+			}
+		}
+		
+		getters = ret.toArray(new FieldGetter[ret.size()]);
 	}
 }
+
+
+
 
 
 

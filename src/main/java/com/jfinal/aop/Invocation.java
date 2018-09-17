@@ -84,7 +84,8 @@ public class Invocation {
 			}
 			catch (InvocationTargetException e) {
 				Throwable t = e.getTargetException();
-				throw t instanceof RuntimeException ? (RuntimeException)t : new RuntimeException(e);
+				if (t == null) {t = e;}
+				throw t instanceof RuntimeException ? (RuntimeException)t : new RuntimeException(t);
 			}
 			catch (RuntimeException e) {
 				throw e;
