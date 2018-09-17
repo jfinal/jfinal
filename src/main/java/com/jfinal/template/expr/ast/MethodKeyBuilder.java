@@ -43,17 +43,20 @@ public abstract class MethodKeyBuilder {
 	 *   如果希望将 configEngine(Engine me) 中的 Engine 切换到 StrictMethodKeyBuilder，
 	 *   需要在 YourJFinalConfig extends JFinalConfig 中利用如下代码块才能生效：
 	 * 	  static {
-	 * 			MethodKeyBuilder.useStrictMethodKeyBuilder();
+	 * 			MethodKeyBuilder.setToStrictMethodKeyBuilder();
 	 *    }
 	 * 
-	 *   原因是在 com.jfinal.core.Config 中 new Engine() 时 useStrictMethodKeyBuilder()
+	 *   原因是在 com.jfinal.core.Config 中 new Engine() 时 setToStrictMethodKeyBuilder()
 	 *   方法并未生效，所以 extension method 生成 method key 时仍然使用的是  FastMethodKeyBuilder
 	 *   以至于在运行时，使用 StrictMethodKeyBuilder 生成的 key 找不到 extension method
+	 *   
+	 *   后续版本考虑在调用 setToStrictMethodKeyBuilder() 以后重新初始化一下 MethodKit 中的变量
+	 *   原先的 static 初始化方式重构出 synchronized void init() 方法来方便调用
 	 * 
 	 * </pre>
 	 */
-	public static void useStrictMethodKeyBuilder() {
-		MethodKeyBuilder.instance = new StrictMethodKeyBuilder();
+	public static void setToStrictMethodKeyBuilder() {
+		instance = new StrictMethodKeyBuilder();
 	}
 	
 	/**
@@ -63,7 +66,7 @@ public abstract class MethodKeyBuilder {
 		if (methodKeyBuilder == null) {
 			throw new IllegalArgumentException("methodKeyBuilder can not be null");
 		}
-		MethodKeyBuilder.instance = methodKeyBuilder;
+		instance = methodKeyBuilder;
 	}
 	
 	/**

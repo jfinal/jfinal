@@ -17,7 +17,6 @@
 package com.jfinal.template.expr.ast;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -41,7 +40,7 @@ public class MethodInfo {
 		this.paraTypes = method.getParameterTypes();
 	}
 	
-	public Object invoke(Object target, Object... args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public Object invoke(Object target, Object... args) throws ReflectiveOperationException {
 		if (isVarArgs) {
 			return invokeVarArgsMethod(target, args);
 		} else {
@@ -49,7 +48,7 @@ public class MethodInfo {
 		}
 	}
 	
-	protected Object invokeVarArgsMethod(Object target, Object[] argValues) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	protected Object invokeVarArgsMethod(Object target, Object[] argValues) throws ReflectiveOperationException {
 		Object[] finalArgValues = new Object[paraTypes.length];
 		
 		int fixedParaLength = paraTypes.length - 1;

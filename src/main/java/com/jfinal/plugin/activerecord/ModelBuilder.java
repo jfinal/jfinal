@@ -37,7 +37,7 @@ public class ModelBuilder {
 	public static final ModelBuilder me = new ModelBuilder();
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, InstantiationException, IllegalAccessException {
+	public <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, ReflectiveOperationException {
 		List<T> result = new ArrayList<T>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
@@ -125,7 +125,7 @@ public class ModelBuilder {
 	
 	/* backup before use columnType
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	static final <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, InstantiationException, IllegalAccessException {
+	static final <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, ReflectiveOperationException {
 		List<T> result = new ArrayList<T>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
@@ -152,7 +152,7 @@ public class ModelBuilder {
 	
 	/* backup
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	static final <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, InstantiationException, IllegalAccessException {
+	static final <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, ReflectiveOperationException {
 		List<T> result = new ArrayList<T>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		List<String> labelNames = getLabelNames(rsmd);

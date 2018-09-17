@@ -37,7 +37,7 @@ public class TimestampProcessedModelBuilder extends ModelBuilder {
 	public static final TimestampProcessedModelBuilder me = new TimestampProcessedModelBuilder();
 	
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, InstantiationException, IllegalAccessException {
+	public <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, ReflectiveOperationException {
 		List<T> result = new ArrayList<T>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
