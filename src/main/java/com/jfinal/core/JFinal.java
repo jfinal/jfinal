@@ -26,9 +26,7 @@ import com.jfinal.kit.LogKit;
 import com.jfinal.kit.PathKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.render.RenderManager;
-import com.jfinal.server.JettyServerForIDEA;
 import com.jfinal.server.IServer;
-import com.jfinal.server.ServerFactory;
 import com.jfinal.token.ITokenCache;
 import com.jfinal.token.TokenManager;
 import com.jfinal.upload.OreillyCos;
@@ -150,7 +148,7 @@ public final class JFinal {
 	}
 	
 	public static void start() {
-		server = ServerFactory.getServer();
+		server = com.jfinal.server.jetty.ServerFactory.getServer();
 		server.start();
 	}
 	
@@ -158,7 +156,7 @@ public final class JFinal {
 	 * 用于在 Eclipse 中，通过创建 main 方法的方式启动项目，支持热加载
 	 */
 	public static void start(String webAppDir, int port, String context, int scanIntervalSeconds) {
-		server = ServerFactory.getServer(webAppDir, port, context, scanIntervalSeconds);
+		server = com.jfinal.server.jetty.ServerFactory.getServer(webAppDir, port, context, scanIntervalSeconds);
 		server.start();
 	}
 	
@@ -179,8 +177,9 @@ public final class JFinal {
 	 */
 	@Deprecated
 	public static void start(String webAppDir, int port, String context) {
-		server = new JettyServerForIDEA(webAppDir, port, context);
-		server.start();
+		// server = new JettyServerForIDEA(webAppDir, port, context);
+		// server.start();
+		start(webAppDir, port, context, 0);
 	}
 	
 	public static void stop() {
@@ -194,7 +193,7 @@ public final class JFinal {
 	 */
 	public static void main(String[] args) {
 		if (args == null || args.length == 0) {
-			server = ServerFactory.getServer();
+			server = com.jfinal.server.jetty.ServerFactory.getServer();
 			server.start();
 			return ;
 		}
@@ -205,7 +204,7 @@ public final class JFinal {
 			int port = Integer.parseInt(args[1]);
 			String context = args[2];
 			int scanIntervalSeconds = Integer.parseInt(args[3]);
-			server = ServerFactory.getServer(webAppDir, port, context, scanIntervalSeconds);
+			server = com.jfinal.server.jetty.ServerFactory.getServer(webAppDir, port, context, scanIntervalSeconds);
 			server.start();
 			return ;
 		}

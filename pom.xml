@@ -52,10 +52,17 @@
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib-nodep</artifactId>
+			<version>3.2.5</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>8.1.8</version>
+			<version>2018.9</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- dependency>
@@ -65,12 +72,19 @@
 			<scope>provided</scope>
 		</dependency -->
 		<!-- jsp support by jetty -->
-		<dependency>
+		<!-- dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-jsp</artifactId>
 			<version>8.1.8.v20121106</version>
 			<scope>provided</scope>
+		</dependency -->
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-jsp</artifactId>
+			<version>9.2.26.v20180806</version>
+			<scope>provided</scope>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.mchange</groupId>
 			<artifactId>c3p0</artifactId>
@@ -131,11 +145,6 @@
 			<artifactId>cos</artifactId>
 			<version>2017.5</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib-nodep</artifactId>
-			<version>3.2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>redis.clients</groupId>
