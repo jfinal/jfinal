@@ -72,12 +72,6 @@
 			<scope>provided</scope>
 		</dependency -->
 		<!-- jsp support by jetty -->
-		<!-- dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-jsp</artifactId>
-			<version>8.1.8.v20121106</version>
-			<scope>provided</scope>
-		</dependency -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-jsp</artifactId>
