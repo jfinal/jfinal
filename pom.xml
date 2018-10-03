@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>2018.9</version>
+			<version>2018.10</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- dependency>
@@ -72,12 +72,6 @@
 			<scope>provided</scope>
 		</dependency -->
 		<!-- jsp support by jetty -->
-		<!-- dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-jsp</artifactId>
-			<version>8.1.8.v20121106</version>
-			<scope>provided</scope>
-		</dependency -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-jsp</artifactId>
