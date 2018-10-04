@@ -27,7 +27,7 @@ import com.jfinal.template.stat.ParseException;
 import com.jfinal.template.stat.Scope;
 
 /**
- * SetLocal 设置全局变量，全局作用域是指本次请求的整个 template
+ * SetGlobal 设置全局变量，全局作用域是指本次请求的整个 template
  * 
  * 适用于极少数的在内层作用域中希望直接操作顶层作用域的场景
  */
