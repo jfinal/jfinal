@@ -93,7 +93,7 @@ public class FieldGetters {
 	 * IsMethodFieldGetter
 	 * 
 	 * 使用 target.isXxx() 方法获取值，默认不启用该功能，用户可以通过如下方式启用：
-	 * Engine.addLastFieldGetter(new FieldGetters.IsMethodFieldGetter(null));
+	 * Engine.addLastFieldGetter(new FieldGetters.IsMethodFieldGetter());
 	 */
 	public static class IsMethodFieldGetter extends FieldGetter {
 		

@@ -49,6 +49,7 @@ public class FieldKit {
 		ret.addLast(new MapFieldGetter());
 		ret.addLast(new RealFieldGetter(null));
 		ret.addLast(new ArrayLengthGetter());
+		// ret.addLast(new IsMethodFieldGetter());
 		
 		return ret.toArray(new FieldGetter[ret.size()]);
 	}
@@ -64,8 +65,8 @@ public class FieldKit {
 	
 	private static FieldGetter doGetFieldGetter(Class<?> targetClass, String fieldName) {
 		FieldGetter ret;
-		for (FieldGetter fg : getters) {
-			ret = fg.takeOver(targetClass, fieldName);
+		for (FieldGetter fieldGetter : getters) {
+			ret = fieldGetter.takeOver(targetClass, fieldName);
 			if (ret != null) {
 				return ret;
 			}
