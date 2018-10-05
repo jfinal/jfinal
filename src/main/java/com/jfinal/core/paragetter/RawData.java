@@ -1,9 +1,9 @@
 package com.jfinal.core.paragetter;
 
-public class RawPostData {
+public class RawData {
 	private final String data;
 
-	public RawPostData(String data) {
+	public RawData(String data) {
 		this.data = data;
 	}
 

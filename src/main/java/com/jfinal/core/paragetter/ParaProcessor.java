@@ -18,6 +18,9 @@ package com.jfinal.core.paragetter;
 import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 
+/**
+ * 使用构建好的 IParaGetter 数组获取用于 action 方法实参的参数值
+ */
 public class ParaProcessor implements IParaGetter<Object[]> {
 	
 	private int fileParaIndex = -1;
