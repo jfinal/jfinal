@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import com.jfinal.aop.Enhancer;
-import com.jfinal.aop.Interceptor;
 import com.jfinal.core.converter.TypeConverter;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.ContentType;
@@ -1306,6 +1305,30 @@ public abstract class Controller {
 	
 	// ---------
 	
+	/**
+	 * 获取 Aop 代理对象，便于在 action 方法内部调用，可以取代 @Inject 注入
+	 * 
+	 * <pre>
+	 * 如果控制器中使用了多个 @Inject 注入了多个业务对象，但在该控制器中的有些
+	 * action 中，并没有用到或者用到少量的 @Inject 注入的业务对象，就会造成浪费，
+	 * 因为控制器中的所有 @Inject 属性不管在 action 中有没有被使用，都会被注入
+	 * 
+	 * 
+	 * 在上述场景下，可以使用 getAopProxy(...) 来取代 @Inject 注入，例如：
+	 * public void action() {
+	 *    Service service c = getAopProxy(Service.class);
+	 *    service.justDoIt();
+	 * }
+	 * </pre>
+	 */
+	public <T> T getAopProxy(Class<T> targetClass) {
+		return com.jfinal.aop.Aop.get(targetClass);
+	}
+	
+	/**
+	 * 该功能已被 getAopProxy(...)、@Inject 注入以及 Aop.get(...) 完全取代，不建议使用
+	 */
+	@Deprecated
 	public <T> T enhance(Class<T> targetClass) {
 		return (T)Enhancer.enhance(targetClass);
 	}
