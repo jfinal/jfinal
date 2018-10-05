@@ -41,8 +41,7 @@ public class Enhancer {
 	}
 	
 	/**
-	 * 下一个版本 jfinal 的 enhance 动作将由 @Before 注解来决定，不再需要显示调用 enhance 方法，
-	 * 所以本方法被 Deprecated
+	 * 下一个版本的 aop 将不再支持 inject interceptor，所以本方法被 Deprecated
 	 */
 	@Deprecated
 	public static <T> T enhance(Class<T> targetClass, Interceptor... injectInters) {

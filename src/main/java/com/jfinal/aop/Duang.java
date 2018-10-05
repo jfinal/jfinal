@@ -39,7 +39,10 @@ public class Duang {
 		return (T)Enhancer.enhance(targetClass);
 	}
 	
-	@SuppressWarnings("deprecation")
+	/**
+	 * 下一个版本的 aop 将不再支持 inject interceptor，所以本方法被 Deprecated
+	 */
+	@Deprecated
 	public static <T> T duang(Class<T> targetClass, Interceptor... injectInters) {
 		return (T)Enhancer.enhance(targetClass, injectInters);
 	}
