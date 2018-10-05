@@ -18,86 +18,30 @@ package com.jfinal.aop;
 
 /**
  * duang duang duang
+ * 
+ * <pre>
+ * 自 jfinal 3.5 开始，新增了更强大的 Aop 工具，建议使用 Aop.get(...) 以及
+ * Aop.inject(...) 来代替 Duang 的功能
+ * 
+ * 下一个版本所有 Aop 功能将会被 Aop.java 取代，并且为了拦截器的整体缓存不会再支持
+ * Inject Interceptor 参数，所以删除了 Duang 中所有带 injectInters 参数
+ * 的方法
+ * 
+ * 下一个版本的 Singleton 判别将由 @Singleton 注解以及 AopFactory 中的默认值决定，
+ * 所以删除了 Duang 中所有带 singletonKey 参数的方法
+ * </pre>
  */
-@SuppressWarnings("unchecked")
 public class Duang {
 	
-	private Duang(){}
-
+	private Duang() {}
+	
 	public static <T> T duang(Class<T> targetClass) {
 		return (T)Enhancer.enhance(targetClass);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static <T> T duang(Class<T> targetClass, Interceptor... injectInters) {
 		return (T)Enhancer.enhance(targetClass, injectInters);
-	}
-	
-	public static <T> T duang(Class<T> targetClass, Class<? extends Interceptor>... injectIntersClasses) {
-		return (T)Enhancer.enhance(targetClass, injectIntersClasses);
-	}
-	
-	public static <T> T duang(Class<T> targetClass, Class<? extends Interceptor> injectIntersClass) {
-		return (T)Enhancer.enhance(targetClass, injectIntersClass);
-	}
-	
-	public static <T> T duang(Class<T> targetClass, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2) {
-		return (T)Enhancer.enhance(targetClass, injectIntersClass1, injectIntersClass2);
-	}
-	
-	public static <T> T duang(Class<T> targetClass, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2, Class<? extends Interceptor> injectIntersClass3) {
-		return (T)Enhancer.enhance(targetClass, injectIntersClass1, injectIntersClass2, injectIntersClass3);
-	}
-	
-	public static <T> T getTarget(String singletonKey) {
-		return (T)Enhancer.getTarget(singletonKey);
-	}
-	
-	public static <T> T duang(String singletonKey, Class<T> targetClass) {
-		return (T)Enhancer.enhance(singletonKey, targetClass);
-	}
-	
-	public static <T> T duang(String singletonKey, Class<T> targetClass, Interceptor... injectInters) {
-		return (T)Enhancer.enhance(singletonKey, targetClass, injectInters);
-	}
-	
-	public static <T> T duang(String singletonKey, Class<T> targetClass, Class<? extends Interceptor>... injectIntersClasses) {
-		return (T)Enhancer.enhance(singletonKey, targetClass, injectIntersClasses);
-	}
-	
-	public static <T> T duang(Object target) {
-		return (T)Enhancer.enhance(target);
-	}
-	
-	public static <T> T duang(Object target, Interceptor... injectInters) {
-		return (T)Enhancer.enhance(target, injectInters);
-	}
-	
-	public static <T> T duang(Object target, Class<? extends Interceptor>... injectIntersClasses) {
-		return (T)Enhancer.enhance(target, injectIntersClasses);
-	}
-	
-	public static <T> T duang(Object target, Class<? extends Interceptor> injectIntersClass) {
-		return (T)Enhancer.enhance(target, injectIntersClass);
-	}
-	
-	public static <T> T duang(Object target, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2) {
-		return (T)Enhancer.enhance(target, injectIntersClass1, injectIntersClass2);
-	}
-	
-	public static <T> T duang(Object target, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2, Class<? extends Interceptor> injectIntersClass3) {
-		return (T)Enhancer.enhance(target, injectIntersClass1, injectIntersClass2, injectIntersClass3);
-	}
-	
-	public static <T> T duang(String singletonKey, Object target) {
-		return (T)Enhancer.enhance(singletonKey, target);
-	}
-	
-	public static <T> T duang(String singletonKey, Object target, Interceptor... injectInters) {
-		return (T)Enhancer.enhance(singletonKey, target, injectInters);
-	}
-	
-	public static <T> T duang(String singletonKey, Object target, Class<? extends Interceptor>... injectIntersClasses) {
-		return (T)Enhancer.enhance(singletonKey, target, injectIntersClasses);
 	}
 }
 
