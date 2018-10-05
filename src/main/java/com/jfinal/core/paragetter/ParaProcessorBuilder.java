@@ -21,7 +21,6 @@ import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import java.util.Map;
 import com.jfinal.core.Controller;
-import com.jfinal.kit.LogKit;
 import com.jfinal.log.Log;
 
 public class ParaProcessorBuilder {
