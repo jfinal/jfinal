@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2017, 玛雅牛 (myaniu AT gmail.com).
+ * Copyright (c) 2011-2019, 玛雅牛 (myaniu AT gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.jfinal.log.Log;
 
 public class ParaProcessorBuilder {
 
-	private final static ParaProcessorBuilder me = new ParaProcessorBuilder();
+	public static final ParaProcessorBuilder me = new ParaProcessorBuilder();
 	private Map<String, Holder> typeMap = new HashMap<String, Holder>();
 	private static final Log log = Log.getLog(ParaProcessorBuilder.class);
 
@@ -57,10 +57,6 @@ public class ParaProcessorBuilder {
 		regist(com.jfinal.core.paragetter.RawPostData.class, RawPostDataGetter.class, null);
 		
 	}
-
-	public static ParaProcessorBuilder me() {
-		return me;
-	}
 	
 	/**
 	 * 注册一个类型对应的参数获取器 
@@ -74,21 +70,22 @@ public class ParaProcessorBuilder {
 	}
 
 	public ParaProcessor build(Class<? extends Controller> controllerClass, Method method) {
-		final int parameterCount = method.getParameterCount();
-		ParaProcessor opag = new ParaProcessor(parameterCount);
-		if (0 == parameterCount) {
-			return opag;
+		final int paraCount = method.getParameterCount();
+		
+		// 无参 action 共享同一个对象，该分支以外的所有 ParaProcessor 都是有参 action，不必进行 null 值判断
+		if (paraCount == 0) {
+			return NullParaProcessor.me;
 		}
-		for (Parameter p : method.getParameters()) {
-			IParaGetter<?> pg = createParaGetter(controllerClass, method, p);
-			//存在文件的情况下，文件需要优先获取才行
-			if (pg instanceof FileGetter) {
-				opag.addParaGetterToHeader(pg);
-			} else {
-				opag.addParaGetter(pg);
-			}
+		
+		ParaProcessor ret = new ParaProcessor(paraCount);
+		
+		Parameter[] paras = method.getParameters();
+		for (int i=0; i<paraCount; i++) {
+			IParaGetter<?> pg = createParaGetter(controllerClass, method, paras[i]);
+			ret.addParaGetter(i, pg);
 		}
-		return opag;
+		
+		return ret;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

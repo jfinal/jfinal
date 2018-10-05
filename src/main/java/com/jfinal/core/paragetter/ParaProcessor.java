@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2017, 玛雅牛 (myaniu AT gmail.com).
+ * Copyright (c) 2011-2019, 玛雅牛 (myaniu AT gmail.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,47 +15,56 @@
  */
 package com.jfinal.core.paragetter;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 
-public class ParaProcessor implements IParaGetter<Object[]>{
+public class ParaProcessor implements IParaGetter<Object[]> {
 	
-	private final List<IParaGetter<?>> paraGetters;
+	private int fileParaIndex = -1;
+	private IParaGetter<?>[] paraGetters;
 	
-	private static final Object[] NULL_ARGS = new Object[0];
-	
-	public ParaProcessor(int paramCount){
-		if( paramCount > 0){
-			this.paraGetters = new ArrayList<IParaGetter<?>>(paramCount);
-		}else{
-			this.paraGetters = null;
-		}
-	}
-	public void addParaGetterToHeader(IParaGetter<?> paraGetter){
-		if(this.paraGetters != null){
-			this.paraGetters.add(0, paraGetter);
-		}
+	public ParaProcessor(int paraCount) {
+		paraGetters = paraCount > 0 ? new IParaGetter<?>[paraCount] : null;
 	}
 	
-	public void addParaGetter(IParaGetter<?> paraGetter){
-		if(this.paraGetters != null){
-			this.paraGetters.add(paraGetter);
+	public void addParaGetter(int index, IParaGetter<?> paraGetter) {
+		// fileParaIndex 记录第一个 File、UploadFile 的数组下标
+		if (	fileParaIndex == -1 &&
+				(paraGetter instanceof FileGetter || paraGetter instanceof UploadFileGetter)) {
+			fileParaIndex = index;
 		}
+		
+		paraGetters[index] = paraGetter;
 	}
+	
 	@Override
 	public Object[] get(Action action, Controller c) {
-		if(this.paraGetters != null){
-			List<Object> parameters = new ArrayList<Object>(this.paraGetters.size());
-			for(IParaGetter<?> paraGetter : this.paraGetters ){
-			    Object obj = paraGetter.get(action,c);
-				parameters.add(obj);
+		int len = paraGetters.length;
+		Object[] ret = new Object[len];
+		
+		// 没有 File、UploadFile 参数的 action
+		if (fileParaIndex == -1) {
+			for (int i=0; i<len; i++) {
+				ret[i] = paraGetters[i].get(action, c);
 			}
-			return parameters.toArray();
-		}else{
-			return NULL_ARGS;
+			return ret;
 		}
+		
+		// 有 File、UploadFile 参数的 action，优先获取 File、UploadFile 对象
+		Object fileRet = paraGetters[fileParaIndex].get(action, c);
+		for (int i=0; i<len; i++) {
+			if (i != fileParaIndex) {
+				ret[i] = paraGetters[i].get(action, c);	
+			} else {
+				ret[i] = fileRet;
+			}
+		}
+		return ret;
 	}
 }
+
+
+
+
+
+

@@ -45,7 +45,7 @@ public class Action {
 		this.interceptors = interceptors;
 		this.viewPath = viewPath;
 		
-		this.parameterGetter = ParaProcessorBuilder.me().build(controllerClass, method);
+		this.parameterGetter = ParaProcessorBuilder.me.build(controllerClass, method);
 	}
 	
 	public Class<? extends Controller> getControllerClass() {
