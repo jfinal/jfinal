@@ -134,6 +134,7 @@ public class Compare extends Expr {
 		}
 		
 		if (leftValue instanceof Comparable &&
+			rightValue != null &&
 			leftValue.getClass() == rightValue.getClass()) {
 			return ((Comparable)leftValue).compareTo((Comparable)rightValue) > 0;
 		}
@@ -166,6 +167,7 @@ public class Compare extends Expr {
 		}
 		
 		if (leftValue instanceof Comparable &&
+			rightValue != null &&
 			leftValue.getClass() == rightValue.getClass()) {
 			return ((Comparable)leftValue).compareTo((Comparable)rightValue) >= 0;
 		}
@@ -198,6 +200,7 @@ public class Compare extends Expr {
 		}
 		
 		if (leftValue instanceof Comparable &&
+			rightValue != null &&
 			leftValue.getClass() == rightValue.getClass()) {
 			return ((Comparable)leftValue).compareTo((Comparable)rightValue) < 0;
 		}
@@ -230,6 +233,7 @@ public class Compare extends Expr {
 		}
 		
 		if (leftValue instanceof Comparable &&
+			rightValue != null &&
 			leftValue.getClass() == rightValue.getClass()) {
 			return ((Comparable)leftValue).compareTo((Comparable)rightValue) <= 0;
 		}
