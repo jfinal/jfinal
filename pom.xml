@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>2018.10</version>
+			<version>2018.11</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- dependency>
