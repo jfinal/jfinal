@@ -805,7 +805,7 @@ public abstract class Controller {
 		for (Entry<String, String[]> entry : paraMap.entrySet()) {
 			String[] values = entry.getValue();
 			String value = (values != null && values.length > 0) ? values[0] : null;
-			kv.put(entry.getKey(), value);
+			kv.put(entry.getKey(), "".equals(value) ? null : value);
 		}
 		return kv;
 	}
