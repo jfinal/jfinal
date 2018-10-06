@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import com.jfinal.aop.Enhancer;
 import com.jfinal.core.converter.TypeConverter;
+import com.jfinal.kit.Kv;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.ContentType;
 import com.jfinal.render.JsonRender;
@@ -789,6 +790,24 @@ public abstract class Controller {
 	
 	public <T> T getBean(Class<T> beanClass, String beanName, boolean skipConvertError) {
 		return (T)Injector.injectBean(beanClass, beanName, request, skipConvertError);
+	}
+	
+	/**
+	 * 获取被 Kv 封装后的参数，便于使用 Kv 中的一些工具方法
+	 * 
+	 * 由于 Kv 继承自 HashMap，也便于需要使用 HashMap 的场景，
+	 * 例如：
+	 * Record record = new Record().setColumns(getKv());
+	 */
+	public Kv getKv() {
+		Kv kv = new Kv();
+		Map<String, String[]> paraMap = request.getParameterMap();
+		for (Entry<String, String[]> entry : paraMap.entrySet()) {
+			String[] values = entry.getValue();
+			String value = (values != null && values.length > 0) ? values[0] : null;
+			kv.put(entry.getKey(), value);
+		}
+		return kv;
 	}
 	
 	// TODO public <T> List<T> getModels(Class<T> modelClass, String modelName) {}
