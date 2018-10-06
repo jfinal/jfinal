@@ -37,7 +37,7 @@ public class JsonRender extends Render {
 	 * It creates the extra attribute below while tomcat take SSL open.
 	 * http://git.oschina.net/jfinal/jfinal/issues/10
 	 */
-	private static final Set<String> excludedAttrs = new HashSet<String>() {
+	protected static final Set<String> excludedAttrs = new HashSet<String>() {
 		private static final long serialVersionUID = 9186138395157680676L;
 		{
 			add("javax.servlet.request.ssl_session");
