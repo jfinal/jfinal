@@ -69,7 +69,9 @@ package com.jfinal.aop;
  * 
  * 4：可以在目标类中中直接配置注解 Singleton 与注解 Enhance：
  *    @Singleton(false)
- *    @Enhance(false) 
+ *    @Enhance(false)
+ *    public class MyService {...}
+ *    
  *    注意：如上在配置会覆盖掉 2、3 中 setSingleton()/setEnhance() 方法配置的默认值
  * 
  * 5：如上 2、3、4 中的配置，建议的用法是：先用 /setSingleton()/setEnhance() 配置大多数情况，然后在个别
