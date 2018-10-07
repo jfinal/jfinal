@@ -42,6 +42,10 @@ public class InterceptorManager {
 		this.injectDependency = injectDependency;
 	}
 	
+	public boolean getInjectDependency() {
+		return injectDependency;
+	}
+	
 	public static final Interceptor[] NULL_INTERS = new Interceptor[0];
 	
 	// 控制层与业务层全局拦截器
