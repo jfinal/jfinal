@@ -20,7 +20,6 @@ package com.jfinal.core;
  * ControllerFactory
  */
 public class ControllerFactory {
-	
 	public Controller getController(Class<? extends Controller> controllerClass) throws ReflectiveOperationException {
 		return controllerClass.newInstance();
 	}

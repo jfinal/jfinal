@@ -54,5 +54,7 @@ public interface Const {
 	int DEFAULT_CONFIG_PLUGIN_ORDER = 2;
 	
 	ControllerFactory DEFAULT_CONTROLLER_FACTORY = new ControllerFactory();
+	
+	boolean DEFAULT_INJECT_DEPENDENCY = false;
 }
 

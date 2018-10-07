@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+import com.jfinal.core.Const;
 import com.jfinal.core.Controller;
 
 /**
@@ -36,13 +37,13 @@ import com.jfinal.core.Controller;
  */
 public class InterceptorManager {
 	
-	private boolean injectDependency = true;
+	private boolean injectDependency = Const.DEFAULT_INJECT_DEPENDENCY;
 	
 	public void setInjectDependency(boolean injectDependency) {
 		this.injectDependency = injectDependency;
 	}
 	
-	public boolean getInjectDependency() {
+	public boolean isInjectDependency() {
 		return injectDependency;
 	}
 	
