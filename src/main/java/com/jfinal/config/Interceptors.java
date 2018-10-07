@@ -56,5 +56,15 @@ final public class Interceptors {
 		InterceptorManager.me().addGlobalServiceInterceptor(globalServiceInterceptor);
 		return this;
 	}
+	
+	/**
+	 * 配置是否对拦截器进行依赖注入，默认值为 true
+	 * 
+	 * 拦截器的依赖注入是指在拦截器中通过 @Inject 注解注入依赖对象，例如注入业务层对象
+	 */
+	public Interceptors setInjectDependency(boolean injectDependency) {
+		InterceptorManager.me().setInjectDependency(injectDependency);
+		return this;
+	}
 }
 
