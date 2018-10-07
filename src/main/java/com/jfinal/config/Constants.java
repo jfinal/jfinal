@@ -157,7 +157,7 @@ final public class Constants {
 	}
 	
 	/**
-	 * 设置为 AopControllerFactory 用于创建 Controller 对象并针对其中使用
+	 * 设置为 InjectControllerFactory 用于创建 Controller 对象并针对其中使用
 	 * Inject 注解的属性进行依赖注入。
 	 * 
 	 * 被注入对象默认为 singleton，可以通过 Aop.setSingleton(boolean) 配置
@@ -166,8 +166,8 @@ final public class Constants {
 	 * 也可通过在被注入的目标类上使用 Singleton 注解覆盖上述默认值，注解配置
 	 * 优先级高于默认配置
 	 */
-	public void setToAopControllerFactory() {
-		this.controllerFactory = new com.jfinal.aop.AopControllerFactory();
+	public void setToInjectControllerFactory() {
+		this.controllerFactory = new com.jfinal.aop.InjectControllerFactory();
 	}
 	
 	public ControllerFactory getControllerFactory() {
