@@ -188,7 +188,7 @@ public class InterceptorManager {
 		addGlobalInterceptor(false, inters);
 	}
 	
-	private void addGlobalInterceptor(boolean forAction, Interceptor... inters) {
+	private synchronized void addGlobalInterceptor(boolean forAction, Interceptor... inters) {
 		if (inters == null || inters.length == 0) {
 			throw new IllegalArgumentException("interceptors can not be null.");
 		}
