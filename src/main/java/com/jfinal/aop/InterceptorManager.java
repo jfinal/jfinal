@@ -36,6 +36,12 @@ import com.jfinal.core.Controller;
  */
 public class InterceptorManager {
 	
+	private boolean injectDependency = true;
+	
+	public void setInjectDependency(boolean injectDependency) {
+		this.injectDependency = injectDependency;
+	}
+	
 	public static final Interceptor[] NULL_INTERS = new Interceptor[0];
 	
 	// 控制层与业务层全局拦截器
@@ -162,6 +168,9 @@ public class InterceptorManager {
 				result[i] = singletonMap.get(interceptorClasses[i]);
 				if (result[i] == null) {
 					result[i] = (Interceptor)interceptorClasses[i].newInstance();
+					if (injectDependency) {
+						Aop.inject(result[i]);
+					}
 					singletonMap.put(interceptorClasses[i], result[i]);
 				}
 			}
@@ -194,6 +203,9 @@ public class InterceptorManager {
 		}
 		
 		for (Interceptor inter : inters) {
+			if (injectDependency) {
+				Aop.inject(inter);
+			}
 			singletonMap.put(inter.getClass(), inter);
 		}
 		
