@@ -23,22 +23,22 @@ import javax.servlet.http.HttpServletResponse;
  * Cross Package Invoking pattern for package core.
  * 
  * <pre>
- * 有利于在自定义扩展的 ActionHandler 中调用 Controller.init(...)
- * 与 Controller.clear() 以及其它一切需要调用上面两个方法的场景
+ * 有利于在自定义扩展的 ActionHandler 中调用 Controller._init_(...)
+ * 与 Controller._clear_() 以及其它一切需要调用上面两个方法的场景
  * 
  * 示例：
- * CPI.init(controller, request, response, urlPara);
- * CPI.clear(controller);
+ * CPI._init_(controller, request, response, urlPara);
+ * CPI._clear_(controller);
  * </pre>
  */
 public class CPI {
 	
-	public static void init(Controller controller, Action action, HttpServletRequest request, HttpServletResponse response, String urlPara) {
-		controller.init(action, request, response, urlPara);
+	public static void _init_(Controller controller, Action action, HttpServletRequest request, HttpServletResponse response, String urlPara) {
+		controller._init_(action, request, response, urlPara);
 	}
 	
-	public static void clear(Controller controller) {
-		controller.clear();
+	public static void _clear_(Controller controller) {
+		controller._clear_();
 	}
 }
 

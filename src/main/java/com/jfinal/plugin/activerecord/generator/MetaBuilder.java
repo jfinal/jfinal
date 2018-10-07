@@ -96,6 +96,7 @@ public class MetaBuilder {
 				buildPrimaryKey(tableMeta);
 				buildColumnMetas(tableMeta);
 			}
+			removeNoPrimaryKeyTable(ret);
 			return ret;
 		}
 		catch (SQLException e) {
@@ -108,6 +109,17 @@ public class MetaBuilder {
 		}
 	}
 	
+	// 移除没有主键的 table
+	protected void removeNoPrimaryKeyTable(List<TableMeta> ret) {
+		for (java.util.Iterator<TableMeta> it = ret.iterator(); it.hasNext();) {
+			TableMeta tm = it.next();
+			if (StrKit.isBlank(tm.primaryKey)) {
+				it.remove();
+				System.err.println("Skip table " + tm.name + " because there is no primary key");
+			}
+		}
+	}
+
 	/**
 	 * 通过继承并覆盖此方法，跳过一些不希望处理的 table，定制更加灵活的 table 过滤规则
 	 * @return 返回 true 时将跳过当前 tableName 的处理
@@ -196,9 +208,12 @@ public class MetaBuilder {
 			}
 			primaryKey += rs.getString("COLUMN_NAME");
 		}
-		if (StrKit.isBlank(primaryKey)) {
-			throw new RuntimeException("primaryKey of table \"" + tableMeta.name + "\" required by active record pattern");
-		}
+		
+		// 无主键的 table 将在后续的 removeNoPrimaryKeyTable() 中被移除，不再抛出异常
+		// if (StrKit.isBlank(primaryKey)) {
+			// throw new RuntimeException("primaryKey of table \"" + tableMeta.name + "\" required by active record pattern");
+		// }
+		
 		tableMeta.primaryKey = primaryKey;
 		rs.close();
 	}
@@ -260,6 +275,9 @@ public class MetaBuilder {
 					typeStr = "java.lang.String";
 				}
 			}
+			
+			typeStr = handleJavaType(typeStr, rsmd, i);
+			
 			cm.javaType = typeStr;
 			
 			// 构造字段对应的属性名 attrName
@@ -270,6 +288,51 @@ public class MetaBuilder {
 		
 		rs.close();
 		stm.close();
+	}
+	
+	/**
+	 * handleJavaType(...) 方法是用于处理 java 类型的回调方法，当 jfinal 默认
+	 * 处理规则无法满足需求时，用户可以通过继承 MetaBuilder 并覆盖此方法定制自己的
+	 * 类型转换规则
+	 * 
+	 * 当前实现只处理了 Oracle 数据库的 NUMBER 类型，根据精度与小数位数转换成 Integer、
+	 * Long、BigDecimal。其它数据库直接返回原值 typeStr
+	 * 
+	 * Oracle 数据库 number 类型对应 java 类型：
+	 *  1：如果不指定number的长度，或指定长度 n > 18
+	 *     number 对应 java.math.BigDecimal
+	 *  2：如果number的长度在10 <= n <= 18
+	 *     number(n) 对应 java.lang.Long
+	 *  3：如果number的长度在1 <= n <= 9
+	 *     number(n) 对应 java.lang.Integer 类型
+	 * 
+	 * 社区分享：《Oracle NUMBER 类型映射改进》http://www.jfinal.com/share/1145
+	 */
+	protected String handleJavaType(String typeStr, ResultSetMetaData rsmd, int column) throws SQLException {
+		// 当前实现只处理 Oracle
+		if ( ! dialect.isOracle() ) {
+			return typeStr;
+		}
+		
+		// 默认实现只处理 BigDecimal 类型
+		if ("java.math.BigDecimal".equals(typeStr)) {
+			int scale = rsmd.getScale(column);			// 小数点右边的位数，值为 0 表示整数
+			int precision = rsmd.getPrecision(column);	// 最大精度
+			if (scale == 0) {
+				if (precision <= 9) {
+					typeStr = "java.lang.Integer";
+				} else if (precision <= 18) {
+					typeStr = "java.lang.Long";
+				} else {
+					typeStr = "java.math.BigDecimal";
+				}
+			} else {
+				// 非整数都采用 BigDecimal 类型，需要转成 double 的可以覆盖并改写下面的代码
+				typeStr = "java.math.BigDecimal";
+			}
+		}
+		
+		return typeStr;
 	}
 	
 	/**

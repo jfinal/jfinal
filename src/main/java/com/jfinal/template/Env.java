@@ -35,7 +35,7 @@ import com.jfinal.template.stat.ast.Define;
 public class Env {
 	
 	protected EngineConfig engineConfig;
-	protected Map<String, Define> functionMap = new HashMap<String, Define>();
+	protected Map<String, Define> functionMap = new HashMap<String, Define>(16, 0.5F);
 	
 	// 代替 Template 持有该属性，便于在 #include 指令中调用 Env.addSource()
 	protected List<ISource> sourceList = null;

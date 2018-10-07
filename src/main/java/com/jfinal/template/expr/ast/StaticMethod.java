@@ -57,23 +57,23 @@ public class StaticMethod extends Expr {
 	
 	public Object eval(Scope scope) {
 		Object[] argValues = exprList.evalExprList(scope);
-		MethodInfo methodInfo;
-		try {
-			methodInfo = MethodKit.getMethod(clazz, methodName, argValues);
-		} catch (Exception e) {
-			throw new TemplateException(e.getMessage(), location, e);
-		}
-		
-		// StaticMethod 是固定的存在，不支持 null safe，null safe 只支持具有动态特征的用法
-		if (methodInfo == null) {
-			throw new TemplateException(Method.buildMethodNotFoundSignature("public static method not found: " + clazz.getName() + "::", methodName, argValues), location);
-		}
-		if (!methodInfo.isStatic()) {
-			throw new TemplateException(Method.buildMethodNotFoundSignature("Not public static method: " + clazz.getName() + "::", methodName, argValues), location);
-		}
 		
 		try {
-			return methodInfo.invoke(null, argValues);
+			MethodInfo methodInfo = MethodKit.getMethod(clazz, methodName, argValues);
+			
+			if (methodInfo != null) {
+				if (methodInfo.isStatic()) {
+					return methodInfo.invoke(null, argValues);
+				} else {
+					throw new TemplateException(Method.buildMethodNotFoundSignature("Not public static method: " + clazz.getName() + "::", methodName, argValues), location);
+				}
+			} else {
+				// StaticMethod 是固定的存在，不支持 null safe，null safe 只支持具有动态特征的用法
+				throw new TemplateException(Method.buildMethodNotFoundSignature("public static method not found: " + clazz.getName() + "::", methodName, argValues), location);
+			}
+			
+		} catch (TemplateException | ParseException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}

@@ -38,7 +38,7 @@ public class ActionMapping {
 	protected static final String SLASH = "/";
 	
 	protected Routes routes;
-	protected Map<String, Action> mapping = new HashMap<String, Action>();
+	protected Map<String, Action> mapping = new HashMap<String, Action>(2048, 0.5F);
 	
 	public ActionMapping(Routes routes) {
 		this.routes = routes;
@@ -48,7 +48,7 @@ public class ActionMapping {
 		Set<String> excludedMethodName = new HashSet<String>();
 		Method[] methods = Controller.class.getMethods();
 		for (Method m : methods) {
-			if (m.getParameterTypes().length == 0)
+			// if (m.getParameterTypes().length == 0)
 				excludedMethodName.add(m.getName());
 		}
 		return excludedMethodName;
@@ -75,7 +75,7 @@ public class ActionMapping {
 			Method[] methods = (sonOfController ? controllerClass.getDeclaredMethods() : controllerClass.getMethods());
 			for (Method method : methods) {
 				String methodName = method.getName();
-				if (excludedMethodName.contains(methodName) || method.getParameterTypes().length != 0)
+				if (excludedMethodName.contains(methodName) /* || method.getParameterTypes().length != 0 */)
 					continue ;
 				if (sonOfController && !Modifier.isPublic(method.getModifiers()))
 					continue ;

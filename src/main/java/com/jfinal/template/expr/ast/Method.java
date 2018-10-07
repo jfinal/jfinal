@@ -24,6 +24,17 @@ import com.jfinal.template.stat.Scope;
 
 /**
  * Method : expr '.' ID '(' exprList? ')'
+ * 
+ * 每次通过 MethodKit.getMethod(...) 取 MethodInfo 而不是用属性持有其对象
+ * 是为了支持 target 对象的动态类型，MethodInfo 中的 Method 被调用 15 次以后
+ * 会被 JDK 动态生成 GeneratedAccessorXXX 字节码，性能不是问题
+ * 唯一的性能损耗是从 HashMap 中获取 MethodInfo 对象，可以忽略不计
+ * 
+ * 如果在未来通过结合 #dynamic(boolean) 指令来优化，需要在 Ctrl 中引入一个
+ * boolean dynamic = false 变量，而不能在 Env、Scope 引入该变量
+ * 
+ * 还需要引入一个 NullMethodInfo 以及 notNull() 方法，此优化复杂度提高不少，
+ * 暂时不做此优化
  */
 public class Method extends Expr {
 	
@@ -65,28 +76,24 @@ public class Method extends Expr {
 		}
 		
 		Object[] argValues = exprList.evalExprList(scope);
-		MethodInfo methodInfo;
 		try {
-			methodInfo = MethodKit.getMethod(target.getClass(), methodName, argValues);
-		} catch (Exception e) {
-			throw new TemplateException(e.getMessage(), location, e);
-		}
-		if (methodInfo == null) {
+			
+			MethodInfo methodInfo = MethodKit.getMethod(target.getClass(), methodName, argValues);
+			if (methodInfo != null) {
+				return methodInfo.invoke(target, argValues);
+			}
+			
 			if (scope.getCtrl().isNullSafe()) {
 				return null;
 			}
 			throw new TemplateException(buildMethodNotFoundSignature("public method not found: " + target.getClass().getName() + ".", methodName, argValues), location);
-		}
-		
-		try {
-			return methodInfo.invoke(target, argValues);
+			
+		} catch (TemplateException | ParseException e) {
+			throw e;
 		} catch (InvocationTargetException e) {
 			Throwable t = e.getTargetException();
-			if (t != null) {
-				throw new TemplateException(t.getMessage(), location, t);
-			} else {
-				throw new TemplateException(e.getMessage(), location, e);
-			}
+			if (t == null) {t = e;}
+			throw new TemplateException(t.getMessage(), location, t);
 		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}

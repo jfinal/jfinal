@@ -18,9 +18,9 @@ package com.jfinal.plugin.activerecord;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.jfinal.kit.SyncWriteMap;
 
 /**
  * Db. Powerful database query and update tool box.
@@ -29,7 +29,7 @@ import java.util.Map;
 public class Db {
 	
 	private static DbPro MAIN = null;
-	private static final Map<String, DbPro> map = new HashMap<String, DbPro>();
+	private static final Map<String, DbPro> map = new SyncWriteMap<String, DbPro>(32, 0.25F);
 	
 	/**
 	 * for DbKit.addConfig(configName)

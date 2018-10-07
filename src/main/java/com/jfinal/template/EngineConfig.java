@@ -49,14 +49,14 @@ public class EngineConfig {
 	
 	WriterBuffer writerBuffer = new WriterBuffer();
 	
-	private Map<String, Define> sharedFunctionMap = new HashMap<String, Define>();
+	private Map<String, Define> sharedFunctionMap = createSharedFunctionMap();		// new HashMap<String, Define>(512, 0.25F);
 	private List<ISource> sharedFunctionSourceList = new ArrayList<ISource>();		// for devMode only
 	
 	Map<String, Object> sharedObjectMap = null;
 	
 	private OutputDirectiveFactory outputDirectiveFactory = OutputDirectiveFactory.me;
 	private ISourceFactory sourceFactory = new FileSourceFactory();
-	private Map<String, Class<? extends Directive>> directiveMap = new HashMap<String, Class<? extends Directive>>();
+	private Map<String, Class<? extends Directive>> directiveMap = new HashMap<String, Class<? extends Directive>>(64, 0.5F);
 	private SharedMethodKit sharedMethodKit = new SharedMethodKit();
 	
 	private boolean devMode = false;
@@ -180,7 +180,7 @@ public class EngineConfig {
 	 * 开发者可直接使用模板注释功能将不需要的 function 直接注释掉
 	 */
 	private synchronized void reloadSharedFunctionSourceList() {
-		Map<String, Define> newMap = new HashMap<String, Define>();
+		Map<String, Define> newMap = createSharedFunctionMap();
 		for (int i = 0, size = sharedFunctionSourceList.size(); i < size; i++) {
 			ISource source = sharedFunctionSourceList.get(i);
 			String fileName = source instanceof FileSource ? ((FileSource)source).getFileName() : null;
@@ -195,9 +195,13 @@ public class EngineConfig {
 		this.sharedFunctionMap = newMap;
 	}
 	
+	private Map<String, Define> createSharedFunctionMap() {
+		return new HashMap<String, Define>(512, 0.25F);
+	}
+	
 	public synchronized void addSharedObject(String name, Object object) {
 		if (sharedObjectMap == null) {
-			sharedObjectMap = new HashMap<String, Object>();
+			sharedObjectMap = new HashMap<String, Object>(64, 0.25F);
 		} else if (sharedObjectMap.containsKey(name)) {
 			throw new IllegalArgumentException("Shared object already exists: " + name);
 		}

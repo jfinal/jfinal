@@ -134,11 +134,12 @@ public class Compare extends Expr {
 		}
 		
 		if (leftValue instanceof Comparable &&
+			rightValue != null &&
 			leftValue.getClass() == rightValue.getClass()) {
 			return ((Comparable)leftValue).compareTo((Comparable)rightValue) > 0;
 		}
 		
-		return checkType(leftValue, rightValue);
+		return checkComparisonValue(leftValue, rightValue);
 	}
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -166,11 +167,12 @@ public class Compare extends Expr {
 		}
 		
 		if (leftValue instanceof Comparable &&
+			rightValue != null &&
 			leftValue.getClass() == rightValue.getClass()) {
 			return ((Comparable)leftValue).compareTo((Comparable)rightValue) >= 0;
 		}
 		
-		return checkType(leftValue, rightValue);
+		return checkComparisonValue(leftValue, rightValue);
 	}
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -198,11 +200,12 @@ public class Compare extends Expr {
 		}
 		
 		if (leftValue instanceof Comparable &&
+			rightValue != null &&
 			leftValue.getClass() == rightValue.getClass()) {
 			return ((Comparable)leftValue).compareTo((Comparable)rightValue) < 0;
 		}
 		
-		return checkType(leftValue, rightValue);
+		return checkComparisonValue(leftValue, rightValue);
 	}
 	
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -230,11 +233,12 @@ public class Compare extends Expr {
 		}
 		
 		if (leftValue instanceof Comparable &&
+			rightValue != null &&
 			leftValue.getClass() == rightValue.getClass()) {
 			return ((Comparable)leftValue).compareTo((Comparable)rightValue) <= 0;
 		}
 		
-		return checkType(leftValue, rightValue);
+		return checkComparisonValue(leftValue, rightValue);
 	}
 	
 	private int getMaxType(Number obj1, Number obj2) {
@@ -270,7 +274,7 @@ public class Compare extends Expr {
 		return ret;
 	}
 	
-	private Boolean checkType(Object leftValue, Object rightValue) {
+	private Boolean checkComparisonValue(Object leftValue, Object rightValue) {
 		if (leftValue == null) {
 			throw new TemplateException("The operation target on the left side of \"" + op.value() + "\" can not be null", location);
 		}

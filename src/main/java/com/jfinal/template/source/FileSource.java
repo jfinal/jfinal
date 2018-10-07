@@ -48,7 +48,7 @@ public class FileSource implements ISource {
 		return lastModified != new File(finalFileName).lastModified();
 	}
 	
-	public String getKey() {
+	public String getCacheKey() {
 		return fileName;
 	}
 	

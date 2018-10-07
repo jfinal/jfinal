@@ -16,156 +16,36 @@
 
 package com.jfinal.aop;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
  * Enhancer
+ * 
+ * <pre>
+ * 自 jfinal 3.5 开始，新增了更强大的 Aop 工具，建议使用 Aop.get(...) 以及
+ * Aop.inject(...) 来代替 Enhancer 的功能
+ * 
+ * 下一个版本所有 Aop 功能将会被 Aop.java 取代，并且为了拦截器的整体缓存不会再支持
+ * Inject Interceptor 参数，所以删除了 Enhancer 中所有带 injectInters 参数
+ * 的方法
+ * 
+ * 下一个版本的 Singleton 判别将由 @Singleton 注解以及 AopFactory 中的默认值决定，
+ * 所以删除了 Enhancer 中所有带 singletonKey 参数的方法
+ * </pre>
  */
 @SuppressWarnings("unchecked")
 public class Enhancer {
 	
-	private static final ConcurrentHashMap<String, Object> singleton = new ConcurrentHashMap<String, Object>();
+	private Enhancer() {}
 	
-	private Enhancer(){}
-
 	public static <T> T enhance(Class<T> targetClass) {
 		return (T)net.sf.cglib.proxy.Enhancer.create(targetClass, new Callback());
 	}
 	
+	/**
+	 * 下一个版本的 aop 将不再支持 inject interceptor，所以本方法被 Deprecated
+	 */
+	@Deprecated
 	public static <T> T enhance(Class<T> targetClass, Interceptor... injectInters) {
 		return (T)net.sf.cglib.proxy.Enhancer.create(targetClass, new Callback(injectInters));
-	}
-	
-	public static <T> T enhance(Class<T> targetClass, Class<? extends Interceptor>... injectIntersClasses) {
-		return (T)enhance(targetClass, createInjectInters(injectIntersClasses));
-	}
-	
-	public static <T> T enhance(Class<T> targetClass, Class<? extends Interceptor> injectIntersClass) {
-		return (T)enhance(targetClass, createInjectInters(injectIntersClass));
-	}
-	
-	public static <T> T enhance(Class<T> targetClass, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2) {
-		return (T)enhance(targetClass, createInjectInters(injectIntersClass1, injectIntersClass2));
-	}
-	
-	public static <T> T enhance(Class<T> targetClass, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2, Class<? extends Interceptor> injectIntersClass3) {
-		return (T)enhance(targetClass, createInjectInters(injectIntersClass1, injectIntersClass2, injectIntersClass3));
-	}
-	
-	public static <T> T getTarget(String singletonKey) {
-		return (T)singleton.get(singletonKey);
-	}
-	
-	public static <T> T enhance(String singletonKey, Class<T> targetClass) {
-		Object ret = singleton.get(singletonKey);
-		if (ret == null) {
-			synchronized (Enhancer.class) {
-				ret = singleton.get(singletonKey);
-				if (ret == null) {
-					ret = enhance(targetClass);
-					singleton.put(singletonKey, ret);
-				}
-			}
-		}
-		return (T)ret;
-	}
-	
-	public static <T> T enhance(String singletonKey, Class<T> targetClass, Interceptor... injectInters) {
-		Object ret = singleton.get(singletonKey);
-		if (ret == null) {
-			synchronized (Enhancer.class) {
-				ret = singleton.get(singletonKey);
-				if (ret == null) {
-					ret = enhance(targetClass, injectInters);
-					singleton.put(singletonKey, ret);
-				}
-			}
-		}
-		return (T)ret;
-	}
-	
-	public static <T> T enhance(String singletonKey, Class<T> targetClass, Class<? extends Interceptor>... injectIntersClasses) {
-		Object ret = singleton.get(singletonKey);
-		if (ret == null) {
-			synchronized (Enhancer.class) {
-				ret = singleton.get(singletonKey);
-				if (ret == null) {
-					ret = enhance(targetClass, injectIntersClasses);
-					singleton.put(singletonKey, ret);
-				}
-			}
-		}
-		return (T)ret;
-	}
-	
-	public static <T> T enhance(Object target) {
-		return (T)net.sf.cglib.proxy.Enhancer.create(target.getClass(), new Callback(target));
-	}
-	
-	public static <T> T enhance(Object target, Interceptor... injectInters) {
-		return (T)net.sf.cglib.proxy.Enhancer.create(target.getClass(), new Callback(target, injectInters));
-	}
-	
-	public static <T> T enhance(Object target, Class<? extends Interceptor>... injectIntersClasses) {
-		return (T)enhance(target, createInjectInters(injectIntersClasses));
-	}
-	
-	public static <T> T enhance(Object target, Class<? extends Interceptor> injectIntersClass) {
-		return (T)enhance(target, createInjectInters(injectIntersClass));
-	}
-	
-	public static <T> T enhance(Object target, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2) {
-		return (T)enhance(target, createInjectInters(injectIntersClass1, injectIntersClass2));
-	}
-	
-	public static <T> T enhance(Object target, Class<? extends Interceptor> injectIntersClass1, Class<? extends Interceptor> injectIntersClass2, Class<? extends Interceptor> injectIntersClass3) {
-		return (T)enhance(target, createInjectInters(injectIntersClass1, injectIntersClass2, injectIntersClass3));
-	}
-	
-	public static <T> T enhance(String singletonKey, Object target) {
-		Object ret = singleton.get(singletonKey);
-		if (ret == null) {
-			synchronized (Enhancer.class) {
-				ret = singleton.get(singletonKey);
-				if (ret == null) {
-					ret = enhance(target);
-					singleton.put(singletonKey, ret);
-				}
-			}
-		}
-		return (T)ret;
-	}
-	
-	public static <T> T enhance(String singletonKey, Object target, Interceptor... injectInters) {
-		Object ret = singleton.get(singletonKey);
-		if (ret == null) {
-			synchronized (Enhancer.class) {
-				ret = singleton.get(singletonKey);
-				if (ret == null) {
-					ret = enhance(target, injectInters);
-					singleton.put(singletonKey, ret);
-				}
-			}
-		}
-		return (T)ret;
-	}
-	
-	public static <T> T enhance(String singletonKey, Object target, Class<? extends Interceptor>... injectIntersClasses) {
-		Object ret = singleton.get(singletonKey);
-		if (ret == null) {
-			synchronized (Enhancer.class) {
-				ret = singleton.get(singletonKey);
-				if (ret == null) {
-					ret = enhance(target, injectIntersClasses);
-					singleton.put(singletonKey, ret);
-				}
-			}
-		}
-		return (T)ret;
-	}
-	
-	private static Interceptor[] createInjectInters(Class<? extends Interceptor>... injectInterClasses) {
-		return InterceptorManager.me().createInterceptor(injectInterClasses);
 	}
 }
 

@@ -45,7 +45,7 @@ import com.jfinal.plugin.activerecord.Record;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JFinalJson extends Json {
 	
-	private static int defaultConvertDepth = 15;
+	private static int defaultConvertDepth = 16;
 	
 	protected int convertDepth = defaultConvertDepth;
 	protected String timestampPattern = "yyyy-MM-dd HH:mm:ss";

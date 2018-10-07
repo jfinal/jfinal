@@ -22,11 +22,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.HashMap;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.ReflectKit;
+import com.jfinal.kit.SyncWriteMap;
 
 /**
  * SharedMethodKit
@@ -44,7 +44,7 @@ public class SharedMethodKit {
 	}
 	
 	private final List<SharedMethodInfo> sharedMethodList = new ArrayList<SharedMethodInfo>();
-	private final HashMap<Long, SharedMethodInfo> methodCache = new HashMap<Long, SharedMethodInfo>();
+	private final HashMap<Long, SharedMethodInfo> methodCache = new SyncWriteMap<Long, SharedMethodInfo>(512, 0.25F);
 	
 	public SharedMethodInfo getSharedMethodInfo(String methodName, Object[] argValues) {
 		Class<?>[] argTypes = MethodKit.getArgTypes(argValues);
@@ -53,9 +53,9 @@ public class SharedMethodKit {
 		if (method == null) {
 			method = doGetSharedMethodInfo(methodName, argTypes);
 			if (method != null) {
-				methodCache.put(key, method);
+				methodCache.putIfAbsent(key, method);
 			}
-			// shared method 不支持 null safe，不缓存: methodCache.put(key, Boolean.FALSE)
+			// shared method 不支持 null safe，不缓存: methodCache.putIfAbsent(key, Void.class)
 		}
 		return method;
 	}
@@ -173,7 +173,7 @@ public class SharedMethodKit {
 			this.target = target;
 		}
 		
-		public Object invoke(Object... args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		public Object invoke(Object... args) throws ReflectiveOperationException {
 			return super.invoke(target, args);
 		}
 		

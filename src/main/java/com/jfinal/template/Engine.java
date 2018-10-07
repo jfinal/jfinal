@@ -21,6 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
+import com.jfinal.kit.SyncWriteMap;
+import com.jfinal.template.expr.ast.FieldGetter;
+import com.jfinal.template.expr.ast.FieldKeyBuilder;
+import com.jfinal.template.expr.ast.FieldKit;
 import com.jfinal.template.expr.ast.MethodKit;
 import com.jfinal.template.source.ClassPathSourceFactory;
 import com.jfinal.template.source.ISource;
@@ -42,7 +46,7 @@ public class Engine {
 	public static final String MAIN_ENGINE_NAME = "main";
 	
 	private static Engine MAIN_ENGINE;
-	private static Map<String, Engine> engineMap = new HashMap<String, Engine>();
+	private static Map<String, Engine> engineMap = new HashMap<String, Engine>(64, 0.5F);
 	
 	// Create main engine
 	static {
@@ -55,7 +59,7 @@ public class Engine {
 	private EngineConfig config = new EngineConfig();
 	private ISourceFactory sourceFactory = config.getSourceFactory();
 	
-	private Map<String, Template> templateCache = new HashMap<String, Template>();
+	private Map<String, Template> templateCache = new SyncWriteMap<String, Template>(2048, 0.5F);
 	
 	/**
 	 * Create engine without management of JFinal 
@@ -125,7 +129,7 @@ public class Engine {
 	}
 	
 	/**
-	 * Get template with file name
+	 * Get template by file name
 	 */
 	public Template getTemplate(String fileName) {
 		if (fileName.charAt(0) != '/') {
@@ -171,9 +175,9 @@ public class Engine {
 	/**
 	 * Get template by string content
 	 * 
-	 * 重要：StringSource 中的 key = HashKit.md5(content)，也即 key
-	 *     与 content 有紧密的对应关系，当 content 发生变化时 key 值也相应变化
-	 *     因此，原先 key 所对应的 Template 缓存对象已无法被获取，当 getTemplateByString(String)
+	 * 重要：StringSource 中的 cacheKey = HashKit.md5(content)，也即 cacheKey
+	 *     与 content 有紧密的对应关系，当 content 发生变化时 cacheKey 值也相应变化
+	 *     因此，原先 cacheKey 所对应的 Template 缓存对象已无法被获取，当 getTemplateByString(String)
 	 *     的 String 参数的数量不确定时会引发内存泄漏
 	 *     
 	 *     当 getTemplateByString(String, boolean) 中的 String 参数的
@@ -187,37 +191,37 @@ public class Engine {
 			return buildTemplateBySource(new StringSource(content, cache));
 		}
 		
-		String key = HashKit.md5(content);
-		Template template = templateCache.get(key);
+		String cacheKey = HashKit.md5(content);
+		Template template = templateCache.get(cacheKey);
 		if (template == null) {
 			template = buildTemplateBySource(new StringSource(content, cache));
-			templateCache.put(key, template);
+			templateCache.put(cacheKey, template);
 		} else if (devMode) {
 			if (template.isModified()) {
 				template = buildTemplateBySource(new StringSource(content, cache));
-				templateCache.put(key, template);
+				templateCache.put(cacheKey, template);
 			}
 		}
 		return template;
 	}
 	
 	/**
-	 * Get template with implementation of ISource
+	 * Get template by implementation of ISource
 	 */
 	public Template getTemplate(ISource source) {
-		String key = source.getKey();
-		if (key == null) {	// key 为 null 则不缓存，详见 ISource.getKey() 注释
+		String cacheKey = source.getCacheKey();
+		if (cacheKey == null) {	// cacheKey 为 null 则不缓存，详见 ISource.getCacheKey() 注释
 			return buildTemplateBySource(source);
 		}
 		
-		Template template = templateCache.get(key);
+		Template template = templateCache.get(cacheKey);
 		if (template == null) {
 			template = buildTemplateBySource(source);
-			templateCache.put(key, template);
+			templateCache.put(cacheKey, template);
 		} else if (devMode) {
 			if (template.isModified()) {
 				template = buildTemplateBySource(source);
-				templateCache.put(key, template);
+				templateCache.put(cacheKey, template);
 			}
 		}
 		return template;
@@ -235,7 +239,7 @@ public class Engine {
 	}
 	
 	/**
-	 * Add shared function with file
+	 * Add shared function by file
 	 */
 	public Engine addSharedFunction(String fileName) {
 		config.addSharedFunction(fileName);
@@ -251,7 +255,7 @@ public class Engine {
 	}
 	
 	/**
-	 * Add shared function with files
+	 * Add shared function by files
 	 */
 	public Engine addSharedFunction(String... fileNames) {
 		config.addSharedFunction(fileNames);
@@ -335,7 +339,7 @@ public class Engine {
 	}
 	
 	/**
-	 * Remove shared Method with method name
+	 * Remove shared Method by method name
 	 */
 	public Engine removeSharedMethod(String methodName) {
 		config.removeSharedMethod(methodName);
@@ -359,10 +363,10 @@ public class Engine {
 	}
 	
 	/**
-	 * Remove template cache with template key
+	 * Remove template cache by cache key
 	 */
-	public void removeTemplateCache(String templateKey) {
-		templateCache.remove(templateKey);
+	public void removeTemplateCache(String cacheKey) {
+		templateCache.remove(cacheKey);
 	}
 	
 	/**
@@ -498,6 +502,45 @@ public class Engine {
 	
 	public static void removeExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {
 		MethodKit.removeExtensionMethod(targetClass, extensionClass);
+	}
+	
+	/**
+	 * 添加 FieldGetter 实现类到指定的位置
+	 * 
+	 * 系统当前默认 FieldGetter 实现类及其位置如下：
+	 * GetterMethodFieldGetter  ---> 调用 getter 方法取值
+	 * ModelFieldGetter			---> 调用 Model.get(String) 方法取值
+	 * RecordFieldGetter			---> 调用 Record.get(String) 方法取值
+	 * MapFieldGetter			---> 调用 Map.get(String) 方法取值 
+	 * RealFieldGetter			---> 直接获取 public 型的 object.field 值
+	 * ArrayLengthGetter			---> 获取数组长度
+	 * 
+	 * 根据以上次序，如果要插入 IsMethodFieldGetter 到 GetterMethodFieldGetter
+	 * 之后的代码如下：
+	 * Engine.addFieldGetter(1, new IsMethodFieldGetter());
+	 * 
+	 * 注：IsMethodFieldGetter 系统已经提供，只是默认没有启用。该实现类通过调用
+	 *    target.isXxx() 方法获取 target.xxx 表达式的值，其中 xxx 字段必须是
+	 *    Boolean/boolean 类型
+	 */
+	public static void addFieldGetter(int index, FieldGetter fieldGetter) {
+		FieldKit.addFieldGetter(index, fieldGetter);
+	}
+	
+	public static void addFieldGetterToLast(FieldGetter fieldGetter) {
+		FieldKit.addFieldGetterToLast(fieldGetter);
+	}
+	
+	public static void addFieldGetterToFirst(FieldGetter fieldGetter) {
+		FieldKit.addFieldGetterToFirst(fieldGetter);
+	}
+	
+	public static void removeFieldGetter(Class<? extends FieldGetter> fieldGetterClass) {
+		FieldKit.removeFieldGetter(fieldGetterClass);
+	}
+	
+	public static void setToFastFieldKeyBuilder() {
+		FieldKeyBuilder.setToFastFieldKeyBuilder();
 	}
 }
 

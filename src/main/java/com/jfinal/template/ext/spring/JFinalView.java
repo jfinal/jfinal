@@ -16,6 +16,7 @@
 
 package com.jfinal.template.ext.spring;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -56,8 +57,20 @@ public class JFinalView extends AbstractTemplateView {
 			}
 		}
 		
-		OutputStream os = response.getOutputStream();
-		JFinalViewResolver.engine.getTemplate(getUrl()).render(model, os);
+		try {
+			OutputStream os = response.getOutputStream();
+			JFinalViewResolver.engine.getTemplate(getUrl()).render(model, os);
+		} catch (Exception e) {	// 捕获 ByteWriter.close() 抛出的 RuntimeException
+			Throwable cause = e.getCause();
+			if (cause instanceof IOException) {	// ClientAbortException、EofException 直接或间接继承自 IOException
+				String name = cause.getClass().getSimpleName();
+				if ("ClientAbortException".equals(name) || "EofException".equals(name)) {
+					return ;
+				}
+			}
+			
+			throw e;
+		}
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes", "deprecation"})

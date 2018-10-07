@@ -43,10 +43,10 @@ public class InterceptorManager {
 	private Interceptor[] globalServiceInters = NULL_INTERS;
 	
 	// 单例拦截器
-	private final ConcurrentHashMap<Class<? extends Interceptor>, Interceptor> singletonMap = new ConcurrentHashMap<Class<? extends Interceptor>, Interceptor>();
+	private final ConcurrentHashMap<Class<? extends Interceptor>, Interceptor> singletonMap = new ConcurrentHashMap<Class<? extends Interceptor>, Interceptor>(32, 0.5F);
 	
 	// 业务层 Class 级别拦截器缓存
-	private final ConcurrentHashMap<Class<?>, Interceptor[]> serviceClassInters = new ConcurrentHashMap<Class<?>, Interceptor[]>();
+	private final ConcurrentHashMap<Class<?>, Interceptor[]> serviceClassInters = new ConcurrentHashMap<Class<?>, Interceptor[]>(32, 0.5F);
 	
 	private static final InterceptorManager me = new InterceptorManager();
 	

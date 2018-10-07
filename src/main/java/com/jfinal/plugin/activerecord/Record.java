@@ -313,18 +313,22 @@ public class Record implements Serializable {
 	}
 	
 	public String toString() {
+		if (columns == null) {
+			return "{}";
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append('{');
 		boolean first = true;
 		for (Entry<String, Object> e : getColumns().entrySet()) {
-			if (first)
+			if (first) {
 				first = false;
-			else
+			} else {
 				sb.append(", ");
-			
+			}
 			Object value = e.getValue();
-			if (value != null)
+			if (value != null) {
 				value = value.toString();
+			}
 			sb.append(e.getKey()).append(':').append(value);
 		}
 		sb.append('}');
@@ -333,14 +337,14 @@ public class Record implements Serializable {
 	
 	public boolean equals(Object o) {
 		if (!(o instanceof Record))
-            return false;
+			return false;
 		if (o == this)
 			return true;
-		return this.getColumns().equals(((Record)o).getColumns());
+		return getColumns().equals(((Record)o).getColumns());
 	}
 	
 	public int hashCode() {
-		return getColumns() == null ? 0 : getColumns().hashCode();
+		return getColumns().hashCode();
 	}
 	
 	/**

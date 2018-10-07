@@ -5,7 +5,6 @@ Run Configurations... / Debug Configurations...
     Main class(required) ---> com.jfinal.core.JFinal
 
 2: Argument
-    Program arguments(optional) ---> WebRoot 80 / 5
-    VM arguments(optional) ---> -XX:PermSize=64M -XX:MaxPermSize=256M
+    Program arguments(optional) ---> src/main/webapp 80 / 5
 
 

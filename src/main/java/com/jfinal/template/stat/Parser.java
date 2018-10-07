@@ -90,7 +90,7 @@ public class Parser {
 		tokenList.add(EOF);
 		StatList statList = statList();
 		if (peek() != EOF) {
-			throw new ParseException("Syntax error: can not match " + peek().value(), getLocation(peek().row));
+			throw new ParseException("Syntax error: can not match \"#" + peek().value() + "\"", getLocation(peek().row));
 		}
 		return statList;
 	}

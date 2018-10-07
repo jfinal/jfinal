@@ -120,3 +120,4 @@ public class BlogInterceptor implements Interceptor {
 
 ![JFinal](http://www.jfinal.com/assets/img/jfinal_weixin_service_qr_code_150.jpg) 
 
+

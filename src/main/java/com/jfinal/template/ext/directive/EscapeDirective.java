@@ -52,11 +52,12 @@ public class EscapeDirective extends Directive {
 			case '>':
 				ret.append("&gt;");
 				break;
-			case '\"':
+			case '"':
 				ret.append("&quot;");
 				break;
 			case '\'':
-				ret.append("&apos;");	// IE 不支持 &apos; 考虑 &#39;
+				// ret.append("&apos;");	// IE 不支持 &apos; 考虑 &#39;
+				ret.append("&#39;");
 				break;
 			case '&':
 				ret.append("&amp;");

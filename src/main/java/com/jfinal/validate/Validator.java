@@ -502,9 +502,12 @@ public abstract class Validator implements Interceptor {
 	}
 	
 	private void validateStringValue(String value, int minLen, int maxLen, String errorKey, String errorMessage) {
-		if (StrKit.isBlank(value)) {
+		if (minLen > 0 && StrKit.isBlank(value)) {
 			addError(errorKey, errorMessage);
 			return ;
+		}
+		if (value == null) {		// 支持 minLen <= 0 且 value == null 的情况
+			value = "";
 		}
 		if (value.length() < minLen || value.length() > maxLen) {
 			addError(errorKey, errorMessage);
