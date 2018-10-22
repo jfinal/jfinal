@@ -252,8 +252,8 @@ public class MetaBuilder {
 			colMetaRs = dbMeta.getColumns(null, null, tableMeta.name, null);
 			while (colMetaRs.next()) {
 				ColumnMeta columnMeta = new ColumnMeta();
-				columnMeta.name = colMetaRs.getString(4);
-				columnMeta.remarks = colMetaRs.getString(12);
+				columnMeta.name = colMetaRs.getString("COLUMN_NAME");
+				columnMeta.remarks = colMetaRs.getString("REMARKS");
 				colmap.put(columnMeta.name, columnMeta);
 			}
 			
