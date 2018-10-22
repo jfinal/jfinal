@@ -236,7 +236,7 @@ public class AopFactory {
 	public <T> AopFactory addMapping(Class<T> from, String to) {
 		try {
 			@SuppressWarnings("unchecked")
-			Class<T> toClass = (Class<T>)Class.forName(to);
+			Class<T> toClass = (Class<T>)Class.forName(to.trim());
 			if (from.isAssignableFrom(toClass)) {
 				return addMapping(from, toClass);
 			} else {
