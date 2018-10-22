@@ -24,10 +24,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
 import javax.sql.DataSource;
+
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.dialect.Dialect;
 import com.jfinal.plugin.activerecord.dialect.MysqlDialect;
@@ -236,8 +240,33 @@ public class MetaBuilder {
 		Statement stm = conn.createStatement();
 		ResultSet rs = stm.executeQuery(sql);
 		ResultSetMetaData rsmd = rs.getMetaData();
+		int count = rsmd.getColumnCount();
 		
-		for (int i=1; i<=rsmd.getColumnCount(); i++) {
+		
+		DatabaseMetaData dbMeta = conn.getMetaData();
+		
+		
+		Map<String, ColumnMeta> colmap = new HashMap<>();
+		ResultSet colMetaRs = null;
+		try {
+			colMetaRs = dbMeta.getColumns(null, null, tableMeta.name, null);
+			while (colMetaRs.next()) {
+				ColumnMeta columnMeta = new ColumnMeta();
+				columnMeta.name = colMetaRs.getString(4);
+				columnMeta.remarks = colMetaRs.getString(12);
+				colmap.put(columnMeta.name, columnMeta);
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		} finally {
+			if (colMetaRs != null) {
+				colMetaRs.close();
+			}
+		}
+
+		
+		for (int i=1; i<=count; i++) {
 			ColumnMeta cm = new ColumnMeta();
 			cm.name = rsmd.getColumnName(i);
 			
@@ -282,6 +311,12 @@ public class MetaBuilder {
 			
 			// 构造字段对应的属性名 attrName
 			cm.attrName = buildAttrName(cm.name);
+			
+			ColumnMeta cm1 = colmap.get(cm.name);
+			if (cm1 != null) {
+				cm.remarks = cm1.remarks;
+			}
+
 			
 			tableMeta.columnMetas.add(cm);
 		}
