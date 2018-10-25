@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.jfinal.plugin.activerecord;
+package com.jfinal.plugin.activerecord.builder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

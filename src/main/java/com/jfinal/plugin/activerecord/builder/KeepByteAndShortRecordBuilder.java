@@ -26,7 +26,6 @@ import java.util.Map;
 
 import com.jfinal.plugin.activerecord.CPI;
 import com.jfinal.plugin.activerecord.Config;
-import com.jfinal.plugin.activerecord.JdbcKit;
 import com.jfinal.plugin.activerecord.ModelBuilder;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.RecordBuilder;
