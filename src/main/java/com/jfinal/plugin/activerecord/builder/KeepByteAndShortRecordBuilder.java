@@ -61,9 +61,9 @@ public class KeepByteAndShortRecordBuilder extends RecordBuilder {
 				int t = types[i];
 				if (t < Types.DATE) {
 					if (t == Types.TINYINT) {
-						value = JdbcKit.getByte(rs, i);
+						value = BuilderKit.getByte(rs, i);
 					} else if (t == Types.SMALLINT) {
-						value = JdbcKit.getShort(rs, i);
+						value = BuilderKit.getShort(rs, i);
 					} else {
 						value = rs.getObject(i);
 					}
