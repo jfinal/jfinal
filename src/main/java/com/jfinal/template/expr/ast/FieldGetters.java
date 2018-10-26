@@ -69,9 +69,9 @@ public class FieldGetters {
 			java.lang.reflect.Method[] methodArray = targetClass.getMethods();
 			for (java.lang.reflect.Method method : methodArray) {
 				if (method.getName().equals(getterName) && method.getParameterTypes().length == 0) {
-					if (MethodKit.isForbiddenMethod(getterName)) {
-						throw new RuntimeException("Forbidden method: " + getterName);
-					}
+					// if (MethodKit.isForbiddenMethod(getterName)) {
+						// throw new RuntimeException("Forbidden method: " + getterName);
+					// }
 					
 					return new GetterMethodFieldGetter(method);
 				}
