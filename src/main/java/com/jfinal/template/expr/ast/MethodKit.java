@@ -48,7 +48,8 @@ public class MethodKit {
 		Class<?>[] cs = {
 			System.class, Runtime.class, Thread.class, Class.class, ClassLoader.class, File.class,
 			Compiler.class, InheritableThreadLocal.class, Package.class, Process.class,
-			RuntimePermission.class, SecurityManager.class, ThreadGroup.class, ThreadLocal.class
+			RuntimePermission.class, SecurityManager.class, ThreadGroup.class, ThreadLocal.class,
+			java.lang.reflect.Method.class
 		};
 		for (Class<?> c : cs) {
 			forbiddenClasses.add(c);
@@ -59,7 +60,7 @@ public class MethodKit {
 	static {
 		String[] ms = {
 			"getClass", "getDeclaringClass", "forName", "newInstance", "getClassLoader",
-			"getMethod", "getMethods", "getField", "getFields",
+			"getMethod", "getMethods", "invoke", // "getField", "getFields",
 			"notify", "notifyAll", "wait",
 			"load", "exit", "loadLibrary", "halt",
 			"stop", "suspend", "resume", "setDaemon", "setPriority",
