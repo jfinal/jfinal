@@ -54,6 +54,7 @@ public class JFinalFilter implements Filter {
 		this.jfinalConfig = jfinalConfig;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void init(FilterConfig filterConfig) throws ServletException {
 		if (jfinalConfig == null) {
 			createJFinalConfig(filterConfig.getInitParameter("configClass"));
@@ -66,6 +67,8 @@ public class JFinalFilter implements Filter {
 		
 		constants = Config.getConstants();
 		encoding = constants.getEncoding();
+		
+		jfinalConfig.onStart();
 		jfinalConfig.afterJFinalStart();
 		
 		handler = jfinal.getHandler();		// 开始接受请求
@@ -97,10 +100,13 @@ public class JFinalFilter implements Filter {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void destroy() {
 		handler = null;		// 停止接受请求
 		
+		jfinalConfig.onStop();
 		jfinalConfig.beforeJFinalStop();
+		
 		jfinal.stopPlugins();
 	}
 	

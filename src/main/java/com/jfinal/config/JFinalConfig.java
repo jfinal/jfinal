@@ -62,12 +62,26 @@ public abstract class JFinalConfig {
 	/**
 	 * Call back after JFinal start
 	 */
-	public void afterJFinalStart(){}
+	public void onStart() {}
+	
+	/**
+	 * 为减少记忆成本、代码输入量以及输入手误的概率 afterJFinalStart() 已被 onStart() 取代，
+	 * 功能暂时保留仍然可用
+	 */
+	@Deprecated
+	public void afterJFinalStart() {}
 	
 	/**
 	 * Call back before JFinal stop
 	 */
-	public void beforeJFinalStop(){}
+	public void onStop() {}
+	
+	/**
+	 * 为减少记忆成本、代码输入量以及输入手误的概率 afterJFinalStart() 已被 onStop() 取代，
+	 * 功能暂时保留仍然可用
+	 */
+	@Deprecated
+	public void beforeJFinalStop() {}
 	
 	protected Prop prop = null;
 	
