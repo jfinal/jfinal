@@ -60,7 +60,7 @@ public class MethodKit {
 	static {
 		String[] ms = {
 			"getClass", "getDeclaringClass", "forName", "newInstance", "getClassLoader",
-			"getMethod", "getMethods", "invoke", // "getField", "getFields",
+			"invoke", // "getMethod", "getMethods", // "getField", "getFields",
 			"notify", "notifyAll", "wait",
 			"load", "exit", "loadLibrary", "halt",
 			"stop", "suspend", "resume", "setDaemon", "setPriority",
