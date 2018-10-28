@@ -99,12 +99,20 @@ public class MethodKit {
 		forbiddenClasses.add(clazz);
 	}
 	
+	public static void removeForbiddenClass(Class<?> clazz) {
+		forbiddenClasses.remove(clazz);
+	}
+	
 	public static boolean isForbiddenMethod(String methodName) {
 		return forbiddenMethods.contains(methodName);
 	}
 	
 	public static void addForbiddenMethod(String methodName) {
 		forbiddenMethods.add(methodName);
+	}
+	
+	public static void removeForbiddenMethod(String methodName) {
+		forbiddenMethods.remove(methodName);
 	}
 	
 	public static MethodInfo getMethod(Class<?> targetClass, String methodName, Object[] argValues) {
