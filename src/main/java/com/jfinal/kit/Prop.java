@@ -32,9 +32,10 @@ public class Prop {
 	protected Properties properties = null;
 	
 	/**
-	 * protected 构造方法便于子类扩展
+	 * 支持 new Prop().appendIfExists(...)
 	 */
-	protected Prop() {
+	public Prop() {
+		properties = new Properties();
 	}
 	
 	/**
@@ -156,7 +157,7 @@ public class Prop {
 	}
 	
 	public Prop appendIfExists(File file, String encoding) {
-		if (file.exists()) {
+		if (file.isFile()) {
 			append(new Prop(file, encoding));
 		}
 		return this;
