@@ -29,7 +29,7 @@ import com.jfinal.core.Const;
  */
 public class Prop {
 	
-	protected Properties properties = null;
+	protected Properties properties;
 	
 	/**
 	 * 支持 new Prop().appendIfExists(...)
@@ -219,6 +219,14 @@ public class Prop {
 	
 	public boolean containsKey(String key) {
 		return properties.containsKey(key);
+	}
+	
+	public boolean isEmpty() {
+		return properties.isEmpty();
+	}
+	
+	public boolean notEmpty() {
+		return ! properties.isEmpty();
 	}
 	
 	public Properties getProperties() {
