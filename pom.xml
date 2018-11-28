@@ -225,7 +225,7 @@
 					<additionalparam>-Xdoclint:none</additionalparam>
 					<encoding>UTF-8</encoding>
 					<outputDirectory>${basedir}</outputDirectory>
-					<reportOutputDirectory>${basedir}</reportOutputDirectory>
+					<reportOutputDirectory>${basedir}/doc</reportOutputDirectory>
 				</configuration>
 			</plugin>
 
