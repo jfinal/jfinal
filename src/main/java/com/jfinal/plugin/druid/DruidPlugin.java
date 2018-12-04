@@ -41,9 +41,9 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	private String driverClass = null;	// 由 "com.mysql.jdbc.Driver" 改为 null 让 druid 自动探测 driverClass 值
 	
 	// 初始连接池大小、最小空闲连接数、最大活跃连接数
-	private int initialSize = 10;
+	private int initialSize = 1;
 	private int minIdle = 10;
-	private int maxActive = 100;
+	private int maxActive = 32;
 	
 	// 配置获取连接等待超时的时间
 	private long maxWait = DruidDataSource.DEFAULT_MAX_WAIT;
