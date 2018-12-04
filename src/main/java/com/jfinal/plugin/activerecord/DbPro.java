@@ -926,11 +926,13 @@ public class DbPro {
 					result[pointer++] = r[k];
 			}
 		}
-		int[] r = pst.executeBatch();
-		if (isInTransaction == false)
-			conn.commit();
-		for (int k=0; k<r.length; k++)
-			result[pointer++] = r[k];
+		if (counter != 0) {
+			int[] r = pst.executeBatch();
+			if (isInTransaction == false)
+				conn.commit();
+			for (int k = 0; k < r.length; k++)
+				result[pointer++] = r[k];
+		}
 		DbKit.close(pst);
 		return result;
 	}
@@ -1012,11 +1014,13 @@ public class DbPro {
 					result[pointer++] = r[k];
 			}
 		}
-		int[] r = pst.executeBatch();
-		if (isInTransaction == false)
-			conn.commit();
-		for (int k=0; k<r.length; k++)
-			result[pointer++] = r[k];
+		if (counter != 0) {
+			int[] r = pst.executeBatch();
+			if (isInTransaction == false)
+				conn.commit();
+			for (int k = 0; k < r.length; k++)
+				result[pointer++] = r[k];
+		}
 		DbKit.close(pst);
 		return result;
 	}
@@ -1074,11 +1078,13 @@ public class DbPro {
 					result[pointer++] = r[k];
 			}
 		}
-		int[] r = st.executeBatch();
-		if (isInTransaction == false)
-			conn.commit();
-		for (int k=0; k<r.length; k++)
-			result[pointer++] = r[k];
+		if (counter != 0) {
+			int[] r = st.executeBatch();
+			if (isInTransaction == false)
+				conn.commit();
+			for (int k = 0; k < r.length; k++)
+				result[pointer++] = r[k];
+		}
 		DbKit.close(st);
 		return result;
 	}
