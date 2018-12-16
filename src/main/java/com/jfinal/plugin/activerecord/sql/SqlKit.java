@@ -48,6 +48,7 @@ public class SqlKit {
 		
 		engine = new Engine(configName);
 		engine.setDevMode(devMode);
+		engine.setToClassPathSourceFactory();
 		
 		engine.addDirective("namespace", NameSpaceDirective.class);
 		engine.addDirective("sql", SqlDirective.class);
