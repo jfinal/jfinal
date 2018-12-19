@@ -27,7 +27,7 @@ public class ErrorRender extends Render {
 	
 	protected static final String contentType = "text/html; charset=" + getEncoding();
 	
-	protected static final String version = "<center><a href='http://www.jfinal.com?f=ev-" + Const.JFINAL_VERSION + "' target='_blank'><b>Powered by JFinal " + Const.JFINAL_VERSION + "</b></a></center>";
+	protected static final String version = "<center><a href='https://gitee.com/jfinal/jfinal' target='_blank'><b>Powered by JFinal " + Const.JFINAL_VERSION + "</b></a></center>";
 	
 	protected static final String html404 = "<html><head><title>404 Not Found</title></head><body bgcolor='white'><center><h1>404 Not Found</h1></center><hr>" + version + "</body></html>";
 	protected static final String html500 = "<html><head><title>500 Internal Server Error</title></head><body bgcolor='white'><center><h1>500 Internal Server Error</h1></center><hr>" + version + "</body></html>";
