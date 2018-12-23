@@ -200,6 +200,10 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Switching data source, dialect and all config by configName
 	 */
 	public M use(String configName) {
+		if (attrs == DaoContainerFactory.daoMap) {
+			throw new RuntimeException("dao 只允许调用查询方法");
+		}
+		
 		this.configName = configName;
 		return (M)this;
 	}
