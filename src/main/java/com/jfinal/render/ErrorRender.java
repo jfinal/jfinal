@@ -52,6 +52,7 @@ public class ErrorRender extends Render {
 			return;
 		}
 		
+		// render with html content
 		try {
 			response.setContentType(contentType);
 			response.getOutputStream().write(getErrorHtml());
