@@ -49,7 +49,7 @@ public class TemplateRender extends Render {
 	
 	public void render() {
 		response.setContentType(getContentType());
-        
+		
 		Map<Object, Object> data = new HashMap<Object, Object>();
 		for (Enumeration<String> attrs=request.getAttributeNames(); attrs.hasMoreElements();) {
 			String attrName = attrs.nextElement();

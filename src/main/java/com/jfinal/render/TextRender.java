@@ -57,7 +57,7 @@ public class TextRender extends Render {
 			
 			writer = response.getWriter();
 			writer.write(text);
-			writer.flush();
+			// writer.flush();
 		} catch (IOException e) {
 			throw new RenderException(e);
 		}
