@@ -20,5 +20,19 @@ package com.jfinal.validate;
  * ValidateException support short circuit implementation.
  */
 public class ValidateException extends RuntimeException {
-	private static final long serialVersionUID = 20920496215941871L;
+	
+	private static final long serialVersionUID = -6240972331557944766L;
+	
+	/**
+	 * 异常构造函数会调用 fillInStackTrace() 构建整个调用栈，消耗较大
+	 * 而 ValidateException 无需使用调用栈信息，覆盖此方法用于提升性能
+	 */
+	@Override
+	public Throwable fillInStackTrace() {
+		return this;
+	}
 }
+
+
+
+
