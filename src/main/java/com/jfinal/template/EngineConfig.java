@@ -83,6 +83,7 @@ public class EngineConfig {
 	 * Add shared function with file
 	 */
 	public void addSharedFunction(String fileName) {
+		fileName = fileName.replaceAll("\\\\", "/");
 		// FileSource fileSource = new FileSource(baseTemplatePath, fileName, encoding);
 		ISource source = sourceFactory.getSource(baseTemplatePath, fileName, encoding);
 		doAddSharedFunction(source, fileName);
@@ -261,6 +262,7 @@ public class EngineConfig {
 			throw new IllegalArgumentException("baseTemplatePath can not be blank");
 		}
 		baseTemplatePath = baseTemplatePath.trim();
+		baseTemplatePath = baseTemplatePath.replaceAll("\\\\", "/");
 		if (baseTemplatePath.length() > 1) {
 			if (baseTemplatePath.endsWith("/") || baseTemplatePath.endsWith("\\")) {
 				baseTemplatePath = baseTemplatePath.substring(0, baseTemplatePath.length() - 1);

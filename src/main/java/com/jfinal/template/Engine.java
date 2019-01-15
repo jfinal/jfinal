@@ -520,8 +520,8 @@ public class Engine {
 	 * Engine.addFieldGetter(1, new IsMethodFieldGetter());
 	 * 
 	 * 注：IsMethodFieldGetter 系统已经提供，只是默认没有启用。该实现类通过调用
-	 *    target.isXxx() 方法获取 target.xxx 表达式的值，其中 xxx 字段必须是
-	 *    Boolean/boolean 类型
+	 *    target.isXxx() 方法获取 target.xxx 表达式的值，其中 isXxx() 返回值
+	 *    必须是 Boolean/boolean 类型才会被调用
 	 */
 	public static void addFieldGetter(int index, FieldGetter fieldGetter) {
 		FieldKit.addFieldGetter(index, fieldGetter);
