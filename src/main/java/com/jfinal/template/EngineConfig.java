@@ -264,7 +264,7 @@ public class EngineConfig {
 		baseTemplatePath = baseTemplatePath.trim();
 		baseTemplatePath = baseTemplatePath.replace("\\", "/");
 		if (baseTemplatePath.length() > 1) {
-			if (baseTemplatePath.endsWith("/") || baseTemplatePath.endsWith("\\")) {
+			if (baseTemplatePath.endsWith("/")) {
 				baseTemplatePath = baseTemplatePath.substring(0, baseTemplatePath.length() - 1);
 			}
 		}
