@@ -37,7 +37,7 @@ public abstract class Routes {
 	private List<Route> routeItemList = new ArrayList<Route>();
 	private List<Interceptor> injectInters = new ArrayList<Interceptor>();
 	
-	private boolean clearAfterMapping = true;
+	private boolean clearAfterMapping = false;
 	
 	/**
 	 * Implement this method to add route, add interceptor and set baseViewPath
