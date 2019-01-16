@@ -36,7 +36,7 @@ public class ShortGetter extends ParaGetter<Short> {
 			return to(value.trim());
 		}
 		catch (Exception e) {
-			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),  "Can not parse the parameter \"" + value + "\" to Short value.");
+			throw new ActionException(400, RenderManager.me().getRenderFactory().getErrorRender(400),  "Can not parse the parameter \"" + value + "\" to Short value.");
 		}
 	}
 

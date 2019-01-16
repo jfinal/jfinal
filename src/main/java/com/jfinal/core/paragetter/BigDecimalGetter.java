@@ -37,7 +37,7 @@ public class BigDecimalGetter extends ParaGetter<BigDecimal> {
 				return this.getDefaultValue();
 			return to(value.trim());
 		} catch (Exception e) {
-			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
+			throw new ActionException(400, RenderManager.me().getRenderFactory().getErrorRender(400),
 					"Can not parse the parameter \"" + value + "\" to BigDecimal value.");
 		}
 	}
