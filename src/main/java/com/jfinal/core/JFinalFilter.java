@@ -112,20 +112,14 @@ public class JFinalFilter implements Filter {
 	
 	protected void createJFinalConfig(String configClass) {
 		if (configClass == null) {
-			throw new RuntimeException("Please set configClass parameter of JFinalFilter in web.xml");
+			throw new RuntimeException("The configClass parameter of JFinalFilter can not be blank");
 		}
 		
-		Object temp = null;
 		try {
-			temp = Class.forName(configClass).newInstance();
-		} catch (Exception e) {
-			throw new RuntimeException("Can not create instance of class: " + configClass, e);
-		}
-		
-		if (temp instanceof JFinalConfig) {
+			Object temp = Class.forName(configClass).newInstance();
 			jfinalConfig = (JFinalConfig)temp;
-		} else {
-			throw new RuntimeException("Can not create instance of class: " + configClass + ". Please check the config in web.xml");
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException("Can not create instance of class: " + configClass, e);
 		}
 	}
 	
