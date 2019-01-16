@@ -92,9 +92,9 @@ public class ParaProcessorBuilder {
 	private IParaGetter<?> createParaGetter(Class<? extends Controller> controllerClass, Method method,
 			Parameter p) {
 		if(!p.isNamePresent()) {
-			log.warn("You should config compiler argument \"-parameters\" for parameter injection of action : " + 
-					controllerClass.getName() + "." + method.getName() + "(...)" +
-					"\nVisit http://www.jfinal.com/doc/3-3 for details \n");
+			log.warn("You should config compiler argument \"-parameters\" for parameter injection of action : " +
+					controllerClass.getName() + "." + method.getName() + "(...) \n" +
+					"Visit http://www.jfinal.com/doc/3-3 for details \n");
 		}
 		String parameterName = p.getName();
 		String defaultValue = null;
