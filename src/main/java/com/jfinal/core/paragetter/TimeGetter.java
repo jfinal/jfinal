@@ -16,11 +16,12 @@
 package com.jfinal.core.paragetter;
 
 import java.text.ParseException;
-
 import com.jfinal.core.Action;
+import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
 import com.jfinal.core.converter.Converters.TimeConverter;
 import com.jfinal.kit.StrKit;
+import com.jfinal.render.RenderManager;
 
 public class TimeGetter extends ParaGetter<java.sql.Time> {
 	private static TimeConverter converter = new TimeConverter();
@@ -45,7 +46,8 @@ public class TimeGetter extends ParaGetter<java.sql.Time> {
 		try {
 			return converter.convert(v);
 		} catch (ParseException e) {
-			return null;
+			// return null;
+			throw new ActionException(400, RenderManager.me().getRenderFactory().getErrorRender(400),  "Can not parse the parameter \"" + v + "\" to java.sql.Time");
 		}
 	}
 

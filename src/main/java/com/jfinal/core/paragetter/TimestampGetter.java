@@ -16,11 +16,12 @@
 package com.jfinal.core.paragetter;
 
 import java.text.ParseException;
-
 import com.jfinal.core.Action;
+import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
 import com.jfinal.core.converter.Converters.TimestampConverter;
 import com.jfinal.kit.StrKit;
+import com.jfinal.render.RenderManager;
 
 public class TimestampGetter extends ParaGetter<java.sql.Timestamp> {
 	private static TimestampConverter converter = new TimestampConverter();
@@ -45,7 +46,8 @@ public class TimestampGetter extends ParaGetter<java.sql.Timestamp> {
 		try {
 			return converter.convert(v);
 		} catch (ParseException e) {
-			return null;
+			// return null;
+			throw new ActionException(400, RenderManager.me().getRenderFactory().getErrorRender(400),  "Can not parse the parameter \"" + v + "\" to java.sql.Timestamp");
 		}
 	}
 
