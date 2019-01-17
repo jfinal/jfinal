@@ -16,9 +16,11 @@ public abstract class #(tableMeta.baseModelName)<M extends #(tableMeta.baseModel
 #set(b = generateChainSetter)
 #for(cm : tableMeta.columnMetas)
 	#set(argName = javaKeyword.contains(cm.attrName) ? '_' + cm.attrName : cm.attrName)
+	#if (cm.remarks)
 	/**
 	 * #(cm.remarks)
 	 */
+	 #end
 	public #(b ? 'M' : 'void') set#(firstCharToUpperCase(cm.attrName))(#(cm.javaType) #(argName)) {
 		set("#(cm.name)", #(argName));
 		#if (b)
@@ -26,9 +28,11 @@ public abstract class #(tableMeta.baseModelName)<M extends #(tableMeta.baseModel
 		#end
 	}
 	
+	#if (cm.remarks)
 	/**
 	 * #(cm.remarks)
 	 */
+	 #end
 	#set(getterOfModel = getterTypeMap.get(cm.javaType))
 	#if (isBlank(getterOfModel))
 		#set(getterOfModel = 'get')
