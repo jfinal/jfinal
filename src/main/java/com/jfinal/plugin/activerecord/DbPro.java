@@ -458,7 +458,7 @@ public class DbPro {
 	public boolean delete(String tableName, String primaryKey, Record record) {
 		String[] pKeys = primaryKey.split(",");
 		if (pKeys.length <= 1) {
-			Object t = record.get(primaryKey);	// 引入中间变量避免 JDK 8 传参类型有误
+			Object t = record.get(primaryKey);	// 引入中间变量避免 JDK 8 传参有误
 			return deleteById(tableName, primaryKey, t);
 		}
 		
@@ -481,7 +481,7 @@ public class DbPro {
 	 */
 	public boolean delete(String tableName, Record record) {
 		String defaultPrimaryKey = config.dialect.getDefaultPrimaryKey();
-		Object t = record.get(defaultPrimaryKey);	// 引入中间变量避免 JDK 8 传参类型有误
+		Object t = record.get(defaultPrimaryKey);	// 引入中间变量避免 JDK 8 传参有误
 		return deleteById(tableName, defaultPrimaryKey, t);
 	}
 	
