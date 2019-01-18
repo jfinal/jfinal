@@ -190,6 +190,20 @@ public class Ret extends HashMap {
 		return this;
 	}
 	
+	public Ret setIfNotBlank(Object key, String value) {
+		if (StrKit.notBlank(value)) {
+			set(key, value);
+		}
+		return this;
+	}
+	
+	public Ret setIfNotNull(Object key, Object value) {
+		if (value != null) {
+			set(key, value);
+		}
+		return this;
+	}
+	
 	public Ret set(Map map) {
 		super.putAll(map);
 		return this;
