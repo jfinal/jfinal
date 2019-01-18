@@ -56,7 +56,7 @@ public class Okv extends LinkedHashMap {
 		return this;
 	}
 	
-	public Okv setIfNotNull(Object key, String value) {
+	public Okv setIfNotNull(Object key, Object value) {
 		if (value != null) {
 			set(key, value);
 		}
