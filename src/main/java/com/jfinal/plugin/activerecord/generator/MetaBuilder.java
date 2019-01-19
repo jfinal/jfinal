@@ -29,9 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.sql.DataSource;
-
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.dialect.Dialect;
 import com.jfinal.plugin.activerecord.dialect.MysqlDialect;
@@ -53,11 +51,17 @@ public class MetaBuilder {
 	
 	protected TypeMapping typeMapping = new TypeMapping();
 	
+	protected boolean generateRemarks = false;	// 是否生成备注
+	
 	public MetaBuilder(DataSource dataSource) {
 		if (dataSource == null) {
 			throw new IllegalArgumentException("dataSource can not be null.");
 		}
 		this.dataSource = dataSource;
+	}
+	
+	public void setGenerateRemarks(boolean generateRemarks) {
+		this.generateRemarks = generateRemarks;
 	}
 	
 	public void setDialect(Dialect dialect) {
@@ -240,33 +244,32 @@ public class MetaBuilder {
 		Statement stm = conn.createStatement();
 		ResultSet rs = stm.executeQuery(sql);
 		ResultSetMetaData rsmd = rs.getMetaData();
-		int count = rsmd.getColumnCount();
+		int columnCount = rsmd.getColumnCount();
 		
 		
-		DatabaseMetaData dbMeta = conn.getMetaData();
-		
-		
-		Map<String, ColumnMeta> colmap = new HashMap<>();
-		ResultSet colMetaRs = null;
-		try {
-			colMetaRs = dbMeta.getColumns(null, null, tableMeta.name, null);
-			while (colMetaRs.next()) {
-				ColumnMeta columnMeta = new ColumnMeta();
-				columnMeta.name = colMetaRs.getString("COLUMN_NAME");
-				columnMeta.remarks = colMetaRs.getString("REMARKS");
-				colmap.put(columnMeta.name, columnMeta);
-			}
-			
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		} finally {
-			if (colMetaRs != null) {
-				colMetaRs.close();
+		Map<String, ColumnMeta> columnMetaMap = new HashMap<>();
+		if (generateRemarks) {
+			DatabaseMetaData dbMeta = conn.getMetaData();
+			ResultSet colMetaRs = null;
+			try {
+				colMetaRs = dbMeta.getColumns(null, null, tableMeta.name, null);
+				while (colMetaRs.next()) {
+					ColumnMeta columnMeta = new ColumnMeta();
+					columnMeta.name = colMetaRs.getString("COLUMN_NAME");
+					columnMeta.remarks = colMetaRs.getString("REMARKS");
+					columnMetaMap.put(columnMeta.name, columnMeta);
+				}
+			} catch (Exception e) {
+				System.out.println("无法生成 REMARKS");
+			} finally {
+				if (colMetaRs != null) {
+					colMetaRs.close();
+				}
 			}
 		}
-
 		
-		for (int i=1; i<=count; i++) {
+		
+		for (int i=1; i<=columnCount; i++) {
 			ColumnMeta cm = new ColumnMeta();
 			cm.name = rsmd.getColumnName(i);
 			
@@ -312,11 +315,10 @@ public class MetaBuilder {
 			// 构造字段对应的属性名 attrName
 			cm.attrName = buildAttrName(cm.name);
 			
-			ColumnMeta cm1 = colmap.get(cm.name);
-			if (cm1 != null) {
-				cm.remarks = cm1.remarks;
+			// 备注字段赋值
+			if (generateRemarks && columnMetaMap.containsKey(cm.name)) {
+				cm.remarks = columnMetaMap.get(cm.name).remarks;
 			}
-
 			
 			tableMeta.columnMetas.add(cm);
 		}
