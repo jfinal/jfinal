@@ -1408,7 +1408,7 @@ public abstract class Controller {
 	
 	// --- 以下是 getPara 系列中获取 urlPara 的缩短版本
 	
-	/* 为了让继承类可以使用名为 get 的 action 注掉此方法，可使用 get(0) 来实现本方法的功能
+	/* 为了让继承类可以使用名为 get 的 action 注掉此方法，可使用 get(-1) 来实现本方法的功能
 	public String get() {
 		return getPara();
 	} */
