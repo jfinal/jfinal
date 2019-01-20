@@ -1302,6 +1302,11 @@ public class DbPro {
     	String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
     	return doPaginate(pageNumber, pageSize, null, sqls[0], sqls[1], sqlPara.getPara());
     }
+	
+	public Page<Record> paginate(int pageNumber, int pageSize, boolean isGroupBySql, SqlPara sqlPara) {
+		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
+		return doPaginate(pageNumber, pageSize, isGroupBySql, sqls[0], sqls[1], sqlPara.getPara());
+	}
 }
 
 

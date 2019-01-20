@@ -686,6 +686,10 @@ public class Db {
     public static Page<Record> paginate(int pageNumber, int pageSize, SqlPara sqlPara) {
     	return MAIN.paginate(pageNumber, pageSize, sqlPara);
     }
+	
+	public static Page<Record> paginate(int pageNumber, int pageSize, boolean isGroupBySql, SqlPara sqlPara) {
+		return MAIN.paginate(pageNumber, pageSize, isGroupBySql, sqlPara);
+	}
 }
 
 
