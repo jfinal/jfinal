@@ -1285,7 +1285,15 @@ public class DbPro {
     public SqlPara getSqlPara(String key, Object... paras) {
     	return config.getSqlKit().getSqlPara(key, paras);
     }
-    
+	
+	public SqlPara getSqlParaByString(String content, Map data) {
+		return config.getSqlKit().getSqlParaByString(content, data);
+	}
+	
+	public SqlPara getSqlParaByString(String content, Object... paras) {
+		return config.getSqlKit().getSqlParaByString(content, paras);
+	}
+	
     public List<Record> find(SqlPara sqlPara) {
     	return find(sqlPara.getSql(), sqlPara.getPara());
     }

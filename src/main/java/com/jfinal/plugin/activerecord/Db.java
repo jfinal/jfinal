@@ -670,7 +670,15 @@ public class Db {
     public static SqlPara getSqlPara(String key, Object... paras) {
     	return MAIN.getSqlPara(key, paras);
     }
-    
+	
+	public static SqlPara getSqlParaByString(String content, Map data) {
+		return MAIN.getSqlParaByString(content, data);
+	}
+	
+	public static SqlPara getSqlParaByString(String content, Object... paras) {
+		return MAIN.getSqlParaByString(content, paras);
+	}
+	
     public static List<Record> find(SqlPara sqlPara) {
     	return MAIN.find(sqlPara);
     }

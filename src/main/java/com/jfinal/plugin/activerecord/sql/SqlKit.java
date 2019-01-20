@@ -218,9 +218,6 @@ public class SqlKit {
 	 */
 	public SqlPara getSqlParaByString(String content, Map data) {
 		Template template = engine.getTemplateByString(content);
-		if (template == null) {
-			return null;
-		}
 		
 		SqlPara sqlPara = new SqlPara();
 		data.put(SQL_PARA_KEY, sqlPara);
@@ -242,9 +239,6 @@ public class SqlKit {
 	 */
 	public SqlPara getSqlParaByString(String content, Object... paras) {
 		Template template = engine.getTemplateByString(content);
-		if (template == null) {
-			return null;
-		}
 		
 		SqlPara sqlPara = new SqlPara();
 		Map data = new HashMap();
