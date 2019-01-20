@@ -477,7 +477,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		
 		// --------
 		String sql = config.dialect.forPaginate(pageNumber, pageSize, findSql);
-		List<M> list = find(conn, sql, paras);
+		List<M> list = find(config, conn, sql, paras);
 		return new Page<M>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
@@ -640,8 +640,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	/**
 	 * Find model.
 	 */
-	private List<M> find(Connection conn, String sql, Object... paras) throws Exception {
-		Config config = _getConfig();
+	private List<M> find(Config config, Connection conn, String sql, Object... paras) throws Exception {
 		PreparedStatement pst = conn.prepareStatement(sql);
 		config.dialect.fillStatement(pst, paras);
 		ResultSet rs = pst.executeQuery();
@@ -661,7 +660,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
-			return find(conn, sql, paras);
+			return find(config, conn, sql, paras);
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
