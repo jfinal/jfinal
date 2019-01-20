@@ -44,6 +44,10 @@ public class PostgreSqlDialect extends Dialect {
 		return "select * from \"" + tableName + "\" where 1 = 2";
 	}
 	
+	public String forFindAll(String tableName) {
+		return "select * from \"" + tableName + "\"";
+	}
+	
 	public void forModelSave(Table table, Map<String, Object> attrs, StringBuilder sql, List<Object> paras) {
 		sql.append("insert into \"").append(table.getName()).append("\"(");
 		StringBuilder temp = new StringBuilder(") values(");
