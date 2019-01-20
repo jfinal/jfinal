@@ -210,7 +210,7 @@ public class SqlKit {
 	 * 
 	 * <pre>
 	 * 例子：
-	 *     String content = "select * from user where id = #para(id)"
+	 *     String content = "select * from user where id = #para(id)";
 	 *     SqlPara sqlPara = getSqlParaByString(content, Kv.by("id", 123));
 	 * 
 	 * 特别注意：content 参数中不能包含 #sql 指令
@@ -234,7 +234,7 @@ public class SqlKit {
 	 * 
 	 * <pre>
 	 * 例子：
-	 *     String content = "select * from user where id = #para(0)"
+	 *     String content = "select * from user where id = #para(0)";
 	 *     SqlPara sqlPara = getSqlParaByString(content, 123);
 	 * 
 	 * 特别注意：content 参数中不能包含 #sql 指令
