@@ -279,6 +279,10 @@ public class Db {
 		return MAIN.find(sql);
 	}
 	
+	public static List<Record> findAll(String tableName) {
+		return MAIN.findAll(tableName);
+	}
+	
 	/**
 	 * Find first record. I recommend add "limit 1" in your sql.
 	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
