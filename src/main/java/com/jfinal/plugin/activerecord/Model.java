@@ -649,14 +649,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		return result;
 	}
 	
-	/**
-	 * Find model.
-	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
-	 * @param paras the parameters of sql
-	 * @return the list of Model
-	 */
-	public List<M> find(String sql, Object... paras) {
-		Config config = _getConfig();
+	protected List<M> find(Config config, String sql, Object... paras) {
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
@@ -669,10 +662,26 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	/**
+	 * Find model.
+	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
+	 * @param paras the parameters of sql
+	 * @return the list of Model
+	 */
+	public List<M> find(String sql, Object... paras) {
+		return find(_getConfig(), sql, paras);
+	}
+	
+	/**
 	 * @see #find(String, Object...)
 	 */
 	public List<M> find(String sql) {
 		return find(sql, NULL_PARA_ARRAY);
+	}
+	
+	public List<M> findAll() {
+		Config config = _getConfig();
+		String sql = config.dialect.forFindAll(_getTable().getName());
+		return find(config, sql, NULL_PARA_ARRAY);
 	}
 	
 	/**
