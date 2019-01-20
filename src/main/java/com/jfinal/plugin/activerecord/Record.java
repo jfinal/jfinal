@@ -210,7 +210,7 @@ public class Record implements Serializable {
 	
 	public Object getObject(String column, Object defaultValue) {
 		Object result = getColumns().get(column);
-		return (result != null ? result : defaultValue);
+		return result != null ? result : defaultValue;
 	}
 	
 	/**
