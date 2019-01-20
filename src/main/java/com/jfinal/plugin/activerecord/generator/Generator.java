@@ -108,6 +108,16 @@ public class Generator {
 		}
 	}
 	
+	/**
+	 * 配置是否生成字段备注，生成的备注会体现在 Base Model 之中
+	 * 默认值为 false
+	 */
+	public void setGenerateRemarks(boolean generateRemarks) {
+		if (metaBuilder != null) {
+			metaBuilder.setGenerateRemarks(generateRemarks);
+		}
+	}
+	
 	public void setTypeMapping(TypeMapping typeMapping) {
 		this.metaBuilder.setTypeMapping(typeMapping);
 	}
