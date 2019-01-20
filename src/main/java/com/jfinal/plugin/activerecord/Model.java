@@ -754,8 +754,9 @@ public abstract class Model<M extends Model> implements Serializable {
 		if (table.getPrimaryKey().length != idValues.length)
 			throw new IllegalArgumentException("id values error, need " + table.getPrimaryKey().length + " id value");
 		
-		String sql = _getConfig().dialect.forModelFindById(table, columns);
-		List<M> result = find(sql, idValues);
+		Config config = _getConfig();
+		String sql = config.dialect.forModelFindById(table, columns);
+		List<M> result = find(config, sql, idValues);
 		return result.size() > 0 ? result.get(0) : null;
 	}
 	
@@ -906,10 +907,11 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return the list of Model
 	 */
 	public List<M> findByCache(String cacheName, Object key, String sql, Object... paras) {
-		ICache cache = _getConfig().getCache();
+		Config config = _getConfig();
+		ICache cache = config.getCache();
 		List<M> result = cache.get(cacheName, key);
 		if (result == null) {
-			result = find(sql, paras);
+			result = find(config, sql, paras);
 			cache.put(cacheName, key, result);
 		}
 		return result;
