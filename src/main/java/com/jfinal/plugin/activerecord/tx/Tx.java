@@ -81,7 +81,13 @@ public class Tx implements Interceptor {
 			LogKit.logNothing(e);
 		} catch (Throwable t) {
 			if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}
-			throw t instanceof RuntimeException ? (RuntimeException)t : new ActiveRecordException(t);
+			
+			// 支持在 controller 中 try catch 的 catch 块中使用 render(...) 并 throw e，实现灵活控制 render
+			if (inv.isActionInvocation() && inv.getController().getRender() != null) {
+				LogKit.error(t.getMessage(), t);
+			} else {
+				throw t instanceof RuntimeException ? (RuntimeException)t : new ActiveRecordException(t);
+			}
 		}
 		finally {
 			try {
