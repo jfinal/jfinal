@@ -27,17 +27,28 @@ public class EvictInterceptor implements Interceptor {
 	final public void intercept(Invocation inv) {
 		inv.invoke();
 		
-		CacheKit.removeAll(buildCacheName(inv));
+		// @CacheName 注解中的多个 cacheName 可用逗号分隔
+		String[] cacheNames = getCacheName(inv).split(",");
+		if (cacheNames.length == 1) {
+			CacheKit.removeAll(cacheNames[0].trim());
+		} else {
+			for (String cn : cacheNames) {
+				CacheKit.removeAll(cn.trim());
+			}
+		}
 	}
 	
-	private String buildCacheName(Invocation inv) {
+	private String getCacheName(Invocation inv) {
 		CacheName cacheName = inv.getMethod().getAnnotation(CacheName.class);
-		if (cacheName != null)
+		if (cacheName != null) {
 			return cacheName.value();
+		}
 		
 		cacheName = inv.getController().getClass().getAnnotation(CacheName.class);
-		if (cacheName == null)
+		if (cacheName == null) {
 			throw new RuntimeException("EvictInterceptor need CacheName annotation in controller.");
+		}
+		
 		return cacheName.value();
 	}
 }
