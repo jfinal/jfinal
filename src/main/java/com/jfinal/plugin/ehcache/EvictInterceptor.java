@@ -24,7 +24,7 @@ import com.jfinal.aop.Invocation;
  */
 public class EvictInterceptor implements Interceptor {
 	
-	final public void intercept(Invocation inv) {
+	public void intercept(Invocation inv) {
 		inv.invoke();
 		
 		// @CacheName 注解中的多个 cacheName 可用逗号分隔
@@ -41,7 +41,7 @@ public class EvictInterceptor implements Interceptor {
 	/**
 	 * 获取 @CacheName 注解配置的 cacheName，注解可配置在方法和类之上
 	 */
-	private String getCacheName(Invocation inv) {
+	protected String getCacheName(Invocation inv) {
 		CacheName cacheName = inv.getMethod().getAnnotation(CacheName.class);
 		if (cacheName != null) {
 			return cacheName.value();
