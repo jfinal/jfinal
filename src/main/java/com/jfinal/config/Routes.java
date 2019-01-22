@@ -122,6 +122,10 @@ public abstract class Routes {
 				InterceptorManager.NULL_INTERS;
 	}
 	
+	public static Set<String> controllerKeySet() {
+		return controllerKeySet;
+	}
+	
 	/**
 	 * 配置是否在路由映射完成之后清除内部数据，以回收内存，默认值为 true.
 	 * 
