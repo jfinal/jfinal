@@ -122,7 +122,7 @@ public abstract class Routes {
 		return routesList;
 	}
 	
-	public static Set<String> controllerKeySet() {
+	public static Set<String> getControllerKeySet() {
 		return controllerKeySet;
 	}
 	
