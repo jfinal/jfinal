@@ -108,10 +108,6 @@ public abstract class Routes {
 		return baseViewPath;
 	}
 	
-	public static List<Routes> getRoutesList() {
-		return routesList;
-	}
-	
 	public List<Route> getRouteItemList() {
 		return routeItemList;
 	}
@@ -120,6 +116,10 @@ public abstract class Routes {
 		return injectInters.size() > 0 ?
 				injectInters.toArray(new Interceptor[injectInters.size()]) :
 				InterceptorManager.NULL_INTERS;
+	}
+	
+	public static List<Routes> getRoutesList() {
+		return routesList;
 	}
 	
 	public static Set<String> controllerKeySet() {
