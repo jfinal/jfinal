@@ -48,20 +48,19 @@ public class Page<T> implements Serializable {
 		this.totalRow = totalRow;
 	}
 	
-	/* 注掉此方法是因为 fastjson 在反序列化时无法注入属性值
-	 * 新版本 fastjson 在 "无默认构造方法" 时不会抛出异常，并能正确注入属性值
-	 * 
-	 * 老版本 fastjson 在 "无默认构造方法" 时会抛出: default constructor not found
-	 * 并且仍然无法注入属性值
 	public Page() {
 		
-	} */
+	}
 	
 	/**
 	 * Return list of this page.
 	 */
 	public List<T> getList() {
 		return list;
+	}
+	
+	public void setList(List<T> list) {
+		this.list = list;
 	}
 	
 	/**
@@ -71,11 +70,19 @@ public class Page<T> implements Serializable {
 		return pageNumber;
 	}
 	
+	public void setPageNumber(int pageNumber) {
+		this.pageNumber = pageNumber;
+	}
+	
 	/**
 	 * Return page size.
 	 */
 	public int getPageSize() {
 		return pageSize;
+	}
+	
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
 	}
 	
 	/**
@@ -85,11 +92,19 @@ public class Page<T> implements Serializable {
 		return totalPage;
 	}
 	
+	public void setTotalPage(int totalPage) {
+		this.totalPage = totalPage;
+	}
+	
 	/**
 	 * Return total row.
 	 */
 	public int getTotalRow() {
 		return totalRow;
+	}
+	
+	public void setTotalRow(int totalRow) {
+		this.totalRow = totalRow;
 	}
 	
 	public boolean isFirstPage() {
