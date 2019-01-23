@@ -70,6 +70,7 @@ public class CallDirective extends Directive {
 		}
 		
 		funcNameExpr = exprList.getExpr(index++);
+		
 		ArrayList<Expr> list = new ArrayList<Expr>();
 		for (int i=index; i<len; i++) {
 			list.add(exprList.getExpr(i));
