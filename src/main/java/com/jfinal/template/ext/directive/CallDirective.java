@@ -84,7 +84,7 @@ public class CallDirective extends Directive {
 			if (nullSafe) {
 				return ;
 			}
-			throw new TemplateException("模板函数不存在 : " + funcNameValue, location);
+			throw new TemplateException("模板函数名为 null", location);
 		}
 		
 		if (!(funcNameValue instanceof String)) {
@@ -97,7 +97,7 @@ public class CallDirective extends Directive {
 			if (nullSafe) {
 				return ;
 			}
-			throw new TemplateException("模板函数不存在 : " + funcNameValue, location);
+			throw new TemplateException("模板函数未找到 : " + funcNameValue, location);
 		}
 		
 		func.call(env, scope, paraExpr, writer);
