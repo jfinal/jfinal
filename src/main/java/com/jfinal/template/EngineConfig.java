@@ -73,9 +73,9 @@ public class EngineConfig {
 		addDirective("string", StringDirective.class);
 		addDirective("random", RandomDirective.class);
 		addDirective("number", NumberDirective.class);
+		addDirective("call", CallDirective.class);
 		
 		// Add official shared method of Template Engine
-		// addSharedMethod(new Json());
 		addSharedMethod(new SharedMethodLib());
 	}
 	

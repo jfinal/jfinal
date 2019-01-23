@@ -19,6 +19,8 @@ package com.jfinal.template.ext.directive;
 import java.util.ArrayList;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
+import com.jfinal.template.TemplateException;
+import com.jfinal.template.expr.ast.Const;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.io.Writer;
@@ -35,8 +37,11 @@ import com.jfinal.template.stat.ast.Define;
  *     #call(funcName, p1, p2, ..., pn)
  *     其中 funcName，为函数名，p1、p2、pn 为被调用函数所使用的参数
  * 
- * 注意：该指令并非默认指令，需要使用 Engine.addDirective("call", CallDirective.class)
- *      配置后才可以使用
+ * 
+ * 如果希望模板函数不存在时忽略其调用，添加常量值 true 在第一个参数位置即可
+ * 例如：
+ *     #call(true, funcName, p1, p2, ..., pn)
+ * 
  * 
  * TODO 后续优化看一下 ast.Call.java
  */
@@ -45,27 +50,55 @@ public class CallDirective extends Directive {
 	protected Expr funcNameExpr;
 	protected ExprList paraExpr;
 	
+	protected boolean nullSafe = false;		// 是否支持函数名不存在时跳过
+	
 	public void setExprList(ExprList exprList) {
-		if (exprList.length() == 0) {
+		int len = exprList.length();
+		if (len == 0) {
 			throw new ParseException("模板函数名不能缺失", location);
 		}
 		
-		this.funcNameExpr = exprList.getExpr(0);
+		int index = 0;
+		Expr expr = exprList.getExpr(index);
+		if (expr instanceof Const && ((Const)expr).isBoolean()) {
+			if (len == 1) {
+				throw new ParseException("模板函数名不能缺失", location);
+			}
+			
+			nullSafe = ((Const)expr).getBoolean();
+			index++;
+		}
 		
+		funcNameExpr = exprList.getExpr(index++);
 		ArrayList<Expr> list = new ArrayList<Expr>();
-		for (int i=1; i<exprList.length(); i++) {
+		for (int i=index; i<len; i++) {
 			list.add(exprList.getExpr(i));
 		}
-		this.paraExpr = new ExprList(list);
+		paraExpr = new ExprList(list);
 	}
 	
 	public void exec(Env env, Scope scope, Writer writer) {
 		Object funcNameValue = funcNameExpr.eval(scope);
+		if (funcNameValue == null) {
+			if (nullSafe) {
+				return ;
+			}
+			throw new TemplateException("模板函数不存在 : " + funcNameValue, location);
+		}
+		
 		if (!(funcNameValue instanceof String)) {
-			throw new ParseException("模板函数名必须是字符串", location);
+			throw new TemplateException("模板函数名必须是字符串", location);
 		}
 		
 		Define func = env.getFunction(funcNameValue.toString());
+		
+		if (func == null) {
+			if (nullSafe) {
+				return ;
+			}
+			throw new TemplateException("模板函数不存在 : " + funcNameValue, location);
+		}
+		
 		func.call(env, scope, paraExpr, writer);
 	}
 }
