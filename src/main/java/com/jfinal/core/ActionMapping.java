@@ -21,10 +21,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.InterceptorManager;
 import com.jfinal.config.Routes;
@@ -44,6 +42,7 @@ public class ActionMapping {
 		this.routes = routes;
 	}
 	
+	/*
 	protected Set<String> buildExcludedMethodName() {
 		Set<String> excludedMethodName = new HashSet<String>();
 		Method[] methods = Controller.class.getMethods();
@@ -52,7 +51,7 @@ public class ActionMapping {
 				excludedMethodName.add(m.getName());
 		}
 		return excludedMethodName;
-	}
+	} */
 	
 	protected List<Routes> getRoutesList() {
 		List<Routes> routesList = Routes.getRoutesList();
@@ -64,7 +63,7 @@ public class ActionMapping {
 	
 	protected void buildActionMapping() {
 		mapping.clear();
-		Set<String> excludedMethodName = buildExcludedMethodName();
+		// Set<String> excludedMethodName = buildExcludedMethodName();
 		InterceptorManager interMan = InterceptorManager.me();
 		for (Routes routes : getRoutesList()) {
 		for (Route route : routes.getRouteItemList()) {
@@ -75,8 +74,12 @@ public class ActionMapping {
 			Method[] methods = (sonOfController ? controllerClass.getDeclaredMethods() : controllerClass.getMethods());
 			for (Method method : methods) {
 				String methodName = method.getName();
-				if (excludedMethodName.contains(methodName) /* || method.getParameterTypes().length != 0 */)
+				
+				// if (excludedMethodName.contains(methodName) /* || method.getParameterTypes().length != 0 */)
+					// continue ;
+				if (method.getDeclaringClass() == Controller.class || method.getDeclaringClass() == Object.class)
 					continue ;
+				
 				if (sonOfController && !Modifier.isPublic(method.getModifiers()))
 					continue ;
 				if (method.getAnnotation(NotAction.class) != null)
