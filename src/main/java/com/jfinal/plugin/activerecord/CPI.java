@@ -25,6 +25,7 @@ import java.util.Set;
 /**
  * Cross Package Invoking pattern for package activerecord.
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class CPI {
 	
 	/**
@@ -32,14 +33,24 @@ public abstract class CPI {
 	 * @param model the model extends from class Model
 	 * @return the attributes map of the model
 	 */
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static final Map<String, Object> getAttrs(Model model) {
 		return model._getAttrs();
 	}
 	
-	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static final Set<String> getModifyFlag(Model model) {
 		return model._getModifyFlag();
+	}
+	
+	public static final Table getTable(Model model) {
+		return model._getTable();
+	}
+	
+	public static final Config getConfig(Model model) {
+		return model._getConfig();
+	}
+	
+	public static final Class<? extends Model> getUsefulClass(Model model) {
+		return model._getUsefulClass();
 	}
 	
 	public static <T> List<T> query(Connection conn, String sql, Object... paras) throws SQLException {

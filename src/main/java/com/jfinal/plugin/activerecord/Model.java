@@ -243,6 +243,31 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	/**
+	 * 如果 attrOrNot 是表中的字段则调用 set(...) 放入数据
+	 * 否则调用 put(...) 放入数据
+	 */
+	public M setOrPut(String attrOrNot, Object value) {
+		Table table = _getTable();
+		if (table != null && table.hasColumnLabel(attrOrNot)) {	
+			_getModifyFlag().add(attrOrNot);	// Add modify flag, update() need this flag.
+		}
+		
+		attrs.put(attrOrNot, value);
+		return (M)this;
+	}
+	
+	public M _setOrPut(Map<String, Object> map) {
+		for (Entry<String, Object> e : map.entrySet()) {
+			setOrPut(e.getKey(), e.getValue());
+		}
+		return (M)this;
+	}
+	
+	public M _setOrPut(Model model) {
+		return _setOrPut(model._getAttrs());
+	}
+	
+	/**
 	 * Put map to the model without check attribute name.
 	 */
 	public M put(Map<String, Object> map) {
