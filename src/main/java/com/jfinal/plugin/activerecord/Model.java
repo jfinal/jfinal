@@ -248,7 +248,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	public M setOrPut(String attrOrNot, Object value) {
 		Table table = _getTable();
-		if (table != null && table.hasColumnLabel(attrOrNot)) {	
+		if (table != null && table.hasColumnLabel(attrOrNot)) {
 			_getModifyFlag().add(attrOrNot);	// Add modify flag, update() need this flag.
 		}
 		
