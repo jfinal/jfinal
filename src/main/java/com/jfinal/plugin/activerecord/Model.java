@@ -264,7 +264,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	}
 	
 	public M _setOrPut(Model model) {
-		return _setOrPut(model._getAttrs());
+		return (M)_setOrPut(model._getAttrs());
 	}
 	
 	/**
