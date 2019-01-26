@@ -33,6 +33,8 @@ public abstract class Routes {
 	private static List<Routes> routesList = new ArrayList<Routes>();
 	private static Set<String> controllerKeySet = new HashSet<String>();
 	
+	private boolean mappingSuperClass = false;	// 是否映射父类中的方法为路由
+	
 	private String baseViewPath = null;
 	private List<Route> routeItemList = new ArrayList<Route>();
 	private List<Interceptor> injectInters = new ArrayList<Interceptor>();
@@ -43,6 +45,20 @@ public abstract class Routes {
 	 * Implement this method to add route, add interceptor and set baseViewPath
 	 */
 	public abstract void config();
+	
+	/**
+	 * 设置是否映射父类中的方法为路由，默认值为 false
+	 * 
+	 * 以免 BaseController extends Controller 用法中的 BaseController 中的方法被映射成 action
+	 */
+	public Routes setMappingSuperClass(boolean mappingSuperClass) {
+		this.mappingSuperClass = mappingSuperClass;
+		return this;
+	}
+	
+	public boolean getMappingSuperClass() {
+		return mappingSuperClass;
+	}
 	
 	/**
 	 * Add Routes
