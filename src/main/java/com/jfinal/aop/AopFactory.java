@@ -24,8 +24,7 @@ public class AopFactory {
 	public <T> T get(Class<T> targetClass) {
 		try {
 			return get(targetClass, injectDepth);
-		}
-		catch (ReflectiveOperationException e) {
+		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -49,7 +48,7 @@ public class AopFactory {
 		
 		ret = singletonCache.get(targetClass);
 		if (ret == null) {
-			synchronized (targetClass) {
+			synchronized (this) {
 				ret = singletonCache.get(targetClass);
 				if (ret == null) {
 					ret = createObject(targetClass);
