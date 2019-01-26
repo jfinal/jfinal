@@ -77,11 +77,17 @@ public class ActionMapping {
 				
 				// if (excludedMethodName.contains(methodName) /* || method.getParameterTypes().length != 0 */)
 					// continue ;
-				if (method.getDeclaringClass() == Controller.class || method.getDeclaringClass() == Object.class)
-					continue ;
 				
-				if (sonOfController && !Modifier.isPublic(method.getModifiers()))
-					continue ;
+				
+				if (sonOfController) {
+					if (!Modifier.isPublic(method.getModifiers()))
+						continue ;
+				} else {
+					if (method.getDeclaringClass() == Controller.class || method.getDeclaringClass() == Object.class)
+						continue ;
+				}
+				
+				
 				if (method.getAnnotation(NotAction.class) != null)
 					continue ;
 				
