@@ -21,41 +21,45 @@ public class AopFactory {
 	protected boolean enhance = true;					// 默认增强
 	protected int injectDepth = 3;						// 默认注入深度
 	
-	@SuppressWarnings("unchecked")
 	public <T> T get(Class<T> targetClass) {
 		try {
-			// Aop.get(obj.getClass()) 可以用 Aop.inject(obj)，所以注掉下一行代码 
-			// targetClass = (Class<T>)getUsefulClass(targetClass);
-			
-			targetClass = (Class<T>)getMappingClass(targetClass);
-			
-			Singleton si = targetClass.getAnnotation(Singleton.class);
-			boolean singleton = (si != null ? si.value() : this.singleton);
-			
-			Object ret;
-			if ( ! singleton ) {
-				ret = createObject(targetClass);
-				inject(targetClass, ret, injectDepth);
-				return (T)ret;
-			}
-			
-			ret = singletonCache.get(targetClass);
-			if (ret == null) {
-				synchronized (targetClass) {
-					ret = singletonCache.get(targetClass);
-					if (ret == null) {
-						ret = createObject(targetClass);
-						inject(targetClass, ret, injectDepth);
-						singletonCache.put(targetClass, ret);
-					}
-				}
-			}
-			
-			return (T)ret;
+			return get(targetClass, injectDepth);
 		}
 		catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected <T> T get(Class<T> targetClass, int injectDepth) throws ReflectiveOperationException {
+		// Aop.get(obj.getClass()) 可以用 Aop.inject(obj)，所以注掉下一行代码 
+		// targetClass = (Class<T>)getUsefulClass(targetClass);
+		
+		targetClass = (Class<T>)getMappingClass(targetClass);
+		
+		Singleton si = targetClass.getAnnotation(Singleton.class);
+		boolean singleton = (si != null ? si.value() : this.singleton);
+		
+		Object ret;
+		if ( ! singleton ) {
+			ret = createObject(targetClass);
+			inject(targetClass, ret, injectDepth);
+			return (T)ret;
+		}
+		
+		ret = singletonCache.get(targetClass);
+		if (ret == null) {
+			synchronized (targetClass) {
+				ret = singletonCache.get(targetClass);
+				if (ret == null) {
+					ret = createObject(targetClass);
+					inject(targetClass, ret, injectDepth);
+					singletonCache.put(targetClass, ret);
+				}
+			}
+		}
+		
+		return (T)ret;
 	}
 	
 	public <T> T inject(T targetObject) {
@@ -102,38 +106,12 @@ public class AopFactory {
 			Class<?> fieldInjectedClass = inject.value();
 			if (fieldInjectedClass == Void.class) {
 				fieldInjectedClass = field.getType();
-				fieldInjectedClass = getMappingClass(fieldInjectedClass);
 			}
 			
-			Singleton si = fieldInjectedClass.getAnnotation(Singleton.class);
-			boolean singleton = (si != null ? si.value() : this.singleton);
-			
-			Object fieldInjectedObject = getOrCreateObject(fieldInjectedClass, singleton);
+			Object fieldInjectedObject = get(fieldInjectedClass, injectDepth);
 			field.setAccessible(true);
 			field.set(targetObject, fieldInjectedObject);
-			
-			// 递归调用，为当前被注入的对象进行注入
-			this.inject(fieldInjectedObject.getClass(), fieldInjectedObject, injectDepth);
 		}
-	}
-	
-	protected Object getOrCreateObject(Class<?> targetClass, boolean singleton) throws ReflectiveOperationException {
-		if ( ! singleton ) {
-			return createObject(targetClass);
-		}
-		
-		Object ret = singletonCache.get(targetClass);
-		if (ret == null) {
-			synchronized (targetClass) {
-				ret = singletonCache.get(targetClass);
-				if (ret == null) {
-					ret = createObject(targetClass);
-					singletonCache.put(targetClass, ret);
-				}
-			}
-		}
-		
-		return ret;
 	}
 	
 	/**
