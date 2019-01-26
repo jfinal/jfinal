@@ -77,6 +77,8 @@ public class ActionMapping {
 				
 				// if (excludedMethodName.contains(methodName) /* || method.getParameterTypes().length != 0 */)
 					// continue ;
+				// if (sonOfController && !Modifier.isPublic(method.getModifiers()))
+					// continue ;
 				
 				
 				if (sonOfController) {
