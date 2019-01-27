@@ -253,6 +253,12 @@ public class Parser {
 					statList = statList();
 					Default _default = new Default(statList);
 					_switch.setDefault(_default, getLocation(caseOrDefault.row));
+				} else if (caseOrDefault.symbol == Symbol.TEXT) {
+					TextToken tt = (TextToken)caseOrDefault;
+					if (tt.getContent().toString().trim().length() != 0) {
+						throw new ParseException("Syntax error: expect #case or #default directive", getLocation(caseOrDefault.row));
+					}
+					move();
 				} else {
 					break ;
 				}
