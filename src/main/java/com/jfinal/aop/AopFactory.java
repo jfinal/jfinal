@@ -23,15 +23,23 @@ public class AopFactory {
 	
 	public <T> T get(Class<T> targetClass) {
 		try {
-			return get(targetClass, injectDepth);
+			return doGet(targetClass, injectDepth);
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public <T> T get(Class<T> targetClass, int injectDepth) {
+		try {
+			return doGet(targetClass, injectDepth);
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected <T> T get(Class<T> targetClass, int injectDepth) throws ReflectiveOperationException {
-		// Aop.get(obj.getClass()) 可以用 Aop.inject(obj)，所以注掉下一行代码 
+	protected <T> T doGet(Class<T> targetClass, int injectDepth) throws ReflectiveOperationException {
+		// Aop.get(obj.getClass()) 可以用 Aop.inject(obj)，所以注掉下一行代码
 		// targetClass = (Class<T>)getUsefulClass(targetClass);
 		
 		targetClass = (Class<T>)getMappingClass(targetClass);
@@ -107,7 +115,7 @@ public class AopFactory {
 				fieldInjectedClass = field.getType();
 			}
 			
-			Object fieldInjectedObject = get(fieldInjectedClass, injectDepth);
+			Object fieldInjectedObject = doGet(fieldInjectedClass, injectDepth);
 			field.setAccessible(true);
 			field.set(targetObject, fieldInjectedObject);
 		}
