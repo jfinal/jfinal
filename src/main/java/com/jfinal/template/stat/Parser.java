@@ -26,7 +26,10 @@ import com.jfinal.template.expr.ast.ForCtrl;
 import com.jfinal.template.stat.Symbol;
 import com.jfinal.template.stat.ast.Break;
 import com.jfinal.template.stat.ast.Call;
+import com.jfinal.template.stat.ast.Case;
+import com.jfinal.template.stat.ast.CaseSetter;
 import com.jfinal.template.stat.ast.Continue;
+import com.jfinal.template.stat.ast.Default;
 import com.jfinal.template.stat.ast.Define;
 import com.jfinal.template.stat.ast.Else;
 import com.jfinal.template.stat.ast.ElseIf;
@@ -39,6 +42,7 @@ import com.jfinal.template.stat.ast.SetGlobal;
 import com.jfinal.template.stat.ast.SetLocal;
 import com.jfinal.template.stat.ast.Stat;
 import com.jfinal.template.stat.ast.StatList;
+import com.jfinal.template.stat.ast.Switch;
 import com.jfinal.template.stat.ast.Text;
 
 /**
@@ -227,7 +231,35 @@ public class Parser {
 		case ELSE:
 		case END:
 		case EOF:
+		case CASE:
+		case DEFAULT:
 			return null;
+		case SWITCH:
+			move();
+			para = matchPara(name);
+			Switch _switch = new Switch(parseExprList(para), getLocation(name.row));
+			
+			CaseSetter currentCaseSetter = _switch;
+			for (Token caseOrDefault=peek(); ; caseOrDefault=peek()) {
+				if (caseOrDefault.symbol == Symbol.CASE) {
+					move();
+					para = matchPara(caseOrDefault);
+					statList = statList();
+					Case nextCase = new Case(parseExprList(para), statList, getLocation(caseOrDefault.row));
+					currentCaseSetter.setNextCase(nextCase);
+					currentCaseSetter = nextCase; 
+				} else if (caseOrDefault.symbol == Symbol.DEFAULT) {
+					move();
+					statList = statList();
+					Default _default = new Default(statList);
+					_switch.setDefault(_default, getLocation(caseOrDefault.row));
+				} else {
+					break ;
+				}
+			}
+			
+			matchEnd(name);
+			return _switch;
 		default :
 			throw new ParseException("Syntax error: can not match the token: " + name.value(), getLocation(name.row));
 		}
