@@ -88,9 +88,22 @@ public class AopFactory {
 	}
 	
 	// 方法原型的参数测试过可以是：Class<? super T> targetClass, T targetObject
-	public <T> T inject(Class<T> targetClass, T targetObject) throws ReflectiveOperationException {
-		doInject(targetClass, targetObject, injectDepth);
-		return targetObject;
+	public <T> T inject(Class<T> targetClass, T targetObject) {
+		try {
+			doInject(targetClass, targetObject, injectDepth);
+			return targetObject;
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public <T> T inject(Class<T> targetClass, T targetObject, int injectDepth) {
+		try {
+			doInject(targetClass, targetObject, injectDepth);
+			return targetObject;
+		} catch (ReflectiveOperationException e) {
+			throw new RuntimeException(e);
+		}
 	}
 	
 	protected void doInject(Class<?> targetClass, Object targetObject, int injectDepth) throws ReflectiveOperationException {
