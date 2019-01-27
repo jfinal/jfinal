@@ -45,6 +45,10 @@ enum Symbol {
 	BREAK("break", false),
 	RETURN("return", false),
 	
+	SWITCH("switch", true),
+	CASE("case", true),
+	DEFAULT("default", false),
+	
 	ID("ID", false),				// 标识符：下划线或字母开头 ^[A-Za-z_][A-Za-z0-9_]*$
 	PARA("PARA", false),
 	
@@ -67,6 +71,10 @@ enum Symbol {
 		put(Symbol.BREAK.getName(), BREAK);
 		put(Symbol.CONTINUE.getName(), CONTINUE);
 		put(Symbol.RETURN.getName(), RETURN);
+		
+		put(Symbol.SWITCH.getName(), SWITCH);
+		put(Symbol.CASE.getName(), CASE);
+		put(Symbol.DEFAULT.getName(), DEFAULT);
 		
 		put(Symbol.DEFINE.getName(), DEFINE);
 		put(Symbol.SET.getName(), SET);
