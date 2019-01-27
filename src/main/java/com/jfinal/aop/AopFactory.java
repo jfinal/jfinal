@@ -50,7 +50,7 @@ public class AopFactory {
 		Object ret;
 		if ( ! singleton ) {
 			ret = createObject(targetClass);
-			inject(targetClass, ret, injectDepth);
+			doInject(targetClass, ret, injectDepth);
 			return (T)ret;
 		}
 		
@@ -60,7 +60,7 @@ public class AopFactory {
 				ret = singletonCache.get(targetClass);
 				if (ret == null) {
 					ret = createObject(targetClass);
-					inject(targetClass, ret, injectDepth);
+					doInject(targetClass, ret, injectDepth);
 					singletonCache.put(targetClass, ret);
 				}
 			}
@@ -71,7 +71,7 @@ public class AopFactory {
 	
 	public <T> T inject(T targetObject) {
 		try {
-			inject(targetObject.getClass(), targetObject, injectDepth);
+			doInject(targetObject.getClass(), targetObject, injectDepth);
 			return targetObject;
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);
@@ -80,7 +80,7 @@ public class AopFactory {
 	
 	public <T> T inject(T targetObject, int injectDepth) {
 		try {
-			inject(targetObject.getClass(), targetObject, injectDepth);
+			doInject(targetObject.getClass(), targetObject, injectDepth);
 			return targetObject;
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);
@@ -89,11 +89,11 @@ public class AopFactory {
 	
 	// 方法原型的参数测试过可以是：Class<? super T> targetClass, T targetObject
 	public <T> T inject(Class<T> targetClass, T targetObject) throws ReflectiveOperationException {
-		inject(targetClass, targetObject, injectDepth);
+		doInject(targetClass, targetObject, injectDepth);
 		return targetObject;
 	}
 	
-	public void inject(Class<?> targetClass, Object targetObject, int injectDepth) throws ReflectiveOperationException {
+	protected void doInject(Class<?> targetClass, Object targetObject, int injectDepth) throws ReflectiveOperationException {
 		if ((injectDepth--) <= 0) {
 			return ;
 		}
