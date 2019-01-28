@@ -221,23 +221,23 @@ public class Parser {
 			Switch _switch = new Switch(parseExprList(para), getLocation(name.row));
 			
 			CaseSetter currentCaseSetter = _switch;
-			for (Token caseOrDefault=peek(); ; caseOrDefault=peek()) {
-				if (caseOrDefault.symbol == Symbol.CASE) {
+			for (Token currentToken=peek(); ; currentToken=peek()) {
+				if (currentToken.symbol == Symbol.CASE) {
 					move();
-					para = matchPara(caseOrDefault);
+					para = matchPara(currentToken);
 					statList = statList();
-					Case nextCase = new Case(parseExprList(para), statList, getLocation(caseOrDefault.row));
+					Case nextCase = new Case(parseExprList(para), statList, getLocation(currentToken.row));
 					currentCaseSetter.setNextCase(nextCase);
 					currentCaseSetter = nextCase; 
-				} else if (caseOrDefault.symbol == Symbol.DEFAULT) {
+				} else if (currentToken.symbol == Symbol.DEFAULT) {
 					move();
 					statList = statList();
 					Default _default = new Default(statList);
-					_switch.setDefault(_default, getLocation(caseOrDefault.row));
-				} else if (caseOrDefault.symbol == Symbol.TEXT) {
-					TextToken tt = (TextToken)caseOrDefault;
+					_switch.setDefault(_default, getLocation(currentToken.row));
+				} else if (currentToken.symbol == Symbol.TEXT) {
+					TextToken tt = (TextToken)currentToken;
 					if (tt.getContent().toString().trim().length() != 0) {
-						throw new ParseException("Syntax error: expect #case or #default directive", getLocation(caseOrDefault.row));
+						throw new ParseException("Syntax error: expect #case or #default directive", getLocation(currentToken.row));
 					}
 					move();
 				} else {
