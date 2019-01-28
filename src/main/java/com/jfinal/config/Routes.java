@@ -34,7 +34,7 @@ public abstract class Routes {
 	private static Set<String> controllerKeySet = new HashSet<String>();
 	
 	static final boolean DEFAULT_MAPPING_SUPER_CLASS = false;	// 是否映射超类中的方法为路由的默认值
-	Boolean mappingSuperClass = null;	// 是否映射超类中的方法为路由
+	Boolean mappingSuperClass = null;							// 是否映射超类中的方法为路由
 	
 	private String baseViewPath = null;
 	private List<Route> routeItemList = new ArrayList<Route>();
