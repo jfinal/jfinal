@@ -38,22 +38,27 @@ import com.jfinal.template.stat.Scope;
  * 
  * <pre>
  * 示例：
- *   #switch (v)
- *      #case (1, 2, 3)
- *         ...
- *      #case (999)
- *         ...
- *      #case (expr)
- *         ...
- *      #default
- *         ...
+ *   #switch (month)
+ *     #case (1, 3, 5, 7, 8, 10, 12)
+ *       #(month) 月有 31 天
+ *     #case (2)
+ *       #(month) 月平年有28天，闰年有29天
+ *     #default
+ *       月份错误: #(month)
  *   #end
  * 
- * 如上所示，#case 指令中可以用逗号分隔开多个值，上述逗号表达式的值 1、2、3 只要
- * 有一个与 switch 指定的参数 v 相等的话，该 case 分支就会被执行
+ * 如上所示，#case 指令中可以用逗号分隔开多个值，上述逗号表达式的值
+ * 1, 3, 5, 7, 8, 10, 12 之中只要有一个与 switch 指定的参数 month
+ * 相等的话，该 case 分支就会被执行
  * 
- * 上述代码中的第三个 #case 指令中使用了 expr，也就是说 #case 指令除了支持常量以外
- * 还支持表达式
+ * 
+ * 此外，除了常量值以外 #case 参数还可以是任意表达式
+ * 例如：
+ *     #case (a, b, c, x + y, obj.method(z))
+ *     
+ * 上述代码中 #case 参数中的所有表达式先会被求值，然后逐一与 #switch
+ * 参数进行对比，同样也是只要有一个对比相等，则该 case 分支就会被执行
+ * 
  * </pre>
  */
 public class Switch extends Stat implements CaseSetter {
