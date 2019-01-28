@@ -19,7 +19,6 @@ package com.jfinal.template.stat.ast;
 import com.jfinal.template.Env;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
-import com.jfinal.template.expr.ast.Id;
 import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ParseException;
@@ -63,11 +62,6 @@ public class Switch extends Stat implements CaseSetter {
 	private Case nextCase;
 	private Default _default;
 	
-	/**
-	 * TODO 测试 switch 后面放一些空的字符串，看 Parser 会不会自动移除，
-	 * 如果自动移除的话，那么 #switch 向前解析时必须要是一个 #case
-	 * 那么关键问题就在于如果 switch 后方有空字符串，会不会正确得到 #case
-	 */
 	public Switch(ExprList exprList, Location location) {
 		if (exprList.length() == 0) {
 			throw new ParseException("The parameter of #switch directive can not be blank", location);
