@@ -1,17 +1,10 @@
-#switch (data)
-
- #default
-   default
-
- #case (111)
+#switch(data)
+  #case (111)
     111
- #case (123)
+  #case(a, b, c)
+    a, b, c
+  #default
+    default
+  #case (123)
     123
-    
-   
- #case (a, b, c)
-    a, b , c
- 
 #end
-
-#(data)
