@@ -24,26 +24,7 @@ import com.jfinal.template.expr.ExprParser;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.ForCtrl;
 import com.jfinal.template.stat.Symbol;
-import com.jfinal.template.stat.ast.Break;
-import com.jfinal.template.stat.ast.Call;
-import com.jfinal.template.stat.ast.Case;
-import com.jfinal.template.stat.ast.CaseSetter;
-import com.jfinal.template.stat.ast.Continue;
-import com.jfinal.template.stat.ast.Default;
-import com.jfinal.template.stat.ast.Define;
-import com.jfinal.template.stat.ast.Else;
-import com.jfinal.template.stat.ast.ElseIf;
-import com.jfinal.template.stat.ast.For;
-import com.jfinal.template.stat.ast.If;
-import com.jfinal.template.stat.ast.Include;
-import com.jfinal.template.stat.ast.Return;
-import com.jfinal.template.stat.ast.Set;
-import com.jfinal.template.stat.ast.SetGlobal;
-import com.jfinal.template.stat.ast.SetLocal;
-import com.jfinal.template.stat.ast.Stat;
-import com.jfinal.template.stat.ast.StatList;
-import com.jfinal.template.stat.ast.Switch;
-import com.jfinal.template.stat.ast.Text;
+import com.jfinal.template.stat.ast.*;
 
 /**
  * DLRD (Double Layer Recursive Descent) Parser
