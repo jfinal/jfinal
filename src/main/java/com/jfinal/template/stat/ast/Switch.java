@@ -75,7 +75,7 @@ public class Switch extends Stat implements CaseSetter {
 	
 	public void setDefault(Default _default, Location location) {
 		if (this._default != null) {
-			throw new ParseException("The #default case of #switch directive is already defined", location);
+			throw new ParseException("The #default case of #switch is already defined", location);
 		}
 		this._default = _default;
 	}
