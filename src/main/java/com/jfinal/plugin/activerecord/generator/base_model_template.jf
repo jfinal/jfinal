@@ -15,12 +15,12 @@ public abstract class #(tableMeta.baseModelName)<M extends #(tableMeta.baseModel
 
 #set(b = generateChainSetter)
 #for(cm : tableMeta.columnMetas)
-	#set(argName = javaKeyword.contains(cm.attrName) ? '_' + cm.attrName : cm.attrName)
 	#if (cm.remarks)
 	/**
 	 * #(cm.remarks)
 	 */
 	 #end
+	#set(argName = javaKeyword.contains(cm.attrName) ? '_' + cm.attrName : cm.attrName)
 	public #(b ? 'M' : 'void') set#(firstCharToUpperCase(cm.attrName))(#(cm.javaType) #(argName)) {
 		set("#(cm.name)", #(argName));
 		#if (b)
