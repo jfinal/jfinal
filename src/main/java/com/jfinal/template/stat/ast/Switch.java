@@ -44,7 +44,7 @@ import com.jfinal.template.stat.Scope;
  *     #case (2)
  *       #(month) 月平年有28天，闰年有29天
  *     #default
- *       月份错误: #(month)
+ *       月份错误: #(month ?? "null")
  *   #end
  * 
  * 如上所示，#case 指令中可以用逗号分隔开多个值，上述逗号表达式的值
