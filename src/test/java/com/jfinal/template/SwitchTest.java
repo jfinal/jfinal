@@ -1,22 +1,22 @@
 package com.jfinal.template;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import com.jfinal.kit.Kv;
 
 public class SwitchTest {
 	
-	Engine engine;
+	static Engine engine;
 	
-	@Before
-	public void init() {
+	@BeforeClass
+	public static void init() {
 		engine = Engine.use();
 		engine.setToClassPathSourceFactory();
 	}
 	
-	@After
-	public void exit() {
+	@AfterClass
+	public static void exit() {
 	}
 	
 	@Test
