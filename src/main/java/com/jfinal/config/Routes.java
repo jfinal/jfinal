@@ -33,7 +33,8 @@ public abstract class Routes {
 	private static List<Routes> routesList = new ArrayList<Routes>();
 	private static Set<String> controllerKeySet = new HashSet<String>();
 	
-	private boolean mappingSuperClass = false;	// 是否映射父类中的方法为路由
+	static final boolean DEFAULT_MAPPING_SUPER_CLASS = false;	// 是否映射超类中的方法为路由的默认值
+	Boolean mappingSuperClass = null;	// 是否映射超类中的方法为路由
 	
 	private String baseViewPath = null;
 	private List<Route> routeItemList = new ArrayList<Route>();
@@ -47,7 +48,7 @@ public abstract class Routes {
 	public abstract void config();
 	
 	/**
-	 * 设置是否映射父类中的方法为路由，默认值为 false
+	 * 设置是否映射超类中的方法为路由，默认值为 false
 	 * 
 	 * 以免 BaseController extends Controller 用法中的 BaseController 中的方法被映射成 action
 	 */
@@ -57,7 +58,7 @@ public abstract class Routes {
 	}
 	
 	public boolean getMappingSuperClass() {
-		return mappingSuperClass;
+		return mappingSuperClass != null ? mappingSuperClass : DEFAULT_MAPPING_SUPER_CLASS;
 	}
 	
 	/**
@@ -65,6 +66,17 @@ public abstract class Routes {
 	 */
 	public Routes add(Routes routes) {
 		routes.config();
+		
+		/**
+		 * 如果子 Routes 没有配置 mappingSuperClass，则使用顶层 Routes 的配置
+		 * 主要是为了让 jfinal weixin 用户有更好的体验
+		 * 
+		 * 因为顶层 Routes 和模块级 Routes 配置都可以生效，减少学习成本
+		 */
+		if (routes.mappingSuperClass == null) {
+			routes.mappingSuperClass = this.mappingSuperClass;
+		}
+		
 		routesList.add(routes);
 		return this;
 	}
