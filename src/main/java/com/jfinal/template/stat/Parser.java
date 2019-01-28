@@ -228,7 +228,7 @@ public class Parser {
 					statList = statList();
 					Case nextCase = new Case(parseExprList(para), statList, getLocation(currentToken.row));
 					currentCaseSetter.setNextCase(nextCase);
-					currentCaseSetter = nextCase; 
+					currentCaseSetter = nextCase;
 				} else if (currentToken.symbol == Symbol.DEFAULT) {
 					move();
 					statList = statList();
