@@ -22,7 +22,7 @@ public class SwitchTest {
 	@Test
 	public void switch_() {
 		Template template = engine.getTemplate("com/jfinal/template/switch.txt");
-		Kv kv = Kv.by("date", 123);
+		Kv kv = Kv.by("data", 123);
 		String ret = template.renderToString(kv);
 		System.out.println(ret);
 	}
