@@ -54,6 +54,7 @@ public class Case extends Stat implements CaseSetter {
 		Object[] valueArray = exprList.evalExprList(scope);
 		
 		for (Object value : valueArray) {
+			// 照顾 null == null 以及数值比较小的整型数据比较
 			if (value == switchValue) {
 				stat.exec(env, scope, writer);
 				return true;
