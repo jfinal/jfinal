@@ -744,11 +744,11 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Find model by composite id values.
 	 * <pre>
 	 * Example:
-	 * User user = User.dao.findById(123, 456);
+	 * User user = User.dao.findByIds(123, 456);
 	 * </pre>
 	 * @param idValues the composite id values of the model
 	 */
-	public M findById(Object... idValues) {
+	public M findByIds(Object... idValues) {
 		return findByIdLoadColumns(idValues, "*");
 	}
 	
