@@ -390,27 +390,27 @@ public class DbPro {
 	 * @param idValue the id value of the record
 	 */
 	public Record findById(String tableName, Object idValue) {
-		return findById(tableName, config.dialect.getDefaultPrimaryKey(), idValue);
+		return findByIds(tableName, config.dialect.getDefaultPrimaryKey(), idValue);
 	}
 	
 	/**
-	 * Find record by id.
+	 * Find record by ids.
 	 * <pre>
 	 * Example:
-	 * Record user = DbPro.use().findById("user", "user_id", 123);
-	 * Record userRole = DbPro.use().findById("user_role", "user_id, role_id", 123, 456);
+	 * Record user = DbPro.use().findByIds("user", "user_id", 123);
+	 * Record userRole = DbPro.use().findByIds("user_role", "user_id, role_id", 123, 456);
 	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
-	 * @param idValue the id value of the record, it can be composite id values
+	 * @param idValues the id value of the record, it can be composite id values
 	 */
-	public Record findById(String tableName, String primaryKey, Object... idValue) {
+	public Record findByIds(String tableName, String primaryKey, Object... idValues) {
 		String[] pKeys = primaryKey.split(",");
-		if (pKeys.length != idValue.length)
+		if (pKeys.length != idValues.length)
 			throw new IllegalArgumentException("primary key number must equals id value number");
 		
 		String sql = config.dialect.forDbFindById(tableName, pKeys);
-		List<Record> result = find(sql, idValue);
+		List<Record> result = find(sql, idValues);
 		return result.size() > 0 ? result.get(0) : null;
 	}
 	

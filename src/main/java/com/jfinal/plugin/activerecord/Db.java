@@ -315,18 +315,18 @@ public class Db {
 	}
 	
 	/**
-	 * Find record by id.
+	 * Find record by ids.
 	 * <pre>
 	 * Example:
-	 * Record user = Db.findById("user", "user_id", 123);
-	 * Record userRole = Db.findById("user_role", "user_id, role_id", 123, 456);
+	 * Record user = Db.findByIds("user", "user_id", 123);
+	 * Record userRole = Db.findByIds("user_role", "user_id, role_id", 123, 456);
 	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
-	 * @param idValue the id value of the record, it can be composite id values
+	 * @param idValues the id value of the record, it can be composite id values
 	 */
-	public static Record findById(String tableName, String primaryKey, Object... idValue) {
-		return MAIN.findById(tableName, primaryKey, idValue);
+	public static Record findById(String tableName, String primaryKey, Object... idValues) {
+		return MAIN.findByIds(tableName, primaryKey, idValues);
 	}
 	
 	/**
