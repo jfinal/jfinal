@@ -18,6 +18,7 @@ package com.jfinal.template.stat.ast;
 
 import com.jfinal.template.Env;
 import com.jfinal.template.TemplateException;
+import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.Location;
@@ -29,7 +30,7 @@ import com.jfinal.template.stat.Scope;
  */
 public class Case extends Stat implements CaseSetter {
 	
-	private ExprList exprList;
+	private Expr[] exprArray;
 	private Stat stat;
 	private Case nextCase;
 	
@@ -38,7 +39,7 @@ public class Case extends Stat implements CaseSetter {
 			throw new ParseException("The parameter of #case directive can not be blank", location);
 		}
 		
-		this.exprList = exprList;
+		this.exprArray = exprList.getExprArray();
 		this.stat = statList.getActualStat();
 	}
 	
@@ -51,9 +52,9 @@ public class Case extends Stat implements CaseSetter {
 	}
 	
 	boolean execIfMatch(Object switchValue, Env env, Scope scope, Writer writer) {
-		Object[] valueArray = exprList.evalExprList(scope);
-		
-		for (Object value : valueArray) {
+		for (Expr expr : exprArray) {
+			Object value = expr.eval(scope);
+			
 			// 照顾 null == null 以及数值比较小的整型数据比较
 			if (value == switchValue) {
 				stat.exec(env, scope, writer);
