@@ -52,8 +52,8 @@ public class Case extends Stat implements CaseSetter {
 	}
 	
 	boolean execIfMatch(Object switchValue, Env env, Scope scope, Writer writer) {
-		for (Expr expr : exprArray) {
-			Object value = expr.eval(scope);
+		if (exprArray.length == 1) {
+			Object value = exprArray[0].eval(scope);
 			
 			// 照顾 null == null 以及数值比较小的整型数据比较
 			if (value == switchValue) {
@@ -64,6 +64,21 @@ public class Case extends Stat implements CaseSetter {
 			if (value != null && value.equals(switchValue)) {
 				stat.exec(env, scope, writer);
 				return true;
+			}
+		} else {
+			for (Expr expr : exprArray) {
+				Object value = expr.eval(scope);
+				
+				// 照顾 null == null 以及数值比较小的整型数据比较
+				if (value == switchValue) {
+					stat.exec(env, scope, writer);
+					return true;
+				}
+				
+				if (value != null && value.equals(switchValue)) {
+					stat.exec(env, scope, writer);
+					return true;
+				}
 			}
 		}
 		
