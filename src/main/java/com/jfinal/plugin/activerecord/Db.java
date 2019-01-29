@@ -314,6 +314,10 @@ public class Db {
 		return MAIN.findById(tableName, idValue);
 	}
 	
+	public static Record findById(String tableName, String primaryKey, Object idValue) {
+		return MAIN.findById(tableName, primaryKey, idValue);
+	}
+	
 	/**
 	 * Find record by ids.
 	 * <pre>
