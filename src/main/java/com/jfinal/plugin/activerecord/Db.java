@@ -325,7 +325,7 @@ public class Db {
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
 	 * @param idValues the id value of the record, it can be composite id values
 	 */
-	public static Record findById(String tableName, String primaryKey, Object... idValues) {
+	public static Record findByIds(String tableName, String primaryKey, Object... idValues) {
 		return MAIN.findByIds(tableName, primaryKey, idValues);
 	}
 	
