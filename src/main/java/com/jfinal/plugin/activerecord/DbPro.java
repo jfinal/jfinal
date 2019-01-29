@@ -393,6 +393,10 @@ public class DbPro {
 		return findByIds(tableName, config.dialect.getDefaultPrimaryKey(), idValue);
 	}
 	
+	public Record findById(String tableName, String primaryKey, Object idValue) {
+		return findByIds(tableName, primaryKey, idValue);
+	}
+	
 	/**
 	 * Find record by ids.
 	 * <pre>
