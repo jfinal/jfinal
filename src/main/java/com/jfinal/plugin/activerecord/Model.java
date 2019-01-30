@@ -575,7 +575,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		for (int i=0; i<pKeys.length; i++) {
 			ids[i] = attrs.get(pKeys[i]);
 			if (ids[i] == null)
-				throw new ActiveRecordException("You can't delete model without primary key value, " + pKeys[i] + " is null");
+				throw new ActiveRecordException("Primary key " + pKeys[i] + " can not be null");
 		}
 		return deleteById(table, ids);
 	}
