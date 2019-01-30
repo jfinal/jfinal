@@ -347,6 +347,10 @@ public class Db {
 		return MAIN.deleteById(tableName, idValue);
 	}
 	
+	public static boolean deleteById(String tableName, String primaryKey, Object idValue) {
+		return MAIN.deleteById(tableName, primaryKey, idValue);
+	}
+	
 	/**
 	 * Delete record by ids.
 	 * <pre>

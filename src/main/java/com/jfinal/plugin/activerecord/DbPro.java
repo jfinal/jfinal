@@ -432,6 +432,10 @@ public class DbPro {
 		return deleteByIds(tableName, config.dialect.getDefaultPrimaryKey(), idValue);
 	}
 	
+	public boolean deleteById(String tableName, String primaryKey, Object idValue) {
+		return deleteByIds(tableName, primaryKey, idValue);
+	}
+	
 	/**
 	 * Delete record by ids.
 	 * <pre>
