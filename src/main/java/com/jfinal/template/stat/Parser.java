@@ -24,22 +24,7 @@ import com.jfinal.template.expr.ExprParser;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.ForCtrl;
 import com.jfinal.template.stat.Symbol;
-import com.jfinal.template.stat.ast.Break;
-import com.jfinal.template.stat.ast.Call;
-import com.jfinal.template.stat.ast.Continue;
-import com.jfinal.template.stat.ast.Define;
-import com.jfinal.template.stat.ast.Else;
-import com.jfinal.template.stat.ast.ElseIf;
-import com.jfinal.template.stat.ast.For;
-import com.jfinal.template.stat.ast.If;
-import com.jfinal.template.stat.ast.Include;
-import com.jfinal.template.stat.ast.Return;
-import com.jfinal.template.stat.ast.Set;
-import com.jfinal.template.stat.ast.SetGlobal;
-import com.jfinal.template.stat.ast.SetLocal;
-import com.jfinal.template.stat.ast.Stat;
-import com.jfinal.template.stat.ast.StatList;
-import com.jfinal.template.stat.ast.Text;
+import com.jfinal.template.stat.ast.*;
 
 /**
  * DLRD (Double Layer Recursive Descent) Parser
@@ -227,7 +212,41 @@ public class Parser {
 		case ELSE:
 		case END:
 		case EOF:
+		case CASE:
+		case DEFAULT:
 			return null;
+		case SWITCH:
+			move();
+			para = matchPara(name);
+			Switch _switch = new Switch(parseExprList(para), getLocation(name.row));
+			
+			CaseSetter currentCaseSetter = _switch;
+			for (Token currentToken=peek(); ; currentToken=peek()) {
+				if (currentToken.symbol == Symbol.CASE) {
+					move();
+					para = matchPara(currentToken);
+					statList = statList();
+					Case nextCase = new Case(parseExprList(para), statList, getLocation(currentToken.row));
+					currentCaseSetter.setNextCase(nextCase);
+					currentCaseSetter = nextCase;
+				} else if (currentToken.symbol == Symbol.DEFAULT) {
+					move();
+					statList = statList();
+					Default _default = new Default(statList);
+					_switch.setDefault(_default, getLocation(currentToken.row));
+				} else if (currentToken.symbol == Symbol.TEXT) {
+					TextToken tt = (TextToken)currentToken;
+					if (tt.getContent().toString().trim().length() != 0) {
+						throw new ParseException("Syntax error: expect #case or #default directive", getLocation(currentToken.row));
+					}
+					move();
+				} else {
+					break ;
+				}
+			}
+			
+			matchEnd(name);
+			return _switch;
 		default :
 			throw new ParseException("Syntax error: can not match the token: " + name.value(), getLocation(name.row));
 		}

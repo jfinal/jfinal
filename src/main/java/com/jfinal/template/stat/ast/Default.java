@@ -14,31 +14,26 @@
  * limitations under the License.
  */
 
-package com.jfinal.plugin.activerecord;
+package com.jfinal.template.stat.ast;
+
+import com.jfinal.template.Env;
+import com.jfinal.template.io.Writer;
+import com.jfinal.template.stat.Scope;
 
 /**
- * NestedTransactionHelpException
- * <br>
- * Notice the outer transaction that the nested transaction return false
+ * Default
+ * 
+ * #switch 指令内部的 #default 指令
  */
-public class NestedTransactionHelpException extends RuntimeException {
+public class Default extends Stat {
 	
-	private static final long serialVersionUID = 3813238946083156753L;
+	private Stat stat;
 	
-	public NestedTransactionHelpException(String message) {
-		super(message);
+	public Default(StatList statList) {
+		this.stat = statList.getActualStat();
 	}
 	
-	/**
-	 * 异常构造函数会调用 fillInStackTrace() 构建整个调用栈，消耗较大
-	 * 而 NestedTransactionHelpException 无需使用调用栈信息，覆盖
-	 * 此方法用于提升性能
-	 */
-	@Override
-	public Throwable fillInStackTrace() {
-		return this;
+	public void exec(Env env, Scope scope, Writer writer) {
+		stat.exec(env, scope, writer);
 	}
 }
-
-
-

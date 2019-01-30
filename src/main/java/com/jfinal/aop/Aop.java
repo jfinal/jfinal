@@ -85,6 +85,10 @@ public class Aop {
 		return aopFactory.get(targetClass);
 	}
 	
+	public static <T> T get(Class<T> targetClass, int injectDepth) {
+		return aopFactory.get(targetClass, injectDepth);
+	}
+	
 	public static <T> T inject(T targetObject) {
 		return aopFactory.inject(targetObject);
 	}
@@ -190,11 +194,11 @@ public class Aop {
 	}
 	
 	/* 通过 Aop.getAopFactory().inject(...) 可调用如下两个方法，不直接开放出来
-	public static void inject(Class<?> targetClass, Object targetObject) throws ReflectiveOperationException {
+	public static void inject(Class<?> targetClass, Object targetObject) {
 		aopFactory.inject(targetClass, targetObject);
 	}
 	
-	public static void inject(Class<?> targetClass, Object targetObject, int injectDepth) throws ReflectiveOperationException {
+	public static void inject(Class<?> targetClass, Object targetObject, int injectDepth) {
 		aopFactory.inject(targetClass, targetObject, injectDepth);
 	}*/
 	

@@ -23,6 +23,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import com.jfinal.plugin.activerecord.CPI;
 import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.ModelBuilder;
@@ -60,9 +61,9 @@ public class KeepByteAndShortRecordBuilder extends RecordBuilder {
 				int t = types[i];
 				if (t < Types.DATE) {
 					if (t == Types.TINYINT) {
-						value = rs.getByte(i);
+						value = BuilderKit.getByte(rs, i);
 					} else if (t == Types.SMALLINT) {
-						value = rs.getShort(i);
+						value = BuilderKit.getShort(rs, i);
 					} else {
 						value = rs.getObject(i);
 					}

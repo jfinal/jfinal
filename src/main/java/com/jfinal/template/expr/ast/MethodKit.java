@@ -48,7 +48,8 @@ public class MethodKit {
 		Class<?>[] cs = {
 			System.class, Runtime.class, Thread.class, Class.class, ClassLoader.class, File.class,
 			Compiler.class, InheritableThreadLocal.class, Package.class, Process.class,
-			RuntimePermission.class, SecurityManager.class, ThreadGroup.class, ThreadLocal.class
+			RuntimePermission.class, SecurityManager.class, ThreadGroup.class, ThreadLocal.class,
+			java.lang.reflect.Method.class
 		};
 		for (Class<?> c : cs) {
 			forbiddenClasses.add(c);
@@ -59,7 +60,7 @@ public class MethodKit {
 	static {
 		String[] ms = {
 			"getClass", "getDeclaringClass", "forName", "newInstance", "getClassLoader",
-			"getMethod", "getMethods", "getField", "getFields",
+			"invoke", // "getMethod", "getMethods", // "getField", "getFields",
 			"notify", "notifyAll", "wait",
 			"load", "exit", "loadLibrary", "halt",
 			"stop", "suspend", "resume", "setDaemon", "setPriority",
@@ -98,12 +99,20 @@ public class MethodKit {
 		forbiddenClasses.add(clazz);
 	}
 	
+	public static void removeForbiddenClass(Class<?> clazz) {
+		forbiddenClasses.remove(clazz);
+	}
+	
 	public static boolean isForbiddenMethod(String methodName) {
 		return forbiddenMethods.contains(methodName);
 	}
 	
 	public static void addForbiddenMethod(String methodName) {
 		forbiddenMethods.add(methodName);
+	}
+	
+	public static void removeForbiddenMethod(String methodName) {
+		forbiddenMethods.remove(methodName);
 	}
 	
 	public static MethodInfo getMethod(Class<?> targetClass, String methodName, Object[] argValues) {

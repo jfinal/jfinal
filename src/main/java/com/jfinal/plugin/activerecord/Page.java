@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class Page<T> implements Serializable {
 	
-	private static final long serialVersionUID = -5395997221963176643L;
+	private static final long serialVersionUID = -7102129155309986923L;
 	
 	private List<T> list;				// list result of this page
 	private int pageNumber;				// page number
@@ -59,11 +59,19 @@ public class Page<T> implements Serializable {
 		return list;
 	}
 	
+	public void setList(List<T> list) {
+		this.list = list;
+	}
+	
 	/**
 	 * Return page number.
 	 */
 	public int getPageNumber() {
 		return pageNumber;
+	}
+	
+	public void setPageNumber(int pageNumber) {
+		this.pageNumber = pageNumber;
 	}
 	
 	/**
@@ -73,6 +81,10 @@ public class Page<T> implements Serializable {
 		return pageSize;
 	}
 	
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+	
 	/**
 	 * Return total page.
 	 */
@@ -80,11 +92,19 @@ public class Page<T> implements Serializable {
 		return totalPage;
 	}
 	
+	public void setTotalPage(int totalPage) {
+		this.totalPage = totalPage;
+	}
+	
 	/**
 	 * Return total row.
 	 */
 	public int getTotalRow() {
 		return totalRow;
+	}
+	
+	public void setTotalRow(int totalRow) {
+		this.totalRow = totalRow;
 	}
 	
 	public boolean isFirstPage() {

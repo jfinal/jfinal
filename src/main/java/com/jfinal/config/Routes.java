@@ -33,11 +33,14 @@ public abstract class Routes {
 	private static List<Routes> routesList = new ArrayList<Routes>();
 	private static Set<String> controllerKeySet = new HashSet<String>();
 	
+	static final boolean DEFAULT_MAPPING_SUPER_CLASS = false;	// 是否映射超类中的方法为路由的默认值
+	Boolean mappingSuperClass = null;							// 是否映射超类中的方法为路由
+	
 	private String baseViewPath = null;
 	private List<Route> routeItemList = new ArrayList<Route>();
 	private List<Interceptor> injectInters = new ArrayList<Interceptor>();
 	
-	private boolean clearAfterMapping = true;
+	private boolean clearAfterMapping = false;
 	
 	/**
 	 * Implement this method to add route, add interceptor and set baseViewPath
@@ -45,10 +48,35 @@ public abstract class Routes {
 	public abstract void config();
 	
 	/**
+	 * 设置是否映射超类中的方法为路由，默认值为 false
+	 * 
+	 * 以免 BaseController extends Controller 用法中的 BaseController 中的方法被映射成 action
+	 */
+	public Routes setMappingSuperClass(boolean mappingSuperClass) {
+		this.mappingSuperClass = mappingSuperClass;
+		return this;
+	}
+	
+	public boolean getMappingSuperClass() {
+		return mappingSuperClass != null ? mappingSuperClass : DEFAULT_MAPPING_SUPER_CLASS;
+	}
+	
+	/**
 	 * Add Routes
 	 */
 	public Routes add(Routes routes) {
 		routes.config();
+		
+		/**
+		 * 如果子 Routes 没有配置 mappingSuperClass，则使用顶层 Routes 的配置
+		 * 主要是为了让 jfinal weixin 用户有更好的体验
+		 * 
+		 * 因为顶层 Routes 和模块级 Routes 配置都可以生效，减少学习成本
+		 */
+		if (routes.mappingSuperClass == null) {
+			routes.mappingSuperClass = this.mappingSuperClass;
+		}
+		
 		routesList.add(routes);
 		return this;
 	}
@@ -108,10 +136,6 @@ public abstract class Routes {
 		return baseViewPath;
 	}
 	
-	public static List<Routes> getRoutesList() {
-		return routesList;
-	}
-	
 	public List<Route> getRouteItemList() {
 		return routeItemList;
 	}
@@ -120,6 +144,14 @@ public abstract class Routes {
 		return injectInters.size() > 0 ?
 				injectInters.toArray(new Interceptor[injectInters.size()]) :
 				InterceptorManager.NULL_INTERS;
+	}
+	
+	public static List<Routes> getRoutesList() {
+		return routesList;
+	}
+	
+	public static Set<String> getControllerKeySet() {
+		return controllerKeySet;
 	}
 	
 	/**

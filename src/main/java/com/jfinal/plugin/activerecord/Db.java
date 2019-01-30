@@ -279,6 +279,10 @@ public class Db {
 		return MAIN.find(sql);
 	}
 	
+	public static List<Record> findAll(String tableName) {
+		return MAIN.findAll(tableName);
+	}
+	
 	/**
 	 * Find first record. I recommend add "limit 1" in your sql.
 	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
@@ -310,19 +314,23 @@ public class Db {
 		return MAIN.findById(tableName, idValue);
 	}
 	
+	public static Record findById(String tableName, String primaryKey, Object idValue) {
+		return MAIN.findById(tableName, primaryKey, idValue);
+	}
+	
 	/**
-	 * Find record by id.
+	 * Find record by ids.
 	 * <pre>
 	 * Example:
-	 * Record user = Db.findById("user", "user_id", 123);
-	 * Record userRole = Db.findById("user_role", "user_id, role_id", 123, 456);
+	 * Record user = Db.findByIds("user", "user_id", 123);
+	 * Record userRole = Db.findByIds("user_role", "user_id, role_id", 123, 456);
 	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
-	 * @param idValue the id value of the record, it can be composite id values
+	 * @param idValues the id value of the record, it can be composite id values
 	 */
-	public static Record findById(String tableName, String primaryKey, Object... idValue) {
-		return MAIN.findById(tableName, primaryKey, idValue);
+	public static Record findByIds(String tableName, String primaryKey, Object... idValues) {
+		return MAIN.findByIds(tableName, primaryKey, idValues);
 	}
 	
 	/**
@@ -339,20 +347,24 @@ public class Db {
 		return MAIN.deleteById(tableName, idValue);
 	}
 	
+	public static boolean deleteById(String tableName, String primaryKey, Object idValue) {
+		return MAIN.deleteById(tableName, primaryKey, idValue);
+	}
+	
 	/**
-	 * Delete record by id.
+	 * Delete record by ids.
 	 * <pre>
 	 * Example:
-	 * Db.deleteById("user", "user_id", 15);
-	 * Db.deleteById("user_role", "user_id, role_id", 123, 456);
+	 * Db.deleteByIds("user", "user_id", 15);
+	 * Db.deleteByIds("user_role", "user_id, role_id", 123, 456);
 	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
-	 * @param idValue the id value of the record, it can be composite id values
+	 * @param idValues the id value of the record, it can be composite id values
 	 * @return true if delete succeed otherwise false
 	 */
-	public static boolean deleteById(String tableName, String primaryKey, Object... idValue) {
-		return MAIN.deleteById(tableName, primaryKey, idValue);
+	public static boolean deleteByIds(String tableName, String primaryKey, Object... idValues) {
+		return MAIN.deleteByIds(tableName, primaryKey, idValues);
 	}
 	
 	/**
@@ -666,7 +678,15 @@ public class Db {
     public static SqlPara getSqlPara(String key, Object... paras) {
     	return MAIN.getSqlPara(key, paras);
     }
-    
+	
+	public static SqlPara getSqlParaByString(String content, Map data) {
+		return MAIN.getSqlParaByString(content, data);
+	}
+	
+	public static SqlPara getSqlParaByString(String content, Object... paras) {
+		return MAIN.getSqlParaByString(content, paras);
+	}
+	
     public static List<Record> find(SqlPara sqlPara) {
     	return MAIN.find(sqlPara);
     }
@@ -682,6 +702,10 @@ public class Db {
     public static Page<Record> paginate(int pageNumber, int pageSize, SqlPara sqlPara) {
     	return MAIN.paginate(pageNumber, pageSize, sqlPara);
     }
+	
+	public static Page<Record> paginate(int pageNumber, int pageSize, boolean isGroupBySql, SqlPara sqlPara) {
+		return MAIN.paginate(pageNumber, pageSize, isGroupBySql, sqlPara);
+	}
 }
 
 

@@ -29,12 +29,13 @@ import com.jfinal.core.Const;
  */
 public class Prop {
 	
-	protected Properties properties = null;
+	protected Properties properties;
 	
 	/**
-	 * protected 构造方法便于子类扩展
+	 * 支持 new Prop().appendIfExists(...)
 	 */
-	protected Prop() {
+	public Prop() {
+		properties = new Properties();
 	}
 	
 	/**
@@ -156,7 +157,7 @@ public class Prop {
 	}
 	
 	public Prop appendIfExists(File file, String encoding) {
-		if (file.exists()) {
+		if (file.isFile()) {
 			append(new Prop(file, encoding));
 		}
 		return this;
@@ -218,6 +219,14 @@ public class Prop {
 	
 	public boolean containsKey(String key) {
 		return properties.containsKey(key);
+	}
+	
+	public boolean isEmpty() {
+		return properties.isEmpty();
+	}
+	
+	public boolean notEmpty() {
+		return ! properties.isEmpty();
 	}
 	
 	public Properties getProperties() {

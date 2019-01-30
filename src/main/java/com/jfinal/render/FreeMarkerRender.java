@@ -152,11 +152,10 @@ public class FreeMarkerRender extends Render {
 		}
 		
 		PrintWriter writer = null;
-        try {
+		try {
 			Template template = config.getTemplate(view);
 			writer = response.getWriter();
 			template.process(data, writer);		// Merge the data-model and the template
-			writer.flush();
 		} catch (Exception e) {
 			throw new RenderException(e);
 		}

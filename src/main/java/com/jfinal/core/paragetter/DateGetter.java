@@ -16,11 +16,12 @@
 package com.jfinal.core.paragetter;
 
 import java.text.ParseException;
-
 import com.jfinal.core.Action;
+import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
 import com.jfinal.core.converter.Converters.DateConverter;
 import com.jfinal.kit.StrKit;
+import com.jfinal.render.RenderManager;
 
 public class DateGetter extends ParaGetter<java.util.Date> {
 	private static DateConverter converter = new DateConverter();
@@ -30,7 +31,11 @@ public class DateGetter extends ParaGetter<java.util.Date> {
 
 	@Override
 	public java.util.Date get(Action action, Controller c) {
-		return c.getParaToDate(getParameterName(), getDefaultValue());
+		String value = c.getPara(this.getParameterName());
+		if(StrKit.notBlank(value)){
+			return to(value);
+		}
+		return this.getDefaultValue();
 	}
 
 	@Override
@@ -41,7 +46,8 @@ public class DateGetter extends ParaGetter<java.util.Date> {
 		try {
 			return converter.convert(v);
 		} catch (ParseException e) {
-			return null;
+			// return null;
+			throw new ActionException(400, RenderManager.me().getRenderFactory().getErrorRender(400),  "Can not parse the parameter \"" + v + "\" to java.util.Date");
 		}
 	}
 

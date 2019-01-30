@@ -24,7 +24,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.sql.DataSource;
@@ -49,11 +51,17 @@ public class MetaBuilder {
 	
 	protected TypeMapping typeMapping = new TypeMapping();
 	
+	protected boolean generateRemarks = false;	// 是否生成备注
+	
 	public MetaBuilder(DataSource dataSource) {
 		if (dataSource == null) {
 			throw new IllegalArgumentException("dataSource can not be null.");
 		}
 		this.dataSource = dataSource;
+	}
+	
+	public void setGenerateRemarks(boolean generateRemarks) {
+		this.generateRemarks = generateRemarks;
 	}
 	
 	public void setDialect(Dialect dialect) {
@@ -236,8 +244,32 @@ public class MetaBuilder {
 		Statement stm = conn.createStatement();
 		ResultSet rs = stm.executeQuery(sql);
 		ResultSetMetaData rsmd = rs.getMetaData();
+		int columnCount = rsmd.getColumnCount();
 		
-		for (int i=1; i<=rsmd.getColumnCount(); i++) {
+		
+		Map<String, ColumnMeta> columnMetaMap = new HashMap<>();
+		if (generateRemarks) {
+			DatabaseMetaData dbMeta = conn.getMetaData();
+			ResultSet colMetaRs = null;
+			try {
+				colMetaRs = dbMeta.getColumns(null, null, tableMeta.name, null);
+				while (colMetaRs.next()) {
+					ColumnMeta columnMeta = new ColumnMeta();
+					columnMeta.name = colMetaRs.getString("COLUMN_NAME");
+					columnMeta.remarks = colMetaRs.getString("REMARKS");
+					columnMetaMap.put(columnMeta.name, columnMeta);
+				}
+			} catch (Exception e) {
+				System.out.println("无法生成 REMARKS");
+			} finally {
+				if (colMetaRs != null) {
+					colMetaRs.close();
+				}
+			}
+		}
+		
+		
+		for (int i=1; i<=columnCount; i++) {
 			ColumnMeta cm = new ColumnMeta();
 			cm.name = rsmd.getColumnName(i);
 			
@@ -282,6 +314,11 @@ public class MetaBuilder {
 			
 			// 构造字段对应的属性名 attrName
 			cm.attrName = buildAttrName(cm.name);
+			
+			// 备注字段赋值
+			if (generateRemarks && columnMetaMap.containsKey(cm.name)) {
+				cm.remarks = columnMetaMap.get(cm.name).remarks;
+			}
 			
 			tableMeta.columnMetas.add(cm);
 		}

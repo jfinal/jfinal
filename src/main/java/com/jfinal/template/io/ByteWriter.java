@@ -46,15 +46,7 @@ public class ByteWriter extends Writer {
 	}
 	
 	public void close() {
-		try {
-			if (out != null) {
-				out.flush();
-			}
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		} finally {
-			out = null;
-		}
+		out = null;
 	}
 	
 	public void write(String str, int offset, int len) throws IOException {

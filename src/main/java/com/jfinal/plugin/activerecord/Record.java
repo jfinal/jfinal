@@ -204,6 +204,15 @@ public class Record implements Serializable {
 		return (T)(result != null ? result : defaultValue);
 	}
 	
+	public Object getObject(String column) {
+		return getColumns().get(column);
+	}
+	
+	public Object getObject(String column, Object defaultValue) {
+		Object result = getColumns().get(column);
+		return result != null ? result : defaultValue;
+	}
+	
 	/**
 	 * Get column of mysql type: varchar, char, enum, set, text, tinytext, mediumtext, longtext
 	 */

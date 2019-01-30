@@ -200,6 +200,10 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Switching data source, dialect and all config by configName
 	 */
 	public M use(String configName) {
+		if (attrs == DaoContainerFactory.daoMap) {
+			throw new RuntimeException("dao 只允许调用查询方法");
+		}
+		
 		this.configName = configName;
 		return (M)this;
 	}
@@ -236,6 +240,31 @@ public abstract class Model<M extends Model> implements Serializable {
 		}*/
 		attrs.put(key, value);
 		return (M)this;
+	}
+	
+	/**
+	 * 如果 attrOrNot 是表中的字段则调用 set(...) 放入数据
+	 * 否则调用 put(...) 放入数据
+	 */
+	public M setOrPut(String attrOrNot, Object value) {
+		Table table = _getTable();
+		if (table != null && table.hasColumnLabel(attrOrNot)) {
+			_getModifyFlag().add(attrOrNot);	// Add modify flag, update() need this flag.
+		}
+		
+		attrs.put(attrOrNot, value);
+		return (M)this;
+	}
+	
+	public M _setOrPut(Map<String, Object> map) {
+		for (Entry<String, Object> e : map.entrySet()) {
+			setOrPut(e.getKey(), e.getValue());
+		}
+		return (M)this;
+	}
+	
+	public M _setOrPut(Model model) {
+		return (M)_setOrPut(model._getAttrs());
 	}
 	
 	/**
@@ -473,7 +502,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		
 		// --------
 		String sql = config.dialect.forPaginate(pageNumber, pageSize, findSql);
-		List<M> list = find(conn, sql, paras);
+		List<M> list = find(config, conn, sql, paras);
 		return new Page<M>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
@@ -542,11 +571,18 @@ public abstract class Model<M extends Model> implements Serializable {
 	public boolean delete() {
 		Table table = _getTable();
 		String[] pKeys = table.getPrimaryKey();
+		if (pKeys.length == 1) {	// 优化：主键大概率只有一个
+			Object id = attrs.get(pKeys[0]);
+			if (id == null)
+				throw new ActiveRecordException("Primary key " + pKeys[0] + " can not be null");
+			return deleteById(table, id);
+		}
+		
 		Object[] ids = new Object[pKeys.length];
 		for (int i=0; i<pKeys.length; i++) {
 			ids[i] = attrs.get(pKeys[i]);
 			if (ids[i] == null)
-				throw new ActiveRecordException("You can't delete model without primary key value, " + pKeys[i] + " is null");
+				throw new ActiveRecordException("Primary key " + pKeys[i] + " can not be null");
 		}
 		return deleteById(table, ids);
 	}
@@ -567,7 +603,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @param idValues the composite id values of the model
 	 * @return true if delete succeed otherwise false
 	 */
-	public boolean deleteById(Object... idValues) {
+	public boolean deleteByIds(Object... idValues) {
 		Table table = _getTable();
 		if (idValues == null || idValues.length != table.getPrimaryKey().length)
 			throw new IllegalArgumentException("Primary key nubmer must equals id value number and can not be null");
@@ -636,14 +672,25 @@ public abstract class Model<M extends Model> implements Serializable {
 	/**
 	 * Find model.
 	 */
-	private List<M> find(Connection conn, String sql, Object... paras) throws Exception {
-		Config config = _getConfig();
+	private List<M> find(Config config, Connection conn, String sql, Object... paras) throws Exception {
 		PreparedStatement pst = conn.prepareStatement(sql);
 		config.dialect.fillStatement(pst, paras);
 		ResultSet rs = pst.executeQuery();
 		List<M> result = config.dialect.buildModelList(rs, _getUsefulClass());	// ModelBuilder.build(rs, getUsefulClass());
 		DbKit.close(rs, pst);
 		return result;
+	}
+	
+	protected List<M> find(Config config, String sql, Object... paras) {
+		Connection conn = null;
+		try {
+			conn = config.getConnection();
+			return find(config, conn, sql, paras);
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			config.close(conn);
+		}
 	}
 	
 	/**
@@ -653,16 +700,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return the list of Model
 	 */
 	public List<M> find(String sql, Object... paras) {
-		Config config = _getConfig();
-		Connection conn = null;
-		try {
-			conn = config.getConnection();
-			return find(conn, sql, paras);
-		} catch (Exception e) {
-			throw new ActiveRecordException(e);
-		} finally {
-			config.close(conn);
-		}
+		return find(_getConfig(), sql, paras);
 	}
 	
 	/**
@@ -670,6 +708,12 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	public List<M> find(String sql) {
 		return find(sql, NULL_PARA_ARRAY);
+	}
+	
+	public List<M> findAll() {
+		Config config = _getConfig();
+		String sql = config.dialect.forFindAll(_getTable().getName());
+		return find(config, sql, NULL_PARA_ARRAY);
 	}
 	
 	/**
@@ -707,11 +751,11 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Find model by composite id values.
 	 * <pre>
 	 * Example:
-	 * User user = User.dao.findById(123, 456);
+	 * User user = User.dao.findByIds(123, 456);
 	 * </pre>
 	 * @param idValues the composite id values of the model
 	 */
-	public M findById(Object... idValues) {
+	public M findByIds(Object... idValues) {
 		return findByIdLoadColumns(idValues, "*");
 	}
 	
@@ -742,8 +786,9 @@ public abstract class Model<M extends Model> implements Serializable {
 		if (table.getPrimaryKey().length != idValues.length)
 			throw new IllegalArgumentException("id values error, need " + table.getPrimaryKey().length + " id value");
 		
-		String sql = _getConfig().dialect.forModelFindById(table, columns);
-		List<M> result = find(sql, idValues);
+		Config config = _getConfig();
+		String sql = config.dialect.forModelFindById(table, columns);
+		List<M> result = find(config, sql, idValues);
 		return result.size() > 0 ? result.get(0) : null;
 	}
 	
@@ -894,10 +939,11 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return the list of Model
 	 */
 	public List<M> findByCache(String cacheName, Object key, String sql, Object... paras) {
-		ICache cache = _getConfig().getCache();
+		Config config = _getConfig();
+		ICache cache = config.getCache();
 		List<M> result = cache.get(cacheName, key);
 		if (result == null) {
-			result = find(sql, paras);
+			result = find(config, sql, paras);
 			cache.put(cacheName, key, result);
 		}
 		return result;

@@ -1351,6 +1351,111 @@ public abstract class Controller {
 	public <T> T enhance(Class<T> targetClass) {
 		return (T)Enhancer.enhance(targetClass);
 	}
+	
+	
+	
+	// --------------------
+	
+	/**
+	 * 为了进一步省代码，创建与 setAttr(...) 功能一模一样的缩短版本 set(...)
+	 */
+	public Controller set(String attributeName, Object attributeValue) {
+		request.setAttribute(attributeName, attributeValue);
+		return this;
+	}
+	
+	// --- 以下是为了省代码，为 getPara 系列方法创建的缩短版本
+	
+	public String get(String name) {
+		return getPara(name);
+	}
+	
+	public String get(String name, String defaultValue) {
+		return getPara(name, defaultValue);
+	}
+	
+	public Integer getInt(String name) {
+		return getParaToInt(name);
+	}
+	
+	public Integer getInt(String name, Integer defaultValue) {
+		return getParaToInt(name, defaultValue);
+	}
+	
+	public Long getLong(String name) {
+		return getParaToLong(name);
+	}
+	
+	public Long getLong(String name, Long defaultValue) {
+		return getParaToLong(name, defaultValue);
+	}
+	
+	public Boolean getBoolean(String name) {
+		return getParaToBoolean(name);
+	}
+	
+	public Boolean getBoolean(String name, Boolean defaultValue) {
+		return getParaToBoolean(name, defaultValue);
+	}
+	
+	public Date getDate(String name) {
+		return getParaToDate(name);
+	}
+	
+	public Date getDate(String name, Date defaultValue) {
+		return getParaToDate(name, defaultValue);
+	}
+	
+	// --- 以下是 getPara 系列中获取 urlPara 的缩短版本
+	
+	/* 为了让继承类可以使用名为 get 的 action 注掉此方法，可使用 get(-1) 来实现本方法的功能
+	public String get() {
+		return getPara();
+	} */
+	
+	public String get(int index) {
+		return getPara(index);
+	}
+	
+	public String get(int index, String defaultValue) {
+		return getPara(index, defaultValue);
+	}
+	
+	public Integer getInt() {
+		return getParaToInt();
+	}
+	
+	public Integer getInt(int index) {
+		return getParaToInt(index);
+	}
+	
+	public Integer getInt(int index, Integer defaultValue) {
+		return getParaToInt(index, defaultValue);
+	}
+	
+	public Long getLong() {
+		return getParaToLong();
+	}
+	
+	public Long getLong(int index) {
+		return getParaToLong(index);
+	}
+	
+	public Long getLong(int index, Long defaultValue) {
+		return getParaToLong(index, defaultValue);
+	}
+	
+	public Boolean getBoolean() {
+		return getParaToBoolean();
+	}
+	
+	public Boolean getBoolean(int index) {
+		return getParaToBoolean(index);
+	}
+	
+	public Boolean getBoolean(int index, Boolean defaultValue) {
+		return getParaToBoolean(index, defaultValue);
+	}
 }
 
 

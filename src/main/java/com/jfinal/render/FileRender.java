@@ -96,21 +96,21 @@ public class FileRender extends Render {
 		if (file == null || !file.isFile()) {
 			RenderManager.me().getRenderFactory().getErrorRender(404).setContext(request, response).render();
 			return ;
-        }
+		}
 		
 		// ---------
 		response.setHeader("Accept-Ranges", "bytes");
 		String fn = downloadFileName == null ? file.getName() : downloadFileName;
 		response.setHeader("Content-disposition", "attachment; " + encodeFileName(request, fn));
-        String contentType = servletContext.getMimeType(file.getName());
-        response.setContentType(contentType != null ? contentType : DEFAULT_CONTENT_TYPE);
-        
-        // ---------
-        if (StrKit.isBlank(request.getHeader("Range"))) {
-        	normalRender();
-        } else {
-        	rangeRender();
-        }
+		String contentType = servletContext.getMimeType(file.getName());
+		response.setContentType(contentType != null ? contentType : DEFAULT_CONTENT_TYPE);
+		
+		// ---------
+		if (StrKit.isBlank(request.getHeader("Range"))) {
+			normalRender();
+		} else {
+			rangeRender();
+		}
 	}
 	
 	protected String encodeFileName(String fileName) {
@@ -164,28 +164,28 @@ public class FileRender extends Render {
 	protected void normalRender() {
 		response.setHeader("Content-Length", String.valueOf(file.length()));
 		InputStream inputStream = null;
-        OutputStream outputStream = null;
-        try {
-            inputStream = new BufferedInputStream(new FileInputStream(file));
-            outputStream = response.getOutputStream();
-            byte[] buffer = new byte[1024];
-            for (int len = -1; (len = inputStream.read(buffer)) != -1;) {
-                outputStream.write(buffer, 0, len);
-            }
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
-        	String name = e.getClass().getSimpleName();
-        	if (name.equals("ClientAbortException") || name.equals("EofException")) {
-        	} else {
-        		throw new RenderException(e);
-        	}
-        } catch (Exception e) {
-        	throw new RenderException(e);
-        } finally {
-            if (inputStream != null)
-                try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
-        }
+		OutputStream outputStream = null;
+		try {
+			inputStream = new BufferedInputStream(new FileInputStream(file));
+			outputStream = response.getOutputStream();
+			byte[] buffer = new byte[1024];
+			for (int len = -1; (len = inputStream.read(buffer)) != -1;) {
+				outputStream.write(buffer, 0, len);
+			}
+			outputStream.flush();
+			outputStream.close();
+		} catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
+			String name = e.getClass().getSimpleName();
+			if (name.equals("ClientAbortException") || name.equals("EofException")) {
+			} else {
+				throw new RenderException(e);
+			}
+		} catch (Exception e) {
+			throw new RenderException(e);
+		} finally {
+			if (inputStream != null)
+				try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
+		}
 	}
 	
 	protected void rangeRender() {
@@ -202,44 +202,44 @@ public class FileRender extends Render {
 		
 		InputStream inputStream = null;
 		OutputStream outputStream = null;
-        try {
-        	long start = range[0];
-        	long end = range[1];
-            inputStream = new BufferedInputStream(new FileInputStream(file));
-            if (inputStream.skip(start) != start)
-                	throw new RuntimeException("File skip error");
-            outputStream = response.getOutputStream();
-            byte[] buffer = new byte[1024];
-            long position = start;
-            for (int len; position <= end && (len = inputStream.read(buffer)) != -1;) {
-            	if (position + len <= end) {
-            		outputStream.write(buffer, 0, len);
-            		position += len;
-            	}
-            	else {
-            		for (int i=0; i<len && position <= end; i++) {
-            			outputStream.write(buffer[i]);
-                    	position++;
-            		}
-            	}
-            }
-            outputStream.flush();
-            outputStream.close();
-        }
-        catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
-        	String name = e.getClass().getSimpleName();
-        	if (name.equals("ClientAbortException") || name.equals("EofException")) {
-        	} else {
-        		throw new RenderException(e);
-        	}
-        }
-        catch (Exception e) {
-        	throw new RenderException(e);
-        }
-        finally {
-            if (inputStream != null)
-                try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
-        }
+		try {
+			long start = range[0];
+			long end = range[1];
+			inputStream = new BufferedInputStream(new FileInputStream(file));
+			if (inputStream.skip(start) != start)
+					throw new RuntimeException("File skip error");
+			outputStream = response.getOutputStream();
+			byte[] buffer = new byte[1024];
+			long position = start;
+			for (int len; position <= end && (len = inputStream.read(buffer)) != -1;) {
+				if (position + len <= end) {
+					outputStream.write(buffer, 0, len);
+					position += len;
+				}
+				else {
+					for (int i=0; i<len && position <= end; i++) {
+						outputStream.write(buffer[i]);
+						position++;
+					}
+				}
+			}
+			outputStream.flush();
+			outputStream.close();
+		}
+		catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
+			String name = e.getClass().getSimpleName();
+			if (name.equals("ClientAbortException") || name.equals("EofException")) {
+			} else {
+				throw new RenderException(e);
+			}
+		}
+		catch (Exception e) {
+			throw new RenderException(e);
+		}
+		finally {
+			if (inputStream != null)
+				try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
+		}
 	}
 	
 	/**

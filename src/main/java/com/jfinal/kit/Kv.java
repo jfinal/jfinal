@@ -113,6 +113,20 @@ public class Kv extends HashMap {
 		return this;
 	}
 	
+	public Kv setIfNotBlank(Object key, String value) {
+		if (StrKit.notBlank(value)) {
+			set(key, value);
+		}
+		return this;
+	}
+	
+	public Kv setIfNotNull(Object key, Object value) {
+		if (value != null) {
+			set(key, value);
+		}
+		return this;
+	}
+	
 	public Kv set(Map map) {
 		super.putAll(map);
 		return this;

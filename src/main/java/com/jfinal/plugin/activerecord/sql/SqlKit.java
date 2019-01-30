@@ -48,6 +48,7 @@ public class SqlKit {
 		
 		engine = new Engine(configName);
 		engine.setDevMode(devMode);
+		engine.setToClassPathSourceFactory();
 		
 		engine.addDirective("namespace", NameSpaceDirective.class);
 		engine.addDirective("sql", SqlDirective.class);
@@ -200,6 +201,52 @@ public class SqlKit {
 	
 	public String toString() {
 		return "SqlKit for config : " + configName;
+	}
+	
+	// ---------
+	
+	/**
+	 * 通过 String 内容获取 SqlPara 对象
+	 * 
+	 * <pre>
+	 * 例子：
+	 *     String content = "select * from user where id = #para(id)";
+	 *     SqlPara sqlPara = getSqlParaByString(content, Kv.by("id", 123));
+	 * 
+	 * 特别注意：content 参数中不能包含 #sql 指令
+	 * </pre>
+	 */
+	public SqlPara getSqlParaByString(String content, Map data) {
+		Template template = engine.getTemplateByString(content);
+		
+		SqlPara sqlPara = new SqlPara();
+		data.put(SQL_PARA_KEY, sqlPara);
+		sqlPara.setSql(template.renderToString(data));
+		data.remove(SQL_PARA_KEY);	// 避免污染传入的 Map
+		return sqlPara;
+	}
+	
+	/**
+	 * 通过 String 内容获取 SqlPara 对象
+	 * 
+	 * <pre>
+	 * 例子：
+	 *     String content = "select * from user where id = #para(0)";
+	 *     SqlPara sqlPara = getSqlParaByString(content, 123);
+	 * 
+	 * 特别注意：content 参数中不能包含 #sql 指令
+	 * </pre>
+	 */
+	public SqlPara getSqlParaByString(String content, Object... paras) {
+		Template template = engine.getTemplateByString(content);
+		
+		SqlPara sqlPara = new SqlPara();
+		Map data = new HashMap();
+		data.put(SQL_PARA_KEY, sqlPara);
+		data.put(PARA_ARRAY_KEY, paras);
+		sqlPara.setSql(template.renderToString(data));
+		// data 为本方法中创建，不会污染用户数据，无需移除 SQL_PARA_KEY、PARA_ARRAY_KEY
+		return sqlPara;
 	}
 }
 

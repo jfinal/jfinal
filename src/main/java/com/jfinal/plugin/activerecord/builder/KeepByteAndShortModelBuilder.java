@@ -57,9 +57,9 @@ public class KeepByteAndShortModelBuilder extends ModelBuilder {
 				int t = types[i];
 				if (t < Types.DATE) {
 					if (t == Types.TINYINT) {
-						value = rs.getByte(i);
+						value = BuilderKit.getByte(rs, i);
 					} else if (t == Types.SMALLINT) {
-						value = rs.getShort(i);
+						value = BuilderKit.getShort(rs, i);
 					} else {
 						value = rs.getObject(i);
 					}

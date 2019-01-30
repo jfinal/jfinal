@@ -49,6 +49,20 @@ public class Okv extends LinkedHashMap {
 		return this;
 	}
 	
+	public Okv setIfNotBlank(Object key, String value) {
+		if (StrKit.notBlank(value)) {
+			set(key, value);
+		}
+		return this;
+	}
+	
+	public Okv setIfNotNull(Object key, Object value) {
+		if (value != null) {
+			set(key, value);
+		}
+		return this;
+	}
+	
 	public Okv set(Map map) {
 		super.putAll(map);
 		return this;

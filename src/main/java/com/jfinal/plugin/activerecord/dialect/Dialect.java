@@ -61,6 +61,10 @@ public abstract class Dialect {
 	public abstract void forDbSave(String tableName, String[] pKeys, Record record, StringBuilder sql, List<Object> paras);
 	public abstract void forDbUpdate(String tableName, String[] pKeys, Object[] ids, Record record, StringBuilder sql, List<Object> paras);
 	
+	public String forFindAll(String tableName) {
+		return "select * from " + tableName;
+	}
+	
 	/**
 	 * 指示 Generator、ModelBuilder、RecordBuilder 是否保持住 Byte、Short 类型
 	 */

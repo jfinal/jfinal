@@ -21,10 +21,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.InterceptorManager;
 import com.jfinal.config.Routes;
@@ -44,16 +42,6 @@ public class ActionMapping {
 		this.routes = routes;
 	}
 	
-	protected Set<String> buildExcludedMethodName() {
-		Set<String> excludedMethodName = new HashSet<String>();
-		Method[] methods = Controller.class.getMethods();
-		for (Method m : methods) {
-			// if (m.getParameterTypes().length == 0)
-				excludedMethodName.add(m.getName());
-		}
-		return excludedMethodName;
-	}
-	
 	protected List<Routes> getRoutesList() {
 		List<Routes> routesList = Routes.getRoutesList();
 		List<Routes> ret = new ArrayList<Routes>(routesList.size() + 1);
@@ -64,27 +52,36 @@ public class ActionMapping {
 	
 	protected void buildActionMapping() {
 		mapping.clear();
-		Set<String> excludedMethodName = buildExcludedMethodName();
+		Class<?> dc;
 		InterceptorManager interMan = InterceptorManager.me();
 		for (Routes routes : getRoutesList()) {
 		for (Route route : routes.getRouteItemList()) {
 			Class<? extends Controller> controllerClass = route.getControllerClass();
 			Interceptor[] controllerInters = interMan.createControllerInterceptor(controllerClass);
 			
-			boolean sonOfController = (controllerClass.getSuperclass() == Controller.class);
-			Method[] methods = (sonOfController ? controllerClass.getDeclaredMethods() : controllerClass.getMethods());
+			boolean declaredMethods = routes.getMappingSuperClass()
+					? controllerClass.getSuperclass() == Controller.class
+					: true;
+			
+			Method[] methods = (declaredMethods ? controllerClass.getDeclaredMethods() : controllerClass.getMethods());
 			for (Method method : methods) {
-				String methodName = method.getName();
-				if (excludedMethodName.contains(methodName) /* || method.getParameterTypes().length != 0 */)
+				if (declaredMethods) {
+					if (!Modifier.isPublic(method.getModifiers()))
+						continue ;
+				} else {
+					dc = method.getDeclaringClass();
+					if (dc == Controller.class || dc == Object.class)
+						continue ;
+				}
+				
+				if (method.getAnnotation(NotAction.class) != null) {
 					continue ;
-				if (sonOfController && !Modifier.isPublic(method.getModifiers()))
-					continue ;
-				if (method.getAnnotation(NotAction.class) != null)
-					continue ;
+				}
 				
 				Interceptor[] actionInters = interMan.buildControllerActionInterceptor(routes.getInterceptors(), controllerInters, controllerClass, method);
 				String controllerKey = route.getControllerKey();
 				
+				String methodName = method.getName();
 				ActionKey ak = method.getAnnotation(ActionKey.class);
 				String actionKey;
 				if (ak != null) {

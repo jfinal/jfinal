@@ -36,7 +36,7 @@ public class DoubleGetter extends ParaGetter<Double> {
 			value = value.trim();
 			return to(value);
 		} catch (Exception e) {
-			throw new ActionException(404, RenderManager.me().getRenderFactory().getErrorRender(404),
+			throw new ActionException(400, RenderManager.me().getRenderFactory().getErrorRender(400),
 					"Can not parse the parameter \"" + value + "\" to Double value.");
 		}
 	}

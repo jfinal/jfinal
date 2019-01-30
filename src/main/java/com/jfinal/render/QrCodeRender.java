@@ -107,10 +107,10 @@ public class QrCodeRender extends Render {
 			MatrixToImageWriter.writeToStream(bitMatrix, "png", response.getOutputStream());    // format: "jpg"、"png"
 		} catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
 			String name = e.getClass().getSimpleName();
-        	if ("ClientAbortException".equals(name) || "EofException".equals(name)) {
-        	} else {
-        		throw new RenderException(e);
-        	}
+			if ("ClientAbortException".equals(name) || "EofException".equals(name)) {
+			} else {
+				throw new RenderException(e);
+			}
 		} catch (Exception e) {
 			throw new RenderException(e);
 		}
