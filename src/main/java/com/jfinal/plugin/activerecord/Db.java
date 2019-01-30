@@ -348,19 +348,19 @@ public class Db {
 	}
 	
 	/**
-	 * Delete record by id.
+	 * Delete record by ids.
 	 * <pre>
 	 * Example:
-	 * Db.deleteById("user", "user_id", 15);
-	 * Db.deleteById("user_role", "user_id, role_id", 123, 456);
+	 * Db.deleteByIds("user", "user_id", 15);
+	 * Db.deleteByIds("user_role", "user_id, role_id", 123, 456);
 	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
-	 * @param idValue the id value of the record, it can be composite id values
+	 * @param idValues the id value of the record, it can be composite id values
 	 * @return true if delete succeed otherwise false
 	 */
-	public static boolean deleteById(String tableName, String primaryKey, Object... idValue) {
-		return MAIN.deleteById(tableName, primaryKey, idValue);
+	public static boolean deleteByIds(String tableName, String primaryKey, Object... idValues) {
+		return MAIN.deleteByIds(tableName, primaryKey, idValues);
 	}
 	
 	/**
