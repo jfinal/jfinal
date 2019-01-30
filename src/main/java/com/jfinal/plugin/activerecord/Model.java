@@ -571,6 +571,13 @@ public abstract class Model<M extends Model> implements Serializable {
 	public boolean delete() {
 		Table table = _getTable();
 		String[] pKeys = table.getPrimaryKey();
+		if (pKeys.length == 1) {
+			Object id = attrs.get(pKeys[0]);
+			if (id == null)
+				throw new ActiveRecordException("Primary key " + pKeys[0] + " can not be null");
+			return deleteById(table, id);
+		}
+		
 		Object[] ids = new Object[pKeys.length];
 		for (int i=0; i<pKeys.length; i++) {
 			ids[i] = attrs.get(pKeys[i]);
