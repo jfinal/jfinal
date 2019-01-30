@@ -603,7 +603,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @param idValues the composite id values of the model
 	 * @return true if delete succeed otherwise false
 	 */
-	public boolean deleteById(Object... idValues) {
+	public boolean deleteByIds(Object... idValues) {
 		Table table = _getTable();
 		if (idValues == null || idValues.length != table.getPrimaryKey().length)
 			throw new IllegalArgumentException("Primary key nubmer must equals id value number and can not be null");
