@@ -571,7 +571,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	public boolean delete() {
 		Table table = _getTable();
 		String[] pKeys = table.getPrimaryKey();
-		if (pKeys.length == 1) {
+		if (pKeys.length == 1) {	// 优化：主键大概率只有一个
 			Object id = attrs.get(pKeys[0]);
 			if (id == null)
 				throw new ActiveRecordException("Primary key " + pKeys[0] + " can not be null");
