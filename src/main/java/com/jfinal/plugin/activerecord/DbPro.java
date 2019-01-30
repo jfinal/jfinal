@@ -39,22 +39,6 @@ public class DbPro {
 	
 	protected final Config config;
 	
-	/**
-	 * 建议用 Db.use(configName) 代替，未来版本会去除该方法
-	 */
-	@Deprecated
-	public static DbPro use(String configName) {
-		return Db.use(configName);
-	}
-	
-	/**
-	 * 建议用 Db.use() 代替，未来版本会去除该方法
-	 */
-	@Deprecated
-	public static DbPro use() {
-		return Db.use();
-	}
-	
 	public DbPro() {
 		if (DbKit.config == null) {
 			throw new RuntimeException("The main config is null, initialize ActiveRecordPlugin first");
@@ -384,7 +368,7 @@ public class DbPro {
 	 * Find record by id with default primary key.
 	 * <pre>
 	 * Example:
-	 * Record user = DbPro.use().findById("user", 15);
+	 * Record user = Db.use().findById("user", 15);
 	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param idValue the id value of the record
@@ -401,8 +385,8 @@ public class DbPro {
 	 * Find record by ids.
 	 * <pre>
 	 * Example:
-	 * Record user = DbPro.use().findByIds("user", "user_id", 123);
-	 * Record userRole = DbPro.use().findByIds("user_role", "user_id, role_id", 123, 456);
+	 * Record user = Db.use().findByIds("user", "user_id", 123);
+	 * Record userRole = Db.use().findByIds("user_role", "user_id, role_id", 123, 456);
 	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
@@ -422,7 +406,7 @@ public class DbPro {
 	 * Delete record by id with default primary key.
 	 * <pre>
 	 * Example:
-	 * DbPro.use().deleteById("user", 15);
+	 * Db.use().deleteById("user", 15);
 	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param idValue the id value of the record
@@ -440,8 +424,8 @@ public class DbPro {
 	 * Delete record by ids.
 	 * <pre>
 	 * Example:
-	 * DbPro.use().deleteByIds("user", "user_id", 15);
-	 * DbPro.use().deleteByIds("user_role", "user_id, role_id", 123, 456);
+	 * Db.use().deleteByIds("user", "user_id", 15);
+	 * Db.use().deleteByIds("user_role", "user_id, role_id", 123, 456);
 	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
@@ -461,7 +445,7 @@ public class DbPro {
 	 * Delete record.
 	 * <pre>
 	 * Example:
-	 * boolean succeed = DbPro.use().delete("user", "id", user);
+	 * boolean succeed = Db.use().delete("user", "id", user);
 	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
@@ -488,7 +472,7 @@ public class DbPro {
 	/**
 	 * <pre>
 	 * Example:
-	 * boolean succeed = DbPro.use().delete("user", user);
+	 * boolean succeed = Db.use().delete("user", user);
 	 * </pre>
 	 * @see #delete(String, String, Record)
 	 */
@@ -647,7 +631,7 @@ public class DbPro {
 	 * <pre>
 	 * Example:
 	 * Record userRole = new Record().set("user_id", 123).set("role_id", 456);
-	 * DbPro.use().save("user_role", "user_id, role_id", userRole);
+	 * Db.use().save("user_role", "user_id, role_id", userRole);
 	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
@@ -698,7 +682,7 @@ public class DbPro {
 	 * Update Record.
 	 * <pre>
 	 * Example:
-	 * DbPro.use().update("user_role", "user_id, role_id", record);
+	 * Db.use().update("user_role", "user_id, role_id", record);
 	 * </pre>
 	 * @param tableName the table name of the Record save to
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
@@ -721,7 +705,7 @@ public class DbPro {
 	 * Update record with default primary key.
 	 * <pre>
 	 * Example:
-	 * DbPro.use().update("user", record);
+	 * Db.use().update("user", record);
 	 * </pre>
 	 * @see #update(String, String, Record)
 	 */
@@ -958,7 +942,7 @@ public class DbPro {
      * <pre>
      * Example:
      * String sql = "insert into user(name, cash) values(?, ?)";
-     * int[] result = DbPro.use().batch(sql, new Object[][]{{"James", 888}, {"zhanjin", 888}});
+     * int[] result = Db.use().batch(sql, new Object[][]{{"James", 888}, {"zhanjin", 888}});
      * </pre>
      * @param sql The SQL to execute.
      * @param paras An array of query replacement parameters.  Each row in this array is one set of batch replacement values.
@@ -1046,7 +1030,7 @@ public class DbPro {
      * <pre>
      * Example:
      * String sql = "insert into user(name, cash) values(?, ?)";
-     * int[] result = DbPro.use().batch(sql, "name, cash", modelList, 500);
+     * int[] result = Db.use().batch(sql, "name, cash", modelList, 500);
      * </pre>
 	 * @param sql The SQL to execute.
 	 * @param columns the columns need be processed by sql.
@@ -1109,7 +1093,7 @@ public class DbPro {
      * Execute a batch of SQL INSERT, UPDATE, or DELETE queries.
      * <pre>
      * Example:
-     * int[] result = DbPro.use().batch(sqlList, 500);
+     * int[] result = Db.use().batch(sqlList, 500);
      * </pre>
 	 * @param sqlList The SQL list to execute.
 	 * @param batchSize batch size.
