@@ -429,28 +429,28 @@ public class DbPro {
 	 * @return true if delete succeed otherwise false
 	 */
 	public boolean deleteById(String tableName, Object idValue) {
-		return deleteById(tableName, config.dialect.getDefaultPrimaryKey(), idValue);
+		return deleteByIds(tableName, config.dialect.getDefaultPrimaryKey(), idValue);
 	}
 	
 	/**
-	 * Delete record by id.
+	 * Delete record by ids.
 	 * <pre>
 	 * Example:
-	 * DbPro.use().deleteById("user", "user_id", 15);
-	 * DbPro.use().deleteById("user_role", "user_id, role_id", 123, 456);
+	 * DbPro.use().deleteByIds("user", "user_id", 15);
+	 * DbPro.use().deleteByIds("user_role", "user_id, role_id", 123, 456);
 	 * </pre>
 	 * @param tableName the table name of the table
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
-	 * @param idValue the id value of the record, it can be composite id values
+	 * @param idValues the id value of the record, it can be composite id values
 	 * @return true if delete succeed otherwise false
 	 */
-	public boolean deleteById(String tableName, String primaryKey, Object... idValue) {
+	public boolean deleteByIds(String tableName, String primaryKey, Object... idValues) {
 		String[] pKeys = primaryKey.split(",");
-		if (pKeys.length != idValue.length)
+		if (pKeys.length != idValues.length)
 			throw new IllegalArgumentException("primary key number must equals id value number");
 		
 		String sql = config.dialect.forDbDeleteById(tableName, pKeys);
-		return update(sql, idValue) >= 1;
+		return update(sql, idValues) >= 1;
 	}
 	
 	/**
@@ -468,7 +468,7 @@ public class DbPro {
 		String[] pKeys = primaryKey.split(",");
 		if (pKeys.length <= 1) {
 			Object t = record.get(primaryKey);	// 引入中间变量避免 JDK 8 传参有误
-			return deleteById(tableName, primaryKey, t);
+			return deleteByIds(tableName, primaryKey, t);
 		}
 		
 		config.dialect.trimPrimaryKeys(pKeys);
@@ -478,7 +478,7 @@ public class DbPro {
 			if (idValue[i] == null)
 				throw new IllegalArgumentException("The value of primary key \"" + pKeys[i] + "\" can not be null in record object");
 		}
-		return deleteById(tableName, primaryKey, idValue);
+		return deleteByIds(tableName, primaryKey, idValue);
 	}
 	
 	/**
@@ -491,7 +491,7 @@ public class DbPro {
 	public boolean delete(String tableName, Record record) {
 		String defaultPrimaryKey = config.dialect.getDefaultPrimaryKey();
 		Object t = record.get(defaultPrimaryKey);	// 引入中间变量避免 JDK 8 传参有误
-		return deleteById(tableName, defaultPrimaryKey, t);
+		return deleteByIds(tableName, defaultPrimaryKey, t);
 	}
 	
 	/**
