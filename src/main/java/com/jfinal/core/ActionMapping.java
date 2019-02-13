@@ -16,17 +16,14 @@
 
 package com.jfinal.core;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.InterceptorManager;
 import com.jfinal.config.Routes;
 import com.jfinal.config.Routes.Route;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 /**
  * ActionMapping
@@ -145,7 +142,7 @@ public class ActionMapping {
 		int i = url.lastIndexOf('/');
 		if (i != -1) {
 			action = mapping.get(url.substring(0, i));
-			urlPara[0] = url.substring(i + 1);
+			if (action != null) urlPara[0] = url.substring(i + 1);
 		}
 		
 		return action;
