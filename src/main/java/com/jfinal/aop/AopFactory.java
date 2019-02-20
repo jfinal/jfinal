@@ -62,10 +62,9 @@ public class AopFactory {
 		synchronized (this) {
 			ret = singletonCache.get(targetClass);
 			if (ret == null) {
-				ret = createObject(targetClass);
-				singletonTl.get().put(targetClass, ret);
-				
 				try {
+					ret = createObject(targetClass);
+					singletonTl.get().put(targetClass, ret);
 					doInject(targetClass, ret);
 					singletonCache.put(targetClass, ret);
 				} finally {
@@ -89,10 +88,9 @@ public class AopFactory {
 			}
 		}
 		
-		ret = createObject(targetClass);
-		map.put(targetClass, ret);
-		
 		try {
+			ret = createObject(targetClass);
+			map.put(targetClass, ret);
 			doInject(targetClass, ret);
 		} finally {
 			map.clear();
