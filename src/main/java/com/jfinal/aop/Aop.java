@@ -85,16 +85,8 @@ public class Aop {
 		return aopFactory.get(targetClass);
 	}
 	
-	public static <T> T get(Class<T> targetClass, int injectDepth) {
-		return aopFactory.get(targetClass, injectDepth);
-	}
-	
 	public static <T> T inject(T targetObject) {
 		return aopFactory.inject(targetObject);
-	}
-	
-	public static <T> T inject(T targetObject, int injectDepth) {
-		return aopFactory.inject(targetObject, injectDepth);
 	}
 	
 	/**
@@ -196,10 +188,6 @@ public class Aop {
 	/* 通过 Aop.getAopFactory().inject(...) 可调用如下两个方法，不直接开放出来
 	public static void inject(Class<?> targetClass, Object targetObject) {
 		aopFactory.inject(targetClass, targetObject);
-	}
-	
-	public static void inject(Class<?> targetClass, Object targetObject, int injectDepth) {
-		aopFactory.inject(targetClass, targetObject, injectDepth);
 	}*/
 	
 	/**
@@ -236,17 +224,6 @@ public class Aop {
 	
 	public static boolean isSingleton() {
 		return aopFactory.isSingleton();
-	}
-	
-	/**
-	 * 设置注入深度，避免被注入类在具有循环依赖时造成无限循环
-	 */
-	public static void setInjectDepth(int injectDepth) {
-		aopFactory.setInjectDepth(injectDepth);
-	}
-	
-	public static int getInjectDepth() {
-		return aopFactory.getInjectDepth();
 	}
 }
 
