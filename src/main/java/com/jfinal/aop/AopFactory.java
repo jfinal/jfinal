@@ -120,7 +120,7 @@ public class AopFactory {
 		}
 	}
 	
-	protected void doInject(Class<?> targetClass, Object targetObject) throws ReflectiveOperationException {	
+	protected void doInject(Class<?> targetClass, Object targetObject) throws ReflectiveOperationException {
 		targetClass = getUsefulClass(targetClass);
 		Field[] fields = targetClass.getDeclaredFields();
 		if (fields.length == 0) {
