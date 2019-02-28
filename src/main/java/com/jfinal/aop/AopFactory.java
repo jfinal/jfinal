@@ -148,7 +148,7 @@ public class AopFactory {
 		// 是否对超类进行注入
 		if (injectSuperClass) {
 			Class<?> c = targetClass.getSuperclass();
-			if (c != Object.class && c != Controller.class && c != Interceptor.class && c != Model.class && c != null) {
+			if (c != Controller.class && c != Object.class && c != Interceptor.class && c != Model.class && c != null) {
 				doInject(c, targetObject);
 			}
 		}
