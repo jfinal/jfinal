@@ -133,6 +133,10 @@ public class FieldKit {
 		
 		getters = ret.toArray(new FieldGetter[ret.size()]);
 	}
+	
+	public static void clearCache() {
+		fieldGetterCache.clear();
+	}
 }
 
 

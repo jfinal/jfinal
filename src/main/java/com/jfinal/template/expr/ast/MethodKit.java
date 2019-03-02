@@ -115,6 +115,10 @@ public class MethodKit {
 		forbiddenMethods.remove(methodName);
 	}
 	
+	public static void clearCache() {
+		methodCache.clear();
+	}
+	
 	public static MethodInfo getMethod(Class<?> targetClass, String methodName, Object[] argValues) {
 		Class<?>[] argTypes = getArgTypes(argValues);
 		Long key = getMethodKey(targetClass, methodName, argTypes);
