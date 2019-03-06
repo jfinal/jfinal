@@ -212,6 +212,8 @@ public class MetaBuilder {
 		int index = 0;
 		while (rs.next()) {
 			String cn = rs.getString("COLUMN_NAME");
+			
+			// 避免 oracle 驱动的 bug 生成重复主键，如：ID,ID
 			if (primaryKey.equals(cn)) {
 				continue ;
 			}
