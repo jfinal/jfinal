@@ -171,11 +171,6 @@ public class DataDictionaryGenerator {
 						columnMeta.type = columnMeta.type + ")";
 					}
 					
-					columnMeta.isNullable = rs.getString("IS_NULLABLE");	// 是否允许 NULL 值
-					if (columnMeta.isNullable == null) {
-						columnMeta.isNullable = "";
-					}
-					
 					columnMeta.isPrimaryKey = "   ";
 					String[] keys = tableMeta.primaryKey.split(",");
 					for (String key : keys) {
@@ -185,14 +180,19 @@ public class DataDictionaryGenerator {
 						}
 					}
 					
+					columnMeta.remarks = rs.getString("REMARKS");			// 备注
+					if (columnMeta.remarks == null) {
+						columnMeta.remarks = "";
+					}
+					
 					columnMeta.defaultValue = rs.getString("COLUMN_DEF");	// 默认值
 					if (columnMeta.defaultValue == null) {
 						columnMeta.defaultValue = "";
 					}
 					
-					columnMeta.remarks = rs.getString("REMARKS");			// 备注
-					if (columnMeta.remarks == null) {
-						columnMeta.remarks = "";
+					columnMeta.isNullable = rs.getString("IS_NULLABLE");	// 是否允许 NULL 值
+					if (columnMeta.isNullable == null) {
+						columnMeta.isNullable = "";
 					}
 					
 					if (tableMeta.colNameMaxLen < columnMeta.name.length()) {
