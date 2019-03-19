@@ -42,7 +42,7 @@ public abstract class Handler {
 	 * Handle target
 	 * @param target url target of this web http request
 	 * @param request HttpServletRequest of this http request
-	 * @param response HttpServletRequest of this http request
+	 * @param response HttpServletResponse of this http response
 	 * @param isHandled JFinalFilter will invoke doFilter() method if isHandled[0] == false,
 	 * 			it is usually to tell Filter should handle the static resource.
 	 */
