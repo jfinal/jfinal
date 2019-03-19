@@ -64,7 +64,7 @@ public class ClassPathSource implements ISource {
 		this.classLoader = getClassLoader();
 		this.url = classLoader.getResource(finalFileName);
 		if (url == null) {
-			throw new IllegalArgumentException("File not found : \"" + finalFileName + "\"");
+			throw new IllegalArgumentException("File not found in CLASSPATH or JAR : \"" + finalFileName + "\"");
 		}
 		
 		processIsInJarAndlastModified();

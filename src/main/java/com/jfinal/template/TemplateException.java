@@ -28,8 +28,8 @@ public class TemplateException extends RuntimeException {
 		super(loc != null ? msg + loc : msg);
 	}
 	
-	public TemplateException(String msg, Location loc, Throwable t) {
-		super(loc != null ? msg + loc : msg, t);
+	public TemplateException(String msg, Location loc, Throwable cause) {
+		super(loc != null ? msg + loc : msg, cause);
 	}
 }
 

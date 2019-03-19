@@ -225,6 +225,17 @@ public class Aop {
 	public static boolean isSingleton() {
 		return aopFactory.isSingleton();
 	}
+	
+	/**
+	 * 设置是否对超类进行注入
+	 */
+	public static void setInjectSuperClass(boolean injectSuperClass) {
+		aopFactory.setInjectSuperClass(injectSuperClass);
+	}
+	
+	public static boolean isInjectSuperClass() {
+		return aopFactory.isInjectSuperClass();
+	}
 }
 
 

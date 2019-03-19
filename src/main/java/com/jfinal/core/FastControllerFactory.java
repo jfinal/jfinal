@@ -53,6 +53,15 @@ public class FastControllerFactory extends ControllerFactory {
 		}
 		return ret;
 	}
+	
+	/**
+	 * 清除 controller 状态，回收利用
+	 */
+	public void recycle(Controller controller) {
+		if (controller != null) {
+			controller._clear_();
+		}
+	}
 }
 
 

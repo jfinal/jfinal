@@ -121,9 +121,7 @@ public class ActionHandler extends Handler {
 			}
 			renderManager.getRenderFactory().getErrorRender(500).setContext(request, response, action.getViewPath()).render();
 		} finally {
-			if (controller != null) {
-				controller._clear_();
-			}
+			controllerFactory.recycle(controller);
 		}
 	}
 	

@@ -211,10 +211,17 @@ public class MetaBuilder {
 		String primaryKey = "";
 		int index = 0;
 		while (rs.next()) {
+			String cn = rs.getString("COLUMN_NAME");
+			
+			// 避免 oracle 驱动的 bug 生成重复主键，如：ID,ID
+			if (primaryKey.equals(cn)) {
+				continue ;
+			}
+			
 			if (index++ > 0) {
 				primaryKey += ",";
 			}
-			primaryKey += rs.getString("COLUMN_NAME");
+			primaryKey += cn;
 		}
 		
 		// 无主键的 table 将在后续的 removeNoPrimaryKeyTable() 中被移除，不再抛出异常

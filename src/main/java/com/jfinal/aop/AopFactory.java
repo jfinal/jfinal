@@ -3,6 +3,8 @@ package com.jfinal.aop;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import com.jfinal.core.Controller;
+import com.jfinal.plugin.activerecord.Model;
 
 /**
  * AopFactory 是工具类 Aop 功能的具体实现，详细用法见 Aop
@@ -21,6 +23,8 @@ public class AopFactory {
 	
 	protected boolean singleton = true;					// 默认单例
 	protected boolean enhance = true;					// 默认增强
+	
+	protected boolean injectSuperClass = false;			// 默认不对超类进行注入
 	
 	public <T> T get(Class<T> targetClass) {
 		try {
@@ -140,6 +144,14 @@ public class AopFactory {
 			field.setAccessible(true);
 			field.set(targetObject, fieldInjectedObject);
 		}
+		
+		// 是否对超类进行注入
+		if (injectSuperClass) {
+			Class<?> c = targetClass.getSuperclass();
+			if (c != Controller.class && c != Object.class && c != Interceptor.class && c != Model.class && c != null) {
+				doInject(c, targetObject);
+			}
+		}
 	}
 	
 	/**
@@ -187,6 +199,18 @@ public class AopFactory {
 	
 	public boolean isSingleton() {
 		return singleton;
+	}
+	
+	/**
+	 * 设置是否对超类进行注入
+	 */
+	public AopFactory setInjectSuperClass(boolean injectSuperClass) {
+		this.injectSuperClass = injectSuperClass;
+		return this;
+	}
+	
+	public boolean isInjectSuperClass() {
+		return injectSuperClass;
 	}
 	
 	public AopFactory addSingletonObject(Object singletonObject) {

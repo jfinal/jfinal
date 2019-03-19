@@ -69,7 +69,7 @@ public class Include extends Stat {
 		Expr expr = exprList.getExpr(0);
 		if (expr instanceof Const && ((Const)expr).isStr()) {
 		} else {
-			throw new ParseException("The first parameter of #include directive must be String", location); 
+			throw new ParseException("The first parameter of #include directive must be String, or use the #render directive", location); 
 		}
 		// 其它参数必须为赋值表达式
 		if (len > 1) {
