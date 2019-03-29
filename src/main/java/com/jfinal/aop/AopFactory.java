@@ -125,24 +125,22 @@ public class AopFactory {
 	protected void doInject(Class<?> targetClass, Object targetObject) throws ReflectiveOperationException {
 		targetClass = getUsefulClass(targetClass);
 		Field[] fields = targetClass.getDeclaredFields();
-		if (fields.length == 0) {
-			return ;
-		}
-		
-		for (Field field : fields) {
-			Inject inject = field.getAnnotation(Inject.class);
-			if (inject == null) {
-				continue ;
+		if (fields.length != 0) {
+			for (Field field : fields) {
+				Inject inject = field.getAnnotation(Inject.class);
+				if (inject == null) {
+					continue ;
+				}
+				
+				Class<?> fieldInjectedClass = inject.value();
+				if (fieldInjectedClass == Void.class) {
+					fieldInjectedClass = field.getType();
+				}
+				
+				Object fieldInjectedObject = doGet(fieldInjectedClass);
+				field.setAccessible(true);
+				field.set(targetObject, fieldInjectedObject);
 			}
-			
-			Class<?> fieldInjectedClass = inject.value();
-			if (fieldInjectedClass == Void.class) {
-				fieldInjectedClass = field.getType();
-			}
-			
-			Object fieldInjectedObject = doGet(fieldInjectedClass);
-			field.setAccessible(true);
-			field.set(targetObject, fieldInjectedObject);
 		}
 		
 		// 是否对超类进行注入
