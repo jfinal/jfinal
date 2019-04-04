@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Model;
+import com.jfinal.validate.Validator;
 
 /**
  * AopFactory 是工具类 Aop 功能的具体实现，详细用法见 Aop
@@ -146,7 +147,7 @@ public class AopFactory {
 		// 是否对超类进行注入
 		if (injectSuperClass) {
 			Class<?> c = targetClass.getSuperclass();
-			if (c != Controller.class && c != Object.class && c != Interceptor.class && c != Model.class && c != null) {
+			if (c != Controller.class && c != Object.class && c != Validator.class && c != Model.class && c != null) {
 				doInject(c, targetObject);
 			}
 		}
