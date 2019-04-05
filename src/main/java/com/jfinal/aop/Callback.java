@@ -99,7 +99,7 @@ class Callback implements MethodInterceptor {
 	}
 	
 	private static final Set<String> buildExcludedMethodName() {
-		Set<String> excludedMethodName = new HashSet<String>();
+		Set<String> excludedMethodName = new HashSet<String>(64, 0.25F);
 		Method[] methods = Object.class.getDeclaredMethods();
 		for (Method m : methods) {
 			excludedMethodName.add(m.getName());
