@@ -149,11 +149,6 @@ public class AopManager {
 		Aop.aopFactory.addMapping(from, to);
 	}
 	
-	/* 通过 AopManager.me().getAopFactory().inject(...) 可调用如下两个方法，不直接开放出来
-	public void inject(Class<?> targetClass, Object targetObject) {
-		Aop.aopFactory.inject(targetClass, targetObject);
-	}*/
-	
 	/**
 	 * 设置 AopFactory，便于扩展自己的 AopFactory 实现
 	 */
