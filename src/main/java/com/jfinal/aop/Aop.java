@@ -28,7 +28,7 @@ package com.jfinal.aop;
  *    而后者先要使用 Class 去创建对象，创建完对象以后对该对象之中的属性进行注入。
  *    简单一句话：get(...) 比 inject(...) 多了一个目标对象的创建过程
  *    
- * 4：是否要 singleton 与 enhance 根据 Aop.setSingleton(...)、Aop.setEhnace(...) 配置来操作
+ * 4：是否要 singleton 与 enhance 根据 AopManager.me().setSingleton(...)、AopManager.me().setEhnace(...) 配置来操作
  * 
  * 5：在目标类上使用注解 Singleton 与注解 Enhance 可以覆盖掉上面的默认配置
  * 
@@ -66,7 +66,7 @@ package com.jfinal.aop;
  *    enhance，所以 doIt() 上的 Aaa 拦截器会生效，而 Aop.inject(...) 用法下 Aaa 拦截器不起用用
  * 
  * 4：以上两点中的 enhance 还取决于配置
- *    Aop.setEnhance(false) 配置以后，只注入对象，但被注入对象不进行 enhance， Aaa、Bbb 拦截器都不会生效
+ *    AopManager.me().setEnhance(false) 配置以后，只注入对象，但被注入对象不进行 enhance， Aaa、Bbb 拦截器都不会生效
  *    
  *    
  * 注意：后续的 jfinal 3.6 版本将根据目标类是否配置了拦截器而进行增强，会去除一切与 enhance 有关的配置与代码
@@ -79,9 +79,9 @@ package com.jfinal.aop;
  *    @Inject(UserServiceImpl.class)			// 此处的 UserServiceImpl 为 UserService 的子类或实现类
  *    UserService userService;
  * 
- * 2：被注入对象默认是 singleton 单例，可以通过 Aop.setSingleton(false) 配置默认不为单例
+ * 2：被注入对象默认是 singleton 单例，可以通过 AopManager.me().setSingleton(false) 配置默认不为单例
  * 
- * 3：被注入对象默认会被 enhance 增强，可以通过 Aop.setEnhance(false) 配置默认不增强
+ * 3：被注入对象默认会被 enhance 增强，可以通过 AopManager.me().setEnhance(false) 配置默认不增强
  * 
  * 4：可以在目标类中中直接配置注解 Singleton 与注解 Enhance：
  *    @Singleton(false)
