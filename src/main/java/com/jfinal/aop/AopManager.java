@@ -44,7 +44,6 @@ public class AopManager {
 	 */
 	public void setInjectDependency(boolean injectDependency) {
 		this.injectDependency = injectDependency;
-		InterceptorManager.me().setInjectDependency(injectDependency);
 	}
 	
 	public boolean isInjectDependency() {
