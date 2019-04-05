@@ -33,6 +33,15 @@ public class AopManager {
 		return me;
 	}
 	
+	/**
+	 * 设置对 Controller、Interceptor、Validator 进行依赖注入，默认值为 false
+	 * 
+	 * 被注入对象默认为 singleton，可以通过 AopManager.me().setSingleton(boolean) 配置
+	 * 该默认值。
+	 * 
+	 * 也可通过在被注入的目标类上使用 Singleton 注解覆盖上述默认值，注解配置
+	 * 优先级高于默认配置
+	 */
 	public void setInjectDependency(boolean injectDependency) {
 		this.injectDependency = injectDependency;
 		InterceptorManager.me().setInjectDependency(injectDependency);

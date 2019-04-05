@@ -18,7 +18,7 @@ package com.jfinal.config;
 
 import java.util.HashMap;
 import java.util.Map;
-import com.jfinal.aop.InterceptorManager;
+import com.jfinal.aop.AopManager;
 import com.jfinal.captcha.CaptchaManager;
 import com.jfinal.captcha.ICaptchaCache;
 import com.jfinal.core.ActionReporter;
@@ -54,8 +54,6 @@ final public class Constants {
 	
 	private ControllerFactory controllerFactory = Const.DEFAULT_CONTROLLER_FACTORY;
 	private int configPluginOrder = Const.DEFAULT_CONFIG_PLUGIN_ORDER;
-	
-	private boolean injectDependency = Const.DEFAULT_INJECT_DEPENDENCY;
 	
 	private ITokenCache tokenCache = null;
 	
@@ -164,21 +162,31 @@ final public class Constants {
 	}
 	
 	/**
-	 * 设置对 Controller、Interceptor 进行依赖注入，默认值为 false
+	 * 设置对 Controller、Interceptor、Validator 进行依赖注入，默认值为 false
 	 * 
-	 * 被注入对象默认为 singleton，可以通过 Aop.setSingleton(boolean) 配置
+	 * 被注入对象默认为 singleton，可以通过 AopManager.me().setSingleton(boolean) 配置
 	 * 该默认值。
 	 * 
 	 * 也可通过在被注入的目标类上使用 Singleton 注解覆盖上述默认值，注解配置
 	 * 优先级高于默认配置
 	 */
 	public void setInjectDependency(boolean injectDependency) {
-		this.injectDependency = injectDependency;
-		InterceptorManager.me().setInjectDependency(injectDependency);
+		AopManager.me().setInjectDependency(injectDependency);
 	}
 	
 	public boolean getInjectDependency() {
-		return injectDependency;
+		return AopManager.me().isInjectDependency();
+	}
+	
+	/**
+	 * 设置是否对超类进行注入
+	 */
+	public void setInjectSuperClass(boolean injectSuperClass) {
+		AopManager.me().setInjectSuperClass(injectSuperClass);
+	}
+	
+	public boolean getInjectSuperClass() {
+		return AopManager.me().isInjectSuperClass();
 	}
 	
 	/**

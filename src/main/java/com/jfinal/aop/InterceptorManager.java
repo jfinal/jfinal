@@ -39,11 +39,11 @@ public class InterceptorManager {
 	
 	private boolean injectDependency = Const.DEFAULT_INJECT_DEPENDENCY;
 	
-	public void setInjectDependency(boolean injectDependency) {
+	void setInjectDependency(boolean injectDependency) {
 		this.injectDependency = injectDependency;
 	}
 	
-	public boolean isInjectDependency() {
+	boolean isInjectDependency() {
 		return injectDependency;
 	}
 	

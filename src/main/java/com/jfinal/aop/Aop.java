@@ -95,7 +95,7 @@ package com.jfinal.aop;
  */
 public class Aop {
 	
-	private static AopFactory aopFactory = new AopFactory();
+	static AopFactory aopFactory = new AopFactory();
 	
 	public static <T> T get(Class<T> targetClass) {
 		return aopFactory.get(targetClass);
@@ -105,153 +105,10 @@ public class Aop {
 		return aopFactory.inject(targetObject);
 	}
 	
-	/**
-	 * 添加单例对象
-	 * 
-	 * 由于 Aop 创建对象时不支持为构造方法传递参数，故添加此方法
-	 * 
-	 * <pre>
-	 * 示例：
-	 * // Service 类的构造方法中传入了两个参数
-	 * Service service = new Service(paraAaa, paraBbb);
-	 * Aop.addSingletonObject(service);
-	 * 
-	 * // 上面代码添加完成以后，可以在任何地方通过下面的方式获取单例对象 
-	 * service = Aop.get(Service.class);
-	 * 
-	 * // 被添加进去的对象还可以用于注入
-	 * @Inject
-	 * Service service;
-	 * 
-	 * // 在添加为单例对象之前还可以先为其注入依赖对象
-	 * Service service = new Service(paraAaa, paraBbb);
-	 * Aop.inject(service);		// 这里是对 Service 进行依赖注入
-	 * Aop.addSingletonObject(service);
-	 * </pre>
-	 */
-	public static void addSingletonObject(Object singletonObject) {
-		aopFactory.addSingletonObject(singletonObject);
-	}
-	
-	/**
-	 * 添加父类到子类的映射，或者接口到实现类的映射。
-	 * 
-	 * 该方法用于为父类、抽象类、或者接口注入子类或者实现类
-	 * 
-	 * <pre>
-	 * 示例：
-	 * // 定义接口
-	 * public interface IService {
-	 *    public void justDoIt();
-	 * }
-	 * 
-	 * // 定义接口的实现类
-	 * public class MyService implements IService {
-	 *   public void justDoIt() {
-	 *      ...
-	 *   }
-	 * }
-	 * 
-	 * // 添加接口与实现类的映射关系
-	 * Aop.addMapping(IService.class, MyService.class)
-	 * 
-	 * public class MyController {
-	 * 
-	 *    // 由于前面添加了接口与实现类的关系，所以下面将被注入实现类 MyService 对象
-	 *    @Inject
-	 *    IService service
-	 *    
-	 *    public action() {
-	 *       service.justDoIt();
-	 *    }
-	 * }
-	 * 
-	 * 如上所示，通过建立了 IService 与 MyService 的映射关系，在 @Inject 注入的时候
-	 * 就会注入映射好的实现类，当然也可以通过在 @Inject 注解中指定实现类来实现：
-	 * 
-	 * @Inject(MyService.class)
-	 * IService service
-	 * 
-	 * 但是上面的的方法是写死在代码中的，不方便改变实现类
-	 * 
-	 * </pre>
-	 * 
-	 * @param from 父类或者接口
-	 * @param to 父类的子类或者接口的实现类
-	 */
-	public static <T> void addMapping(Class<T> from, Class<? extends T> to) {
-		aopFactory.addMapping(from, to);
-	}
-	
-	/**
-	 * 功能与 addMapping(Class<T> from, Class<? extends T> to) 相同，仅仅是第二个参数
-	 * 由 Class 改为 String 类型，便于从外部配置文件传递 String 参数过来
-	 * 
-	 * <pre>
-	 * 示例：
-	 * Aop.addMapping(IService.class, "com.xxx.MyService")
-	 * 
-	 * 以上代码的参数 "com.xxx.MyService" 可通过外部配置文件传入，便于通过配置文件切换接口的
-	 * 实现类：
-	 * Aop.addMapping(IService.class, PropKit.get("ServiceImpl");
-	 * 
-	 * </pre>
-	 */
-	public static <T> void addMapping(Class<T> from, String to) {
-		aopFactory.addMapping(from, to);
-	}
-	
-	/* 通过 Aop.getAopFactory().inject(...) 可调用如下两个方法，不直接开放出来
-	public static void inject(Class<?> targetClass, Object targetObject) {
-		aopFactory.inject(targetClass, targetObject);
+	/* 通过 AopManager.me().getAopFactory().inject(...) 可调用如下方法，不直接开放出来
+	public static <T> T inject(Class<T> targetClass, T targetObject) {
+		return aopFactory.inject(targetClass, targetObject);
 	}*/
-	
-	/**
-	 * 设置 AopFactory，便于扩展自己的 AopFactory 实现
-	 */
-	public static void setAopFactory(AopFactory aopFactory) {
-		if (aopFactory == null) {
-			throw new IllegalArgumentException("aopFactory can not be null");
-		}
-		Aop.aopFactory = aopFactory;
-	}
-	
-	public static AopFactory getAopFactory() {
-		return aopFactory;
-	}
-	
-	/**
-	 * 设置被注入的对象是否被增强，可使用 @Enhace(boolean) 覆盖此默认值
-	 * 
-	 * 由于下一版本的 jfinal 3.6 将根据目标类中是否存在 Before 注解
-	 * 来决定是否增强，所以该 setEnhance 方法仅仅是一个过渡功能，不建议使用
-	 */
-	@Deprecated
-	public static void setEnhance(boolean enhance) {
-		aopFactory.setEnhance(enhance);
-	}
-	
-	/**
-	 * 设置被注入的对象是否为单例，可在目标类上使用 @Singleton(boolean) 覆盖此默认值 
-	 */
-	public static void setSingleton(boolean singleton) {
-		aopFactory.setSingleton(singleton);
-	}
-	
-	public static boolean isSingleton() {
-		return aopFactory.isSingleton();
-	}
-	
-	/**
-	 * 设置是否对超类进行注入
-	 */
-	public static void setInjectSuperClass(boolean injectSuperClass) {
-		aopFactory.setInjectSuperClass(injectSuperClass);
-	}
-	
-	public static boolean isInjectSuperClass() {
-		return aopFactory.isInjectSuperClass();
-	}
 }
 
 
