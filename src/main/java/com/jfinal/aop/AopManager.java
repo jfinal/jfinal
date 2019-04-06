@@ -41,6 +41,9 @@ public class AopManager {
 	 * 
 	 * 也可通过在被注入的目标类上使用 Singleton 注解覆盖上述默认值，注解配置
 	 * 优先级高于默认配置
+	 * 
+	 * 注意：该配置仅针对于配置 jfinal web。而 Aop.get(...)、Aop.inject(...) 默认就会进行注入，
+	 *      无需配置
 	 */
 	public void setInjectDependency(boolean injectDependency) {
 		this.injectDependency = injectDependency;
