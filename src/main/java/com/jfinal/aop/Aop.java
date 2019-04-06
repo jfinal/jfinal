@@ -69,8 +69,8 @@ package com.jfinal.aop;
  *    AopManager.me().setEnhance(false) 配置以后，只注入对象，但被注入对象不进行 enhance， Aaa、Bbb 拦截器都不会生效
  *    
  *    
- * 注意：后续的 jfinal 3.6 版本将根据目标类是否配置了拦截器而进行增强，会去除一切与 enhance 有关的配置与代码
- *      这里与 enhance 有关的配置仅为 jfinal 3.5 到 jfinal 3.6 的过渡
+ * 注意：后续的 jfinal 版本将考虑根据目标类是否配置了拦截器进行增强的新设计，可能会去除与 enhance 有关的配置与代码
+ *      所以与 enhance 有关的配置已被 @Deprecated，不建议使用
  * 
  * 
  * 
@@ -88,7 +88,7 @@ package com.jfinal.aop;
  *    @Enhance(false)
  *    public class MyService {...}
  *    
- *    注意：如上在配置会覆盖掉 2、3 中 setSingleton()/setEnhance() 方法配置的默认值
+ *    注意：以上代码中的注解会覆盖掉 2、3 中 setSingleton()/setEnhance() 方法配置的默认值
  * 
  * 5：如上 2、3、4 中的配置，建议的用法是：先用 /setSingleton()/setEnhance() 配置大多数情况，然后在个别
  *    违反上述配置的情况下使用 Singleton 注解与 Enhance 注解来覆盖默认配置，这样可以节省大量代码

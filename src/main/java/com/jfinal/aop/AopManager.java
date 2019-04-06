@@ -174,8 +174,9 @@ public class AopManager {
 	/**
 	 * 设置被注入的对象是否被增强，可使用 @Enhace(boolean) 覆盖此默认值
 	 * 
-	 * 由于下一版本的 jfinal 3.6 将根据目标类中是否存在 Before 注解
-	 * 来决定是否增强，所以该 setEnhance 方法仅仅是一个过渡功能，不建议使用
+	 * 后续的 jfinal 版本将考虑根据目标类是否配置了拦截器进行增强的新设计，
+	 * 可能会去除与 enhance 有关的配置与代码，所以与 enhance 有关的配置
+	 * 已被 @Deprecated，不建议使用
 	 */
 	@Deprecated
 	public void setEnhance(boolean enhance) {
