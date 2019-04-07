@@ -18,7 +18,6 @@ package com.jfinal.template.source;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -141,9 +140,8 @@ public class ClassPathSource implements ISource {
 	
 	public static StringBuilder loadFile(InputStream inputStream, String encoding) {
 		StringBuilder ret = new StringBuilder();
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new InputStreamReader(inputStream, encoding));
+		
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, encoding))) {
 			// br = new BufferedReader(new FileReader(fileName));
 			String line = br.readLine();
 			if (line != null) {
@@ -158,15 +156,6 @@ public class ClassPathSource implements ISource {
 			return ret;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		}
-		finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					com.jfinal.kit.LogKit.error(e.getMessage(), e);
-				}
-			}
 		}
 	}
 	

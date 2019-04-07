@@ -19,7 +19,6 @@ package com.jfinal.template.source;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import com.jfinal.template.EngineConfig;
 
@@ -92,9 +91,8 @@ public class FileSource implements ISource {
 	
 	public static StringBuilder loadFile(File file, String encoding) {
 		StringBuilder ret = new StringBuilder((int)file.length() + 3);
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding));
+		
+		try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), encoding))) {
 			// br = new BufferedReader(new FileReader(fileName));
 			String line = br.readLine();
 			if (line != null) {
@@ -109,15 +107,6 @@ public class FileSource implements ISource {
 			return ret;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		}
-		finally {
-			if (br != null) {
-				try {
-					br.close();
-				} catch (IOException e) {
-					com.jfinal.kit.LogKit.error(e.getMessage(), e);
-				}
-			}
 		}
 	}
 	
