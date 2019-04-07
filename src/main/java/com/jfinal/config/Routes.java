@@ -105,7 +105,7 @@ public abstract class Routes {
 	 * Add inject interceptor for controller in this Routes
 	 */
 	public Routes addInterceptor(Interceptor interceptor) {
-		if (InterceptorManager.me().isInjectDependency()) {
+		if (com.jfinal.aop.AopManager.me().isInjectDependency()) {
 			com.jfinal.aop.Aop.inject(interceptor);
 		}
 		injectInters.add(interceptor);

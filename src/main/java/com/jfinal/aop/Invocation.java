@@ -31,7 +31,6 @@ public class Invocation {
 	private Action action;
 	// private static final Object[] NULL_ARGS = new Object[0];	// Prevent new Object[0] by jvm for paras of action invocation.
 	
-	boolean useInjectTarget;
 	private Object target;
 	private Method method;
 	private Object[] args;
@@ -78,10 +77,8 @@ public class Invocation {
 				else {
 					// if (!Modifier.isAbstract(method.getModifiers()))
 						// returnValue = methodProxy.invokeSuper(target, args);
-					if (useInjectTarget)
-						returnValue = methodProxy.invoke(target, args);
-					else
-						returnValue = methodProxy.invokeSuper(target, args);
+					
+					returnValue = methodProxy.invokeSuper(target, args);
 				}
 			}
 			catch (InvocationTargetException e) {

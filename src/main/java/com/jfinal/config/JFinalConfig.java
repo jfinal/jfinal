@@ -77,7 +77,7 @@ public abstract class JFinalConfig {
 	public void onStop() {}
 	
 	/**
-	 * 为减少记忆成本、代码输入量以及输入手误的概率 afterJFinalStart() 已被 onStop() 取代，
+	 * 为减少记忆成本、代码输入量以及输入手误的概率 beforeJFinalStop() 已被 onStop() 取代，
 	 * 功能暂时保留仍然可用
 	 */
 	@Deprecated

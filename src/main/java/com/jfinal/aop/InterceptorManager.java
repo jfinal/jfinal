@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
-import com.jfinal.core.Const;
 import com.jfinal.core.Controller;
 
 /**
@@ -36,16 +35,6 @@ import com.jfinal.core.Controller;
  * 2：不同对象获取同一个 method 之上的 Before 得到的对象 id 值不相同
  */
 public class InterceptorManager {
-	
-	private boolean injectDependency = Const.DEFAULT_INJECT_DEPENDENCY;
-	
-	public void setInjectDependency(boolean injectDependency) {
-		this.injectDependency = injectDependency;
-	}
-	
-	public boolean isInjectDependency() {
-		return injectDependency;
-	}
 	
 	public static final Interceptor[] NULL_INTERS = new Interceptor[0];
 	
@@ -173,7 +162,7 @@ public class InterceptorManager {
 				result[i] = singletonMap.get(interceptorClasses[i]);
 				if (result[i] == null) {
 					result[i] = (Interceptor)interceptorClasses[i].newInstance();
-					if (injectDependency) {
+					if (AopManager.me().isInjectDependency()) {
 						Aop.inject(result[i]);
 					}
 					singletonMap.put(interceptorClasses[i], result[i]);
@@ -208,7 +197,7 @@ public class InterceptorManager {
 		}
 		
 		for (Interceptor inter : inters) {
-			if (injectDependency) {
+			if (AopManager.me().isInjectDependency()) {
 				Aop.inject(inter);
 			}
 			singletonMap.put(inter.getClass(), inter);

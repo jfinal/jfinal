@@ -124,7 +124,7 @@ public class Converters {
 	
 	public static class DateConverter implements IConverter<java.util.Date> {
 		// java.util.Date 类型专为传统 java bean 带有该类型的 setter 方法转换做准备，万不可去掉
-		// 经测试 JDBC 不会返回 java.util.Data 类型。java.sql.Date, java.sql.Time,java.sql.Timestamp 全部直接继承自 java.util.Data, 所以 getDate可以返回这三类数据
+		// 经测试 JDBC 不会返回 java.util.Date 类型。java.sql.Date, java.sql.Time,java.sql.Timestamp 全部直接继承自 java.util.Date, 所以 getDate可以返回这三类数据
 		@Override
 		public java.util.Date convert(String s) throws ParseException {
 			if (timeStampWithoutSecPatternLen == s.length()) {

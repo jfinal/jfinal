@@ -106,7 +106,11 @@ public class Cron4jPlugin implements IPlugin {
 	
 	private List<TaskInfo> taskInfoList = new ArrayList<TaskInfo>();
 	public static final String defaultConfigName = "cron4j";
-
+	
+	public List<TaskInfo> getTaskInfoList() {
+		return taskInfoList;
+	}
+	
 	public Cron4jPlugin() {
 
 	}

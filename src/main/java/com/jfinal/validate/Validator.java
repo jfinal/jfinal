@@ -66,6 +66,11 @@ public abstract class Validator implements Interceptor {
 		Validator validator = null;
 		try {
 			validator = getClass().newInstance();
+			
+			if (com.jfinal.aop.AopManager.me().isInjectDependency()) {
+				com.jfinal.aop.Aop.inject(validator);
+			}
+			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
