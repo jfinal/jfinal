@@ -406,7 +406,10 @@ public abstract class Controller {
 		try {
 			if (StrKit.isBlank(value))
 				return defaultValue;
-			return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value.trim());
+			
+			// return new java.text.SimpleDateFormat("yyyy-MM-dd").parse(value.trim());
+			return (Date)TypeConverter.me().convert(Date.class, value);
+			
 		} catch (Exception e) {
 			throw new ActionException(400, renderManager.getRenderFactory().getErrorRender(400),  "Can not parse the parameter \"" + value + "\" to Date value.");
 		}
