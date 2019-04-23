@@ -25,7 +25,7 @@ import com.jfinal.template.Engine;
 /**
  * JFinalConfig.
  * <p>
- * Config order: configConstant(), configPlugin(), configRoute(), configEngine(), configInterceptor(), configHandler()
+ * Config order: configConstant(), configInterceptor(), configRoute(), configPlugin(), configEngine(), configHandler()
  */
 public abstract class JFinalConfig {
 	
