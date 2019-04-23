@@ -45,19 +45,19 @@ class Config {
 	}
 	
 	/*
-	 * Config order: constant, plugin, route, engine, interceptor, handler
+	 * Config order: constant, interceptor, route, plugin, engine, handler
 	 */
 	static void configJFinal(JFinalConfig jfinalConfig) {
 		jfinalConfig.configConstant(constants);			initLogFactory();	initEngine();
 		
 		configPluginWithOrder(1, jfinalConfig);
-		jfinalConfig.configRoute(routes);
+		jfinalConfig.configInterceptor(interceptors);
 		
 		configPluginWithOrder(2, jfinalConfig);
-		jfinalConfig.configEngine(engine);
+		jfinalConfig.configRoute(routes);
 		
 		configPluginWithOrder(3, jfinalConfig);
-		jfinalConfig.configInterceptor(interceptors);
+		jfinalConfig.configEngine(engine);
 		
 		configPluginWithOrder(4, jfinalConfig);
 		jfinalConfig.configHandler(handlers);
