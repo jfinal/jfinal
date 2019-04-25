@@ -200,7 +200,7 @@ public class Converters {
 	// 支持 html5 的 datetime 组件，格式为：2019-01-23T11:22
 	public static String supportHtml5DateTimePattern(String s) {
 		if (s.indexOf(' ') == -1 && s.indexOf('T') != -1 && s.indexOf('-') != -1 && s.indexOf(':') != -1) {
-		    return s.replace("T", " ");
+			return s.replace("T", " ");
 		} else {
 			return s;
 		}
