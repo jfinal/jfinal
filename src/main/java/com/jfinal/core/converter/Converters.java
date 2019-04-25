@@ -179,6 +179,11 @@ public class Converters {
 		// mysql type: timestamp, datetime
 		@Override
 		public java.sql.Timestamp convert(String s) throws ParseException {
+			// 支持 html5 的 datetime 组件，格式为：2019-01-23T11:22
+			if(s.indexOf(' ') == -1 && s.indexOf('T') != -1 && s.indexOf('-') != -1 && s.indexOf(':') != -1) {
+			    s = s.replace("T", " ");
+			}
+			
 			if (timeStampWithoutSecPatternLen == s.length()) {
 				s = s + ":00";
 			}
