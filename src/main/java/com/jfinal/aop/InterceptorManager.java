@@ -214,6 +214,14 @@ public class InterceptorManager {
 			globalServiceInters = temp;
 		}
 	}
+	
+	public java.util.List<Class<?>> getGlobalServiceInterceptorClasses() {
+		ArrayList<Class<?>> ret = new ArrayList<>(globalServiceInters.length + 3);
+		for (Interceptor i : globalServiceInters) {
+			ret.add(i.getClass());
+		}
+		return ret;
+	}
 }
 
 
