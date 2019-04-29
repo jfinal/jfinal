@@ -44,10 +44,13 @@ public class FieldKit {
 		LinkedList<FieldGetter> ret = new LinkedList<FieldGetter>();
 		
 		ret.addLast(new GetterMethodFieldGetter(null));
+		ret.addLast(new RealFieldGetter(null));
 		ret.addLast(new ModelFieldGetter());
 		ret.addLast(new RecordFieldGetter());
 		ret.addLast(new MapFieldGetter());
-		ret.addLast(new RealFieldGetter(null));
+		
+		// 挪到第二的位置，addSharedObject(..., modelObj) 用法可以获取到 model 中的 public 属性
+		// ret.addLast(new RealFieldGetter(null));
 		ret.addLast(new ArrayLengthGetter());
 		// ret.addLast(new IsMethodFieldGetter());
 		
