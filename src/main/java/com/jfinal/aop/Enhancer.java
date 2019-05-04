@@ -16,6 +16,8 @@
 
 package com.jfinal.aop;
 
+import com.jfinal.proxy.Proxy;
+
 /**
  * Enhancer
  * 
@@ -31,22 +33,22 @@ package com.jfinal.aop;
  * 所以删除了 Enhancer 中所有带 singletonKey 参数的方法
  * </pre>
  */
-@SuppressWarnings("unchecked")
+@Deprecated
 public class Enhancer {
 	
 	private Enhancer() {}
 	
 	public static <T> T enhance(Class<T> targetClass) {
-		return (T)net.sf.cglib.proxy.Enhancer.create(targetClass, new Callback());
+		// return (T)net.sf.cglib.proxy.Enhancer.create(targetClass, new Callback());
+		return Proxy.get(targetClass);
 	}
 	
 	/**
 	 * 下一个版本的 aop 将不再支持 inject interceptor，所以本方法被 Deprecated
-	 */
 	@Deprecated
 	public static <T> T enhance(Class<T> targetClass, Interceptor... injectInters) {
 		return (T)net.sf.cglib.proxy.Enhancer.create(targetClass, new Callback(injectInters));
-	}
+	} */
 }
 
 
