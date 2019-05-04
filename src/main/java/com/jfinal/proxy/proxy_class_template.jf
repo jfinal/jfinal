@@ -1,0 +1,84 @@
+#--
+生成的源代码格式如下：
+
+package com.xxx;
+import com.jfinal.aop.Invocation;
+
+public class Target$$EnhancerByJFinal extends Target {
+	public String test(String p0, int p1) {
+		Invocation inv = new Invocation(this, 123L,
+			args -> {
+				return super.test(
+							(String)args[0],
+							(int)args[1]
+						);
+			},
+			p0, p1);
+		
+		inv.invoke();
+		
+		return inv.getReturnValue();
+	}
+}
+--#
+
+package #(pkg);
+import com.jfinal.aop.Invocation;
+public class #(name) extends #(targetName) {
+#for(x : methodList)
+	
+	public #(x.returnType) #(x.name)(#for(y : x.paraTypes)#(y) p#(for.index)#(for.last ? "" : ", ")#end) {
+		#if(x.onlyVarArgs)
+		#@newInvocationForOnlyVarArgs()
+		#else
+		#@newInvocationForCommon()
+		#end
+		
+		inv.invoke();
+		#if (x.returnType != "void")
+		
+		return inv.getReturnValue();
+		#end
+	}
+#end
+}
+
+#--
+   一般参数情况
+--#
+#define newInvocationForCommon()
+		Invocation inv = new Invocation(this, #(x.proxyMethodKey)L,
+			args -> {
+				#(x.frontReturn) #(name).super.#(x.name)(
+						#for(y : x.paraTypes)
+						(#(y.replace("...", "[]")))args[#(for.index)]#(for.last ? "" : ",")
+						#end
+					);
+				#(x.backReturn)
+			}
+			#for(y : x.paraTypes), p#(for.index)#end);
+#end
+#--
+   只有一个参数，且该参数是可变参数
+--#
+#define newInvocationForOnlyVarArgs()
+		Object[] p0Array = new Object[p0.length];
+		for (int i=0; i<p0.length; i++) {
+			p0Array[i] = p0[i];
+		}
+		
+		Invocation inv = new Invocation(this, #(x.proxyMethodKey)L,
+			args -> {
+				#setLocal(t = x.paraTypes[0].replace("...", ""))
+				#(t)[] array = new #(t)[args.length];
+				for (int i=0; i<array.length; i++) {
+					array[i] = (#(t))args[i];
+				}
+				
+				#(x.frontReturn) #(name).super.#(x.name)(
+						array
+					);
+				#(x.backReturn)
+			}
+			, p0Array);
+#end
