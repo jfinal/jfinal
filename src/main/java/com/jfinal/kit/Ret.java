@@ -28,17 +28,7 @@ import com.jfinal.json.Json;
  * 1：业务层需要返回多个返回值，例如要返回业务状态以及数据
  * 2：renderJson(ret) 响应 json 数据给客户端
  * 
- * 二、两种工作模式：
- * 1：默认情况下即为新工作模式，当调用 ok()、fail()、setOk()、setFail() 方法之后
- *    Ret 生成的 json 数据的状态属性为：state:ok 以及 state:fail
- * 
- * 2：通过调用 Ret.setToOldWorkMode() 可以切换到旧工作模式，与新工作模式的不同在于
- *    Ret 生成的 json 数据的状态属性为：isOk:true/false 以及 isFail:true/false
- * 
- * 3：旧工作模式为了兼容 JFinal 3.2 之前的版本而保留，强烈建议使用新工作模式
- *    新工作模式非常有利于使用 json 数据格式的 API 类型项目
- * 
- * 三、实例
+ * 二、实例
  * 1：服务端
  *    Ret ret = service.justDoIt(paras);
  *    renderJson(ret);
@@ -74,20 +64,6 @@ public class Ret extends HashMap {
 	private static final String STATE_OK = "ok";
 	private static final String STATE_FAIL = "fail";
 	
-	// 以下为旧工作模式下的常量名
-	private static final String OLD_STATE_OK = "isOk";
-	private static final String OLD_STATE_FAIL = "isFail";
-	
-	// 默认为新工作模式
-	private static boolean newWorkMode = true;
-	
-	/**
-	 * 设置为旧工作模式，为了兼容 jfinal 3.2 之前的版本
-	 */
-	public static void setToOldWorkMode() {
-		newWorkMode = false;
-	}
-	
 	public Ret() {
 	}
 	
@@ -120,66 +96,34 @@ public class Ret extends HashMap {
 	}
 	
 	public Ret setOk() {
-		if (newWorkMode) {
-			super.put(STATE, STATE_OK);
-		} else {
-			super.put(OLD_STATE_OK, Boolean.TRUE);
-			super.put(OLD_STATE_FAIL, Boolean.FALSE);
-		}
+		super.put(STATE, STATE_OK);
 		return this;
 	}
 	
 	public Ret setFail() {
-		if (newWorkMode) {
-			super.put(STATE, STATE_FAIL);
-		} else {
-			super.put(OLD_STATE_FAIL, Boolean.TRUE);
-			super.put(OLD_STATE_OK, Boolean.FALSE);
-		}
+		super.put(STATE, STATE_FAIL);
 		return this;
 	}
 	
 	public boolean isOk() {
-		if (newWorkMode) {
-			Object state = get(STATE);
-			if (STATE_OK.equals(state)) {
-				return true;
-			}
-			if (STATE_FAIL.equals(state)) {
-				return false;
-			}
-		} else {
-			Boolean isOk = (Boolean)get(OLD_STATE_OK);
-			if (isOk != null) {
-				return isOk;
-			}
-			Boolean isFail = (Boolean)get(OLD_STATE_FAIL);
-			if (isFail != null) {
-				return !isFail;
-			}
+		Object state = get(STATE);
+		if (STATE_OK.equals(state)) {
+			return true;
+		}
+		if (STATE_FAIL.equals(state)) {
+			return false;
 		}
 		
 		throw new IllegalStateException("调用 isOk() 之前，必须先调用 ok()、fail() 或者 setOk()、setFail() 方法");
 	}
 	
 	public boolean isFail() {
-		if (newWorkMode) {
-			Object state = get(STATE);
-			if (STATE_FAIL.equals(state)) {
-				return true;
-			}
-			if (STATE_OK.equals(state)) {
-				return false;
-			}
-		} else {
-			Boolean isFail = (Boolean)get(OLD_STATE_FAIL);
-			if (isFail != null) {
-				return isFail;
-			}
-			Boolean isOk = (Boolean)get(OLD_STATE_OK);
-			if (isOk != null) {
-				return !isOk;
-			}
+		Object state = get(STATE);
+		if (STATE_FAIL.equals(state)) {
+			return true;
+		}
+		if (STATE_OK.equals(state)) {
+			return false;
 		}
 		
 		throw new IllegalStateException("调用 isFail() 之前，必须先调用 ok()、fail() 或者 setOk()、setFail() 方法");
