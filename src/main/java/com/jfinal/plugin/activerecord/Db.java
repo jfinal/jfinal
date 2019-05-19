@@ -706,6 +706,32 @@ public class Db {
 	public static Page<Record> paginate(int pageNumber, int pageSize, boolean isGroupBySql, SqlPara sqlPara) {
 		return MAIN.paginate(pageNumber, pageSize, isGroupBySql, sqlPara);
 	}
+	
+	// ---------
+	
+	/**
+	 * 使用 sql 模板进行查询，可以省去 Db.getSqlPara(...) 调用
+	 * 
+	 * <pre>
+	 * 例子：
+	 * Db.template("blog.find", Kv.by("id", 123).find();
+	 * </pre>
+	 */
+	public static DbTemplate template(String key, Map data) {
+		return MAIN.template(key, data);
+	}
+	
+	/**
+	 * 使用 sql 模板进行查询，可以省去 Db.getSqlPara(...) 调用
+	 * 
+	 * <pre>
+	 * 例子：
+	 * Db.template("blog.find", 123).find();
+	 * </pre>
+	 */
+	public static DbTemplate template(String key, Object... paras) {
+		return MAIN.template(key, paras);
+	}
 }
 
 
