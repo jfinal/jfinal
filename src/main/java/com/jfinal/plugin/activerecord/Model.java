@@ -1075,7 +1075,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * dao.template("blog.find", Kv.by("id", 123).find();
 	 * </pre>
 	 */
-	public DaoTemplate template(String key, Map data) {
+	public DaoTemplate<M> template(String key, Map data) {
 		return new DaoTemplate(this, key, data);
 	}
 	
@@ -1087,7 +1087,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * dao.template("blog.find", 123).find();
 	 * </pre>
 	 */
-	public DaoTemplate template(String key, Object... paras) {
+	public DaoTemplate<M> template(String key, Object... paras) {
 		return new DaoTemplate(this, key, paras);
 	}
 }
