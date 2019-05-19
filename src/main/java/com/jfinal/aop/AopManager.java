@@ -175,18 +175,6 @@ public class AopManager {
 	}
 	
 	/**
-	 * 设置被注入的对象是否被增强，可使用 @Enhace(boolean) 覆盖此默认值
-	 * 
-	 * 后续的 jfinal 版本将考虑根据目标类是否配置了拦截器进行增强的新设计，
-	 * 可能会去除与 enhance 有关的配置与代码，所以与 enhance 有关的配置
-	 * 已被 @Deprecated，不建议使用
-	 */
-	@Deprecated
-	public void setEnhance(boolean enhance) {
-		Aop.aopFactory.setEnhance(enhance);
-	}
-	
-	/**
 	 * 设置被注入的对象是否为单例，可在目标类上使用 @Singleton(boolean) 覆盖此默认值 
 	 */
 	public void setSingleton(boolean singleton) {
