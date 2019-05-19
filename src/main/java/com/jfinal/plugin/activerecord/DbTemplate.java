@@ -53,6 +53,24 @@ public class DbTemplate {
 	public Page<Record> paginate(int pageNumber, int pageSize, boolean isGroupBySql) {
 		return db.paginate(pageNumber, pageSize, isGroupBySql, sqlPara);
 	}
+	
+	// ---------
+	
+	public int delete() {
+		return db.delete(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public String queryStr() {
+		return db.queryStr(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public Integer queryInt() {
+		return db.queryInt(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public Long queryLong() {
+		return db.queryLong(sqlPara.getSql(), sqlPara.getPara());
+	}
 }
 
 
