@@ -43,7 +43,7 @@ public class ReflectKit {
 		Parameter[] paras = method.getParameters();
 		for (Parameter p : paras) {
 			if (index++ > 0) {
-				ret.append(",");
+				ret.append(", ");
 			}
 			ret.append(p.getParameterizedType().getTypeName());
 		}
@@ -63,7 +63,7 @@ public class ReflectKit {
 		java.lang.reflect.Type[] paraTypes = method.getGenericParameterTypes();
 		for (java.lang.reflect.Type type : paraTypes) {
 			if (index++ > 0) {
-				ret.append(",");
+				ret.append(", ");
 			}
 			ret.append(type.getTypeName());
 		}
