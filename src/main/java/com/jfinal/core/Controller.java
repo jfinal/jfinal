@@ -27,7 +27,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import com.jfinal.aop.Enhancer;
 import com.jfinal.core.converter.TypeConverter;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.StrKit;
@@ -1327,7 +1326,7 @@ public abstract class Controller {
 	
 	// ---------
 	
-	/**
+	/*
 	 * 获取 Aop 代理对象，便于在 action 方法内部调用，可以取代 @Inject 注入
 	 * 
 	 * <pre>
@@ -1342,20 +1341,10 @@ public abstract class Controller {
 	 *    service.justDoIt();
 	 * }
 	 * </pre>
-	 */
+	
 	public <T> T getAopProxy(Class<T> targetClass) {
 		return com.jfinal.aop.Aop.get(targetClass);
-	}
-	
-	/**
-	 * 该功能已被 getAopProxy(...)、@Inject 注入以及 Aop.get(...) 完全取代，不建议使用
-	 */
-	@Deprecated
-	public <T> T enhance(Class<T> targetClass) {
-		return (T)Enhancer.enhance(targetClass);
-	}
-	
-	
+	} */
 	
 	// --------------------
 	
