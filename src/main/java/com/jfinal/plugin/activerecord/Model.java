@@ -1059,6 +1059,21 @@ public abstract class Model<M extends Model> implements Serializable {
 		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
 		return doPaginate(pageNumber, pageSize, null, sqls[0], sqls[1], sqlPara.getPara());
 	}
+	
+	public Page<M> paginate(int pageNumber, int pageSize, boolean isGroupBySql, SqlPara sqlPara) {
+		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
+		return doPaginate(pageNumber, pageSize, isGroupBySql, sqls[0], sqls[1], sqlPara.getPara());
+	}
+	
+	// ---------
+	
+	public DaoTemplate template(String key, Map data) {
+		return new DaoTemplate(this, key, data);
+	}
+	
+	public DaoTemplate template(String key, Object... paras) {
+		return new DaoTemplate(this, key, paras);
+	}
 }
 
 
