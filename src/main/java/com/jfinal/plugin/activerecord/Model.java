@@ -1067,10 +1067,26 @@ public abstract class Model<M extends Model> implements Serializable {
 	
 	// ---------
 	
+	/**
+	 * 使用 sql 模板进行查询，可以省去 getSqlPara(...) 调用
+	 * 
+	 * <pre>
+	 * 例子：
+	 * dao.template("blog.find", Kv.by("id", 123).find();
+	 * </pre>
+	 */
 	public DaoTemplate template(String key, Map data) {
 		return new DaoTemplate(this, key, data);
 	}
 	
+	/**
+	 * 使用 sql 模板进行查询，可以省去 getSqlPara(...) 调用
+	 * 
+	 * <pre>
+	 * 例子：
+	 * dao.template("blog.find", 123).find();
+	 * </pre>
+	 */
 	public DaoTemplate template(String key, Object... paras) {
 		return new DaoTemplate(this, key, paras);
 	}
