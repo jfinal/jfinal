@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import com.jfinal.core.Controller;
 import com.jfinal.plugin.activerecord.Model;
+import com.jfinal.proxy.Proxy;
 import com.jfinal.validate.Validator;
 
 /**
@@ -39,7 +40,6 @@ public class AopFactory {
 	protected HashMap<Class<?>, Class<?>> mapping = null;
 	
 	protected boolean singleton = true;					// 默认单例
-	protected boolean enhance = true;					// 默认增强
 	
 	protected boolean injectSuperClass = false;			// 默认不对超类进行注入
 	
@@ -169,15 +169,8 @@ public class AopFactory {
 		}
 	}
 	
-	/**
-	 * 由于上层已经处理过 singleton，所以 Enhancer.enhance() 方法中不必关心 singleton
-	 */
-	@SuppressWarnings("deprecation")
 	protected Object createObject(Class<?> targetClass) throws ReflectiveOperationException {
-		Enhance en = targetClass.getAnnotation(Enhance.class);
-		boolean enhance = (en != null ? en.value() : this.enhance);
-		
-		return enhance ? com.jfinal.aop.Enhancer.enhance(targetClass) : targetClass.newInstance();
+		return Proxy.get(targetClass);
 	}
 	
 	/**
@@ -190,18 +183,6 @@ public class AopFactory {
 		// com.demo.blog.Blog$$EnhancerByCGLIB$$69a17158
 		// return (Class<? extends Model>)((modelClass.getName().indexOf("EnhancerByCGLIB") == -1 ? modelClass : modelClass.getSuperclass()));
 		return (Class<?>)(clazz.getName().indexOf("$$EnhancerBy") == -1 ? clazz : clazz.getSuperclass());
-	}
-	
-	/**
-	 * 设置被注入的对象是否被增强，可使用 @Enhace(boolean) 覆盖此默认值
-	 * 
-	 * 由于下一版本的 jfinal 3.6 将根据目标类中是否配置了拦截器来决定是否增强，
-	 * 所以该 setEnhance 方法仅仅是一个过渡功能，不建议使用
-	 */
-	@Deprecated
-	public AopFactory setEnhance(boolean enhance) {
-		this.enhance = enhance;
-		return this;
 	}
 	
 	/**
