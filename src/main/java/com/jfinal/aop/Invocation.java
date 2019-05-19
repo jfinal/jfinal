@@ -42,10 +42,6 @@ public class Invocation {
 	
 	private int index = 0;
 	
-	
-	// ----------------------------------------------------------------
-	
-	
 	public Invocation(Object target, Long proxyMethodKey, Callback callback, Object... args) {
 		this.action = null;
 		this.target = target;
@@ -58,13 +54,9 @@ public class Invocation {
 		this.args = args;
 	}
 	
-	
 	public Invocation(Object target, Long proxyMethodKey, Callback callback) {
 		this(target, proxyMethodKey, callback, NULL_ARGS);
 	}
-	
-	// ----------------------------------------------------------------
-	
 	
 	// InvocationWrapper need this constructor
 	protected Invocation() {
