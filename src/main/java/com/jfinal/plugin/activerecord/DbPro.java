@@ -1307,6 +1307,16 @@ public class DbPro {
 		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
 		return doPaginate(pageNumber, pageSize, isGroupBySql, sqls[0], sqls[1], sqlPara.getPara());
 	}
+	
+	// ---------
+	
+	public DbTemplate template(String key, Map data) {
+		return new DbTemplate(this, key, data);
+	}
+	
+	public DbTemplate template(String key, Object... paras) {
+		return new DbTemplate(this, key, paras);
+	}
 }
 
 
