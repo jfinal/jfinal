@@ -80,7 +80,7 @@ public class ProxyMethod {
 	 */
 	public Interceptor[] getInterceptors() {
 		if (interceptors == null) {
-			Interceptor[] ret = interMan.buildServiceMethodInterceptor(InterceptorManager.NULL_INTERS, targetClass, method);
+			Interceptor[] ret = interMan.buildServiceMethodInterceptor(targetClass, method);
 			interceptors = ret;
 		}
 		return interceptors;

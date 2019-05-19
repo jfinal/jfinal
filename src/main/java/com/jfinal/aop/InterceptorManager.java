@@ -25,10 +25,9 @@ import com.jfinal.core.Controller;
 /**
  * InterceptorManager.
  * 1：管理控制层、业务层全局拦截器
- * 2：缓存业务层 Class 级拦截器数组。在业务层仅有 injectInters、methodInters 数组未被整体缓存
+ * 2：缓存业务层 Class 级拦截器数组。业务层拦截器被整体缓存在 ProxyMethod 中
  * 3：用于创建 Interceptor、组装 Interceptor
- * 4：除手动 new 出来的 inject 拦截器以外，其它所有拦截器均为单例
- * 5：重点关注于业务层拦截器组装性能， 控制层所有拦截器已被整体缓存
+ * 4：除手动 new 出来的拦截器以外，其它所有拦截器均为单例
  * 
  * 无法使用 Method 或 Before 对象缓存业务层 Method 级拦截器：
  * 1：不同对象或相同对象获取同一个 Class 中同一个 Method 得到的对象 id 值不相同
@@ -71,15 +70,15 @@ public class InterceptorManager {
 		return result;
 	}
 	
-	public Interceptor[] buildControllerActionInterceptor(Interceptor[] injectInters, Interceptor[] classInters, Class<? extends Controller> controllerClass, Method method) {
-		return doBuild(globalActionInters, injectInters, classInters, controllerClass, method);
+	public Interceptor[] buildControllerActionInterceptor(Interceptor[] routesInters, Interceptor[] classInters, Class<? extends Controller> controllerClass, Method method) {
+		return doBuild(globalActionInters, routesInters, classInters, controllerClass, method);
 	}
 	
-	public Interceptor[] buildServiceMethodInterceptor(Interceptor[] injectInters, Class<?> serviceClass, Method method) {
-		return doBuild(globalServiceInters, injectInters, createServiceInterceptor(serviceClass), serviceClass, method);
+	public Interceptor[] buildServiceMethodInterceptor(Class<?> serviceClass, Method method) {
+		return doBuild(globalServiceInters, NULL_INTERS, createServiceInterceptor(serviceClass), serviceClass, method);
 	}
 	
-	private Interceptor[] doBuild(Interceptor[] globalInters, Interceptor[] injectInters, Interceptor[] classInters, Class<?> targetClass, Method method) {
+	private Interceptor[] doBuild(Interceptor[] globalInters, Interceptor[] routesInters, Interceptor[] classInters, Class<?> targetClass, Method method) {
 		Interceptor[] methodInters = createInterceptor(method.getAnnotation(Before.class));
 		
 		Class<? extends Interceptor>[] clearIntersOnMethod;
@@ -99,17 +98,17 @@ public class InterceptorManager {
 			clearIntersOnClass = clearOnClass.value();
 			if (clearIntersOnClass.length == 0) {	// class 级 @clear 且不带参
 				globalInters = NULL_INTERS;
-				injectInters = NULL_INTERS;
+				routesInters = NULL_INTERS;
 			}
 		} else {
 			clearIntersOnClass = null;
 		}
 		
-		ArrayList<Interceptor> result = new ArrayList<Interceptor>(globalInters.length + injectInters.length + classInters.length + methodInters.length);
+		ArrayList<Interceptor> result = new ArrayList<Interceptor>(globalInters.length + routesInters.length + classInters.length + methodInters.length);
 		for (Interceptor inter : globalInters) {
 			result.add(inter);
 		}
-		for (Interceptor inter : injectInters) {
+		for (Interceptor inter : routesInters) {
 			result.add(inter);
 		}
 		if (clearIntersOnClass != null && clearIntersOnClass.length > 0) {
