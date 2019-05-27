@@ -71,6 +71,40 @@ public class DbTemplate {
 	public Long queryLong() {
 		return db.queryLong(sqlPara.getSql(), sqlPara.getPara());
 	}
+	
+	// ---------
+	
+	public <T> T queryColumn() {
+		return db.queryColumn(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public <T> List<T> query() {
+		return db.query(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public <T> T queryFirst() {
+		return db.queryFirst(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	// ---------
+	
+	public List<Record> findByCache(String cacheName, Object key) {
+		return db.findByCache(cacheName, key, sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public Record findFirstByCache(String cacheName, Object key) {
+		return db.findFirstByCache(cacheName, key, sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize) {
+		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
+		return db.paginateByCache(cacheName, key, pageNumber, pageSize, sqls[0], sqls[1], sqlPara.getPara());
+	}
+	
+	public Page<Record> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, boolean isGroupBySql) {
+		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
+		return db.paginateByCache(cacheName, key, pageNumber, pageSize, isGroupBySql, sqls[0], sqls[1], sqlPara.getPara());
+	}
 }
 
 

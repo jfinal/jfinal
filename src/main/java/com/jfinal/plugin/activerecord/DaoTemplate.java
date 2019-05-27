@@ -42,6 +42,26 @@ public class DaoTemplate<M extends Model> {
 	public Page<M> paginate(int pageNumber, int pageSize, boolean isGroupBySql) {
 		return dao.paginate(pageNumber, pageSize, isGroupBySql, sqlPara);
 	}
+	
+	// ---------
+	
+	public List<M> findByCache(String cacheName, Object key) {
+		return dao.findByCache(cacheName, key, sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public M findFirstByCache(String cacheName, Object key) {
+		return dao.findFirstByCache(cacheName, key, sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize) {
+		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
+		return dao.paginateByCache(cacheName, key, pageNumber, pageSize, sqls[0], sqls[1], sqlPara.getPara());
+	}
+	
+	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, boolean isGroupBySql) {
+		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
+		return dao.paginateByCache(cacheName, key, pageNumber, pageSize, isGroupBySql, sqls[0], sqls[1], sqlPara.getPara());
+	}
 }
 
 
