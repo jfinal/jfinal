@@ -24,7 +24,7 @@ public class Target$$EnhancerByJFinal extends Target {
 
 package #(pkg);
 import com.jfinal.aop.Invocation;
-public class #(name) extends #(targetName) {
+public class #(name)#(classTypeVars) extends #(targetName)#(classTypeVars) {
 #for(x : methodList)
 	
 	public #(x.returnType) #(x.name)(#for(y : x.paraTypes)#(y) p#(for.index)#(for.last ? "" : ", ")#end) {

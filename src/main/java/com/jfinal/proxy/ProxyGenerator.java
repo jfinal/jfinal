@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -64,6 +65,7 @@ public class ProxyGenerator {
 		clazz.set("pkg", proxyClass.getPkg());
 		clazz.set("name", proxyClass.getName());
 		clazz.set("targetName", getTargetName(target));
+		clazz.set("classTypeVars", getTypeVars(target.getTypeParameters()));
 		
 		List<Class<?>> methodUpperInters = getMethodUpperInterceptors(proxyClass);
 		
@@ -170,7 +172,55 @@ public class ProxyGenerator {
 	protected String getReturnType(Method method) {
 		// return method.getReturnType().getName();
 		// return method.getAnnotatedReturnType().getType().getTypeName();
-		return method.getGenericReturnType().getTypeName();
+		// return method.getGenericReturnType().getTypeName();
+		
+		String ret = getTypeVars(method.getTypeParameters());
+		if (ret != null) {
+			return ret + " " + method.getGenericReturnType().getTypeName();
+		} else {
+			return method.getGenericReturnType().getTypeName();
+		}
+	}
+	
+	@SuppressWarnings("rawtypes")
+	protected String getTypeVars(TypeVariable[] typeVars) {
+		if (typeVars == null|| typeVars.length == 0) {
+			return null;
+		}
+		
+		StringBuilder ret = new StringBuilder();
+		
+		ret.append('<');
+		for (int i=0; i<typeVars.length; i++) {
+			TypeVariable tv = typeVars[i];
+			if (i > 0) {
+				ret.append(", ");
+			}
+			
+			ret.append(tv.getName());
+			
+			// T extends Map & List & Set
+			Type[] bounds = tv.getBounds();
+			if (bounds.length == 1) {
+				if (bounds[0] != Object.class) {
+					ret.append(" extends ").append(bounds[0].getTypeName());
+					continue ;
+				}
+			} else {
+				for (int j=0; j<bounds.length; j++) {
+					if (bounds[j] != Object.class) {
+						String tn = bounds[j].getTypeName();
+						if (j > 0) {
+							ret.append(" & ").append(tn);
+						} else {
+							ret.append(" extends ").append(tn);
+						}
+					}
+				}
+			}
+		}
+		
+		return ret.append('>').toString();
 	}
 	
 	/**
