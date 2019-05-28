@@ -65,7 +65,11 @@ public class ProxyGenerator {
 		clazz.set("pkg", proxyClass.getPkg());
 		clazz.set("name", proxyClass.getName());
 		clazz.set("targetName", getTargetName(target));
-		clazz.set("classTypeVars", getTypeVars(target.getTypeParameters()));
+		
+		@SuppressWarnings("rawtypes")
+		TypeVariable[] tvs = target.getTypeParameters();
+		clazz.set("classTypeVars", getTypeVars(tvs));
+		clazz.set("targetTypeVars", getTargetTypeVars(tvs));
 		
 		List<Class<?>> methodUpperInters = getMethodUpperInterceptors(proxyClass);
 		
@@ -212,6 +216,27 @@ public class ProxyGenerator {
 			}
 		}
 		
+		return ret.append('>').toString();
+	}
+	
+	/**
+	 * 相对于 getTypeVars(...) 取消了 TypeVariable.getBounds() 内容的生成，否则编译错误
+	 */
+	@SuppressWarnings("rawtypes")
+	protected String getTargetTypeVars(TypeVariable[] typeVars) {
+		if (typeVars == null|| typeVars.length == 0) {
+			return null;
+		}
+		
+		StringBuilder ret = new StringBuilder();
+		ret.append('<');
+		for (int i=0; i<typeVars.length; i++) {
+			TypeVariable tv = typeVars[i];
+			if (i > 0) {
+				ret.append(", ");
+			}
+			ret.append(tv.getName());
+		}
 		return ret.append('>').toString();
 	}
 	
