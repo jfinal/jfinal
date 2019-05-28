@@ -83,8 +83,8 @@ public class ProxyGenerator {
 			}
 			
 			Kv method = Kv.create();
+			method.set("methodTypeVars", getTypeVars(m.getTypeParameters()));
 			method.set("returnType", getReturnType(m));
-			method.set("returnTypeName", m.getGenericReturnType().getTypeName());
 			method.set("name", m.getName());
 			
 			Parameter[] paras = m.getParameters();
@@ -173,14 +173,7 @@ public class ProxyGenerator {
 	protected String getReturnType(Method method) {
 		// return method.getReturnType().getName();
 		// return method.getAnnotatedReturnType().getType().getTypeName();
-		// return method.getGenericReturnType().getTypeName();
-		
-		String ret = getTypeVars(method.getTypeParameters());
-		if (ret != null) {
-			return ret + " " + method.getGenericReturnType().getTypeName();
-		} else {
-			return method.getGenericReturnType().getTypeName();
-		}
+		return method.getGenericReturnType().getTypeName();
 	}
 	
 	@SuppressWarnings("rawtypes")
