@@ -27,7 +27,7 @@ import com.jfinal.aop.Invocation;
 public class #(name)#(classTypeVars) extends #(targetName)#(classTypeVars) {
 #for(x : methodList)
 	
-	public #(x.returnType) #(x.name)(#for(y : x.paraTypes)#(y) p#(for.index)#(for.last ? "" : ", ")#end) {
+	public #(x.methodTypeVars) #(x.returnType) #(x.name)(#for(y : x.paraTypes)#(y) p#(for.index)#(for.last ? "" : ", ")#end) {
 		#if(x.onlyVarArgs)
 		#@newInvocationForOnlyVarArgs()
 		#else
@@ -35,7 +35,7 @@ public class #(name)#(classTypeVars) extends #(targetName)#(classTypeVars) {
 		#end
 		
 		inv.invoke();
-		#if (x.returnTypeName != "void")
+		#if (x.returnType != "void")
 		
 		return inv.getReturnValue();
 		#end
