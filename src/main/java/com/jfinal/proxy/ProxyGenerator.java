@@ -84,6 +84,7 @@ public class ProxyGenerator {
 			
 			Kv method = Kv.create();
 			method.set("returnType", getReturnType(m));
+			method.set("returnTypeName", m.getGenericReturnType().getTypeName());
 			method.set("name", m.getName());
 			
 			Parameter[] paras = m.getParameters();
@@ -208,13 +209,11 @@ public class ProxyGenerator {
 				}
 			} else {
 				for (int j=0; j<bounds.length; j++) {
-					if (bounds[j] != Object.class) {
-						String tn = bounds[j].getTypeName();
-						if (j > 0) {
-							ret.append(" & ").append(tn);
-						} else {
-							ret.append(" extends ").append(tn);
-						}
+					String tn = bounds[j].getTypeName();
+					if (j > 0) {
+						ret.append(" & ").append(tn);
+					} else {
+						ret.append(" extends ").append(tn);
 					}
 				}
 			}

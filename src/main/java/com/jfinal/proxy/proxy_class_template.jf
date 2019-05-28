@@ -35,7 +35,7 @@ public class #(name)#(classTypeVars) extends #(targetName)#(classTypeVars) {
 		#end
 		
 		inv.invoke();
-		#if (x.returnType != "void")
+		#if (x.returnTypeName != "void")
 		
 		return inv.getReturnValue();
 		#end
