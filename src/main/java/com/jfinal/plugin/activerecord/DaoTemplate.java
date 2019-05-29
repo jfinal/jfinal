@@ -27,6 +27,16 @@ public class DaoTemplate<M extends Model> {
 		this.sqlPara = dao.getSqlPara(key, paras);
 	}
 	
+	public DaoTemplate(boolean byString, Model dao, String content, Map<?, ?> data) {
+		this.dao = dao;
+		this.sqlPara = dao.getSqlParaByString(content, data);
+	}
+	
+	public DaoTemplate(boolean byString, Model dao, String content, Object... paras) {
+		this.dao = dao;
+		this.sqlPara = dao.getSqlParaByString(content, paras);
+	}
+	
 	public List<M> find() {
 		return dao.find(sqlPara);
 	}

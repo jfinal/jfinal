@@ -1047,6 +1047,14 @@ public abstract class Model<M extends Model> implements Serializable {
 		return _getConfig().getSqlKit().getSqlPara(key, paras);
 	}
 	
+	public SqlPara getSqlParaByString(String content, Map data) {
+		return _getConfig().getSqlKit().getSqlParaByString(content, data);
+	}
+	
+	public SqlPara getSqlParaByString(String content, Object... paras) {
+		return _getConfig().getSqlKit().getSqlParaByString(content, paras);
+	}
+	
 	public List<M> find(SqlPara sqlPara) {
 		return find(sqlPara.getSql(), sqlPara.getPara());
 	}
@@ -1089,6 +1097,36 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	public DaoTemplate<M> template(String key, Object... paras) {
 		return new DaoTemplate(this, key, paras);
+	}
+	
+	// ---------
+	
+	/**
+	 * 使用字符串变量作为 sql 模板进行查询，可省去外部 sql 文件来使用
+	 * sql 模板功能
+	 * 
+	 * <pre>
+	 * 例子：
+	 * String sql = "select * from blog where id = #para(id)";
+	 * dao.templateByString(sql, Kv.by("id", 123).find();
+	 * </pre>
+	 */
+	public DaoTemplate<M> templateByString(String content, Map data) {
+		return new DaoTemplate(true, this, content, data);
+	}
+	
+	/**
+	 * 使用字符串变量作为 sql 模板进行查询，可省去外部 sql 文件来使用
+	 * sql 模板功能
+	 * 
+	 * <pre>
+	 * 例子：
+	 * String sql = "select * from blog where id = #para(0)";
+	 * dao.templateByString(sql, 123).find();
+	 * </pre>
+	 */
+	public DaoTemplate<M> templateByString(String content, Object... paras) {
+		return new DaoTemplate(true, this, content, paras);
 	}
 }
 
