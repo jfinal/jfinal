@@ -26,6 +26,16 @@ public class DbTemplate {
 		this.sqlPara = db.getSqlPara(key, paras);
 	}
 	
+	public DbTemplate(boolean byString, DbPro db, String content, Map<?, ?> data) {
+		this.db = db;
+		this.sqlPara = db.getSqlParaByString(content, data);
+	}
+	
+	public DbTemplate(boolean byString, DbPro db, String content, Object... paras) {
+		this.db = db;
+		this.sqlPara = db.getSqlParaByString(content, paras);
+	}
+	
 	/*
 	 * 下一版本根据需求强度考虑添加此方法
 	 * TODO 这里要严格测试，因为没有 Map data 值，所以 getSqlPara(...) 不一定可以正常工作
