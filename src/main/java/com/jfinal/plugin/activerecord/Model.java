@@ -1035,10 +1035,6 @@ public abstract class Model<M extends Model> implements Serializable {
 		return getSqlPara(key, this.attrs);
 	} */
 	
-	public SqlPara getSqlPara(String key, Model model) {
-		return getSqlPara(key, model.attrs);
-	}
-	
 	public SqlPara getSqlPara(String key, Map data) {
 		return _getConfig().getSqlKit().getSqlPara(key, data);
 	}
@@ -1047,12 +1043,20 @@ public abstract class Model<M extends Model> implements Serializable {
 		return _getConfig().getSqlKit().getSqlPara(key, paras);
 	}
 	
+	public SqlPara getSqlPara(String key, Model model) {
+		return getSqlPara(key, model.attrs);
+	}
+	
 	public SqlPara getSqlParaByString(String content, Map data) {
 		return _getConfig().getSqlKit().getSqlParaByString(content, data);
 	}
 	
 	public SqlPara getSqlParaByString(String content, Object... paras) {
 		return _getConfig().getSqlKit().getSqlParaByString(content, paras);
+	}
+	
+	public SqlPara getSqlParaByString(String content, Model model) {
+		return getSqlParaByString(content, model.attrs);
 	}
 	
 	public List<M> find(SqlPara sqlPara) {
@@ -1127,6 +1131,10 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	public DaoTemplate<M> templateByString(String content, Object... paras) {
 		return new DaoTemplate(true, this, content, paras);
+	}
+	
+	public DaoTemplate<M> templateByString(String content, Model model) {
+		return templateByString(content, model.attrs);
 	}
 }
 
