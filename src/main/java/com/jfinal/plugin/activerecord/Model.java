@@ -1103,6 +1103,10 @@ public abstract class Model<M extends Model> implements Serializable {
 		return new DaoTemplate(this, key, paras);
 	}
 	
+	public DaoTemplate<M> template(String key, Model model) {
+		return template(key, model.attrs);
+	}
+	
 	// ---------
 	
 	/**
