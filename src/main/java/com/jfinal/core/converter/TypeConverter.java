@@ -101,10 +101,14 @@ public class TypeConverter {
 	/**
 	 * 将 String 数据转换为指定的类型
 	 * @param type 需要转换成为的数据类型
-	 * @param s 被转换的 String 类型数据，注意： s 参数不接受 null 值，否则会抛出异常
+	 * @param s 被转换的 String 类型数据
 	 * @return 转换成功的数据
 	 */
 	public final Object convert(Class<?> type, String s) throws ParseException {
+		if (s == null) {
+			return null;
+		}
+		
 		// mysql type: varchar, char, enum, set, text, tinytext, mediumtext, longtext
 		if (type == String.class) {
 			return ("".equals(s) ? null : s);	// 用户在表单域中没有输入内容时将提交过来 "", 因为没有输入,所以要转成 null.

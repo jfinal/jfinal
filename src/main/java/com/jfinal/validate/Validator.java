@@ -21,12 +21,14 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.LogKit;
+import com.jfinal.kit.Ret;
 import com.jfinal.kit.StrKit;
 
 /**
@@ -43,6 +45,50 @@ public abstract class Validator implements Interceptor {
 	// TODO set the DEFAULT_DATE_PATTERN in Const and config it in Constants. TypeConverter do the same thing.
 	protected static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd";
 	protected static final String emailAddressPattern = "\\b(^['_A-Za-z0-9-]+(\\.['_A-Za-z0-9-]+)*@([A-Za-z0-9-])+(\\.[A-Za-z0-9-]+)*((\\.[A-Za-z0-9]{2,})|(\\.[A-Za-z0-9]{2,}\\.[A-Za-z0-9]{2,}))$)\\b";
+	
+	protected Ret ret = null;
+	
+	/**
+	 * Add message when validate failure.
+	 */
+	protected void addError(String errorKey, String errorMessage) {
+		invalid = true;
+		
+		if (ret != null) {
+			ret.set(errorKey, errorMessage);
+		} else {
+			controller.setAttr(errorKey, errorMessage);
+		}
+		
+		if (shortCircuit) {
+			throw new ValidateException();
+		}
+	}
+	
+	/**
+	 * 注入 Ret 对象，验证结果将被存放在其中，以便在 handleError 中使用 getRet()：
+	 *     controller.renderJson(getRet());
+	 * 
+	 * <pre>
+	 * 用法：
+	 * validate(Controller c) 中调用 setRet(Ret.fail());
+	 * handleError(Controller c) 中调用 c.renderJson(getRet());
+	 * </pre>
+	 */
+	protected void setRet(Ret ret) {
+		Objects.requireNonNull(ret, "ret can not be null");
+		this.ret = ret;
+	}
+	
+	/**
+	 * 便于在 handleError 中使用 controller.renderJson(getRet());
+	 */
+	protected Ret getRet() {
+		if (ret == null) {
+			throw new IllegalStateException("You should invoke setRet(Ret.fail()) method in validate(Controller c) first");
+		}
+		return ret;
+	}
 	
 	/**
 	 * 设置短路验证. 默认值为 false
@@ -104,17 +150,6 @@ public abstract class Validator implements Interceptor {
 	 * controller.render("register.html");
 	 */
 	protected abstract void handleError(Controller c);
-	
-	/**
-	 * Add message when validate failure.
-	 */
-	protected void addError(String errorKey, String errorMessage) {
-		invalid = true;
-		controller.setAttr(errorKey, errorMessage);
-		if (shortCircuit) {
-			throw new ValidateException();
-		}
-	}
 	
 	/**
 	 * Return the controller of this action.

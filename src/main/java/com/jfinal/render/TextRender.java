@@ -52,8 +52,15 @@ public class TextRender extends Render {
 			response.setHeader("Cache-Control", "no-cache");
 			response.setDateHeader("Expires", 0);
 			
-			response.setContentType(contentType);
-			response.setCharacterEncoding(getEncoding());	// 与 contentType 分开设置
+			
+			String ct = getContentType();
+			response.setContentType(ct);
+			
+			// 不包含 "charset" 时才调用该方法，否则该方法会覆盖掉 contentType 中的 "charset" 部分
+			if (ct.indexOf("charset") == -1) {
+				response.setCharacterEncoding(getEncoding());	// 与 contentType 分开设置
+			}
+			
 			
 			writer = response.getWriter();
 			writer.write(text);

@@ -1035,16 +1035,28 @@ public abstract class Model<M extends Model> implements Serializable {
 		return getSqlPara(key, this.attrs);
 	} */
 	
-	public SqlPara getSqlPara(String key, Model model) {
-		return getSqlPara(key, model.attrs);
-	}
-	
 	public SqlPara getSqlPara(String key, Map data) {
 		return _getConfig().getSqlKit().getSqlPara(key, data);
 	}
 	
 	public SqlPara getSqlPara(String key, Object... paras) {
 		return _getConfig().getSqlKit().getSqlPara(key, paras);
+	}
+	
+	public SqlPara getSqlPara(String key, Model model) {
+		return getSqlPara(key, model.attrs);
+	}
+	
+	public SqlPara getSqlParaByString(String content, Map data) {
+		return _getConfig().getSqlKit().getSqlParaByString(content, data);
+	}
+	
+	public SqlPara getSqlParaByString(String content, Object... paras) {
+		return _getConfig().getSqlKit().getSqlParaByString(content, paras);
+	}
+	
+	public SqlPara getSqlParaByString(String content, Model model) {
+		return getSqlParaByString(content, model.attrs);
 	}
 	
 	public List<M> find(SqlPara sqlPara) {
@@ -1058,6 +1070,71 @@ public abstract class Model<M extends Model> implements Serializable {
 	public Page<M> paginate(int pageNumber, int pageSize, SqlPara sqlPara) {
 		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
 		return doPaginate(pageNumber, pageSize, null, sqls[0], sqls[1], sqlPara.getPara());
+	}
+	
+	public Page<M> paginate(int pageNumber, int pageSize, boolean isGroupBySql, SqlPara sqlPara) {
+		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
+		return doPaginate(pageNumber, pageSize, isGroupBySql, sqls[0], sqls[1], sqlPara.getPara());
+	}
+	
+	// ---------
+	
+	/**
+	 * 使用 sql 模板进行查询，可以省去 getSqlPara(...) 调用
+	 * 
+	 * <pre>
+	 * 例子：
+	 * dao.template("blog.find", Kv.by("id", 123).find();
+	 * </pre>
+	 */
+	public DaoTemplate<M> template(String key, Map data) {
+		return new DaoTemplate(this, key, data);
+	}
+	
+	/**
+	 * 使用 sql 模板进行查询，可以省去 getSqlPara(...) 调用
+	 * 
+	 * <pre>
+	 * 例子：
+	 * dao.template("blog.find", 123).find();
+	 * </pre>
+	 */
+	public DaoTemplate<M> template(String key, Object... paras) {
+		return new DaoTemplate(this, key, paras);
+	}
+	
+	// ---------
+	
+	/**
+	 * 使用字符串变量作为 sql 模板进行查询，可省去外部 sql 文件来使用
+	 * sql 模板功能
+	 * 
+	 * <pre>
+	 * 例子：
+	 * String sql = "select * from blog where id = #para(id)";
+	 * dao.templateByString(sql, Kv.by("id", 123).find();
+	 * </pre>
+	 */
+	public DaoTemplate<M> templateByString(String content, Map data) {
+		return new DaoTemplate(true, this, content, data);
+	}
+	
+	/**
+	 * 使用字符串变量作为 sql 模板进行查询，可省去外部 sql 文件来使用
+	 * sql 模板功能
+	 * 
+	 * <pre>
+	 * 例子：
+	 * String sql = "select * from blog where id = #para(0)";
+	 * dao.templateByString(sql, 123).find();
+	 * </pre>
+	 */
+	public DaoTemplate<M> templateByString(String content, Object... paras) {
+		return new DaoTemplate(true, this, content, paras);
+	}
+	
+	public DaoTemplate<M> templateByString(String content, Model model) {
+		return templateByString(content, model.attrs);
 	}
 }
 

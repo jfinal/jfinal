@@ -706,6 +706,62 @@ public class Db {
 	public static Page<Record> paginate(int pageNumber, int pageSize, boolean isGroupBySql, SqlPara sqlPara) {
 		return MAIN.paginate(pageNumber, pageSize, isGroupBySql, sqlPara);
 	}
+	
+	// ---------
+	
+	/**
+	 * 使用 sql 模板进行查询，可以省去 Db.getSqlPara(...) 调用
+	 * 
+	 * <pre>
+	 * 例子：
+	 * Db.template("blog.find", Kv.by("id", 123).find();
+	 * </pre>
+	 */
+	public static DbTemplate template(String key, Map data) {
+		return MAIN.template(key, data);
+	}
+	
+	/**
+	 * 使用 sql 模板进行查询，可以省去 Db.getSqlPara(...) 调用
+	 * 
+	 * <pre>
+	 * 例子：
+	 * Db.template("blog.find", 123).find();
+	 * </pre>
+	 */
+	public static DbTemplate template(String key, Object... paras) {
+		return MAIN.template(key, paras);
+	}
+	
+	// ---------
+	
+	/**
+	 * 使用字符串变量作为 sql 模板进行查询，可省去外部 sql 文件来使用
+	 * sql 模板功能
+	 * 
+	 * <pre>
+	 * 例子：
+	 * String sql = "select * from blog where id = #para(id)";
+	 * Db.templateByString(sql, Kv.by("id", 123).find();
+	 * </pre>
+	 */
+	public static DbTemplate templateByString(String content, Map data) {
+		return MAIN.templateByString(content, data);
+	}
+	
+	/**
+	 * 使用字符串变量作为 sql 模板进行查询，可省去外部 sql 文件来使用
+	 * sql 模板功能
+	 * 
+	 * <pre>
+	 * 例子：
+	 * String sql = "select * from blog where id = #para(0)";
+	 * Db.templateByString(sql, 123).find();
+	 * </pre>
+	 */
+	public static DbTemplate templateByString(String content, Object... paras) {
+		return MAIN.templateByString(content, paras);
+	}
 }
 
 

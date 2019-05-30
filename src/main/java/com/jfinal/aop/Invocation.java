@@ -18,9 +18,11 @@ package com.jfinal.aop;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import com.jfinal.proxy.Callback;
+import com.jfinal.proxy.ProxyMethod;
+import com.jfinal.proxy.ProxyMethodCache;
 import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
-import net.sf.cglib.proxy.MethodProxy;
 
 /**
  * Invocation is used to invoke the interceptors and the target method
@@ -28,17 +30,33 @@ import net.sf.cglib.proxy.MethodProxy;
 @SuppressWarnings("unchecked")
 public class Invocation {
 	
-	private Action action;
-	// private static final Object[] NULL_ARGS = new Object[0];	// Prevent new Object[0] by jvm for paras of action invocation.
+	private static final Object[] NULL_ARGS = new Object[0];	// Prevent new Object[0] by jvm for args of method invoking
 	
+	private Action action;
 	private Object target;
 	private Method method;
 	private Object[] args;
-	private MethodProxy methodProxy;
+	private Callback callback;
 	private Interceptor[] inters;
 	private Object returnValue;
 	
 	private int index = 0;
+	
+	public Invocation(Object target, Long proxyMethodKey, Callback callback, Object... args) {
+		this.action = null;
+		this.target = target;
+		
+		ProxyMethod proxyMethod = ProxyMethodCache.get(proxyMethodKey);
+		this.method = proxyMethod.getMethod();
+		this.inters = proxyMethod.getInterceptors();
+		
+		this.callback = callback;
+		this.args = args;
+	}
+	
+	public Invocation(Object target, Long proxyMethodKey, Callback callback) {
+		this(target, proxyMethodKey, callback, NULL_ARGS);
+	}
 	
 	// InvocationWrapper need this constructor
 	protected Invocation() {
@@ -54,15 +72,6 @@ public class Invocation {
 		this.args = action.getParameterGetter().get(action, controller);
 	}
 	
-	public Invocation(Object target, Method method, Object[] args, MethodProxy methodProxy, Interceptor[] inters) {
-		this.action = null;
-		this.target = target;
-		this.method = method;
-		this.args = args;
-		this.methodProxy = methodProxy;
-		this.inters = inters;
-	}
-	
 	public void invoke() {
 		if (index < inters.length) {
 			inters[index++].intercept(this);
@@ -73,12 +82,9 @@ public class Invocation {
 				if (action != null) {
 					returnValue = action.getMethod().invoke(target, args);
 				}
-				// Invoke the method
+				// Invoke the callback
 				else {
-					// if (!Modifier.isAbstract(method.getModifiers()))
-						// returnValue = methodProxy.invokeSuper(target, args);
-					
-					returnValue = methodProxy.invokeSuper(target, args);
+					returnValue = callback.call(args);
 				}
 			}
 			catch (InvocationTargetException e) {

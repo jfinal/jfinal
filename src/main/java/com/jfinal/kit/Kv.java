@@ -30,11 +30,6 @@ import com.jfinal.json.Json;
 @SuppressWarnings({"serial", "rawtypes", "unchecked"})
 public class Kv extends HashMap {
 	
-	@Deprecated
-	private static final String STATE_OK = "isOk";
-	@Deprecated
-	private static final String STATE_FAIL = "isFail";
-	
 	public Kv() {
 	}
 	
@@ -44,68 +39,6 @@ public class Kv extends HashMap {
 	
 	public static Kv create() {
 		return new Kv();
-	}
-	
-	@Deprecated
-	public static Kv ok() {
-		return new Kv().setOk();
-	}
-	
-	@Deprecated
-	public static Kv ok(Object key, Object value) {
-		return ok().set(key, value);
-	}
-	
-	@Deprecated
-	public static Kv fail() {
-		return new Kv().setFail();
-	}
-	
-	@Deprecated
-	public static Kv fail(Object key, Object value) {
-		return fail().set(key, value);
-	}
-	
-	@Deprecated
-	public Kv setOk() {
-		super.put(STATE_OK, Boolean.TRUE);
-		super.put(STATE_FAIL, Boolean.FALSE);
-		return this;
-	}
-	
-	@Deprecated
-	public Kv setFail() {
-		super.put(STATE_FAIL, Boolean.TRUE);
-		super.put(STATE_OK, Boolean.FALSE);
-		return this;
-	}
-	
-	@Deprecated
-	public boolean isOk() {
-		Boolean isOk = (Boolean)get(STATE_OK);
-		if (isOk != null) {
-			return isOk;
-		}
-		Boolean isFail = (Boolean)get(STATE_FAIL);
-		if (isFail != null) {
-			return !isFail;
-		}
-		
-		throw new IllegalStateException("调用 isOk() 之前，必须先调用 ok()、fail() 或者 setOk()、setFail() 方法");
-	}
-	
-	@Deprecated
-	public boolean isFail() {
-		Boolean isFail = (Boolean)get(STATE_FAIL);
-		if (isFail != null) {
-			return isFail;
-		}
-		Boolean isOk = (Boolean)get(STATE_OK);
-		if (isOk != null) {
-			return !isOk;
-		}
-		
-		throw new IllegalStateException("调用 isFail() 之前，必须先调用 ok()、fail() 或者 setOk()、setFail() 方法");
 	}
 	
 	public Kv set(Object key, Object value) {

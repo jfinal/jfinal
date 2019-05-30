@@ -72,11 +72,11 @@ final public class Constants {
 	/**
 	 * 配置 configPlugin(Plugins me) 在 JFinalConfig 中被调用的次序.
 	 * 
-	 * 取值 1、2、3、4、5 分别表示在 configConstant(..)、configRoute(..)、
-	 * configEngine(..)、configInterceptor(..)、configHandler(...)
+	 * 取值 1、2、3、4、5 分别表示在 configConstant(..)、configInterceptor(..)、
+	 * configRoute(..)、configEngine(..)、configHandler(...)
 	 * 之后被调用
 	 * 
-	 * 默认值为 2，那么 configPlugin(..) 将在 configRoute(...) 调用之后被调用
+	 * 默认值为 3，那么 configPlugin(..) 将在 configRoute(...) 调用之后被调用
 	 * @param 取值只能是 1、2、3、4、5
 	 */
 	public void setConfigPluginOrder(int configPluginOrder) {

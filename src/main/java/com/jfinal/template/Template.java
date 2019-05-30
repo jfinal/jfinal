@@ -17,7 +17,6 @@
 package com.jfinal.template;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -117,16 +116,10 @@ public class Template {
 	 * 适用于代码生成器类似应用场景
 	 */
 	public void render(Map<?, ?> data, File file) {
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(file);
+		try (FileOutputStream fos = new FileOutputStream(file)) {
 			render(data, fos);
-		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
-		} finally {
-			if (fos != null) {
-				try {fos.close();} catch (IOException e) {e.printStackTrace(System.err);}
-			}
 		}
 	}
 	
