@@ -1,0 +1,10 @@
+#switch (data)
+  #case (111)
+    111
+  #case (a, b, c)
+    a, b, c
+  #default
+    default
+  #case (333)
+    333
+#end

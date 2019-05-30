@@ -1,27 +1,27 @@
 ## JAVA 极速WEB+ORM框架 JFinal
 
 
-JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标是开发迅速、代码量少、学习简单、功能强大、轻量级、易扩展、Restful。在拥有Java语言所有优势的同时再拥有ruby、python等动态语言的开发效率！为您节约更多时间，去陪恋人、家人和朋友 ;)
+JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标是开发迅速、代码量少、学习简单、功能强大、轻量级、易扩展、Restful。在拥有Java语言所有优势的同时再拥有 ruby、python 等动态语言的开发效率！为您节约更多时间，去陪恋人、家人和朋友 ;)
 
 #### JFinal有如下主要特点
-- MVC架构，设计精巧，使用简单
-- 遵循COC原则，零配置，无xml
-- 独创Db + Record模式，灵活便利
-- ActiveRecord支持，使数据库开发极致快速
-- 极简、高性能Template Engine，十分钟内掌握基本用法
-- 自动加载修改后的java文件，开发过程中无需重启web server
+- MVC 架构，设计精巧，使用简单
+- 遵循 COC 原则，零配置，无 XML
+- 独创 Db + Record 模式，灵活便利
+- ActiveRecord 支持，使数据库开发极致快速
+- 极简、高性能 Template Engine，十分钟内掌握基本用法
+- 自动加载修改后的 Java 文件，开发过程中无需重启服务
 - AOP支持，拦截器配置灵活，功能强大
-- Plugin体系结构，扩展性强
-- 多视图支持，支持FreeMarker、JSP、Velocity
-- 强大的Validator后端校验功能
-- 功能齐全，拥有struts2的绝大部分功能
-- 体积小仅580K
+- Plugin 体系结构，扩展性强
+- 多视图支持，支持 Enjoy、FreeMarker、JSP、Velocity
+- 强大的 Validator 后端校验功能
+- 功能齐全，拥有传统 SSH 框架的绝大部分核心功能
+- 体积小仅 708 KB，并且无第三方依赖
 
 **JFinal 极速开发微信公众号欢迎你的加入: JFinal**
 
 #### 以下是JFinal实现Blog管理的示例：
 
-**1. 控制器(支持JFinal Template、JSP、Velocity、JSON等等以及自定义视图渲染)**
+**1. 控制器(支持 Enjoy、JSP、Velocity、JSON等等以及自定义视图渲染)**
 
 ```java
 @Before(BlogInterceptor.class)

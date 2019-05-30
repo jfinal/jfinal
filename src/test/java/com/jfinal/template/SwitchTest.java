@@ -1,12 +1,12 @@
 package com.jfinal.template;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import com.jfinal.kit.Kv;
 
-public class EngineTest {
+public class SwitchTest {
 	
 	static Engine engine;
 	
@@ -20,10 +20,12 @@ public class EngineTest {
 	public static void exit() {
 	}
 	
+	@Ignore
 	@Test
-	public void renderToString() {
-		Kv para = Kv.by("key", "value");
-		String result = Engine.use().getTemplateByString("#(key)").renderToString(para);
-		Assert.assertEquals("value", result);
+	public void switch_() {
+		Template template = engine.getTemplate("com/jfinal/template/switch.txt");
+		Kv kv = Kv.by("data", 123).set("b", 123);
+		String ret = template.renderToString(kv);
+		System.out.print(ret);
 	}
 }
