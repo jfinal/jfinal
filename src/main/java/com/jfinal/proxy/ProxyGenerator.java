@@ -90,6 +90,7 @@ public class ProxyGenerator {
 			method.set("methodTypeVars", getTypeVars(m.getTypeParameters()));
 			method.set("returnType", getReturnType(m));
 			method.set("name", m.getName());
+			method.set("throws", getThrows(m));
 			
 			Parameter[] paras = m.getParameters();
 			List<String> paraTypes = Arrays.asList(paras).stream().map(
@@ -180,6 +181,9 @@ public class ProxyGenerator {
 		return method.getGenericReturnType().getTypeName();
 	}
 	
+	/**
+	 * 获取子类泛型变量，也可用于获取方法泛型变量
+	 */
 	@SuppressWarnings("rawtypes")
 	protected String getTypeVars(TypeVariable[] typeVars) {
 		if (typeVars == null|| typeVars.length == 0) {
@@ -220,6 +224,8 @@ public class ProxyGenerator {
 	}
 	
 	/**
+	 * 获取父类泛型变量
+	 * 
 	 * 相对于 getTypeVars(...) 取消了 TypeVariable.getBounds() 内容的生成，否则编译错误
 	 */
 	@SuppressWarnings("rawtypes")
@@ -238,6 +244,25 @@ public class ProxyGenerator {
 			ret.append(tv.getName());
 		}
 		return ret.append('>').toString();
+	}
+	
+	/**
+	 * 获取方法抛出的异常
+	 */
+	protected String getThrows(Method method) {
+		Class<?>[] throwTypes = method.getExceptionTypes();
+		if (throwTypes == null || throwTypes.length == 0) {
+			return null;
+		}
+		
+		StringBuilder ret = new StringBuilder().append("throws ");
+		for (int i=0; i<throwTypes.length; i++) {
+			if (i > 0) {
+				ret.append(", ");
+			}
+			ret.append(throwTypes[i].getName());
+		}
+		return ret.append(' ').toString();
 	}
 	
 	/**
