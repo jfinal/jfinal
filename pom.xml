@@ -4,7 +4,7 @@
 	<artifactId>jfinal</artifactId>
 	<packaging>jar</packaging>
 	<name>JFinal</name>
-	<version>4.1</version>
+	<version>4.2</version>
 	<url>http://www.jfinal.com</url>
 	<description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
 	
@@ -52,6 +52,8 @@
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
+		
+		
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>jetty-server</artifactId>
@@ -173,8 +175,14 @@
 			<artifactId>javase</artifactId>
 			<version>3.2.1</version>
 			<scope>provided</scope>
-		 </dependency>
-		 
+		</dependency>
+		
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib-nodep</artifactId>
+			<version>3.2.5</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>

@@ -19,7 +19,17 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 
 **JFinal 极速开发微信公众号欢迎你的加入: JFinal**
 
-#### 以下是JFinal实现Blog管理的示例：
+## Maven 坐标
+
+```java
+<dependency>
+    <groupId>com.jfinal</groupId>
+    <artifactId>jfinal</artifactId>
+    <version>4.2</version>
+</dependency>
+```
+
+## 以下是JFinal实现Blog管理的示例：
 
 **1. 控制器(支持 Enjoy、JSP、Velocity、JSON等等以及自定义视图渲染)**
 

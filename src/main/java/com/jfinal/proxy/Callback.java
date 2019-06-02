@@ -21,7 +21,7 @@ package com.jfinal.proxy;
  */
 @FunctionalInterface
 public interface Callback {
-	public Object call(Object[] args);
+	public Object call(Object[] args) throws Throwable;
 }
 
 
