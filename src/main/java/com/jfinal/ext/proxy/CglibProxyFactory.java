@@ -29,7 +29,9 @@ import com.jfinal.proxy.ProxyFactory;
  * 
  * <pre>
  * 配置方法：
- * 	ProxyManager.me().setProxyFactory(new CglibProxyFactory());
+ * public void configConstant(Constants me) {
+ *     ProxyManager.me().setProxyFactory(new CglibProxyFactory());
+ * }
  * </pre>
  */
 public class CglibProxyFactory extends ProxyFactory {
