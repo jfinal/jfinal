@@ -58,6 +58,20 @@ public class Invocation {
 		this(target, proxyMethodKey, callback, NULL_ARGS);
 	}
 	
+	/**
+	 * 用于扩展 ProxyFactory
+	 */
+	public Invocation(Object target, Method method, Interceptor[] inters, Callback callback, Object[] args) {
+		this.action = null;
+		this.target = target;
+		
+		this.method = method;
+		this.inters = inters;
+		
+		this.callback = callback;
+		this.args = args;
+	}
+	
 	// InvocationWrapper need this constructor
 	protected Invocation() {
 		this.action = null;

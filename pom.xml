@@ -175,8 +175,14 @@
 			<artifactId>javase</artifactId>
 			<version>3.2.1</version>
 			<scope>provided</scope>
-		 </dependency>
-		 
+		</dependency>
+		
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib-nodep</artifactId>
+			<version>3.2.5</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
