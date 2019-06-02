@@ -53,7 +53,7 @@ class CglibCallback implements MethodInterceptor {
 			IntersCache.put(key, inters);
 		}
 		
-		Invocation invocation = new Invocation(target, method, inters, 
+		Invocation invocation = new Invocation(target, method, inters,
 			x -> {
 				return methodProxy.invokeSuper(target, x);
 			}

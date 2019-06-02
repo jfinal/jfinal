@@ -145,9 +145,9 @@ public class ProxyGenerator {
 				System.out.print(msg);
 				System.out.println(sourceCode);
 			}
-			if (log.isInfoEnabled()) {
+			if (log.isDebugEnabled()) {
 				String msg = "\nGenerate proxy class \"" + proxyClass.getPkg() + "." + proxyClass.getName() + "\":";
-				log.info(msg + sourceCode);
+				log.debug(msg + sourceCode);
 			}
 		}
 		

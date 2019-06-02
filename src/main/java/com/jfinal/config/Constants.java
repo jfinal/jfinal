@@ -30,6 +30,8 @@ import com.jfinal.json.JsonManager;
 import com.jfinal.kit.StrKit;
 import com.jfinal.log.ILogFactory;
 import com.jfinal.log.LogManager;
+import com.jfinal.proxy.ProxyFactory;
+import com.jfinal.proxy.ProxyManager;
 import com.jfinal.render.IRenderFactory;
 import com.jfinal.render.RenderManager;
 import com.jfinal.render.ViewType;
@@ -130,6 +132,17 @@ final public class Constants {
 			throw new IllegalArgumentException("logFactory can not be null.");
 		}
 		LogManager.me().setDefaultLogFactory(logFactory);
+	}
+	
+	/**
+	 * 配置 ProxyFactory 用于切换代理实现
+	 * <pre>
+	 * 例如：
+	 * me.setProxyFactory(new CglibProxyFactory());
+	 * </pre>
+	 */
+	public void setProxyFactory(ProxyFactory proxyFactory) {
+		ProxyManager.me().setProxyFactory(proxyFactory);
 	}
 	
 	/**
