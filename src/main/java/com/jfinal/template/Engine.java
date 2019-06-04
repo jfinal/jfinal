@@ -521,10 +521,10 @@ public class Engine {
 	 * 
 	 * 系统当前默认 FieldGetter 实现类及其位置如下：
 	 * GetterMethodFieldGetter  ---> 调用 getter 方法取值
+	 * RealFieldGetter			---> 直接获取 public 型的 object.field 值
 	 * ModelFieldGetter			---> 调用 Model.get(String) 方法取值
 	 * RecordFieldGetter			---> 调用 Record.get(String) 方法取值
-	 * MapFieldGetter			---> 调用 Map.get(String) 方法取值 
-	 * RealFieldGetter			---> 直接获取 public 型的 object.field 值
+	 * MapFieldGetter			---> 调用 Map.get(String) 方法取值
 	 * ArrayLengthGetter			---> 获取数组长度
 	 * 
 	 * 根据以上次序，如果要插入 IsMethodFieldGetter 到 GetterMethodFieldGetter
