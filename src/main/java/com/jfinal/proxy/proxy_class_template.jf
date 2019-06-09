@@ -28,8 +28,8 @@ public class #(name)#(classTypeVars) extends #(targetName)#(targetTypeVars) {
 #for(x : methodList)
 	
 	public #(x.methodTypeVars) #(x.returnType) #(x.name)(#for(y : x.paraTypes)#(y) p#(for.index)#(for.last ? "" : ", ")#end) #(x.throws){
-		#if(x.onlyVarArgs)
-		#@newInvocationForOnlyVarArgs()
+		#if(x.singleArrayPara)
+		#@newInvocationForSingleArrayPara()
 		#else
 		#@newInvocationForCommon()
 		#end
@@ -59,26 +59,15 @@ public class #(name)#(classTypeVars) extends #(targetName)#(targetTypeVars) {
 			#for(y : x.paraTypes), p#(for.index)#end);
 #end
 #--
-   只有一个参数，且该参数是可变参数
+   只有一个参数，且该参数是数组或者可变参数
 --#
-#define newInvocationForOnlyVarArgs()
-		Object[] p0Array = new Object[p0.length];
-		for (int i=0; i<p0.length; i++) {
-			p0Array[i] = p0[i];
-		}
-		
+#define newInvocationForSingleArrayPara()
 		Invocation inv = new Invocation(this, #(x.proxyMethodKey)L,
 			args -> {
-				#setLocal(t = x.paraTypes[0].replace("...", "").replace("[]", ""))
-				#(t)[] array = new #(t)[args.length];
-				for (int i=0; i<array.length; i++) {
-					array[i] = (#(t))args[i];
-				}
-				
 				#(x.frontReturn) #(name).super.#(x.name)(
-						array
+						p0
 					);
 				#(x.backReturn)
 			}
-			, p0Array);
+			, p0);
 #end
