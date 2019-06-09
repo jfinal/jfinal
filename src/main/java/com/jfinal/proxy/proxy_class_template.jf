@@ -69,7 +69,7 @@ public class #(name)#(classTypeVars) extends #(targetName)#(targetTypeVars) {
 		
 		Invocation inv = new Invocation(this, #(x.proxyMethodKey)L,
 			args -> {
-				#setLocal(t = x.paraTypes[0].replace("...", ""))
+				#setLocal(t = x.paraTypes[0].replace("...", "").replace("[]", ""))
 				#(t)[] array = new #(t)[args.length];
 				for (int i=0; i<array.length; i++) {
 					array[i] = (#(t))args[i];
