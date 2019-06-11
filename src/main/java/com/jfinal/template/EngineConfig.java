@@ -213,6 +213,12 @@ public class EngineConfig {
 		return sharedObjectMap;
 	}
 	
+	public synchronized void removeSharedObject(String name) {
+		if (sharedObjectMap != null) {
+			sharedObjectMap.remove(name);
+		}
+	}
+	
 	/**
 	 * Set output directive factory
 	 */

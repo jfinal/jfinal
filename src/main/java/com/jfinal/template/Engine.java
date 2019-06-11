@@ -279,6 +279,11 @@ public class Engine {
 		return this;
 	}
 	
+	public Engine removeSharedObject(String name) {
+		config.removeSharedObject(name);
+		return this;
+	}
+	
 	/**
 	 * Set output directive factory
 	 */
