@@ -50,25 +50,31 @@ public class ProxyCompiler {
 	protected static final Log log = Log.getLog(ProxyCompiler.class);
 	
 	// protected List<String> options = Arrays.asList("-target", "1.8" /*, "-parameters"*/);
-	protected List<String> options = null;
+	protected volatile List<String> options = null;
 	
 	protected List<String> getOptions() {
 		if (options != null) {
 			return options;
 		}
 		
-		List<String> ret = new ArrayList<>();
-		ret.add("-target");
-		ret.add("1.8");
-		
-		String cp = getClassPath();
-		if (cp != null && cp.trim().length() != 0) {
-			ret.add("-classpath");
-			ret.add(cp);
+		synchronized (this) {
+			if (options != null) {
+				return options;
+			}
+			
+			List<String> ret = new ArrayList<>();
+			ret.add("-target");
+			ret.add("1.8");
+			
+			String cp = getClassPath();
+			if (cp != null && cp.trim().length() != 0) {
+				ret.add("-classpath");
+				ret.add(cp);
+			}
+			
+			options = ret;
+			return options;
 		}
-		
-		options = ret;
-		return options;
 	}
 	
 	/**
