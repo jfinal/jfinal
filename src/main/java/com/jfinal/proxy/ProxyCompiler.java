@@ -86,7 +86,11 @@ public class ProxyCompiler {
 			if (index++ > 0) {
 				ret.append(File.pathSeparator);
 			}
-			ret.append(url.getFile());
+			String path = url.getFile();
+			if (path.length() > 2 && path.endsWith(File.separator)) {
+				path = path.substring(0, path.length() - 1);
+			}
+			ret.append(path);
 		}
 		
 		return ret.toString();
