@@ -17,9 +17,13 @@
 package com.jfinal.proxy;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +49,56 @@ public class ProxyCompiler {
 	
 	protected static final Log log = Log.getLog(ProxyCompiler.class);
 	
-	protected List<String> options = Arrays.asList("-target", "1.8" /*, "-parameters"*/);
+	// protected List<String> options = Arrays.asList("-target", "1.8" /*, "-parameters"*/);
+	protected List<String> options = null;
+	
+	protected List<String> getOptions() {
+		if (options != null) {
+			return options;
+		}
+		
+		List<String> ret = new ArrayList<>();
+		ret.add("-target");
+		ret.add("1.8");
+		
+		String cp = getClassPath();
+		if (cp != null && cp.trim().length() != 0) {
+			ret.add("-classpath");
+			ret.add(cp);
+		}
+		
+		options = ret;
+		return options;
+	}
+	
+	/**
+	 * 兼容 tomcat 丢失 class path，否则无法编译
+	 */
+	protected String getClassPath() {
+		URLClassLoader classLoader = getURLClassLoader();
+		if (classLoader == null) {
+			return null;
+		}
+		
+		int index = 0;
+		StringBuilder ret = new StringBuilder();
+		for (URL url : classLoader.getURLs()) {
+			if (index++ > 0) {
+				ret.append(File.pathSeparator);
+			}
+			ret.append(url.getFile());
+		}
+		
+		return ret.toString();
+	}
+	
+	protected URLClassLoader getURLClassLoader() {
+		ClassLoader ret = Thread.currentThread().getContextClassLoader();
+		if (ret == null) {
+			ret = ProxyCompiler.class.getClassLoader();
+		}
+		return (ret instanceof URLClassLoader) ? (URLClassLoader)ret : null;
+	}
 	
 	public void compile(ProxyClass proxyClass) {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
@@ -57,7 +110,7 @@ public class ProxyCompiler {
 		try (MyJavaFileManager javaFileManager = new MyJavaFileManager(compiler.getStandardFileManager(collector, null, null))) {
 			
 			MyJavaFileObject javaFileObject = new MyJavaFileObject(proxyClass.getName(), proxyClass.getSourceCode());
-			Boolean result = compiler.getTask(null, javaFileManager, collector, options, null, Arrays.asList(javaFileObject)).call();
+			Boolean result = compiler.getTask(null, javaFileManager, collector, getOptions(), null, Arrays.asList(javaFileObject)).call();
 			if (! result) {
 				collector.getDiagnostics().forEach(item -> log.error(item.toString()));
 			}
