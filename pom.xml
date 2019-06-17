@@ -46,7 +46,10 @@
 	<repositories>
 	</repositories>
 	
-	<!-- 所有 dependency 都仅仅是可选项，仅当实际用到第三方时才需要引入 -->
+	<!--
+		所有 dependency 都仅仅是可选项，仅当实际用到第三方时才需要引入
+		注意在 copy 引入下面的依赖时，要去掉 <scope>provided</scope> 才能生效
+	 -->
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
