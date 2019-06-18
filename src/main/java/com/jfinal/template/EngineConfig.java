@@ -209,7 +209,7 @@ public class EngineConfig {
 		sharedObjectMap.put(name, object);
 	}
 	
-	Map<String, Object> getSharedObjectMap() {
+	public Map<String, Object> getSharedObjectMap() {
 		return sharedObjectMap;
 	}
 	
