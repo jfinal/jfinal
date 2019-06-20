@@ -151,9 +151,13 @@ public class StrKit {
 	}
 	
 	public static String join(List<String> list, String separator) {
-		StringBuilder sb =new StringBuilder();
-		for(String s : list){
-			sb.append(s);
+		if(list==null || list.isEmpty()) return "";
+		StringBuilder sb = new StringBuilder();
+		for (int i=0;i<list.size();i++) {
+			if (i > 0) {
+				sb.append(separator);
+			}
+			sb.append(list.get(i));
 		}
 		return sb.toString();
 	}
