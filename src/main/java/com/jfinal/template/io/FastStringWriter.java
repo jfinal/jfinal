@@ -16,102 +16,153 @@
 
 package com.jfinal.template.io;
 
+import java.io.IOException;
 import java.io.Writer;
 
 /**
  * FastStringWriter
  * 
  * <pre>
- * 由 JDK 中 StringWriter 改造而来，在其基础之上做了如下改变：
- * 1：StringBuffer 属性改为 StringBuilder，避免了前者的 synchronized 操作
- * 2：添加了 MAX_SIZE 属性
- * 3：去掉了 close() 方法声明中的 throws IOException，并添加了代码，原先该方法中无任何代码
+ * 由 JDK 中 Writer 改造而来，在其基础之上做了如下改变：
+ * 1：添加 char[] value 直接保存 char 值
+ * 2：添加 int len 记录数据长度
+ * 3：去掉 synchronized 操作
+ * 4：添加 MAX_BUFFER_SIZE，限定 value 被重用的最大长度
+ * 5：去掉了 close() 方法声明中的 throws IOException，并添加缓存回收逻辑
  * </pre>
  */
 public class FastStringWriter extends Writer {
 	
-	private StringBuilder buf;
+	private char[] value;
+	private int len;
 	
-    public FastStringWriter() {
-        buf = new StringBuilder();
-    }
-    
-    public FastStringWriter(int initialSize) {
-        if (initialSize < 0) {
-            throw new IllegalArgumentException("Negative buffer size");
-        }
-        buf = new StringBuilder(initialSize);
-    }
-    
-    public void write(int c) {
-        buf.append((char) c);
-    }
-    
-    public void write(char cbuf[], int off, int len) {
-        if ((off < 0) || (off > cbuf.length) || (len < 0) ||
-            ((off + len) > cbuf.length) || ((off + len) < 0)) {
-            throw new IndexOutOfBoundsException();
-        } else if (len == 0) {
-            return;
-        }
-        buf.append(cbuf, off, len);
-    }
-    
-    public void write(String str) {
-        buf.append(str);
-    }
-    
-    public void write(String str, int off, int len)  {
-        buf.append(str.substring(off, off + len));
-    }
-    
-    public FastStringWriter append(CharSequence csq) {
-        if (csq == null) {
-            write("null");
-        } else {
-            write(csq.toString());
-        }
-        return this;
-    }
-    
-    public FastStringWriter append(CharSequence csq, int start, int end) {
-        CharSequence cs = (csq == null ? "null" : csq);
-        write(cs.subSequence(start, end).toString());
-        return this;
-    }
-    
-    public FastStringWriter append(char c) {
-        write(c);
-        return this;
-    }
-    
-    public String toString() {
-        return buf.toString();
-    }
-    
-    public StringBuilder getBuffer() {
-        return buf;
-    }
-    
-    public void flush() {
-    	
-    }
-    
-    static int MAX_SIZE = 1024 * 64;
-    
-    /**
-     * 由 StringWriter.close() 改造而来，原先该方法中无任何代码 ，改造如下：
-     * 1：去掉 throws IOException
-     * 2：添加 buf 空间释放处理逻辑
-     * 3：添加 buf.setLength(0)，以便于配合 ThreadLocal 回收利用
-     */
-    public void close() {
-    	if (buf.length() > MAX_SIZE) {
-    		buf = new StringBuilder(MAX_SIZE / 2);	// 释放空间占用过大的 buf
-		} else {
-			buf.setLength(0);
+	private static int MAX_BUFFER_SIZE = 1024 * 256;		// 1024 * 64;
+	
+	public static void setMaxBufferSize(int maxBufferSize) {
+		int min = 256;
+		if (maxBufferSize < min) {
+			throw new IllegalArgumentException("maxBufferSize must more than " + min);
 		}
-    }
+		MAX_BUFFER_SIZE = maxBufferSize;
+	}
+	
+	@Override
+	public void close() /* throws IOException */ {
+		len = 0;
+		
+		// 释放空间占用过大的缓存
+		if (value.length > MAX_BUFFER_SIZE) {
+			value = new char[Math.max(256, MAX_BUFFER_SIZE / 2)];
+		}
+	}
+	
+	public String toString() {
+		return new String(value, 0, len);
+	}
+	
+	public StringBuilder toStringBuilder() {
+		return new StringBuilder(len + 64).append(value, 0, len);
+	}
+	
+	public FastStringWriter(int capacity) {
+		value = new char[capacity];
+	}
+	
+	public FastStringWriter() {
+		this(128);
+	}
+	
+	/**
+	 * 扩容
+	 */
+	protected void expandCapacity(int newLen) {
+		int newCapacity = Math.max(newLen, value.length * 2);
+		char[] newValue = new char[newCapacity];
+		
+		// 复制 value 中的值到 newValue
+		if (len > 0) {
+			System.arraycopy(value, 0, newValue, 0, len);
+		}
+		value = newValue;
+	}
+	
+	@Override
+	public void write(char buffer[], int offset, int len) throws IOException {
+		int newLen = this.len + len;
+		if (newLen > value.length) {
+			expandCapacity(newLen);
+		}
+		
+		System.arraycopy(buffer, offset, value, this.len, len);
+		this.len = newLen;
+	}
+	
+	@Override
+	public void write(String str, int offset, int len) throws IOException {
+		int newLen = this.len + len;
+		if (newLen > value.length) {
+			expandCapacity(newLen);
+		}
+		
+		str.getChars(offset, (offset + len), value, this.len);
+		this.len = newLen;
+	}
+	
+	@Override
+	public void write(int c) throws IOException {
+		char[] buffer = {(char)c};
+		write(buffer, 0, 1);
+	}
+	
+	@Override
+	public void write(char buffer[]) throws IOException {
+		write(buffer, 0, buffer.length);
+	}
+	
+	@Override
+	public void write(String str) throws IOException {
+		write(str, 0, str.length());
+	}
+	
+	@Override
+	public Writer append(CharSequence csq) throws IOException {
+		if (csq instanceof String) {
+			String str = (String)csq;
+			write(str, 0, str.length());
+			return this;
+		}
+		
+		if (csq == null)
+			write("null");
+		else
+			write(csq.toString());
+		return this;
+	}
+	
+	@Override
+	public Writer append(CharSequence csq, int start, int end) throws IOException {
+		if (csq instanceof String) {
+			String str = (String)csq;
+			write(str, start, (end - start));
+			return this;
+		}
+		
+		CharSequence cs = (csq == null ? "null" : csq);
+		write(cs.subSequence(start, end).toString());
+		return this;
+	}
+	
+	@Override
+	public Writer append(char c) throws IOException {
+		char[] buffer = {c};
+		write(buffer, 0, 1);
+		return this;
+	}
+	
+	@Override
+	public void flush() throws IOException {
+		
+	}
 }
 
 

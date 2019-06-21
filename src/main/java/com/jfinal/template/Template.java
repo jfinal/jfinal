@@ -108,7 +108,7 @@ public class Template {
 	public StringBuilder renderToStringBuilder(Map<?, ?> data) {
 		FastStringWriter fsw = new FastStringWriter();
 		render(data, fsw);
-		return fsw.getBuffer();
+		return fsw.toStringBuilder();
 	}
 	
 	/**
