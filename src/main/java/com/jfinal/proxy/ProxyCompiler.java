@@ -102,7 +102,7 @@ public class ProxyCompiler {
 			}
 			
 			// 去除后缀字符 '/'
-			if (path.length() > 1 && path.endsWith(File.separator)) {
+			if (path.length() > 1 && ( path.endsWith("/")) || path.endsWith(File.separator) ) {
 				path = path.substring(0, path.length() - 1);
 			}
 			
