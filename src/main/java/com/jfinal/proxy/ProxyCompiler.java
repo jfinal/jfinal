@@ -93,6 +93,7 @@ public class ProxyCompiler {
 			if (index++ > 0) {
 				ret.append(File.pathSeparator);
 			}
+			
 			String path = url.getFile();
 			
 			// 如果是 windows 系统，去除前缀字符 '/'
