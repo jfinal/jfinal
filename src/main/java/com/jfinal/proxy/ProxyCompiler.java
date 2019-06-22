@@ -87,19 +87,33 @@ public class ProxyCompiler {
 		}
 		
 		int index = 0;
+		boolean isWindows = isWindows();
 		StringBuilder ret = new StringBuilder();
 		for (URL url : classLoader.getURLs()) {
 			if (index++ > 0) {
 				ret.append(File.pathSeparator);
 			}
 			String path = url.getFile();
+			
+			// 如果是 windows 系统，去除前缀字符 '/'
+			if (isWindows && path.startsWith("/")) {
+				path = path.substring(1);
+			}
+			
+			// 去除后缀字符 '/'
 			if (path.length() > 1 && path.endsWith(File.separator)) {
 				path = path.substring(0, path.length() - 1);
 			}
+			
 			ret.append(path);
 		}
 		
 		return ret.toString();
+	}
+	
+	protected boolean isWindows() {
+		String osName = System.getProperty("os.name", "unknown");
+		return osName.toLowerCase().indexOf("windows") != -1;
 	}
 	
 	protected URLClassLoader getURLClassLoader() {
