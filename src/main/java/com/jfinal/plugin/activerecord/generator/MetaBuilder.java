@@ -150,7 +150,7 @@ public class MetaBuilder {
 		gen.setMetaBuilder(new MetaBuilder(dataSource).filter(
 			tableName -> {
 				return tableName.startsWith("SYS_");
-			 })
+			})
 		);
 		gen.addExcludedTable("error_log");	// 注意这行代码要放在上面的之后调用
 		gen.generate();
