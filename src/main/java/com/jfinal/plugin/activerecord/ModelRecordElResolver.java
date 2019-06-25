@@ -112,7 +112,7 @@ public class ModelRecordElResolver extends ELResolver {
 		String getter = "get" + StrKit.firstCharToUpperCase(property);
 		Method[] methods = base.getClass().getMethods();
 		for (Method m : methods) {
-			if (m.getName().equals(getter) && m.getParameterTypes().length == 0) {
+			if (m.getName().equals(getter) && m.getParameterCount() == 0) {
 				return m;
 			}
 		}

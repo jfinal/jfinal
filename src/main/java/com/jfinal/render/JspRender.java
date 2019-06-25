@@ -149,7 +149,7 @@ public class JspRender extends Render {
 	private void handleGetterMethod(Map<String, Object> result, Method[] methods) {
 		for (Method method : methods) {
 			String methodName = method.getName();
-			if (methodName.startsWith("get") && method.getParameterTypes().length == 0) {
+			if (methodName.startsWith("get") && method.getParameterCount() == 0) {
 				throw new RuntimeException("Not finished!");
 			}
 		}
