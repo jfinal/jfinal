@@ -559,6 +559,22 @@ public class Engine {
 	public static void setToFastFieldKeyBuilder() {
 		FieldKeyBuilder.setToFastFieldKeyBuilder();
 	}
+	
+	/**
+	 * 设置极速模式
+	 * 
+	 * 极速模式将生成代理对象来消除 java.lang.reflect.Method.invoke(...) 调用，
+	 * 性能提升 12.9%
+	 */
+	public static void setFastMode(boolean fastMode) {
+		if (fastMode) {
+			addFieldGetterToFirst(new com.jfinal.template.expr.ast.FastFieldGetter());
+			FieldKeyBuilder.setToFastFieldKeyBuilder();
+		} else {
+			removeFieldGetter(com.jfinal.template.expr.ast.FastFieldGetter.class);
+			FieldKeyBuilder.setFieldKeyBuilder(new com.jfinal.template.expr.ast.FieldKeyBuilder.StrictFieldKeyBuilder());
+		}
+	}
 }
 
 
