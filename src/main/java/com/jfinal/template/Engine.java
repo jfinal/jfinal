@@ -556,8 +556,8 @@ public class Engine {
 		FieldKit.removeFieldGetter(fieldGetterClass);
 	}
 	
-	public static void setToFastFieldKeyBuilder() {
-		FieldKeyBuilder.setToFastFieldKeyBuilder();
+	public static void setFastFieldKeyBuilder(boolean enable) {
+		FieldKeyBuilder.setFastFieldKeyBuilder(enable);
 	}
 	
 	/**
@@ -567,13 +567,8 @@ public class Engine {
 	 * 性能提升 12.9%
 	 */
 	public static void setFastMode(boolean fastMode) {
-		if (fastMode) {
-			addFieldGetterToFirst(new com.jfinal.template.expr.ast.FastFieldGetter());
-			FieldKeyBuilder.setToFastFieldKeyBuilder();
-		} else {
-			removeFieldGetter(com.jfinal.template.expr.ast.FastFieldGetter.class);
-			FieldKeyBuilder.setFieldKeyBuilder(new com.jfinal.template.expr.ast.FieldKeyBuilder.StrictFieldKeyBuilder());
-		}
+		FieldKit.setFastMode(fastMode);
+		FieldKeyBuilder.setFastFieldKeyBuilder(fastMode);
 	}
 }
 
