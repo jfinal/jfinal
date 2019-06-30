@@ -16,9 +16,12 @@
 
 package com.jfinal.template.ext.directive;
 
+import java.io.IOException;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
+import com.jfinal.template.TemplateException;
 import com.jfinal.template.io.Writer;
+import com.jfinal.template.stat.ParseException;
 import com.jfinal.template.stat.Scope;
 
 /**
@@ -29,45 +32,67 @@ import com.jfinal.template.stat.Scope;
 public class EscapeDirective extends Directive {
 	
 	public void exec(Env env, Scope scope, Writer writer) {
-		Object value = exprList.eval(scope);
-		if (value != null) {
-			write(writer, escape(value.toString()));
+		try {
+			Object value = exprList.eval(scope);
+			
+			if (value instanceof String) {
+				escape((String)value, writer);
+			} else if (value instanceof Number) {
+				Class<?> c = value.getClass();
+				if (c == Integer.class) {
+					writer.write((Integer)value);
+				} else if (c == Long.class) {
+					writer.write((Long)value);
+				} else if (c == Double.class) {
+					writer.write((Double)value);
+				} else if (c == Float.class) {
+					writer.write((Float)value);
+				} else if (c == Short.class) {
+					writer.write((Short)value);
+				} else {
+					writer.write(value.toString());
+				}
+			} else if (value != null) {
+				escape(value.toString(), writer);
+			}
+		} catch(TemplateException | ParseException e) {
+			throw e;
+		} catch(Exception e) {
+			throw new TemplateException(e.getMessage(), location, e);
 		}
 	}
 	
-	// TODO 挪到 StrKit 中
-	private String escape(String str) {
-		if (str == null || str.length() == 0) {
-			return str;
+	private void escape(String str, Writer w) throws IOException {
+		int len = str.length();
+		if (len == 0) {
+			return ;
 		}
 		
-		int len = str.length();
-		StringBuilder ret = new StringBuilder(len * 2);
 		for (int i = 0; i < len; i++) {
 			char cur = str.charAt(i);
 			switch (cur) {
 			case '<':
-				ret.append("&lt;");
+				w.write("&lt;");
 				break;
 			case '>':
-				ret.append("&gt;");
+				w.write("&gt;");
 				break;
 			case '"':
-				ret.append("&quot;");
+				w.write("&quot;");
 				break;
 			case '\'':
-				// ret.append("&apos;");	// IE 不支持 &apos; 考虑 &#39;
-				ret.append("&#39;");
+				// w.write("&apos;");	// IE 不支持 &apos; 考虑 &#39;
+				w.write("&#39;");
 				break;
 			case '&':
-				ret.append("&amp;");
+				w.write("&amp;");
 				break;
 			default:
-				ret.append(cur);
+				w.write(str, i, 1);
 				break;
 			}
 		}
-
-		return ret.toString();
 	}
 }
+
+
