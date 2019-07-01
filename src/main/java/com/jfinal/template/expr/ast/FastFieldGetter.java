@@ -49,7 +49,7 @@ public class FastFieldGetter extends FieldGetter {
 						if (proxy == null) {	
 							try {
 								proxy = createProxy(targetClass, fieldName);
-							} catch (Exception e) {
+							} catch (Throwable e) {
 								return null;
 							}
 							cache.putIfAbsent(targetClass, proxy);
