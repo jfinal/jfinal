@@ -136,9 +136,7 @@ public class ProxyCompiler {
 			
 			MyJavaFileObject javaFileObject = new MyJavaFileObject(proxyClass.getName(), proxyClass.getSourceCode());
 			Boolean result = compiler.getTask(null, javaFileManager, collector, getOptions(), null, Arrays.asList(javaFileObject)).call();
-			if (! result) {
-				collector.getDiagnostics().forEach(item -> log.error(item.toString()));
-			}
+			outputCompileError(result, collector);
 			
 			Map<String, byte[]> ret = new HashMap<>();
 			for (Entry<String, MyJavaFileObject> e : javaFileManager.fileObjects.entrySet()) {
@@ -148,6 +146,12 @@ public class ProxyCompiler {
 			proxyClass.setByteCode(ret);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
+		}
+	}
+	
+	protected void outputCompileError(Boolean result, DiagnosticCollector<JavaFileObject> collector) {
+		if (! result) {
+			collector.getDiagnostics().forEach(item -> log.error(item.toString()));
 		}
 	}
 	
@@ -201,7 +205,7 @@ public class ProxyCompiler {
 		
 		public Map<String, MyJavaFileObject> fileObjects = new HashMap<>();
 		
-		protected MyJavaFileManager(JavaFileManager fileManager) {
+		public MyJavaFileManager(JavaFileManager fileManager) {
 			super(fileManager);
 		}
 		
