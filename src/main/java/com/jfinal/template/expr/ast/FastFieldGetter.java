@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.jfinal.kit.StrKit;
 import com.jfinal.proxy.ProxyClassLoader;
-import com.jfinal.proxy.ProxyCompiler;
 
 /**
  * 使用 jfinal proxy 机制消除 java.lang.reflect.Method.invoke(...)
@@ -16,6 +15,8 @@ public class FastFieldGetter extends FieldGetter {
 	protected static ProxyCompiler compiler = new ProxyCompiler();
 	protected static ProxyClassLoader classLoader = new ProxyClassLoader();
 	protected static Map<Class<?>, Proxy> cache = new ConcurrentHashMap<>(512, 0.25F);
+	
+	protected static boolean outputCompileError = false;
 	
 	protected Proxy proxy;
 	protected java.lang.reflect.Method getterMethod;
@@ -157,6 +158,24 @@ public class FastFieldGetter extends FieldGetter {
 			
 			return ret.toString();
 		}	
+	}
+	
+	// ---------
+	
+	public static void setOutputCompileError(boolean outputCompileError) {
+		FastFieldGetter.outputCompileError = outputCompileError;
+	}
+	
+	/**
+	 * 代理编译器
+	 */
+	static class ProxyCompiler extends com.jfinal.proxy.ProxyCompiler {
+		@Override
+		protected void outputCompileError(Boolean result, javax.tools.DiagnosticCollector<javax.tools.JavaFileObject> collector) {
+			if (outputCompileError) {
+				super.outputCompileError(result, collector);
+			}
+		}
 	}
 }
 
