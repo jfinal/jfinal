@@ -153,7 +153,9 @@ public class FieldKit {
 				addFieldGetterToFirst(new FastFieldGetter());
 			}
 		} else {
-			removeFieldGetter(FastFieldGetter.class);
+			if (contains(FastFieldGetter.class)) {
+				removeFieldGetter(FastFieldGetter.class);
+			}
 		}
 	}
 	
