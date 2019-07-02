@@ -149,10 +149,24 @@ public class FieldKit {
 	 */
 	public static void setFastMode(boolean fastMode) {
 		if (fastMode) {
-			addFieldGetterToFirst(new FastFieldGetter());
+			if ( !contains(FastFieldGetter.class) ) {
+				addFieldGetterToFirst(new FastFieldGetter());
+			}
 		} else {
 			removeFieldGetter(FastFieldGetter.class);
 		}
+	}
+	
+	/**
+	 * 判断是否包含某个 FieldGetter
+	 */
+	public static boolean contains(Class<? extends FieldGetter> fieldGetterClass) {
+		for (FieldGetter fg : getters) {
+			if (fg.getClass() == fieldGetterClass) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 
