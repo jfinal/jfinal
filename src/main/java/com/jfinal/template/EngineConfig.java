@@ -209,8 +209,14 @@ public class EngineConfig {
 		sharedObjectMap.put(name, object);
 	}
 	
-	Map<String, Object> getSharedObjectMap() {
+	public Map<String, Object> getSharedObjectMap() {
 		return sharedObjectMap;
+	}
+	
+	public synchronized void removeSharedObject(String name) {
+		if (sharedObjectMap != null) {
+			sharedObjectMap.remove(name);
+		}
 	}
 	
 	/**

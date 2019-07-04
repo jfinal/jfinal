@@ -33,10 +33,14 @@ public abstract class FieldKeyBuilder {
 	}
 	
 	/**
-	 * 设置为官方提供的 FastFieldKeyBuilder 实现，性能更高
+	 * 开启 FastFieldKeyBuilder，性能更高
 	 */
-	public static void setToFastFieldKeyBuilder() {
-		instance = new FastFieldKeyBuilder();
+	public static void setFastFieldKeyBuilder(boolean enable) {
+		if (enable) {
+			instance = new FastFieldKeyBuilder();
+		} else {
+			instance = new StrictFieldKeyBuilder();
+		}
 	}
 	
 	/**

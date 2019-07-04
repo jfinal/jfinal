@@ -57,7 +57,7 @@ public class DbPro {
 		return config;
 	}
 	
-	<T> List<T> query(Config config, Connection conn, String sql, Object... paras) throws SQLException {
+	protected <T> List<T> query(Config config, Connection conn, String sql, Object... paras) throws SQLException {
 		List result = new ArrayList();
 		PreparedStatement pst = conn.prepareStatement(sql);
 		config.dialect.fillStatement(pst, paras);
@@ -272,7 +272,7 @@ public class DbPro {
 	/**
 	 * Execute sql update
 	 */
-	int update(Config config, Connection conn, String sql, Object... paras) throws SQLException {
+	protected int update(Config config, Connection conn, String sql, Object... paras) throws SQLException {
 		PreparedStatement pst = conn.prepareStatement(sql);
 		config.dialect.fillStatement(pst, paras);
 		int result = pst.executeUpdate();
@@ -308,7 +308,7 @@ public class DbPro {
 		return update(sql, NULL_PARA_ARRAY);
 	}
 	
-	List<Record> find(Config config, Connection conn, String sql, Object... paras) throws SQLException {
+	protected List<Record> find(Config config, Connection conn, String sql, Object... paras) throws SQLException {
 		PreparedStatement pst = conn.prepareStatement(sql);
 		config.dialect.fillStatement(pst, paras);
 		ResultSet rs = pst.executeQuery();
@@ -579,7 +579,7 @@ public class DbPro {
 		return new Page<Record>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
-	Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
+	protected Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
 		String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
 		StringBuilder findSql = new StringBuilder();
 		findSql.append(select).append(' ').append(sqlExceptSelect);
@@ -607,7 +607,7 @@ public class DbPro {
 		return doPaginateByFullSql(pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
 	}
 	
-	boolean save(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
+	protected boolean save(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
 		String[] pKeys = primaryKey.split(",");
 		List<Object> paras = new ArrayList<Object>();
 		StringBuilder sql = new StringBuilder();
@@ -657,7 +657,7 @@ public class DbPro {
 		return save(tableName, config.dialect.getDefaultPrimaryKey(), record);
 	}
 	
-	boolean update(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
+	protected boolean update(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
 		String[] pKeys = primaryKey.split(",");
 		Object[] ids = new Object[pKeys.length];
 		
@@ -725,7 +725,7 @@ public class DbPro {
 	 * @param config the Config object
 	 * @param callback the ICallback interface
 	 */
-	Object execute(Config config, ICallback callback) {
+	protected Object execute(Config config, ICallback callback) {
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
@@ -744,7 +744,7 @@ public class DbPro {
 	 * @param atom the atom operation
 	 * @return true if transaction executing succeed otherwise false
 	 */
-	boolean tx(Config config, int transactionLevel, IAtom atom) {
+	protected boolean tx(Config config, int transactionLevel, IAtom atom) {
 		Connection conn = config.getThreadLocalConnection();
 		if (conn != null) {	// Nested transaction support
 			try {

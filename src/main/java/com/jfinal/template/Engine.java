@@ -279,6 +279,11 @@ public class Engine {
 		return this;
 	}
 	
+	public Engine removeSharedObject(String name) {
+		config.removeSharedObject(name);
+		return this;
+	}
+	
 	/**
 	 * Set output directive factory
 	 */
@@ -521,10 +526,10 @@ public class Engine {
 	 * 
 	 * 系统当前默认 FieldGetter 实现类及其位置如下：
 	 * GetterMethodFieldGetter  ---> 调用 getter 方法取值
+	 * RealFieldGetter			---> 直接获取 public 型的 object.field 值
 	 * ModelFieldGetter			---> 调用 Model.get(String) 方法取值
 	 * RecordFieldGetter			---> 调用 Record.get(String) 方法取值
-	 * MapFieldGetter			---> 调用 Map.get(String) 方法取值 
-	 * RealFieldGetter			---> 直接获取 public 型的 object.field 值
+	 * MapFieldGetter			---> 调用 Map.get(String) 方法取值
 	 * ArrayLengthGetter			---> 获取数组长度
 	 * 
 	 * 根据以上次序，如果要插入 IsMethodFieldGetter 到 GetterMethodFieldGetter
@@ -551,8 +556,19 @@ public class Engine {
 		FieldKit.removeFieldGetter(fieldGetterClass);
 	}
 	
-	public static void setToFastFieldKeyBuilder() {
-		FieldKeyBuilder.setToFastFieldKeyBuilder();
+	public static void setFastFieldKeyBuilder(boolean enable) {
+		FieldKeyBuilder.setFastFieldKeyBuilder(enable);
+	}
+	
+	/**
+	 * 设置极速模式
+	 * 
+	 * 极速模式将生成代理对象来消除 java.lang.reflect.Method.invoke(...) 调用，
+	 * 性能提升 12.9%
+	 */
+	public static void setFastMode(boolean fastMode) {
+		FieldKit.setFastMode(fastMode);
+		FieldKeyBuilder.setFastFieldKeyBuilder(fastMode);
 	}
 }
 

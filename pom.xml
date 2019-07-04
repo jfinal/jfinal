@@ -4,7 +4,7 @@
 	<artifactId>jfinal</artifactId>
 	<packaging>jar</packaging>
 	<name>JFinal</name>
-	<version>4.2</version>
+	<version>4.4-SNAPSHOT</version>
 	<url>http://www.jfinal.com</url>
 	<description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
 	
@@ -45,6 +45,11 @@
 
 	<repositories>
 	</repositories>
+	
+	<!--
+		所有 dependency 都仅仅是可选项，仅当实际用到第三方时才需要引入
+		注意在 copy 引入下面的依赖时，要去掉 <scope>provided</scope> 才能生效
+	 -->
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -53,7 +58,7 @@
 			<scope>test</scope>
 		</dependency>
 		
-		
+		<!-- jetty-server 仅用于开发，现已被 jfinal-undertow 项目所取代 -->
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>jetty-server</artifactId>
@@ -66,7 +71,7 @@
 			<version>3.1.0</version>
 			<scope>provided</scope>
 		</dependency -->
-		<!-- jsp support by jetty -->
+		<!-- jetty-server 开发时支持 JSP -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-jsp</artifactId>
@@ -74,48 +79,63 @@
 			<scope>provided</scope>
 		</dependency>
 		
+		<!-- c3p0 数据源连接池 -->
 		<dependency>
 			<groupId>com.mchange</groupId>
 			<artifactId>c3p0</artifactId>
 			<version>0.9.5.3</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- druid 数据源连接池 -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
 			<version>1.0.29</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- fastjson json 转换 -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 			<version>1.2.55</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- HikariCP 数据源连接池 -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<version>2.3.13</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- ehcache 缓存 -->
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache-core</artifactId>
 			<version>2.6.11</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- freemarkder 模板引擎 -->
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
 			<version>2.3.20</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- log4j 日志 -->
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.16</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- velocity 模板引擎 -->
 		<dependency>
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity</artifactId>
@@ -128,13 +148,16 @@
 			<version>2.0</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- cos -->
+		
+		<!-- cos 文件上传 -->
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>cos</artifactId>
 			<version>2017.5</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- redis 客户端 -->
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
@@ -157,6 +180,7 @@
 		</dependency>
 		-->
 		
+		<!-- jackson json 转换 -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -164,12 +188,15 @@
 			<scope>provided</scope>
 		</dependency>
 		
+		<!-- cron4j 任务调度 -->
 		<dependency>
 			<groupId>it.sauronsoftware.cron4j</groupId>
 			<artifactId>cron4j</artifactId>
 			<version>2.2.5</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- zxing 二维码生成 -->
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>
@@ -177,18 +204,22 @@
 			<scope>provided</scope>
 		</dependency>
 		
+		<!-- cglib 扩展 CglibProxyFactory extends ProxyFactory -->
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
 			<version>3.2.5</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- 支持在 spring 之中整合使用 jfinal -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>4.3.8.RELEASE</version>
 			<scope>provided</scope>
 		</dependency>
+		
 	</dependencies>
 	
 	<build>
@@ -260,11 +291,12 @@
 				  </execution>
 				</executions>
 				<configuration>
-					<skip>true</skip>
+					<skip>false</skip>
 				</configuration>
 			</plugin>
 
 		</plugins>
 	</build>
 </project>
+
 

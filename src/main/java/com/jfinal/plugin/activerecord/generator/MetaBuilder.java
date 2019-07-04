@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 import javax.sql.DataSource;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.dialect.Dialect;
@@ -43,6 +44,8 @@ public class MetaBuilder {
 	protected DataSource dataSource;
 	protected Dialect dialect = new MysqlDialect();
 	protected Set<String> excludedTables = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+	
+	protected Predicate<String> filterPredicate = null;
 	
 	protected Connection conn = null;
 	protected DatabaseMetaData dbMeta = null;
@@ -137,6 +140,28 @@ public class MetaBuilder {
 	}
 	
 	/**
+	 * 过滤不需要生成器处理的 table
+	 * 
+	 * 由于 setMetaBuilder 将置换掉 MetaBuilder，所以 Generator.addExcludedTable(...)
+	 * 需要放在 setMetaBuilder 之后调用，否则 addExcludedTable 将无效
+	 * 
+	 * 示例：
+		Generator gen = new Generator(...);
+		gen.setMetaBuilder(new MetaBuilder(dataSource).filter(
+			tableName -> {
+				return tableName.startsWith("SYS_");
+			})
+		);
+		gen.addExcludedTable("error_log");	// 注意这行代码要放在上面的之后调用
+		gen.generate();
+		
+	 */
+	public MetaBuilder filter(Predicate<String> predicate) {
+		this.filterPredicate = predicate;
+		return this;
+	}
+	
+	/**
 	 * 构造 modelName，mysql 的 tableName 建议使用小写字母，多单词表名使用下划线分隔，不建议使用驼峰命名
 	 * oracle 之下的 tableName 建议使用下划线分隔多单词名，无论 mysql还是 oralce，tableName 都不建议使用驼峰命名
 	 */
@@ -190,6 +215,12 @@ public class MetaBuilder {
 				continue ;
 			}
 			if (isSkipTable(tableName)) {
+				System.out.println("Skip table :" + tableName);
+				continue ;
+			}
+			
+			// jfinal 4.3 新增过滤 table 机制
+			if (filterPredicate != null && filterPredicate.test(tableName)) {
 				System.out.println("Skip table :" + tableName);
 				continue ;
 			}

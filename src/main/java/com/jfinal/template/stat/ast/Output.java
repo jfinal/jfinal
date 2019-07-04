@@ -66,8 +66,6 @@ public class Output extends Stat {
 				} else {
 					writer.write(value.toString());
 				}
-			} else if (value instanceof Boolean) {
-				writer.write((Boolean)value);
 			} else if (value != null) {
 				writer.write(value.toString());
 			}

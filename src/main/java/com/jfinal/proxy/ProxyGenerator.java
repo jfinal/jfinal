@@ -116,9 +116,11 @@ public class ProxyGenerator {
 			Long proxyMethodKey = ProxyMethodCache.generateKey();
 			method.set("proxyMethodKey", proxyMethodKey);
 			
-			// 方法仅有一个可变参数时传递一个 boolean onlyVarArgs 为 true
-			if (paras.length == 1 && paras[0].isVarArgs()) {
-				method.set("onlyVarArgs", true);
+			// 只有一个参数，且该参数是数组或者可变参数时传递 singleArrayPara = true
+			if (paras.length == 1) {
+				if (paras[0].getType().isArray() || paras[0].isVarArgs()) {
+					method.set("singleArrayPara", true);
+				}
 			}
 			
 			if (m.getReturnType() != void.class) {
