@@ -67,35 +67,31 @@ public class RedirectRender extends Render {
 		return result;
 	}
 	
-    @Override
-    public void render() {
-        String finalUrl = buildFinalUrl();
-
-
-        // 支持 https 协议下的重定向
-        // 跳过 http/https 已指定过协议类型的 url
-        if (!finalUrl.startsWith("http")) {
-            String serverName = request.getServerName();
-            int serverPort = request.getServerPort();
-            String scheme = request.getScheme();
-
-            if ("https".equals(scheme)) {
-                //如果https没有使用默认端口443，需要加上端口号
-                String serverPath = serverPort == 443 ? serverName : serverName + ":" + serverPort;
-                if (finalUrl.charAt(0) != '/') {
-                    finalUrl = "https://" + serverPath + "/" + finalUrl;
-                } else {
-                    finalUrl = "https://" + serverPath + finalUrl;
-                }
-            }
-        }
-
-        try {
-            // always 302
-            response.sendRedirect(finalUrl);
-        } catch (IOException e) {
-            throw new RenderException(e);
-        }
-    }
+	public void render() {
+		String finalUrl = buildFinalUrl();
+		
+		// 支持 https 协议下的重定向
+		if (!finalUrl.startsWith("http")) {	// 跳过 http/https 已指定过协议类型的 url
+			if ("https".equals(request.getScheme())) {
+				String serverName = request.getServerName();
+				int port = request.getServerPort();
+				if (port != 443) {
+					serverName = serverName + ":" + port;
+				}
+				
+				if (finalUrl.charAt(0) != '/') {
+					finalUrl = "https://" + serverName + "/" + finalUrl;
+				} else {
+					finalUrl = "https://" + serverName + finalUrl;
+				}
+			}
+		}
+		
+		try {
+			response.sendRedirect(finalUrl);	// always 302
+		} catch (IOException e) {
+			throw new RenderException(e);
+		}
+	}
 }
 
