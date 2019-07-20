@@ -66,6 +66,7 @@ public class RedirectRender extends Render {
 		
 		
 		// 支持 https 协议下的重定向
+		/* 经测试 https 重定向无需额外处理，直接支持
 		if (!result.startsWith("http")) {	// 跳过 http/https 已指定过协议类型的 url
 			if ("https".equals(request.getScheme())) {
 				String serverName = request.getServerName();
@@ -81,6 +82,7 @@ public class RedirectRender extends Render {
 				}
 			}
 		}
+		*/
 		
 		
 		return result;
