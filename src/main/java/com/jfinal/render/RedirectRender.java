@@ -64,14 +64,9 @@ public class RedirectRender extends Render {
 			}
 		}
 		
-		return result;
-	}
-	
-	public void render() {
-		String finalUrl = buildFinalUrl();
 		
 		// 支持 https 协议下的重定向
-		if (!finalUrl.startsWith("http")) {	// 跳过 http/https 已指定过协议类型的 url
+		if (!result.startsWith("http")) {	// 跳过 http/https 已指定过协议类型的 url
 			if ("https".equals(request.getScheme())) {
 				String serverName = request.getServerName();
 				int port = request.getServerPort();
@@ -79,13 +74,20 @@ public class RedirectRender extends Render {
 					serverName = serverName + ":" + port;
 				}
 				
-				if (finalUrl.charAt(0) != '/') {
-					finalUrl = "https://" + serverName + "/" + finalUrl;
+				if (result.charAt(0) != '/') {
+					result = "https://" + serverName + "/" + result;
 				} else {
-					finalUrl = "https://" + serverName + finalUrl;
+					result = "https://" + serverName + result;
 				}
 			}
 		}
+		
+		
+		return result;
+	}
+	
+	public void render() {
+		String finalUrl = buildFinalUrl();
 		
 		try {
 			response.sendRedirect(finalUrl);	// always 302
