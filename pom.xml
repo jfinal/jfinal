@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
-	<packaging>jar</packaging>
-	<name>JFinal</name>
 	<version>4.4-SNAPSHOT</version>
-	<url>http://www.jfinal.com</url>
+	<packaging>jar</packaging>
+	
+	<name>JFinal</name>
 	<description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
+	<url>http://www.jfinal.com</url>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,12 +20,14 @@
 		<system>Github Issue</system>
 		<url>https://gitee.com/jfinal/jfinal/issues</url>
 	</issueManagement>
+	
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
 			<url>http://apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
+	
 	<developers>
 		<developer>
 			<id>jfinal</id>
@@ -32,11 +36,23 @@
 			<url>http://jfinal.com/user/1</url>
 		</developer>
 	</developers>
+	
 	<scm>
 		<connection>scm:git:git@gitee.com:jfinal/jfinal.git</connection>
 		<developerConnection>scm:git:git@gitee.com:jfinal/jfinal.git</developerConnection>
 		<url>git@gitee.com:jfinal/jfinal.git</url>
 	</scm>
+	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 	<repositories>
 	</repositories>
