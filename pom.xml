@@ -36,12 +36,6 @@
 		<developerConnection>scm:git:git@gitee.com:jfinal/jfinal.git</developerConnection>
 		<url>git@gitee.com:jfinal/jfinal.git</url>
 	</scm>
-	
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
 
 	<repositories>
 	</repositories>
