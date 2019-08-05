@@ -478,13 +478,21 @@ public class Engine {
 	}
 	
 	/**
-	 * Enjoy 模板引擎对 UTF-8 的 encoding 做过性能优化，某些偏门字符在
-	 * 被编码为 UTF-8 时会出现异常，此时可以通过继承扩展 EncoderFactory
-	 * 来解决编码异常，具体用法参考：
-	 *     http://www.jfinal.com/feedback/5340
+	 * Enjoy 模板引擎对 UTF-8 的 encoding 做过性能优化，某些罕见字符
+	 * 无法被编码，可以配置为 JdkEncoderFactory 解决问题:
+	 * 		engine.setEncoderFactory(new JdkEncoderFactory());
 	 */
 	public Engine setEncoderFactory(EncoderFactory encoderFactory) {
 		config.setEncoderFactory(encoderFactory);
+		return this;
+	}
+	
+	/**
+	 * 配置为 JdkEncoderFactory，支持 utf8mb4，支持 emoji 表情字符，
+	 * 支持各种罕见字符编码
+	 */
+	public Engine setToJdkEncoderFactory() {
+		config.setEncoderFactory(new com.jfinal.template.io.JdkEncoderFactory());
 		return this;
 	}
 	
