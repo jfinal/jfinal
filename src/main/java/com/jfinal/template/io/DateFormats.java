@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class DateFormats {
 	
-	private Map<String, SimpleDateFormat> map = new HashMap<String, SimpleDateFormat>();
+	private Map<String, SimpleDateFormat> map = new HashMap<String, SimpleDateFormat>(16, 0.25F);
 	
 	public SimpleDateFormat getDateFormat(String datePattern) {
 		SimpleDateFormat ret = map.get(datePattern);
