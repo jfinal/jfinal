@@ -50,15 +50,17 @@ public class ByteWriter extends Writer {
 	}
 	
 	public void write(String str, int offset, int len) throws IOException {
-		while (len > chars.length) {
-			write(str, offset, chars.length);
-			offset += chars.length;
-			len -= chars.length;
+		int size, byteLen;
+		while (len > 0) {
+			size = (len > chars.length ? chars.length : len);
+			
+			str.getChars(offset, offset + size, chars, 0);
+			byteLen = encoder.encode(chars, 0, size, bytes);
+			out.write(bytes, 0, byteLen);
+			
+			offset += size;
+			len -= size;
 		}
-		
-		str.getChars(offset, offset + len, chars, 0);
-		int byteLen = encoder.encode(chars, 0, len, bytes);
-		out.write(bytes, 0, byteLen);
 	}
 	
 	public void write(String str) throws IOException {
@@ -66,15 +68,17 @@ public class ByteWriter extends Writer {
 	}
 	
 	public void write(StringBuilder stringBuilder, int offset, int len) throws IOException {
-		while (len > chars.length) {
-			write(stringBuilder, offset, chars.length);
-			offset += chars.length;
-			len -= chars.length;
+		int size, byteLen;
+		while (len > 0) {
+			size = (len > chars.length ? chars.length : len);
+			
+			stringBuilder.getChars(offset, offset + size, chars, 0);
+			byteLen = encoder.encode(chars, 0, size, bytes);
+			out.write(bytes, 0, byteLen);
+			
+			offset += size;
+			len -= size;
 		}
-		
-		stringBuilder.getChars(offset, offset + len, chars, 0);
-		int byteLen = encoder.encode(chars, 0, len, bytes);
-		out.write(bytes, 0, byteLen);
 	}
 	
 	public void write(StringBuilder stringBuilder) throws IOException {

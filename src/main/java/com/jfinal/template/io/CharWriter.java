@@ -44,14 +44,16 @@ public class CharWriter extends Writer {
 	}
 	
 	public void write(String str, int offset, int len) throws IOException {
-		while (len > chars.length) {
-			write(str, offset, chars.length);
-			offset += chars.length;
-			len -= chars.length;
+		int size;
+		while (len > 0) {
+			size = (len > chars.length ? chars.length : len);
+			
+			str.getChars(offset, offset + size, chars, 0);
+			out.write(chars, 0, size);
+			
+			offset += size;
+			len -= size;
 		}
-		
-		str.getChars(offset, offset + len, chars, 0);
-		out.write(chars, 0, len);
 	}
 	
 	public void write(String str) throws IOException {
@@ -59,14 +61,16 @@ public class CharWriter extends Writer {
 	}
 	
 	public void write(StringBuilder stringBuilder, int offset, int len) throws IOException {
-		while (len > chars.length) {
-			write(stringBuilder, offset, chars.length);
-			offset += chars.length;
-			len -= chars.length;
+		int size;
+		while (len > 0) {
+			size = (len > chars.length ? chars.length : len);
+			
+			stringBuilder.getChars(offset, offset + size, chars, 0);
+			out.write(chars, 0, size);
+			
+			offset += size;
+			len -= size;
 		}
-		
-		stringBuilder.getChars(offset, offset + len, chars, 0);
-		out.write(chars, 0, len);
 	}
 	
 	public void write(StringBuilder stringBuilder) throws IOException {
