@@ -109,9 +109,9 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	/**
 	 * HikariCP will attempt to resolve a driver through the DriverManager based solely on the jdbcUrl,
 	 * but for some older drivers the driverClassName must also be specified
-	 * Default: none
+	 * Default: mysql driver
 	 */
-	private String driverClass = null;
+	private String driverClass = "com.mysql.jdbc.Driver";
 	
 	/**
 	 * the default transaction isolation level of connections returned from the pool.
