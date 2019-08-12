@@ -28,7 +28,7 @@ public @interface Para {
     /**
      * 对应到 HTTP 参数里的参数名称
      */
-    String value();
+    String value() default "";
     
     /**
      * 默认值
