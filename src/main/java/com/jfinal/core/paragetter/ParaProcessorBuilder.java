@@ -102,7 +102,7 @@ public class ParaProcessorBuilder {
 		Para para = p.getAnnotation(Para.class);
 		if (para != null) {
 			// 支持 @Para 注解仅指定 defaultValue 值的用法
-			if (com.jfinal.kit.StrKit.notBlank(para.value())) {
+			if (!Para.NULL_VALUE.equals(para.value())) {
 				parameterName = para.value().trim();
 			}
 			

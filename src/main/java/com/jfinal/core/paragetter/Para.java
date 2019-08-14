@@ -25,10 +25,14 @@ import java.lang.annotation.Target;
 @Target({ElementType.PARAMETER})
 @Documented
 public @interface Para {
+	
+	// 不能使用空字符串，因为早已用于：action(@Para("")User user)
+	String NULL_VALUE = "-NULL VALUE-";
+	
     /**
      * 对应到 HTTP 参数里的参数名称
      */
-    String value() default "";
+    String value() default NULL_VALUE;
     
     /**
      * 默认值
