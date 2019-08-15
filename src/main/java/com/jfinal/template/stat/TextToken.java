@@ -63,7 +63,8 @@ class TextToken extends Token {
 		}
 		
 		// 两个指令之间全是空白字符， 设置其长度为 0，为 Parser 过滤内容为空的 Text 节点做准备
-		// 典型测试用例：两个带有前导空格，并且都在独立一行的 #set(...) 指令
+		// 典型测试用例：两个带有前导空格，并且都在独立一行的 #set(...) 指令，前一个 #set 指令
+		//             虽然是 '\n' 结尾，但已在 Lexer 中被 prepareNextScan(...) 删掉
 		text.setLength(0);
 		return true;		// 当两指令之间全为空白字符时，告知调用方需要吃掉行尾的 '\n'
 	}
