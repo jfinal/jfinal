@@ -293,11 +293,27 @@ public class Engine {
 	}
 	
 	/**
-	 * Add directive
+	 * 添加自定义指令
+	 * 
+	 * 建议添加自定义指令时明确指定 keepLineBlank 变量值，其规则如下：
+	 *   1：keepLineBlank 为 true 时， 该指令所在行的前后空白字符以及末尾字符 '\n' 将会被保留
+	 *      一般用于具有输出值的指令，例如 #date、#para 等指令
+	 *    
+	 *   2：keepLineBlank 为 false 时，该指令所在行的前后空白字符以及末尾字符 '\n' 将会被删除
+	 *      一般用于没有输出值的指令，例如 #for、#if、#else、#end 这种性质的指令
+	 * 
 	 * <pre>
-	 * 示例：
-	 * addDirective("now", NowDirective.class)
+	 * 	示例：
+	 * 	addDirective("now", NowDirective.class, true)
 	 * </pre>
+	 */
+	public Engine addDirective(String directiveName, Class<? extends Directive> directiveClass, boolean keepLineBlank) {
+		config.addDirective(directiveName, directiveClass, keepLineBlank);
+		return this;
+	}
+	
+	/**
+	 * 添加自定义指令，keepLineBlank 使用默认值
 	 */
 	public Engine addDirective(String directiveName, Class<? extends Directive> directiveClass) {
 		config.addDirective(directiveName, directiveClass);
