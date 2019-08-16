@@ -81,8 +81,8 @@ public class EngineConfig {
 		addDirective("escape", EscapeDirective.class, true);
 		addDirective("random", RandomDirective.class, true);
 		addDirective("number", NumberDirective.class, true);
-		addDirective("call", CallDirective.class, true);
 		
+		addDirective("call", CallDirective.class, false);
 		addDirective("string", StringDirective.class, false);
 		
 		// Add official shared method of Template Engine

@@ -489,8 +489,14 @@ class Lexer {
 		tokens.add(idToken);
 		tokens.add(paraToken);
 		
-		// 保留指令所在行空白字符。#define 定义的函数名允许与自定义指令同名，需要排除掉
-		if (idToken.symbol != Symbol.DEFINE && keepLineBlankDirectives.contains(idToken.value())) {
+		// 保留指令所在行空白字符
+		// #define xxx() 模板函数名、#@xxx() 模板函数名，可以与指令同名，需要排除掉这三种 Symbol
+		if (keepLineBlankDirectives.contains(idToken.value())
+			&& idToken.symbol != Symbol.DEFINE
+			&& idToken.symbol != Symbol.CALL
+			&& idToken.symbol != Symbol.CALL_IF_DEFINED
+			) {
+			
 			prepareNextScan(0);
 		} else {
 			trimLineBlank();
