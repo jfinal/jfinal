@@ -490,7 +490,7 @@ class Lexer {
 		tokens.add(paraToken);
 		
 		// 保留指令所在行空白字符
-		if (keepLineBlankDirectives.contains(idToken.value())) {
+		if (idToken.symbol != Symbol.DEFINE && keepLineBlankDirectives.contains(idToken.value())) {
 			prepareNextScan(0);
 		} else {
 			trimLineBlank();
