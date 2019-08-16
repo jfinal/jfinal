@@ -321,14 +321,6 @@ public class Engine {
 	}
 	
 	/**
-	 * 该方法已被 addDirective(String, Class<? extends Directive>) 所代替
-	 */
-	@Deprecated
-	public Engine addDirective(String directiveName, Directive directive) {
-		return addDirective(directiveName, directive.getClass());
-	}
-	
-	/**
 	 * Remove directive
 	 */
 	public Engine removeDirective(String directiveName) {
