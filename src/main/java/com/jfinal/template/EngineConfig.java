@@ -19,9 +19,11 @@ package com.jfinal.template;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.SharedMethodKit;
@@ -60,7 +62,7 @@ public class EngineConfig {
 	private SharedMethodKit sharedMethodKit = new SharedMethodKit();
 	
 	// 保留指令所在行空白字符的指令
-	private java.util.Set<String> keepLineBlankDirectives = new java.util.HashSet<>();
+	private Set<String> keepLineBlankDirectives = new HashSet<>();
 	
 	private boolean devMode = false;
 	private boolean reloadModifiedSharedFunctionInDevMode = true;
