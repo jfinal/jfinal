@@ -489,7 +489,7 @@ class Lexer {
 		tokens.add(idToken);
 		tokens.add(paraToken);
 		
-		// 保留指令所在行空白字符
+		// 保留指令所在行空白字符。#define 定义的函数名允许与自定义指令同名，需要排除掉
 		if (idToken.symbol != Symbol.DEFINE && keepLineBlankDirectives.contains(idToken.value())) {
 			prepareNextScan(0);
 		} else {
