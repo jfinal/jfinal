@@ -18,7 +18,7 @@ package com.jfinal.template.stat;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.jfinal.template.EngineConfig;
+import java.util.Set;
 
 /**
  * DKFF(Dynamic Key Feature Forward) Lexer
@@ -28,7 +28,7 @@ class Lexer {
 	static final char EOF = (char)-1;
 	static final int TEXT_STATE_DIAGRAM = 999;
 	
-	EngineConfig config;
+	Set<String> keepLineBlankDirectives;
 	
 	char[] buf;
 	int state = 0;
@@ -41,8 +41,8 @@ class Lexer {
 	List<Token> tokens = new ArrayList<Token>();
 	String fileName;
 	
-	public Lexer(EngineConfig config, StringBuilder content, String fileName) {
-		this.config = config;
+	public Lexer(StringBuilder content, String fileName, Set<String> keepLineBlankDirectives) {
+		this.keepLineBlankDirectives = keepLineBlankDirectives;
 		
 		int len = content.length();
 		buf = new char[len + 1];
@@ -490,7 +490,7 @@ class Lexer {
 		tokens.add(paraToken);
 		
 		// 保留指令所在行空白字符
-		if (config.isKeepLineBlank(idToken.value())) {
+		if (keepLineBlankDirectives.contains(idToken.value())) {
 			prepareNextScan(0);
 		} else {
 			trimLineBlank();

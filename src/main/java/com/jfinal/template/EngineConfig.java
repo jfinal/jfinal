@@ -71,7 +71,7 @@ public class EngineConfig {
 	private String datePattern = "yyyy-MM-dd HH:mm";
 	
 	public EngineConfig() {
-		// #() 与 #include(...) 系统内置指令需要配置
+		// 内置指令 #() 与 #include() 需要配置，保留指令所在行前后空白字符以及行尾换行字符 '\n'
 		setKeepLineBlank("output", true);
 		setKeepLineBlank("include", true);
 		
@@ -366,8 +366,8 @@ public class EngineConfig {
 		}
 	}
 	
-	public boolean isKeepLineBlank(String directiveName) {
-		return keepLineBlankDirectives.contains(directiveName);
+	public Set<String> getKeepLineBlankDirectives() {
+		return keepLineBlankDirectives;
 	}
 	
 	/**

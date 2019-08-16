@@ -71,7 +71,7 @@ public class Parser {
 	}
 	
 	public StatList parse() {
-		tokenList = new Lexer(env.getEngineConfig(), content, fileName).scan();
+		tokenList = new Lexer(content, fileName, env.getEngineConfig().getKeepLineBlankDirectives()).scan();
 		tokenList.add(EOF);
 		StatList statList = statList();
 		if (peek() != EOF) {
