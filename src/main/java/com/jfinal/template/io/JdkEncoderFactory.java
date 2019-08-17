@@ -16,29 +16,23 @@
 
 package com.jfinal.template.io;
 
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * DateFormats
+ * JdkEncoderFactory
+ * 
+ * 支持 utf8mb4，支持 emoji 表情字符，支持各种罕见字符编码
+ * 
+ * <pre>
+ * 配置方法：
+ * engine.setToJdkEncoderFactory();
+ * </pre>
  */
-public class DateFormats {
+public class JdkEncoderFactory extends EncoderFactory {
 	
-	private Map<String, SimpleDateFormat> map = new HashMap<String, SimpleDateFormat>(16, 0.25F);
-	
-	public SimpleDateFormat getDateFormat(String datePattern) {
-		SimpleDateFormat ret = map.get(datePattern);
-		if (ret == null) {
-			ret = new SimpleDateFormat(datePattern);
-			map.put(datePattern, ret);
-		}
-		return ret;
+	@Override
+	public Encoder getEncoder() {
+		return new JdkEncoder(charset);
 	}
 }
-
-
-
 
 
 

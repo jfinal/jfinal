@@ -293,23 +293,31 @@ public class Engine {
 	}
 	
 	/**
-	 * Add directive
+	 * 添加自定义指令
+	 * 
+	 * 建议添加自定义指令时明确指定 keepLineBlank 变量值，其规则如下：
+	 *   1：keepLineBlank 为 true 时， 该指令所在行的前后空白字符以及末尾字符 '\n' 将会被保留
+	 *      一般用于具有输出值的指令，例如 #date、#para 等指令
+	 *    
+	 *   2：keepLineBlank 为 false 时，该指令所在行的前后空白字符以及末尾字符 '\n' 将会被删除
+	 *      一般用于没有输出值的指令，例如 #for、#if、#else、#end 这种性质的指令
+	 * 
 	 * <pre>
-	 * 示例：
-	 * addDirective("now", NowDirective.class)
+	 * 	示例：
+	 * 	addDirective("now", NowDirective.class, true)
 	 * </pre>
 	 */
-	public Engine addDirective(String directiveName, Class<? extends Directive> directiveClass) {
-		config.addDirective(directiveName, directiveClass);
+	public Engine addDirective(String directiveName, Class<? extends Directive> directiveClass, boolean keepLineBlank) {
+		config.addDirective(directiveName, directiveClass, keepLineBlank);
 		return this;
 	}
 	
 	/**
-	 * 该方法已被 addDirective(String, Class<? extends Directive>) 所代替
+	 * 添加自定义指令，keepLineBlank 使用默认值
 	 */
-	@Deprecated
-	public Engine addDirective(String directiveName, Directive directive) {
-		return addDirective(directiveName, directive.getClass());
+	public Engine addDirective(String directiveName, Class<? extends Directive> directiveClass) {
+		config.addDirective(directiveName, directiveClass);
+		return this;
 	}
 	
 	/**
@@ -478,13 +486,21 @@ public class Engine {
 	}
 	
 	/**
-	 * Enjoy 模板引擎对 UTF-8 的 encoding 做过性能优化，某些偏门字符在
-	 * 被编码为 UTF-8 时会出现异常，此时可以通过继承扩展 EncoderFactory
-	 * 来解决编码异常，具体用法参考：
-	 *     http://www.jfinal.com/feedback/5340
+	 * Enjoy 模板引擎对 UTF-8 的 encoding 做过性能优化，某些罕见字符
+	 * 无法被编码，可以配置为 JdkEncoderFactory 解决问题:
+	 * 		engine.setEncoderFactory(new JdkEncoderFactory());
 	 */
 	public Engine setEncoderFactory(EncoderFactory encoderFactory) {
 		config.setEncoderFactory(encoderFactory);
+		return this;
+	}
+	
+	/**
+	 * 配置为 JdkEncoderFactory，支持 utf8mb4，支持 emoji 表情字符，
+	 * 支持各种罕见字符编码
+	 */
+	public Engine setToJdkEncoderFactory() {
+		config.setEncoderFactory(new com.jfinal.template.io.JdkEncoderFactory());
 		return this;
 	}
 	

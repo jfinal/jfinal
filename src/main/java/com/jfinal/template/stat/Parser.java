@@ -71,7 +71,7 @@ public class Parser {
 	}
 	
 	public StatList parse() {
-		tokenList = new Lexer(content, fileName).scan();
+		tokenList = new Lexer(content, fileName, env.getEngineConfig().getKeepLineBlankDirectives()).scan();
 		tokenList.add(EOF);
 		StatList statList = statList();
 		if (peek() != EOF) {
@@ -207,11 +207,11 @@ public class Parser {
 				matchEnd(name);
 			}
 			return ret;
+		case EOF:
 		case PARA:
 		case ELSEIF:
 		case ELSE:
 		case END:
-		case EOF:
 		case CASE:
 		case DEFAULT:
 			return null;

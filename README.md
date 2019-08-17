@@ -8,14 +8,14 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 - 遵循 COC 原则，零配置，无 XML
 - 独创 Db + Record 模式，灵活便利
 - ActiveRecord 支持，使数据库开发极致快速
-- 极简、高性能 Template Engine，十分钟内掌握基本用法
+- 极简、强大、高性能模板引擎 Enjoy，十分钟内掌握 90% 用法
 - 自动加载修改后的 Java 文件，开发过程中无需重启服务
 - AOP支持，拦截器配置灵活，功能强大
 - Plugin 体系结构，扩展性强
 - 多视图支持，支持 Enjoy、FreeMarker、JSP、Velocity
 - 强大的 Validator 后端校验功能
 - 功能齐全，拥有传统 SSH 框架的绝大部分核心功能
-- 体积小仅 708 KB，并且无第三方依赖
+- 体积小仅 741 KB，并且无第三方依赖
 
 **JFinal 极速开发微信公众号欢迎你的加入: JFinal**
 
@@ -25,7 +25,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 <dependency>
     <groupId>com.jfinal</groupId>
     <artifactId>jfinal</artifactId>
-    <version>4.3</version>
+    <version>4.4</version>
 </dependency>
 ```
 

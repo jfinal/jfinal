@@ -1,12 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
+	<version>4.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
+	
 	<name>JFinal</name>
-	<version>4.3</version>
-	<url>http://www.jfinal.com</url>
 	<description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
+	<url>http://www.jfinal.com</url>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -17,12 +20,14 @@
 		<system>Github Issue</system>
 		<url>https://gitee.com/jfinal/jfinal/issues</url>
 	</issueManagement>
+	
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
 			<url>http://apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
+	
 	<developers>
 		<developer>
 			<id>jfinal</id>
@@ -31,17 +36,23 @@
 			<url>http://jfinal.com/user/1</url>
 		</developer>
 	</developers>
+	
 	<scm>
 		<connection>scm:git:git@gitee.com:jfinal/jfinal.git</connection>
 		<developerConnection>scm:git:git@gitee.com:jfinal/jfinal.git</developerConnection>
 		<url>git@gitee.com:jfinal/jfinal.git</url>
 	</scm>
 	
-	<parent>
-		<groupId>org.sonatype.oss</groupId>
-		<artifactId>oss-parent</artifactId>
-		<version>7</version>
-	</parent>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 	<repositories>
 	</repositories>
@@ -99,7 +110,7 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>1.2.55</version>
+			<version>1.2.58</version>
 			<scope>provided</scope>
 		</dependency>
 		
@@ -153,7 +164,7 @@
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>cos</artifactId>
-			<version>2017.5</version>
+			<version>2019.8</version>
 			<scope>provided</scope>
 		</dependency>
 		
@@ -251,14 +262,20 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
+				<version>2.10.4</version>
 				<configuration>
 					<!-- 解决 java8  发布到 maven 异常 -->
 					<additionalparam>-Xdoclint:none</additionalparam>
 					<encoding>UTF-8</encoding>
-					<outputDirectory>${basedir}</outputDirectory>
-					<reportOutputDirectory>${basedir}</reportOutputDirectory>
 				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<!-- 安装源码到本地仓库 -->
@@ -280,19 +297,16 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.1</version>
+				<version>1.6</version>
 				<executions>
-				  <execution>
-					<id>sign-artifacts</id>
-					<phase>verify</phase>
-					<goals>
-					  <goal>sign</goal>
-					</goals>
-				  </execution>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
 				</executions>
-				<configuration>
-					<skip>false</skip>
-				</configuration>
 			</plugin>
 
 		</plugins>

@@ -19,9 +19,11 @@ package com.jfinal.template;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.SharedMethodKit;
@@ -59,6 +61,9 @@ public class EngineConfig {
 	private Map<String, Class<? extends Directive>> directiveMap = new HashMap<String, Class<? extends Directive>>(64, 0.5F);
 	private SharedMethodKit sharedMethodKit = new SharedMethodKit();
 	
+	// 保留指令所在行空白字符的指令
+	private Set<String> keepLineBlankDirectives = new HashSet<>();
+	
 	private boolean devMode = false;
 	private boolean reloadModifiedSharedFunctionInDevMode = true;
 	private String baseTemplatePath = null;
@@ -66,14 +71,19 @@ public class EngineConfig {
 	private String datePattern = "yyyy-MM-dd HH:mm";
 	
 	public EngineConfig() {
+		// 内置指令 #() 与 #include() 需要配置，保留指令所在行前后空白字符以及行尾换行字符 '\n'
+		setKeepLineBlank("output", true);
+		setKeepLineBlank("include", true);
+		
 		// Add official directive of Template Engine
-		addDirective("render", RenderDirective.class);
-		addDirective("date", DateDirective.class);
-		addDirective("escape", EscapeDirective.class);
-		addDirective("string", StringDirective.class);
-		addDirective("random", RandomDirective.class);
-		addDirective("number", NumberDirective.class);
-		addDirective("call", CallDirective.class);
+		addDirective("render", RenderDirective.class, true);
+		addDirective("date", DateDirective.class, true);
+		addDirective("escape", EscapeDirective.class, true);
+		addDirective("random", RandomDirective.class, true);
+		addDirective("number", NumberDirective.class, true);
+		
+		addDirective("call", CallDirective.class, false);
+		addDirective("string", StringDirective.class, false);
 		
 		// Add official shared method of Template Engine
 		addSharedMethod(new SharedMethodLib());
@@ -318,12 +328,7 @@ public class EngineConfig {
 		this.reloadModifiedSharedFunctionInDevMode = reloadModifiedSharedFunctionInDevMode;
 	}
 	
-	@Deprecated
-	public void addDirective(String directiveName, Directive directive) {
-		addDirective(directiveName, directive.getClass());
-	}
-	
-	public synchronized void addDirective(String directiveName, Class<? extends Directive> directiveClass) {
+	public synchronized void addDirective(String directiveName, Class<? extends Directive> directiveClass, boolean keepLineBlank) {
 		if (StrKit.isBlank(directiveName)) {
 			throw new IllegalArgumentException("directive name can not be blank");
 		}
@@ -333,7 +338,15 @@ public class EngineConfig {
 		if (directiveMap.containsKey(directiveName)) {
 			throw new IllegalArgumentException("directive already exists : " + directiveName);
 		}
+		
 		directiveMap.put(directiveName, directiveClass);
+		if (keepLineBlank) {
+			keepLineBlankDirectives.add(directiveName);
+		}
+	}
+	
+	public void addDirective(String directiveName, Class<? extends Directive> directiveClass) {
+		addDirective(directiveName, directiveClass, false);
 	}
 	
 	public Class<? extends Directive> getDirective(String directiveName) {
@@ -342,6 +355,19 @@ public class EngineConfig {
 	
 	public void removeDirective(String directiveName) {
 		directiveMap.remove(directiveName);
+		keepLineBlankDirectives.remove(directiveName);
+	}
+	
+	public void setKeepLineBlank(String directiveName, boolean keepLineBlank) {
+		if (keepLineBlank) {
+			keepLineBlankDirectives.add(directiveName);
+		} else {
+			keepLineBlankDirectives.remove(directiveName);
+		}
+	}
+	
+	public Set<String> getKeepLineBlankDirectives() {
+		return keepLineBlankDirectives;
 	}
 	
 	/**

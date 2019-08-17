@@ -63,12 +63,7 @@ public class EscapeDirective extends Directive {
 	}
 	
 	private void escape(String str, Writer w) throws IOException {
-		int len = str.length();
-		if (len == 0) {
-			return ;
-		}
-		
-		for (int i = 0; i < len; i++) {
+		for (int i = 0, len = str.length(); i < len; i++) {
 			char cur = str.charAt(i);
 			switch (cur) {
 			case '<':

@@ -52,8 +52,9 @@ public class SqlKit {
 		
 		engine.addDirective("namespace", NameSpaceDirective.class);
 		engine.addDirective("sql", SqlDirective.class);
-		engine.addDirective("para", ParaDirective.class);
-		engine.addDirective("p", ParaDirective.class);		// 配置 #para 指令的别名指令 #p，不建议使用，在此仅为兼容 3.0 版本
+		
+		engine.addDirective("para", ParaDirective.class, true);
+		engine.addDirective("p", ParaDirective.class, true);		// 配置 #para 指令的别名指令 #p，不建议使用，在此仅为兼容 3.0 版本
 	}
 	
 	public SqlKit(String configName) {

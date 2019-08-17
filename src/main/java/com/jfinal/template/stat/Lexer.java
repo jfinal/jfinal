@@ -18,6 +18,7 @@ package com.jfinal.template.stat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * DKFF(Dynamic Key Feature Forward) Lexer
@@ -26,6 +27,8 @@ class Lexer {
 	
 	static final char EOF = (char)-1;
 	static final int TEXT_STATE_DIAGRAM = 999;
+	
+	Set<String> keepLineBlankDirectives;
 	
 	char[] buf;
 	int state = 0;
@@ -38,7 +41,9 @@ class Lexer {
 	List<Token> tokens = new ArrayList<Token>();
 	String fileName;
 	
-	public Lexer(StringBuilder content, String fileName) {
+	public Lexer(StringBuilder content, String fileName, Set<String> keepLineBlankDirectives) {
+		this.keepLineBlankDirectives = keepLineBlankDirectives;
+		
 		int len = content.length();
 		buf = new char[len + 1];
 		content.getChars(0, content.length(), buf, 0);
@@ -110,7 +115,7 @@ class Lexer {
 					para = scanPara("");
 					idToken = new Token(Symbol.OUTPUT, beginRow);
 					paraToken = new ParaToken(para, beginRow);
-					return addOutputToken(idToken, paraToken);
+					return addIdParaToken(idToken, paraToken);
 				}
 				if (CharTable.isLetter(peek())) {		// # id
 					state = 10;
@@ -472,12 +477,57 @@ class Lexer {
 		}
 	}
 	
-	// 输出指令不对前后空白与换行进行任何处理，直接调用 tokens.add(...)
-	boolean addOutputToken(Token idToken, Token paraToken) {
+	/**
+	 * 带参指令处于独立行时删除前后空白字符，并且再删除一个后续的换行符
+	 * 处于独立行是指：向前看无有用内容，在前面情况成立的基础之上
+	 *             再向后看如果也无可用内容，前一个条件成立才开执行后续动作
+	 * 
+	 * 向前看时 forward 在移动，意味着正在删除空白字符(通过 lookForwardLineFeed()方法)
+	 * 向后看时也会在碰到空白 + '\n' 时删空白字符 (通过 deletePreviousTextTokenBlankTails()方法)
+	 */
+	boolean addIdParaToken(Token idToken, Token paraToken) {
 		tokens.add(idToken);
 		tokens.add(paraToken);
+		
+		// 保留指令所在行空白字符
+		// #define xxx() 模板函数名、#@xxx() 模板函数名，可以与指令同名，需要排除掉这三种 Symbol
+		if (keepLineBlankDirectives.contains(idToken.value())
+			&& idToken.symbol != Symbol.DEFINE
+			&& idToken.symbol != Symbol.CALL
+			&& idToken.symbol != Symbol.CALL_IF_DEFINED
+			) {
+			
+			prepareNextScan(0);
+		} else {
+			trimLineBlank();
+		}
+		
 		previousTextToken = null;
-		return prepareNextScan(0);
+		return true;
+	}
+	
+	// #set 这类指令，处在独立一行时，需要删除当前行的前后空白字符以及行尾字符 '\n'
+	void trimLineBlank() {
+		// if (lookForwardLineFeed() && (deletePreviousTextTokenBlankTails() || lexemeBegin == 0)) {
+		if (lookForwardLineFeedAndEof() && deletePreviousTextTokenBlankTails()) {
+			prepareNextScan(peek() != EOF ? 1 : 0);
+		} else {
+			prepareNextScan(0);
+		}
+	}
+	
+	// 处理前后空白的逻辑与 addIdParaToken() 基本一样，仅仅多了一个对于紧随空白的 next() 操作
+	boolean addNoParaToken(Token noParaToken) {
+		tokens.add(noParaToken);
+		
+		if (CharTable.isBlank(peek())) {
+			next();	// 无参指令之后紧随的一个空白字符仅为分隔符，不参与后续扫描
+		}
+		
+		trimLineBlank();
+		
+		previousTextToken = null;
+		return true;
 	}
 	
 	// 向前看后续是否跟随的是空白 + 换行或者是空白 + EOF，是则表示当前指令后续没有其它有用内容
@@ -495,44 +545,6 @@ class Lexer {
 			forwardRow = forwardRowBak;
 			return false;
 		}
-	}
-	
-	/**
-	 * 带参指令处于独立行时删除前后空白字符，并且再删除一个后续的换行符
-	 * 处于独立行是指：向前看无有用内容，在前面情况成立的基础之上
-	 *             再向后看如果也无可用内容，前一个条件成立才开执行后续动作
-	 * 
-	 * 向前看时 forward 在移动，意味着正在删除空白字符(通过 lookForwardLineFeed()方法)
-	 * 向后看时也会在碰到空白 + '\n' 时删空白字符 (通过 deletePreviousTextTokenBlankTails()方法)
-	 */
-	boolean addIdParaToken(Token idToken, Token paraToken) {
-		tokens.add(idToken);
-		tokens.add(paraToken);
-		
-		// if (lookForwardLineFeed() && (deletePreviousTextTokenBlankTails() || lexemeBegin == 0)) {
-		if (lookForwardLineFeedAndEof() && deletePreviousTextTokenBlankTails()) {
-			prepareNextScan(peek() != EOF ? 1 : 0);
-		} else {
-			prepareNextScan(0);
-		}
-		previousTextToken = null;
-		return true;
-	}
-	
-	// 处理前后空白的逻辑与 addIdParaToken() 基本一样，仅仅多了一个对于紧随空白的 next() 操作
-	boolean addNoParaToken(Token noParaToken) {
-		tokens.add(noParaToken);
-		if (CharTable.isBlank(peek())) {
-			next();	// 无参指令之后紧随的一个空白字符仅为分隔符，不参与后续扫描
-		}
-		
-		if (lookForwardLineFeedAndEof() && deletePreviousTextTokenBlankTails()) {
-			prepareNextScan(peek() != EOF ? 1 : 0);
-		} else {
-			prepareNextScan(0);
-		}
-		previousTextToken = null;
-		return true;
 	}
 	
 	/**
