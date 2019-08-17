@@ -102,8 +102,8 @@ public class StrKit {
 		return true;
 	}
 	
-	public static String defaultIfBlank(String src, String defaultValue) {
-		return isBlank(src) ? defaultValue : src;
+	public static String defaultIfBlank(String str, String defaultValue) {
+		return isBlank(str) ? defaultValue : str;
 	}
 	
 	public static String toCamelCase(String stringWithUnderline) {
