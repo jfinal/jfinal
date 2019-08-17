@@ -102,6 +102,10 @@ public class StrKit {
 		return true;
 	}
 	
+	public static String defaultIfBlank(String src, String defaultValue) {
+		return isBlank(src) ? defaultValue : src;
+	}
+	
 	public static String toCamelCase(String stringWithUnderline) {
 		if (stringWithUnderline.indexOf('_') == -1) {
 			return stringWithUnderline;
@@ -141,6 +145,17 @@ public class StrKit {
 				sb.append(separator);
 			}
 			sb.append(stringArray[i]);
+		}
+		return sb.toString();
+	}
+	
+	public static String join(java.util.List<String> list, String separator) {
+		StringBuilder sb = new StringBuilder();
+		for (int i=0, len=list.size(); i<len; i++) {
+			if (i > 0) {
+				sb.append(separator);
+			}
+			sb.append(list.get(i));
 		}
 		return sb.toString();
 	}
