@@ -106,10 +106,16 @@ public class ParaProcessorBuilder {
 				parameterName = para.value().trim();
 			}
 			
+			/*
 			defaultValue = para.defaultValue().trim();
 			if (defaultValue.isEmpty()) {
 				defaultValue = null;
+			}*/
+			// 空字符串 "" 可以成为默认值，空白字符串与前后有空白字符的文本也可以成为默认值: "  "、" ABC "
+			if (!Para.NULL_VALUE.equals(para.defaultValue())) {
+				defaultValue = para.defaultValue();
 			}
+			
 		}
 		Holder holder = typeMap.get(typeClass.getName());
 		if (holder != null) {
