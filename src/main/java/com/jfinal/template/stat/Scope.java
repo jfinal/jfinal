@@ -89,7 +89,8 @@ public class Scope {
 	 * 自内向外在作用域栈中查找变量，返回最先找到的变量
 	 */
 	public Object get(Object key) {
-		for (Scope cur=this; cur!=null; cur=cur.parent) {
+		Scope cur = this;
+		do {
 //			if (cur.data != null && cur.data.containsKey(key)) {
 //				return cur.data.get(key);
 //			}
@@ -104,7 +105,10 @@ public class Scope {
 					return null;
 				}
 			}
-		}
+			
+			cur = cur.parent;
+		} while (cur != null);
+		
 		// return null;
 		return sharedObjectMap != null ? sharedObjectMap.get(key) : null;
 	}
