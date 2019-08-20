@@ -489,6 +489,8 @@ class Lexer {
 		tokens.add(idToken);
 		tokens.add(paraToken);
 		
+		skipFollowingComment();
+		
 		// 保留指令所在行空白字符
 		// #define xxx() 模板函数名、#@xxx() 模板函数名，可以与指令同名，需要排除掉这三种 Symbol
 		if (keepLineBlankDirectives.contains(idToken.value())
@@ -516,9 +518,11 @@ class Lexer {
 		}
 	}
 	
-	// 处理前后空白的逻辑与 addIdParaToken() 基本一样，仅仅多了一个对于紧随空白的 next() 操作
+	// 无参指令无条件调用 trimLineBlank()
 	boolean addNoParaToken(Token noParaToken) {
 		tokens.add(noParaToken);
+		
+		skipFollowingComment();
 		
 		if (CharTable.isBlank(peek())) {
 			next();	// 无参指令之后紧随的一个空白字符仅为分隔符，不参与后续扫描
@@ -532,17 +536,17 @@ class Lexer {
 	
 	// 向前看后续是否跟随的是空白 + 换行或者是空白 + EOF，是则表示当前指令后续没有其它有用内容
 	boolean lookForwardLineFeedAndEof() {
-		int forwardBak = forward;
-		int forwardRowBak = forwardRow;
-		for (char c=peek(); true; c=next()) {
+		int fp = forward;
+		for (char c=buf[fp]; true; c=buf[++fp]) {
 			if (CharTable.isBlank(c)) {
 				continue ;
 			}
+			
 			if (c == '\n' || c == EOF) {
+				forward = fp;
 				return true;
 			}
-			forward = forwardBak;
-			forwardRow = forwardRowBak;
+			
 			return false;
 		}
 	}
@@ -554,6 +558,54 @@ class Lexer {
 	boolean deletePreviousTextTokenBlankTails() {
 		// return previousTextToken != null ? previousTextToken.deleteBlankTails() : false;
 		return previousTextToken == null || previousTextToken.deleteBlankTails();
+	}
+	
+	/**
+	 * 跳过指令后方跟随的注释，以便正确处理各类换行逻辑
+	 */
+	void skipFollowingComment() {
+		int fp = forward;
+		for (char c=buf[fp]; true; c=buf[++fp]) {
+			if (CharTable.isBlank(c)) {
+				continue ;
+			}
+			
+			// 勿使用 next()
+			if (c == '#') {
+				if (buf[fp + 1] == '#' && buf[fp + 2] == '#') {
+					forward = fp;
+					skipFollowingSingleLineComment();
+				} else if (buf[fp + 1] == '-' && buf[fp + 2] == '-') {
+					forward = fp;
+					skipFollowingMultiLineComment();
+				}
+			}
+			
+			return ;
+		}
+	}
+	
+	void skipFollowingSingleLineComment() {
+		forward = forward + 3;
+		for (char c=peek(); true; c=next()) {
+			if (c == '\n' || c == EOF) {
+				break ;
+			}
+		}
+	}
+	
+	void skipFollowingMultiLineComment() {
+		forward = forward + 3;
+		for (char c=peek(); true; c=next()) {
+			if (c == '-' && buf[forward + 1] == '-' && buf[forward + 2] == '#') {
+				forward = forward + 3;
+				break ;
+			}
+			
+			if (c == EOF) {
+				throw new ParseException("The multiline comment start block \"#--\" can not match the end block: \"--#\"", new Location(fileName, beginRow));
+			}
+		}
 	}
 }
 
