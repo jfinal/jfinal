@@ -28,8 +28,6 @@ class Lexer {
 	static final char EOF = (char)-1;
 	static final int TEXT_STATE_DIAGRAM = 999;
 	
-	Set<String> keepLineBlankDirectives;
-	
 	char[] buf;
 	int state = 0;
 	int lexemeBegin = 0;
@@ -38,8 +36,9 @@ class Lexer {
 	int forwardRow = 1;
 	TextToken previousTextToken = null;
 	
-	List<Token> tokens = new ArrayList<Token>();
 	String fileName;
+	Set<String> keepLineBlankDirectives;
+	List<Token> tokens = new ArrayList<Token>();
 	
 	public Lexer(StringBuilder content, String fileName, Set<String> keepLineBlankDirectives) {
 		this.keepLineBlankDirectives = keepLineBlankDirectives;
