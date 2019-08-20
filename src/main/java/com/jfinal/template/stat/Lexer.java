@@ -38,6 +38,7 @@ class Lexer {
 	
 	String fileName;
 	Set<String> keepLineBlankDirectives;
+	
 	List<Token> tokens = new ArrayList<Token>();
 	
 	public Lexer(StringBuilder content, String fileName, Set<String> keepLineBlankDirectives) {
