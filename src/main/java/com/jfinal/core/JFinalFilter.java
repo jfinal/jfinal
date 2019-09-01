@@ -147,7 +147,6 @@ public class JFinalFilter implements Filter {
 				if ( (end > 0) && ((c = t.charAt(end)) == 'j' || c == 'J') ) {
 					end--;
 					if ( (end > -1) && ((c = t.charAt(end)) == '.') ) {
-						System.out.println("找到 jsp 文件 : " + t);
 						return true;
 					}
 				}
