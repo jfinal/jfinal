@@ -67,6 +67,11 @@ public class RedirectRender extends Render {
 		
 		// 支持 https 协议下的重定向
 		/* 经测试 https 重定向无需额外处理，直接支持
+		 * 
+		 * 注意：
+		 *     如果是 nginx 做的 https，需要如下配置才能使重定向保持为 https
+		 *     proxy_redirect http:// https://;
+		 * 
 		if (!result.startsWith("http")) {	// 跳过 http/https 已指定过协议类型的 url
 			if ("https".equals(request.getScheme())) {
 				String serverName = request.getServerName();
