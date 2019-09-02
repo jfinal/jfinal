@@ -98,6 +98,7 @@ public class JFinalFilter implements Filter {
 		if (isHandled[0] == false) {
 			// 默认拒绝直接访问 jsp 文件，加固 tomcat、jetty 安全性
 			if (constants.getDenyAccessJsp() && isJsp(target)) {
+				com.jfinal.kit.HandlerKit.renderError404(request, response, isHandled);
 				return ;
 			}
 			
