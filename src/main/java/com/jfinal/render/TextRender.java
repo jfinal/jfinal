@@ -48,9 +48,7 @@ public class TextRender extends Render {
 	public void render() {
 		PrintWriter writer = null;
 		try {
-			response.setHeader("Pragma", "no-cache");	// HTTP/1.0 caches might not implement Cache-Control and might only implement Pragma: no-cache
-			response.setHeader("Cache-Control", "no-cache");
-			response.setDateHeader("Expires", 0);
+			// response.setHeader("Cache-Control", "no-cache");
 			
 			
 			String ct = getContentType();

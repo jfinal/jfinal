@@ -132,9 +132,8 @@ public class JsonRender extends Render {
 		
 		PrintWriter writer = null;
 		try {
-			response.setHeader("Pragma", "no-cache");	// HTTP/1.0 caches might not implement Cache-Control and might only implement Pragma: no-cache
-			response.setHeader("Cache-Control", "no-cache");
-			response.setDateHeader("Expires", 0);
+			// response.setHeader("Cache-Control", "no-cache");
+			
 			
 			response.setContentType(forIE ? contentTypeForIE : contentType);
 			writer = response.getWriter();
