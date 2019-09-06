@@ -37,7 +37,10 @@ public class TextRender extends Render {
 	
 	public TextRender(String text, String contentType) {
 		this.text = text;
-		this.contentType = contentType;
+		
+		// 支持简洁写法，例如：xml、js
+		ContentType ct = ContentType.parse(contentType);
+		this.contentType = (ct != null ? ct.value() : contentType);
 	}
 	
 	public TextRender(String text, ContentType contentType) {

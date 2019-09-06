@@ -16,6 +16,9 @@
 
 package com.jfinal.render;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * ContentType
  * <br>
@@ -43,6 +46,43 @@ public enum ContentType {
 	
 	public String toString() {
 		return value;
+	}
+	
+	// ---------
+	
+	private static final Map<String, ContentType> mapping = initMapping();
+	
+	/**
+	 * 将简写的文本射到 context type，方便在 Controller.renderText(String, String)
+	 * 之中取用，例如：
+	 *   renderText(..., "xml")
+	 *   比下面的用法要省代码
+	 *   renderText(..., "text/xml")
+	 */
+	private static Map<String, ContentType> initMapping() {
+		Map<String, ContentType> ret = new HashMap<>();
+		
+		ret.put("text", TEXT);
+		ret.put("plain", TEXT);
+		ret.put("html", HTML);
+		ret.put("xml", XML);
+		ret.put("json", JSON);
+		ret.put("javascript", JAVASCRIPT);
+		ret.put("js", JAVASCRIPT);
+		
+		ret.put("TEXT", TEXT);
+		ret.put("PLAIN", TEXT);
+		ret.put("HTML", HTML);
+		ret.put("XML", XML);
+		ret.put("JSON", JSON);
+		ret.put("JAVASCRIPT", JAVASCRIPT);
+		ret.put("JS", JAVASCRIPT);
+		
+		return ret;
+	}
+	
+	public static ContentType parse(String str) {
+		return mapping.get(str);
 	}
 }
 

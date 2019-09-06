@@ -1143,9 +1143,15 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * Render with text and content type.
-	 * <p>
-	 * Example: renderText("&lt;user id='5888'&gt;James&lt;/user&gt;", "application/xml");
+	 * 响应 text 文本并指定 content type，例如: "text/xml"、"application/javascript"
+	 * 
+	 * 其中 "text/xml"、"application/javascript"、"application/json"、"text/html"
+	 * 从 jfinal 4.6 版本开始可以简写为 "xml"、"js"、"json"、"html"
+	 * 
+	 * <pre>
+	 * 例子：
+	 *    renderText("&lt;user id='5888'&gt;James&lt;/user&gt;", "xml");
+	 * </pre>
 	 */
 	public void renderText(String text, String contentType) {
 		render = renderManager.getRenderFactory().getTextRender(text, contentType);
@@ -1274,7 +1280,7 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * Render with xml view using freemarker.
+	 * Render with xml view using enjoy template.
 	 */
 	public void renderXml(String view) {
 		render = renderManager.getRenderFactory().getXmlRender(view);
