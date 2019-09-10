@@ -45,6 +45,11 @@ public class ActionHandler extends Handler {
 		this.injectDependency = constants.getInjectDependency();
 		this.controllerFactory = constants.getControllerFactory();
 	}
+
+	
+	public Action getAction(String target, String[] urlPara) {
+        return actionMapping.getAction(target, urlPara);
+    }
 	
 	/**
 	 * handle
@@ -59,7 +64,7 @@ public class ActionHandler extends Handler {
 		
 		isHandled[0] = true;
 		String[] urlPara = {null};
-		Action action = actionMapping.getAction(target, urlPara);
+		Action action = getAction(target, urlPara);
 		
 		if (action == null) {
 			if (log.isWarnEnabled()) {
