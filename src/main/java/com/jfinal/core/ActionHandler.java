@@ -45,6 +45,18 @@ public class ActionHandler extends Handler {
 		this.injectDependency = constants.getInjectDependency();
 		this.controllerFactory = constants.getControllerFactory();
 	}
+
+	/**
+     * 方便子类复写getAction、从而可以实现自定义路由的功能的功能
+	 * 一般情况下，ActionHandler 只需要复写 getAction() 功能就可以了
+     *
+     * @param target
+     * @param urlPara
+     * @return
+     */
+	protected Action getAction(String target, String[] urlPara) {
+        return actionMapping.getAction(target, urlPara);
+    }
 	
 	/**
 	 * handle
@@ -59,7 +71,7 @@ public class ActionHandler extends Handler {
 		
 		isHandled[0] = true;
 		String[] urlPara = {null};
-		Action action = actionMapping.getAction(target, urlPara);
+		Action action = getAction(target, urlPara);
 		
 		if (action == null) {
 			if (log.isWarnEnabled()) {
