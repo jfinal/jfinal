@@ -47,13 +47,14 @@ public class ActionHandler extends Handler {
 	}
 
 	/**
-     * 方便子类复写、从而可以实现 自定义路由的功能的功能
+     * 方便子类复写getAction、从而可以实现自定义路由的功能的功能
+	 * 一般情况下，ActionHandler 只需要复写 getAction() 功能就可以了
      *
      * @param target
      * @param urlPara
      * @return
      */
-	public Action getAction(String target, String[] urlPara) {
+	protected Action getAction(String target, String[] urlPara) {
         return actionMapping.getAction(target, urlPara);
     }
 	
