@@ -46,7 +46,13 @@ public class ActionHandler extends Handler {
 		this.controllerFactory = constants.getControllerFactory();
 	}
 
-	
+	/**
+     * 方便子类复写、从而可以实现 自定义路由的功能的功能
+     *
+     * @param target
+     * @param urlPara
+     * @return
+     */
 	public Action getAction(String target, String[] urlPara) {
         return actionMapping.getAction(target, urlPara);
     }
