@@ -287,7 +287,6 @@ public class MetaBuilder {
 		
 		Map<String, ColumnMeta> columnMetaMap = new HashMap<>();
 		if (generateRemarks) {
-			DatabaseMetaData dbMeta = conn.getMetaData();
 			ResultSet colMetaRs = null;
 			try {
 				colMetaRs = dbMeta.getColumns(null, null, tableMeta.name, null);
