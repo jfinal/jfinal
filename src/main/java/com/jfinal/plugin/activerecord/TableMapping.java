@@ -35,6 +35,10 @@ public class TableMapping {
 	}
 	
 	public void putTable(Table table) {
+		if (modelToTableMap.containsKey(table.getModelClass())) {
+			throw new RuntimeException("Model mapping already exists : " + table.getModelClass().getName());
+		}
+		
 		modelToTableMap.put(table.getModelClass(), table);
 	}
 	
