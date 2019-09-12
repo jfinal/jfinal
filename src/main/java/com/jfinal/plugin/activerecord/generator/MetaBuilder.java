@@ -34,7 +34,6 @@ import javax.sql.DataSource;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.dialect.Dialect;
 import com.jfinal.plugin.activerecord.dialect.MysqlDialect;
-import com.jfinal.plugin.activerecord.dialect.OracleDialect;
 
 /**
  * MetaBuilder
@@ -177,7 +176,7 @@ public class MetaBuilder {
 		}
 		
 		// 将 oralce 大写的 tableName 转成小写，再生成 modelName
-		if (dialect instanceof OracleDialect) {
+		if (dialect.isOracle()) {
 			tableName = tableName.toLowerCase();
 		}
 		
@@ -200,7 +199,7 @@ public class MetaBuilder {
 	 * 3：开发者若在其它库中发现工作不正常，可通过继承 MetaBuilder并覆盖此方法来实现功能
 	 */
 	protected ResultSet getTablesResultSet() throws SQLException {
-		String schemaPattern = dialect instanceof OracleDialect ? dbMeta.getUserName() : null;
+		String schemaPattern = dialect.isOracle() ? dbMeta.getUserName() : null;
 		// return dbMeta.getTables(conn.getCatalog(), schemaPattern, null, new String[]{"TABLE", "VIEW"});
 		return dbMeta.getTables(conn.getCatalog(), schemaPattern, null, new String[]{"TABLE"});	// 不支持 view 生成
 	}
@@ -414,7 +413,7 @@ public class MetaBuilder {
 	 * Oralce 反射将得到大写字段名，所以不建议使用驼峰命名，建议使用下划线分隔单词命名法
 	 */
 	protected String buildAttrName(String colName) {
-		if (dialect instanceof OracleDialect) {
+		if (dialect.isOracle()) {
 			colName = colName.toLowerCase();
 		}
 		return StrKit.toCamelCase(colName);
