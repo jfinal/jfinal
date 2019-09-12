@@ -289,7 +289,7 @@ public class MetaBuilder {
 		if (generateRemarks) {
 			ResultSet colMetaRs = null;
 			try {
-				colMetaRs = dbMeta.getColumns(conn.getCatalog(), conn.getSchema(), tableMeta.name, null);
+				colMetaRs = dbMeta.getColumns(conn.getCatalog(), null, tableMeta.name, null);
 				while (colMetaRs.next()) {
 					ColumnMeta columnMeta = new ColumnMeta();
 					columnMeta.name = colMetaRs.getString("COLUMN_NAME");
