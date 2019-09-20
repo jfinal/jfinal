@@ -49,7 +49,9 @@ public class MethodKit {
 			System.class, Runtime.class, Thread.class, Class.class, ClassLoader.class, File.class,
 			Compiler.class, InheritableThreadLocal.class, Package.class, Process.class,
 			RuntimePermission.class, SecurityManager.class, ThreadGroup.class, ThreadLocal.class,
-			java.lang.reflect.Method.class
+			
+			java.lang.reflect.Method.class,
+			java.lang.reflect.Proxy.class
 		};
 		for (Class<?> c : cs) {
 			forbiddenClasses.add(c);
@@ -62,8 +64,8 @@ public class MethodKit {
 			"getClass", "getDeclaringClass", "forName", "newInstance", "getClassLoader",
 			"invoke", // "getMethod", "getMethods", // "getField", "getFields",
 			"notify", "notifyAll", "wait",
-			"load", "exit", "loadLibrary", "halt",
-			"stop", "suspend", "resume", "setDaemon", "setPriority",
+			"exit", "loadLibrary", "halt", // "load",
+			"stop", "suspend", "resume" // "setDaemon", "setPriority"
 		};
 		for (String m : ms) {
 			forbiddenMethods.add(m);
