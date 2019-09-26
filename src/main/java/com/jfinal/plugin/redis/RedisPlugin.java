@@ -66,8 +66,8 @@ public class RedisPlugin implements IPlugin {
 	
 	public RedisPlugin(String cacheName, String host, int port, int timeout, String password) {
 		this(cacheName, host, port, timeout);
-		if (StrKit.isBlank(password))
-			throw new IllegalArgumentException("password can not be blank.");
+		// if (StrKit.isBlank(password))
+			// throw new IllegalArgumentException("password can not be blank.");
 		this.password = password;
 	}
 	
