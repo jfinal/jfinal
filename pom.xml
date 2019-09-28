@@ -239,7 +239,7 @@
 			<resource>
 				<directory>src/main/java</directory>
 				<includes>
-					<!-- **/* 写法，可以将各级子目录下的资源文件被打包 -->
+					<!-- **/* 前缀用法，可以匹配所有路径 -->
 					<include>**/*.jf</include>
 				</includes>
 				<filtering>false</filtering>
