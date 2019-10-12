@@ -21,10 +21,10 @@ import java.util.Map;
 
 /**
  * TypeMapping 建立起 ResultSetMetaData.getColumnClassName(i)到 java类型的映射关系
- * 特别注意所有时间型类型全部映射为 java.util.Date，可通过继承扩展该类来调整映射满足特殊需求
+ * 特别注意时间型类型映射为了 java.util.Date（java.sql.Time 除外），可通过继承扩展该类来调整映射满足特殊需求
  * 
- * 与 com.jfinal.plugin.activerecord.JavaType.java 类型映射不同之处在于将所有
- * 时间型类型全部对应到 java.util.Date
+ * 与 com.jfinal.plugin.activerecord.JavaType.java 类型映射不同之处在于
+ * 将时间型类型对应到 java.util.Date（java.sql.Time 除外）
  */
 public class TypeMapping {
 	
@@ -38,7 +38,9 @@ public class TypeMapping {
 		put("java.sql.Date", "java.util.Date");
 		
 		// time
-		put("java.sql.Time", "java.util.Date");
+		// put("java.sql.Time", "java.util.Date");
+		// 生成器需要生成 java.sql.Time 类型的 getter/setter 方法，以便 getBean 能正常工作
+		put("java.sql.Time", "java.sql.Time");
 		
 		// timestamp, datetime
 		put("java.sql.Timestamp", "java.util.Date");
