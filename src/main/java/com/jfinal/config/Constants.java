@@ -57,6 +57,8 @@ final public class Constants {
 	private ControllerFactory controllerFactory = Const.DEFAULT_CONTROLLER_FACTORY;
 	private int configPluginOrder = Const.DEFAULT_CONFIG_PLUGIN_ORDER;
 	
+	private boolean denyAccessJsp = true;	// 默认拒绝直接访问 jsp 文件
+	
 	private ITokenCache tokenCache = null;
 	
 	/**
@@ -394,6 +396,14 @@ final public class Constants {
 	
 	public int getFreeMarkerTemplateUpdateDelay() {
 		return freeMarkerTemplateUpdateDelay;
+	}
+	
+	public void setDenyAccessJsp(boolean denyAccessJsp) {
+		this.denyAccessJsp = denyAccessJsp;
+	}
+	
+	public boolean getDenyAccessJsp() {
+		return denyAccessJsp;
 	}
 }
 
