@@ -35,9 +35,8 @@ public class Redirect301Render extends RedirectRender {
 		String finalUrl = buildFinalUrl();
 		
 		response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-		// response.sendRedirect(url);	// always 302
 		response.setHeader("Location", finalUrl);
-		response.setHeader("Connection", "close");
+		// response.setHeader("Connection", "close");
 	}
 }
 

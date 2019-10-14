@@ -47,6 +47,13 @@ public class ActionHandler extends Handler {
 	}
 	
 	/**
+	 * 子类覆盖 getAction 方法可以定制路由功能
+	 */
+	protected Action getAction(String target, String[] urlPara) {
+		return actionMapping.getAction(target, urlPara);
+	}
+	
+	/**
 	 * handle
 	 * 1: Action action = actionMapping.getAction(target)
 	 * 2: new Invocation(...).invoke()
@@ -59,7 +66,7 @@ public class ActionHandler extends Handler {
 		
 		isHandled[0] = true;
 		String[] urlPara = {null};
-		Action action = actionMapping.getAction(target, urlPara);
+		Action action = getAction(target, urlPara);
 		
 		if (action == null) {
 			if (log.isWarnEnabled()) {

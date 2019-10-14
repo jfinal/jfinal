@@ -103,6 +103,14 @@ public class Template {
 	}
 	
 	/**
+	 * 支持无 data 参数，渲染到 String 中去 <br>
+	 * 适用于数据在模板中通过表达式和语句直接计算得出等等应用场景
+	 */
+	public String renderToString() {
+		return renderToString(null);
+	}
+	
+	/**
 	 * 渲染到 StringBuilder 中去
 	 */
 	public StringBuilder renderToStringBuilder(Map<?, ?> data) {
