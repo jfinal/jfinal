@@ -586,6 +586,18 @@ public class Cache {
 	}
 	
 	/**
+	 * 获取哈希表内记数器的值
+	 */
+	public Long hGetCounter(Object key, Object field) {
+		Jedis jedis = getJedis();
+		try {
+			String ret = jedis.hget(keyNamingPolicy.getKeyName(key), keyNamingPolicy.getKeyName(field));
+			return ret != null ? Long.parseLong(ret) : null;
+		}
+		finally {close(jedis);}
+	}
+	
+	/**
 	 * 为哈希表 key 中的域 field 加上浮点数增量 increment 。
 	 * 如果哈希表中没有域 field ，那么 HINCRBYFLOAT 会先将域 field 的值设为 0 ，然后再执行加法操作。
 	 * 如果键 key 不存在，那么 HINCRBYFLOAT 会先创建一个哈希表，再创建域 field ，最后再执行加法操作。
