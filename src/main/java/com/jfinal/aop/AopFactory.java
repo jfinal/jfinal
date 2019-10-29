@@ -278,17 +278,5 @@ public class AopFactory {
 }
 
 
-/* 未来考虑不再支持对象的 Aop，只支持 Class 的 Aop
-public <T> T get(T targetObject) {
-	try {
-		inject(injectDepth, targetObject.getClass(), targetObject);
-		return targetObject;
-	}
-	catch (Exception e) {
-		throw new RuntimeException(e);
-	}
-}*/
-
-
 
 
