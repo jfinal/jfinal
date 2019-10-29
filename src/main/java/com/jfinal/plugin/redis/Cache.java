@@ -523,8 +523,13 @@ public class Cache {
 		try {
 			Map<byte[], byte[]> data = jedis.hgetAll(keyToBytes(key));
 			Map<Object, Object> result = new HashMap<Object, Object>();
-			for (Entry<byte[], byte[]> e : data.entrySet())
+			if (data == null) {
+				return result;
+			}
+			
+			for (Entry<byte[], byte[]> e : data.entrySet()) {
 				result.put(fieldFromBytes(e.getKey()), valueFromBytes(e.getValue()));
+			}
 			return result;
 		}
 		finally {close(jedis);}
@@ -588,7 +593,7 @@ public class Cache {
 	/**
 	 * 获取哈希表内记数器的值
 	 */
-	public Long hGetCounter(Object key, Object field) {
+	public Long hgetCounter(Object key, Object field) {
 		Jedis jedis = getJedis();
 		try {
 			String ret = jedis.hget(keyNamingPolicy.getKeyName(key), keyNamingPolicy.getKeyName(field));
