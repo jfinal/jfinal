@@ -164,7 +164,8 @@ public abstract class Controller {
 	 * @return a String representing the single value of the parameter
 	 */
 	public String getPara(String name) {
-		return request.getParameter(name);
+		//return request.getParameter(name);
+		return getPara(name, null);
 	}
 	
 	/**
