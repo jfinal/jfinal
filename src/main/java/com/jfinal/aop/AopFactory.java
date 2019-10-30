@@ -166,15 +166,15 @@ public class AopFactory {
 				// field.setAccessible(true);
 				// field.set(targetObject, fieldInjectedObject);
 
-				boolean accessible = filed.isAccessible();
+				boolean accessible = field.isAccessible();
 				if (accessible) {
-					filed.set(targetObject, fieldInjectedObject);
+					field.set(targetObject, fieldInjectedObject);
 				} else {
 					try {
-						filed.setAccessible(true);
-						filed.set(targetObject, fieldInjectedObject);
+						field.setAccessible(true);
+						field.set(targetObject, fieldInjectedObject);
 					} finally {
-						filed.setAccessible(false);
+						field.setAccessible(false);
 					}
 				}
 			}
