@@ -162,9 +162,21 @@ public class AopFactory {
 					fieldInjectedClass = field.getType();
 				}
 				
-				Object fieldInjectedObject = doGet(fieldInjectedClass);
-				field.setAccessible(true);
-				field.set(targetObject, fieldInjectedObject);
+				// Object fieldInjectedObject = doGet(fieldInjectedClass);
+				// field.setAccessible(true);
+				// field.set(targetObject, fieldInjectedObject);
+
+				boolean accessible = filed.isAccessible();
+				if (accessible) {
+					filed.set(targetObject, fieldInjectedObject);
+				} else {
+					try {
+						filed.setAccessible(true);
+						filed.set(targetObject, fieldInjectedObject);
+					} finally {
+						filed.setAccessible(false);
+					}
+				}
 			}
 		}
 		
