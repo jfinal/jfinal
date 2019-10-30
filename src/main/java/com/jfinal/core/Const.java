@@ -23,7 +23,7 @@ import com.jfinal.render.ViewType;
  */
 public interface Const {
 	
-	String JFINAL_VERSION = "4.7";
+	String JFINAL_VERSION = "4.8";
 	
 	ViewType DEFAULT_VIEW_TYPE = ViewType.JFINAL_TEMPLATE;
 	
