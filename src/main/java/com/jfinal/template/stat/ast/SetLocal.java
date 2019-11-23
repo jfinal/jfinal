@@ -47,6 +47,7 @@ public class SetLocal  extends Stat {
 				throw new ParseException("#setLocal directive only supports assignment expressions", location);
 			}
 		}
+		
 		this.expr = exprList.getActualExpr();
 	}
 	

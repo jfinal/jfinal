@@ -46,6 +46,7 @@ public class SetGlobal  extends Stat {
 				throw new ParseException("#setGlobal directive only supports assignment expressions", location);
 			}
 		}
+		
 		this.expr = exprList.getActualExpr();
 	}
 	

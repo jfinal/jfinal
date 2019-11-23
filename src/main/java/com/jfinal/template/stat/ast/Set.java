@@ -49,6 +49,7 @@ public class Set extends Stat {
 				throw new ParseException("#set directive only supports assignment expressions", location);
 			}
 		}
+		
 		this.expr = exprList.getActualExpr();
 	}
 	
