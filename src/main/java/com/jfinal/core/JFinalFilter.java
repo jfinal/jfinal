@@ -35,13 +35,14 @@ import com.jfinal.log.Log;
  */
 public class JFinalFilter implements Filter {
 	
-	private Handler handler;
-	private String encoding;
-	private JFinalConfig jfinalConfig;
-	private Constants constants;
-	private static final JFinal jfinal = JFinal.me();
-	private static Log log;
-	private int contextPathLength;
+	protected JFinalConfig jfinalConfig;
+	protected int contextPathLength;
+	protected Constants constants;
+	protected String encoding;
+	protected Handler handler;
+	protected static Log log;
+	
+	protected static final JFinal jfinal = JFinal.me();
 	
 	public JFinalFilter() {
 		this.jfinalConfig = null;
