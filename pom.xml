@@ -69,6 +69,14 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<!-- slf4j 日志，配置方法：me.setLogFactory(new Slf4jLogFactory()) -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.29</version>
+			<scope>provided</scope>
+		</dependency>
+		
 		<!-- jetty-server 仅用于开发，现已被 jfinal-undertow 项目所取代 -->
 		<dependency>
 			<groupId>com.jfinal</groupId>
