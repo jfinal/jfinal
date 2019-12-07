@@ -88,5 +88,60 @@ public abstract class Log {
 	public abstract boolean isErrorEnabled();
 	
 	public abstract boolean isFatalEnabled();
+	
+	// -------------------------------------------------------
+	
+	// 为兼容老版本而给出默认实现
+	public boolean isTraceEnabled() {
+		return isDebugEnabled();
+	}
+	
+	// 为兼容老版本而给出默认实现
+	public void trace(String message) {
+		debug(message);
+	}
+	
+	// 为兼容老版本而给出默认实现
+	public void trace(String message, Throwable t) {
+		debug(message, t);
+	}
+	
+	// -------------------------------------------------------
+	
+	public void trace(String format, Object... args) {
+		if (isTraceEnabled()) {
+			trace(String.format(format, args));
+		}
+	}
+	
+	public void debug(String format, Object... args) {
+		if (isDebugEnabled()) {
+			debug(String.format(format, args));
+		}
+	}
+	
+	public void info(String format, Object... args) {
+		if (isInfoEnabled()) {
+			info(String.format(format, args));
+		}
+	}
+	
+	public void warn(String format, Object... args) {
+		if (isWarnEnabled()) {
+			warn(String.format(format, args));
+		}
+	}
+	
+	public void error(String format, Object... args) {
+		if (isErrorEnabled()) {
+			error(String.format(format, args));
+		}
+	}
+	
+	public void fatal(String format, Object... args) {
+		if (isFatalEnabled()) {
+			fatal(String.format(format, args));
+		}
+	}
 }
 

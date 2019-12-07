@@ -42,6 +42,14 @@ public class Log4jLog extends Log {
 		return new Log4jLog(name);
 	}
 	
+	public void trace(String message) {
+		log.log(callerFQCN, Level.TRACE, message, null);
+	}
+	
+	public void trace(String message, Throwable t) {
+		log.log(callerFQCN, Level.TRACE, message, t);
+	}
+	
 	public void debug(String message) {
 		log.log(callerFQCN, Level.DEBUG, message, null);
 	}
@@ -80,6 +88,10 @@ public class Log4jLog extends Log {
 	
 	public void fatal(String message, Throwable t) {
 		log.log(callerFQCN, Level.FATAL, message, t);
+	}
+	
+	public boolean isTraceEnabled() {
+		return log.isTraceEnabled();
 	}
 	
 	public boolean isDebugEnabled() {

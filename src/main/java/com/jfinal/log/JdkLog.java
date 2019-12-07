@@ -44,6 +44,14 @@ public class JdkLog extends Log {
 		return new JdkLog(name);
 	}
 	
+	public void trace(String message) {
+		log.logp(Level.FINEST, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
+	}
+	
+	public void trace(String message,  Throwable t) {
+		log.logp(Level.FINEST, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
+	}
+	
 	public void debug(String message) {
 		log.logp(Level.FINE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message);
 	}
@@ -88,6 +96,10 @@ public class JdkLog extends Log {
 	 */
 	public void fatal(String message, Throwable t) {
 		log.logp(Level.SEVERE, clazzName, Thread.currentThread().getStackTrace()[1].getMethodName(), message, t);
+	}
+	
+	public boolean isTraceEnabled() {
+		return log.isLoggable(Level.FINEST);
 	}
 	
 	public boolean isDebugEnabled() {
