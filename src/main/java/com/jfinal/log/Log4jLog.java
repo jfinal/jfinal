@@ -42,20 +42,20 @@ public class Log4jLog extends Log {
 		return new Log4jLog(name);
 	}
 	
-	public void info(String message) {
-		log.log(callerFQCN, Level.INFO, message, null);
-	}
-	
-	public void info(String message, Throwable t) {
-		log.log(callerFQCN, Level.INFO, message, t);
-	}
-	
 	public void debug(String message) {
 		log.log(callerFQCN, Level.DEBUG, message, null);
 	}
 	
 	public void debug(String message, Throwable t) {
 		log.log(callerFQCN, Level.DEBUG, message, t);
+	}
+	
+	public void info(String message) {
+		log.log(callerFQCN, Level.INFO, message, null);
+	}
+	
+	public void info(String message, Throwable t) {
+		log.log(callerFQCN, Level.INFO, message, t);
 	}
 	
 	public void warn(String message) {
