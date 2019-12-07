@@ -18,11 +18,12 @@ package com.jfinal.log;
 
 /**
  * The five logging levels used by Log are (in order):
- * 1. DEBUG (the least serious)
- * 2. INFO
- * 3. WARN
- * 4. ERROR
- * 5. FATAL (the most serious)
+ * 1. TRACE (the least serious)
+ * 2. DEBUG
+ * 3. INFO
+ * 4. WARN
+ * 5. ERROR
+ * 6. FATAL (the most serious)
  */
 public abstract class Log {
 	
