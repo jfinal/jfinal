@@ -92,22 +92,36 @@ public abstract class Log {
 	
 	// -------------------------------------------------------
 	
-	// 为兼容老版本而给出默认实现
+	/*
+	 * 以下 3 个方法为 jfinal 4.8 新增日志级别：trace
+	 * 1：为了兼容用户已经扩展出来的 Log 实现，给出了默认实现
+	 * 2：某些日志系统（如 log4j，参考 Log4jLog）需要覆盖以下
+	 *    方法，才能保障日志信息中的类名正确
+	 */
+	
 	public boolean isTraceEnabled() {
 		return isDebugEnabled();
 	}
 	
-	// 为兼容老版本而给出默认实现
 	public void trace(String message) {
 		debug(message);
 	}
 	
-	// 为兼容老版本而给出默认实现
 	public void trace(String message, Throwable t) {
 		debug(message, t);
 	}
 	
 	// -------------------------------------------------------
+	
+	/*
+	 * 以下 6 个方法为 jfinal 4.8 新增的支持可变参数的方法
+	 * 1：为了兼容用户已经扩展出来的 Log 实现，给出了默认实现
+	 * 2：默认实现通过 String.format(...) 实现的占位符功能与
+	 *   slf4j 的占位符用法不同，因此在使用中要保持使用其中某一种，
+	 *   否则建议使用其它方法替代下面的 6 个方法
+	 * 3：某些日志系统（如 log4j，参考 Log4jLog）需要覆盖以下方法，才能
+	 *    保障日志信息中的类名正确
+	 */
 	
 	public void trace(String format, Object... args) {
 		if (isTraceEnabled()) {
