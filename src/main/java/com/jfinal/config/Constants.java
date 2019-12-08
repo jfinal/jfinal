@@ -137,6 +137,14 @@ final public class Constants {
 	}
 	
 	/**
+	 * 切换到 slf4j 日志框架，需要引入 slf4j 相关依赖
+	 * 切换过去以后的用法参考 slf4j 文档
+	 */
+	public void setToSlf4jLogFactory() {
+		LogManager.me().setToSlf4jLogFactory();
+	}
+	
+	/**
 	 * 配置 ProxyFactory 用于切换代理实现
 	 * <pre>
 	 * 例如：
