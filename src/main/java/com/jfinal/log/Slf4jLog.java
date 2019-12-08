@@ -16,6 +16,8 @@
 
 package com.jfinal.log;
 
+import org.slf4j.helpers.FormattingTuple;
+import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.spi.LocationAwareLogger;
 
 /**
@@ -34,88 +36,64 @@ public class Slf4jLog extends Log {
 	
 	@Override
 	public void trace(String message) {
-		if (isTraceEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.TRACE_INT, message, NULL_ARGS, null);
-		}
+		log.log(null, callerFQCN, LocationAwareLogger.TRACE_INT, message, NULL_ARGS, null);
 	}
 	
 	@Override
 	public void trace(String message, Throwable t) {
-		if (isTraceEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.TRACE_INT, message, NULL_ARGS, t);
-		}
+		log.log(null, callerFQCN, LocationAwareLogger.TRACE_INT, message, NULL_ARGS, t);
 	}
 	
 	@Override
 	public void debug(String message) {
-		if (isDebugEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.DEBUG_INT, message, NULL_ARGS, null);
-		}
+		log.log(null, callerFQCN, LocationAwareLogger.DEBUG_INT, message, NULL_ARGS, null);
 	}
 	
 	@Override
 	public void debug(String message, Throwable t) {
-		if (isDebugEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.DEBUG_INT, message, NULL_ARGS, t);
-		}
+		log.log(null, callerFQCN, LocationAwareLogger.DEBUG_INT, message, NULL_ARGS, t);
 	}
 	
 	@Override
 	public void info(String message) {
-		if (isInfoEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.INFO_INT, message, NULL_ARGS, null);
-		}
+		log.log(null, callerFQCN, LocationAwareLogger.INFO_INT, message, NULL_ARGS, null);
 	}
 	
 	@Override
 	public void info(String message, Throwable t) {
-		if (isInfoEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.INFO_INT, message, NULL_ARGS, t);
-		}
+		log.log(null, callerFQCN, LocationAwareLogger.INFO_INT, message, NULL_ARGS, t);
 	}
 	
 	@Override
 	public void warn(String message) {
-		if (isWarnEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.WARN_INT, message, NULL_ARGS, null);
-		}
+		log.log(null, callerFQCN, LocationAwareLogger.WARN_INT, message, NULL_ARGS, null);
 	}
 
 	@Override
 	public void warn(String message, Throwable t) {
-		if (isWarnEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.WARN_INT, message, NULL_ARGS, t);
-		}
+		log.log(null, callerFQCN, LocationAwareLogger.WARN_INT, message, NULL_ARGS, t);
 	}
 	
 	@Override
 	public void error(String message) {
-		if (isErrorEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.ERROR_INT, message, NULL_ARGS, null);
-		}
+		log.log(null, callerFQCN, LocationAwareLogger.ERROR_INT, message, NULL_ARGS, null);
 	}
 	
 	@Override
 	public void error(String message, Throwable t) {
-		if (isErrorEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.ERROR_INT, message, NULL_ARGS, t);
-		}
+		log.log(null, callerFQCN, LocationAwareLogger.ERROR_INT, message, NULL_ARGS, t);
 	}
 	
 	@Override
 	public void fatal(String message) {
 		// throw new UnsupportedOperationException("slf4j logger does not support fatal level");
-		if (isErrorEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.ERROR_INT, message, NULL_ARGS, null);
-		}
+		log.log(null, callerFQCN, LocationAwareLogger.ERROR_INT, message, NULL_ARGS, null);
 	}
 	
 	@Override
 	public void fatal(String message, Throwable t) {
 		// throw new UnsupportedOperationException("slf4j logger does not support fatal level");
-		if (isErrorEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.ERROR_INT, message, NULL_ARGS, t);
-		}
+		log.log(null, callerFQCN, LocationAwareLogger.ERROR_INT, message, NULL_ARGS, t);
 	}
 	
 	@Override
@@ -153,39 +131,42 @@ public class Slf4jLog extends Log {
 	
 	public void trace(String format, Object... args) {
 		if (isTraceEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.TRACE_INT, format, args, null);
+			FormattingTuple ft = MessageFormatter.arrayFormat(format, args);
+			log.log(null, callerFQCN, LocationAwareLogger.TRACE_INT, ft.getMessage(), NULL_ARGS, ft.getThrowable());
 		}
 	}
 	
 	public void debug(String format, Object... args) {
 		if (isDebugEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.DEBUG_INT, format, args, null);
+			FormattingTuple ft = MessageFormatter.arrayFormat(format, args);
+			log.log(null, callerFQCN, LocationAwareLogger.DEBUG_INT, ft.getMessage(), NULL_ARGS, ft.getThrowable());
 		}
 	}
 	
 	public void info(String format, Object... args) {
 		if (isInfoEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.INFO_INT, format, args, null);
+			FormattingTuple ft = MessageFormatter.arrayFormat(format, args);
+			log.log(null, callerFQCN, LocationAwareLogger.INFO_INT, ft.getMessage(), NULL_ARGS, ft.getThrowable());
 		}
 	}
 	
 	public void warn(String format, Object... args) {
 		if (isWarnEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.WARN_INT, format, args, null);
+			FormattingTuple ft = MessageFormatter.arrayFormat(format, args);
+            log.log(null, callerFQCN, LocationAwareLogger.WARN_INT, ft.getMessage(), NULL_ARGS, ft.getThrowable());
 		}
 	}
 	
 	public void error(String format, Object... args) {
 		if (isErrorEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.ERROR_INT, format, args, null);
+			FormattingTuple ft = MessageFormatter.arrayFormat(format, args);
+			log.log(null, callerFQCN, LocationAwareLogger.ERROR_INT, ft.getMessage(), NULL_ARGS, ft.getThrowable());
 		}
 	}
 	
 	public void fatal(String format, Object... args) {
 		// throw new UnsupportedOperationException("slf4j logger does not support fatal level");
-		if (isFatalEnabled()) {
-			log.log(null, callerFQCN, LocationAwareLogger.ERROR_INT, format, args, null);
-		}
+		error(format, args);
 	}
 }
 
