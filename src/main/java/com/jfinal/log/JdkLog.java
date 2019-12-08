@@ -121,6 +121,49 @@ public class JdkLog extends Log {
 	public boolean isFatalEnabled() {
 		return log.isLoggable(Level.SEVERE);
 	}
+	
+	// -------------------------------------------------------
+	
+	/*
+	 * 以下方法与前面的两个 trace 方法必须覆盖父类中的实现，否则日志中的类名为
+	 * com.jfinal.log.Log 而非所需要的日志发生地点的类名
+	 */
+	
+	public void trace(String format, Object... args) {
+		if (isTraceEnabled()) {
+			trace(String.format(format, args));
+		}
+	}
+	
+	public void debug(String format, Object... args) {
+		if (isDebugEnabled()) {
+			debug(String.format(format, args));
+		}
+	}
+	
+	public void info(String format, Object... args) {
+		if (isInfoEnabled()) {
+			info(String.format(format, args));
+		}
+	}
+	
+	public void warn(String format, Object... args) {
+		if (isWarnEnabled()) {
+			warn(String.format(format, args));
+		}
+	}
+	
+	public void error(String format, Object... args) {
+		if (isErrorEnabled()) {
+			error(String.format(format, args));
+		}
+	}
+	
+	public void fatal(String format, Object... args) {
+		if (isFatalEnabled()) {
+			fatal(String.format(format, args));
+		}
+	}
 }
 
 
