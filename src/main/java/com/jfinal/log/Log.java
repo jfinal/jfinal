@@ -136,7 +136,8 @@ public abstract class Log {
 	}
 	
 	/**
-	 * 可变参数最后一个元素必须确保为 Throwable 类型
+	 * parse(...) 方法必须与 if (endsWithThrowable(...)) 配合使用，
+	 * 确保可变参数 Object... args 中的最后一个元素为 Throwable 类型
 	 */
 	protected LogInfo parse(String format, Object... args) {
 		LogInfo li = new LogInfo();
