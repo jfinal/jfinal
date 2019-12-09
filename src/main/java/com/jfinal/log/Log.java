@@ -114,7 +114,7 @@ public abstract class Log {
 	// -------------------------------------------------------
 	
 	/*
-	 * 以下 6 个方法为 jfinal 4.8 新增的支持可变参数的方法
+	 * 以下为 jfinal 4.8 新增的支持可变参数的方法
 	 * 1：为了兼容用户已经扩展出来的 Log 实现，给出了默认实现
 	 * 
 	 * 2：默认实现通过 String.format(...) 实现的占位符功能与
@@ -127,39 +127,101 @@ public abstract class Log {
 	 *    保障日志信息中的类名正确
 	 */
 	
+	/**
+	 * 判断可变参数是否以 Throwable 结尾
+	 */
+	protected boolean endsWithThrowable(Object... args) {
+		return	args != null && args.length != 0 &&
+				args[args.length - 1] instanceof Throwable;
+	}
+	
+	/**
+	 * 可变参数最后一个元素必须确保为 Throwable 类型
+	 */
+	protected LogInfo parse(String format, Object... args) {
+		LogInfo li = new LogInfo();
+		
+		// 最后一个参数已确定为 Throwable
+		li.throwable = (Throwable)args[args.length - 1];
+		
+		// 其它参数与 format 一起格式化成 message
+		if (args.length > 1) {
+			Object[] temp = new Object[args.length - 1];
+			for (int i=0; i<temp.length; i++) {
+				temp[i] = args[i];
+			}
+			
+			li.message = String.format(format, temp);
+		} else {
+			li.message = format;
+		}
+		
+		return li;
+	}
+	
 	public void trace(String format, Object... args) {
 		if (isTraceEnabled()) {
-			trace(String.format(format, args));
+			if (endsWithThrowable(args)) {
+				LogInfo li = parse(format, args);
+				trace(li.message, li.throwable);
+			} else {
+				trace(String.format(format, args));
+			}
 		}
 	}
 	
 	public void debug(String format, Object... args) {
 		if (isDebugEnabled()) {
-			debug(String.format(format, args));
+			if (endsWithThrowable(args)) {
+				LogInfo li = parse(format, args);
+				debug(li.message, li.throwable);
+			} else {
+				debug(String.format(format, args));
+			}
 		}
 	}
 	
 	public void info(String format, Object... args) {
 		if (isInfoEnabled()) {
-			info(String.format(format, args));
+			if (endsWithThrowable(args)) {
+				LogInfo li = parse(format, args);
+				info(li.message, li.throwable);
+			} else {
+				info(String.format(format, args));
+			}
 		}
 	}
 	
 	public void warn(String format, Object... args) {
 		if (isWarnEnabled()) {
-			warn(String.format(format, args));
+			if (endsWithThrowable(args)) {
+				LogInfo li = parse(format, args);
+				warn(li.message, li.throwable);
+			} else {
+				warn(String.format(format, args));
+			}
 		}
 	}
 	
 	public void error(String format, Object... args) {
 		if (isErrorEnabled()) {
-			error(String.format(format, args));
+			if (endsWithThrowable(args)) {
+				LogInfo li = parse(format, args);
+				error(li.message, li.throwable);
+			} else {
+				error(String.format(format, args));
+			}
 		}
 	}
 	
 	public void fatal(String format, Object... args) {
 		if (isFatalEnabled()) {
-			fatal(String.format(format, args));
+			if (endsWithThrowable(args)) {
+				LogInfo li = parse(format, args);
+				fatal(li.message, li.throwable);
+			} else {
+				fatal(String.format(format, args));
+			}
 		}
 	}
 }
