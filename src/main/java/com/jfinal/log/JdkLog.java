@@ -131,37 +131,67 @@ public class JdkLog extends Log {
 	
 	public void trace(String format, Object... args) {
 		if (isTraceEnabled()) {
-			trace(String.format(format, args));
+			if (endsWithThrowable(args)) {
+				LogInfo li = parse(format, args);
+				trace(li.message, li.throwable);
+			} else {
+				trace(String.format(format, args));
+			}
 		}
 	}
 	
 	public void debug(String format, Object... args) {
 		if (isDebugEnabled()) {
-			debug(String.format(format, args));
+			if (endsWithThrowable(args)) {
+				LogInfo li = parse(format, args);
+				debug(li.message, li.throwable);
+			} else {
+				debug(String.format(format, args));
+			}
 		}
 	}
 	
 	public void info(String format, Object... args) {
 		if (isInfoEnabled()) {
-			info(String.format(format, args));
+			if (endsWithThrowable(args)) {
+				LogInfo li = parse(format, args);
+				info(li.message, li.throwable);
+			} else {
+				info(String.format(format, args));
+			}
 		}
 	}
 	
 	public void warn(String format, Object... args) {
 		if (isWarnEnabled()) {
-			warn(String.format(format, args));
+			if (endsWithThrowable(args)) {
+				LogInfo li = parse(format, args);
+				warn(li.message, li.throwable);
+			} else {
+				warn(String.format(format, args));
+			}
 		}
 	}
 	
 	public void error(String format, Object... args) {
 		if (isErrorEnabled()) {
-			error(String.format(format, args));
+			if (endsWithThrowable(args)) {
+				LogInfo li = parse(format, args);
+				error(li.message, li.throwable);
+			} else {
+				error(String.format(format, args));
+			}
 		}
 	}
 	
 	public void fatal(String format, Object... args) {
 		if (isFatalEnabled()) {
-			fatal(String.format(format, args));
+			if (endsWithThrowable(args)) {
+				LogInfo li = parse(format, args);
+				fatal(li.message, li.throwable);
+			} else {
+				fatal(String.format(format, args));
+			}
 		}
 	}
 }
