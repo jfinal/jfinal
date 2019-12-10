@@ -93,6 +93,29 @@ public class MethodInfo {
 		}
 		return ret.append(")").toString();
 	}
+	
+	// --------- 以下代码仅用于支持 NullMethodInfo
+	
+	/**
+	 * 仅供 NullMethodInfo 继承使用
+	 */
+	protected MethodInfo() {
+		this.key = null;
+		this.clazz = null;
+		this.method = null;
+		this.isVarArgs = false;
+		this.paraTypes = null;
+	}
+	
+	/**
+	 * 仅仅 NullMethodInfo 会覆盖此方法并返回 false
+	 *
+	 * 1：MethodKit.getMethod(...) 消除 instanceof 判断
+	 * 2：Method.exec(...) 消除 null 值判断
+	 */
+	public boolean notNull() {
+		return true;
+	}
 }
 
 

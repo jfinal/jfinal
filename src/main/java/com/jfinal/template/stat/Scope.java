@@ -78,6 +78,7 @@ public class Scope {
 				if (cur.data == null) {			// 支持顶层 data 为 null 值
 					cur.data = new HashMap();
 				}
+				
 				cur.data.put(key, value);
 				return ;
 			}
@@ -159,6 +160,10 @@ public class Scope {
 	public void setGlobal(Object key, Object value) {
 		for (Scope cur=this; true; cur=cur.parent) {
 			if (cur.parent == null) {
+				if (cur.data == null) {
+					cur.data = new HashMap();
+				}
+				
 				cur.data.put(key, value);
 				return ;
 			}
@@ -172,7 +177,7 @@ public class Scope {
 	public Object getGlobal(Object key) {
 		for (Scope cur=this; true; cur=cur.parent) {
 			if (cur.parent == null) {
-				return cur.data.get(key);
+				return cur.data != null ? cur.data.get(key) : null;
 			}
 		}
 	}
@@ -184,7 +189,10 @@ public class Scope {
 	public void removeGlobal(Object key) {
 		for (Scope cur=this; true; cur=cur.parent) {
 			if (cur.parent == null) {
-				cur.data.remove(key);
+				if (cur.data != null) {
+					cur.data.remove(key);
+				}
+				
 				return ;
 			}
 		}

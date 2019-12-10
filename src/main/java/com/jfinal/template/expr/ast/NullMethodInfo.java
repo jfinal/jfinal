@@ -14,37 +14,24 @@
  * limitations under the License.
  */
 
-package com.jfinal.log;
+package com.jfinal.template.expr.ast;
 
 /**
- * LogManager.
+ * NullMethodInfo
+ * 
+ * 1：MethodKit.getMethod(...) 消除 instanceof 判断
+ * 2：Method.exec(...) 消除 null 值判断
  */
-public class LogManager {
+public class NullMethodInfo extends MethodInfo {
 	
-	private static final LogManager me = new LogManager();
+	public static final NullMethodInfo me = new NullMethodInfo();
 	
-	private LogManager() {}
-	
-	public static LogManager me() {
-		return me;
+	public boolean notNull() {
+		return false;
 	}
 	
-	public void init() {
-		Log.init();
-	}
-	
-	public void setDefaultLogFactory(ILogFactory defaultLogFactory) {
-		Log.setDefaultLogFactory(defaultLogFactory);
-		com.jfinal.kit.LogKit.synchronizeLog();
-	}
-	
-	/**
-	 * 切换到 slf4j 日志框架，需要引入 slf4j 相关依赖
-	 * 切换过去以后的用法参考 slf4j 文档
-	 */
-	public void setToSlf4jLogFactory() {
-		setDefaultLogFactory(new Slf4jLogFactory());
+	public Object invoke(Object target, Object... args) throws ReflectiveOperationException {
+		throw new RuntimeException("The method invoke(Object, Object...) of NullMethodInfo should not be invoked");
 	}
 }
-
 

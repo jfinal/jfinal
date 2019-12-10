@@ -20,6 +20,7 @@ import com.jfinal.template.Env;
 import com.jfinal.template.expr.ast.Assign;
 import com.jfinal.template.expr.ast.Expr;
 import com.jfinal.template.expr.ast.ExprList;
+import com.jfinal.template.expr.ast.IncDec;
 import com.jfinal.template.io.Writer;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ParseException;
@@ -44,10 +45,11 @@ public class Set extends Stat {
 		}
 		
 		for (Expr expr : exprList.getExprArray()) {
-			if ( !(expr instanceof Assign) ) {
+			if ( !(expr instanceof Assign || expr instanceof IncDec) ) {
 				throw new ParseException("#set directive only supports assignment expressions", location);
 			}
 		}
+		
 		this.expr = exprList.getActualExpr();
 	}
 	

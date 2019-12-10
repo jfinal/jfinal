@@ -217,7 +217,10 @@ public class AopFactory {
 		return injectSuperClass;
 	}
 	
-	public AopFactory addSingletonObject(Object singletonObject) {
+	public AopFactory addSingletonObject(Class<?> type, Object singletonObject) {
+		if (type == null) {
+			throw new IllegalArgumentException("type can not be null");
+		}
 		if (singletonObject == null) {
 			throw new IllegalArgumentException("singletonObject can not be null");
 		}
@@ -225,12 +228,21 @@ public class AopFactory {
 			throw new IllegalArgumentException("singletonObject can not be Class type");
 		}
 		
-		Class<?> type = getUsefulClass(singletonObject.getClass());
+		if ( ! (type.isAssignableFrom(singletonObject.getClass())) ) {
+			throw new IllegalArgumentException(singletonObject.getClass().getName() + " can not cast to " + type.getName());
+		}
+		
+		// Class<?> type = getUsefulClass(singletonObject.getClass());
 		if (singletonCache.putIfAbsent(type, singletonObject) != null) {
 			throw new RuntimeException("Singleton object already exists for type : " + type.getName());
 		}
 		
 		return this;
+	}
+	
+	public AopFactory addSingletonObject(Object singletonObject) {
+		Class<?> type = getUsefulClass(singletonObject.getClass());
+		return addSingletonObject(type, singletonObject);
 	}
 	
 	public synchronized <T> AopFactory addMapping(Class<T> from, Class<? extends T> to) {

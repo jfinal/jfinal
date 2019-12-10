@@ -50,6 +50,14 @@ public class StaticMethod extends Expr {
 		} catch (Exception e) {
 			throw new ParseException(e.getMessage(), location, e);
 		}
+		
+		if (MethodKit.isForbiddenClass(this.clazz)) {
+			throw new ParseException("Forbidden class: " + this.clazz.getName(), location);
+		}
+		if (MethodKit.isForbiddenMethod(methodName)) {
+			throw new ParseException("Forbidden method: " + methodName, location);
+		}
+		
 		this.methodName = methodName;
 		this.exprList = exprList;
 		this.location = location;
@@ -61,7 +69,7 @@ public class StaticMethod extends Expr {
 		try {
 			MethodInfo methodInfo = MethodKit.getMethod(clazz, methodName, argValues);
 			
-			if (methodInfo != null) {
+			if (methodInfo.notNull()) {
 				if (methodInfo.isStatic()) {
 					return methodInfo.invoke(null, argValues);
 				} else {

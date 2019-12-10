@@ -61,7 +61,7 @@ public class Restful implements Interceptor {
 	 * GET		/user/id		--->	show  
 	 * POST		/user			--->	save	
 	 * PUT		/user/id		--->	update
-	 * DELECT	/user/id		--->	delete
+	 * DELETE	/user/id		--->	delete
 	 */
 	public void intercept(Invocation inv) {
 		// 阻止 JFinal 原有规则 action 请求

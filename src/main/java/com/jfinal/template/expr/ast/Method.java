@@ -79,7 +79,7 @@ public class Method extends Expr {
 		try {
 			
 			MethodInfo methodInfo = MethodKit.getMethod(target.getClass(), methodName, argValues);
-			if (methodInfo != null) {
+			if (methodInfo.notNull()) {
 				return methodInfo.invoke(target, argValues);
 			}
 			

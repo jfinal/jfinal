@@ -17,34 +17,10 @@
 package com.jfinal.log;
 
 /**
- * LogManager.
+ * 可变参数最后一个元素为 Throwable 类型时封装为 LogInfo
  */
-public class LogManager {
-	
-	private static final LogManager me = new LogManager();
-	
-	private LogManager() {}
-	
-	public static LogManager me() {
-		return me;
-	}
-	
-	public void init() {
-		Log.init();
-	}
-	
-	public void setDefaultLogFactory(ILogFactory defaultLogFactory) {
-		Log.setDefaultLogFactory(defaultLogFactory);
-		com.jfinal.kit.LogKit.synchronizeLog();
-	}
-	
-	/**
-	 * 切换到 slf4j 日志框架，需要引入 slf4j 相关依赖
-	 * 切换过去以后的用法参考 slf4j 文档
-	 */
-	public void setToSlf4jLogFactory() {
-		setDefaultLogFactory(new Slf4jLogFactory());
-	}
+public class LogInfo {
+	public String message;
+	public Throwable throwable;
 }
-
 

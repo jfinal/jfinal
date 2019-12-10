@@ -195,6 +195,14 @@ public class JFinalViewResolver extends AbstractTemplateViewResolver {
 	}
 	
 	/**
+	 * 设置为 ClassPathSourceFactory 的快捷方法
+	 * ClassPathSourceFactory 将从 CLASSPATH 与 jar 包中读取模板
+	 */
+	public void setToClassPathSourceFactory() {
+		engine.setToClassPathSourceFactory();
+	}
+	
+	/**
 	 * 设置模板基础路径
 	 */
 	public void setBaseTemplatePath(String baseTemplatePath) {
