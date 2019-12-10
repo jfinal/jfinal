@@ -75,26 +75,31 @@ public class AopFactory {
 			return (T)ret;
 		}
 		
-		ret = singletonTl.get().get(targetClass);
-		if (ret != null) {		// 发现循环注入
-			return (T)ret;
+		HashMap<Class<?>, Object> map = singletonTl.get();
+		int size = map.size();
+		if (size > 0) {
+			ret = map.get(targetClass);
+			if (ret != null) {		// 发现循环注入
+				return (T)ret;
+			}
 		}
 		
 		synchronized (this) {
-			ret = singletonCache.get(targetClass);
-			if (ret == null) {
-				try {
+			try {
+				ret = singletonCache.get(targetClass);
+				if (ret == null) {
 					ret = createObject(targetClass);
-					singletonTl.get().put(targetClass, ret);
+					map.put(targetClass, ret);
 					doInject(targetClass, ret);
 					singletonCache.put(targetClass, ret);
-				} finally {
+				}
+				return (T)ret;
+			} finally {
+				if (size == 0) {		// 仅顶层才需要 remove()
 					singletonTl.remove();
 				}
 			}
 		}
-		
-		return (T)ret;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -102,10 +107,12 @@ public class AopFactory {
 		Object ret;
 		
 		HashMap<Class<?>, Object> map = prototypeTl.get();
-		if (map.size() > 0) {
+		int size = map.size();
+		if (size > 0) {
 			ret = map.get(targetClass);
 			if (ret != null) {		// 发现循环注入
-				return (T)ret;
+				// return (T)ret;
+				return (T)createObject(targetClass);
 			}
 		}
 		
@@ -113,11 +120,12 @@ public class AopFactory {
 			ret = createObject(targetClass);
 			map.put(targetClass, ret);
 			doInject(targetClass, ret);
+			return (T)ret;
 		} finally {
-			map.clear();
+			if (size == 0) {		// 仅顶层才需要 clear()
+				map.clear();
+			}
 		}
-		
-		return (T)ret;
 	}
 	
 	public <T> T inject(T targetObject) {
@@ -268,18 +276,6 @@ public class AopFactory {
 		}
 	}
 }
-
-
-/* 未来考虑不再支持对象的 Aop，只支持 Class 的 Aop
-public <T> T get(T targetObject) {
-	try {
-		inject(injectDepth, targetObject.getClass(), targetObject);
-		return targetObject;
-	}
-	catch (Exception e) {
-		throw new RuntimeException(e);
-	}
-}*/
 
 
 

@@ -523,8 +523,13 @@ public class Cache {
 		try {
 			Map<byte[], byte[]> data = jedis.hgetAll(keyToBytes(key));
 			Map<Object, Object> result = new HashMap<Object, Object>();
-			for (Entry<byte[], byte[]> e : data.entrySet())
+			if (data == null) {
+				return result;
+			}
+			
+			for (Entry<byte[], byte[]> e : data.entrySet()) {
 				result.put(fieldFromBytes(e.getKey()), valueFromBytes(e.getValue()));
+			}
 			return result;
 		}
 		finally {close(jedis);}
@@ -581,6 +586,18 @@ public class Cache {
 		Jedis jedis = getJedis();
 		try {
 			return jedis.hincrBy(keyToBytes(key), fieldToBytes(field), value);
+		}
+		finally {close(jedis);}
+	}
+	
+	/**
+	 * 获取哈希表内记数器的值
+	 */
+	public Long hgetCounter(Object key, Object field) {
+		Jedis jedis = getJedis();
+		try {
+			String ret = jedis.hget(keyNamingPolicy.getKeyName(key), keyNamingPolicy.getKeyName(field));
+			return ret != null ? Long.parseLong(ret) : null;
 		}
 		finally {close(jedis);}
 	}
