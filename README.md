@@ -36,10 +36,11 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 ```java
 @Before(BlogInterceptor.class)
 public class BlogController extends Controller {
-    static BlogService service = new BlogService();
+    @Inject
+    BlogService service;
 
     public void index() {
-        setAttr("blogPage", service.paginate(getParaToInt(0, 1), 10));
+        set("blogPage", service.paginate(getParaToInt(0, 1), 10));
         render("blog.html");
     }
 
@@ -53,7 +54,7 @@ public class BlogController extends Controller {
     }
 
     public void edit() {
-        setAttr("blog", service.findById(getParaToInt()));
+        set("blog", service.findById(getParaToInt()));
     }
 
     @Before(BlogValidator.class)
@@ -73,7 +74,7 @@ public class BlogController extends Controller {
 
 ```java
 public class BlogService {
-    private static final Blog dao = new Blog().dao();
+    private Blog dao = new Blog().dao();
     
     public Page<Blog> paginate(int pageNumber, int pageSize) {
         return dao.paginate(pageNumber, pageSize, "select *", "from blog order by id asc");
