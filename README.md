@@ -75,6 +75,7 @@ public class BlogController extends Controller {
 
 ```java
 public class BlogService {
+
     private Blog dao = new Blog().dao();
     
     public Page<Blog> paginate(int pageNumber, int pageSize) {
