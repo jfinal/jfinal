@@ -31,29 +31,29 @@ import com.jfinal.plugin.activerecord.IDataSourceProvider;
  */
 public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	//连接池的名称
-	private String name = null;
+	protected String name = null;
 	
 	// 基本属性 url、user、password
-	private String url;
-	private String username;
-	private String password;
-	private String publicKey;
-	private String driverClass = null;	// 由 "com.mysql.jdbc.Driver" 改为 null 让 druid 自动探测 driverClass 值
+	protected String url;
+	protected String username;
+	protected String password;
+	protected String publicKey;
+	protected String driverClass = null;	// 由 "com.mysql.jdbc.Driver" 改为 null 让 druid 自动探测 driverClass 值
 	
 	// 初始连接池大小、最小空闲连接数、最大活跃连接数
-	private int initialSize = 1;
-	private int minIdle = 10;
-	private int maxActive = 32;
+	protected int initialSize = 1;
+	protected int minIdle = 10;
+	protected int maxActive = 32;
 	
 	// 配置获取连接等待超时的时间
-	private long maxWait = DruidDataSource.DEFAULT_MAX_WAIT;
+	protected long maxWait = DruidDataSource.DEFAULT_MAX_WAIT;
 	
 	// 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-	private long timeBetweenEvictionRunsMillis = DruidDataSource.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
+	protected long timeBetweenEvictionRunsMillis = DruidDataSource.DEFAULT_TIME_BETWEEN_EVICTION_RUNS_MILLIS;
 	// 配置连接在池中最小生存的时间
-	private long minEvictableIdleTimeMillis = DruidDataSource.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
+	protected long minEvictableIdleTimeMillis = DruidDataSource.DEFAULT_MIN_EVICTABLE_IDLE_TIME_MILLIS;
 	// 配置发生错误时多久重连
-	private long timeBetweenConnectErrorMillis = DruidDataSource.DEFAULT_TIME_BETWEEN_CONNECT_ERROR_MILLIS;
+	protected long timeBetweenConnectErrorMillis = DruidDataSource.DEFAULT_TIME_BETWEEN_CONNECT_ERROR_MILLIS;
 	
 	/**
 	 * hsqldb - "select 1 from INFORMATION_SCHEMA.SYSTEM_USERS"
@@ -61,32 +61,34 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	 * DB2 - "select 1 from sysibm.sysdummy1"
 	 * mysql - "select 1"
 	 */
-	private String validationQuery = "select 1";
-	private String  connectionInitSql = null;
-	private String connectionProperties = null;
-	private boolean testWhileIdle = true;
-	private boolean testOnBorrow = false;
-	private boolean testOnReturn = false;
+	protected String validationQuery = "select 1";
+	protected String  connectionInitSql = null;
+	protected String connectionProperties = null;
+	protected boolean testWhileIdle = true;
+	protected boolean testOnBorrow = false;
+	protected boolean testOnReturn = false;
 	
 	// 是否打开连接泄露自动检测
-	private boolean removeAbandoned = false;
+	protected boolean removeAbandoned = false;
 	// 连接长时间没有使用，被认为发生泄露时长
-	private long removeAbandonedTimeoutMillis = 300 * 1000;
+	protected long removeAbandonedTimeoutMillis = 300 * 1000;
 	// 发生泄露时是否需要输出 log，建议在开启连接泄露检测时开启，方便排错
-	private boolean logAbandoned = false;
+	protected boolean logAbandoned = false;
 	
 	// 是否缓存preparedStatement，即PSCache，对支持游标的数据库性能提升巨大，如 oracle、mysql 5.5 及以上版本
-	// private boolean poolPreparedStatements = false;	// oracle、mysql 5.5 及以上版本建议为 true;
+	// protected boolean poolPreparedStatements = false;	// oracle、mysql 5.5 及以上版本建议为 true;
 	
 	// 只要maxPoolPreparedStatementPerConnectionSize>0,poolPreparedStatements就会被自动设定为true，使用oracle时可以设定此值。
-	private int maxPoolPreparedStatementPerConnectionSize = -1;
+	protected int maxPoolPreparedStatementPerConnectionSize = -1;
+	
+	protected Integer defaultTransactionIsolation = null;
 	
 	// 配置监控统计拦截的filters
-	private String filters;	// 监控统计："stat"    防SQL注入："wall"     组合使用： "stat,wall"
-	private List<Filter> filterList;
+	protected String filters;	// 监控统计："stat"    防SQL注入："wall"     组合使用： "stat,wall"
+	protected List<Filter> filterList;
 	
-	private DruidDataSource ds;
-	private volatile boolean isStarted = false;
+	protected DruidDataSource ds;
+	protected volatile boolean isStarted = false;
 	
 	public DruidPlugin(String url, String username, String password) {
 		this.url = url;
@@ -211,6 +213,10 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		//只要maxPoolPreparedStatementPerConnectionSize>0,poolPreparedStatements就会被自动设定为true，参照druid的源码
 		ds.setMaxPoolPreparedStatementPerConnectionSize(maxPoolPreparedStatementPerConnectionSize);
 		
+		if (defaultTransactionIsolation != null) {
+			ds.setDefaultTransactionIsolation(defaultTransactionIsolation);
+		}
+		
 		boolean hasSetConnectionProperties = false;
 		if (StrKit.notBlank(filters)){
 			try {
@@ -302,6 +308,11 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	
 	public DruidPlugin setMaxWait(long maxWait) {
 		this.maxWait = maxWait;
+		return this;
+	}
+	
+	public DruidPlugin setDefaultTransactionIsolation(int defaultTransactionIsolation) {
+		this.defaultTransactionIsolation = defaultTransactionIsolation;
 		return this;
 	}
 	
