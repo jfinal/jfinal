@@ -17,7 +17,7 @@
 package com.jfinal.log;
 
 /**
- * The five logging levels used by Log are (in order):
+ * The six logging levels used by Log are (in order):
  * 1. TRACE (the least serious)
  * 2. DEBUG
  * 3. INFO
