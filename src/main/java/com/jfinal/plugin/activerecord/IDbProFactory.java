@@ -26,6 +26,7 @@ package com.jfinal.plugin.activerecord;
  * 
  * 注意：每个 ActiveRecordPlugin 对象拥有独立的 IDbProFactory 对象，多数据源使用时注意要对每个 arp 进行配置
  */
+@FunctionalInterface
 public interface IDbProFactory {
 	
 	DbPro getDbPro(String configName);

@@ -30,6 +30,7 @@ import java.sql.SQLException;
  * 			return result1 == 1 && result2 == 1;<br>
  * 		}});
  */
+@FunctionalInterface
 public interface IAtom {
 	
 	/**

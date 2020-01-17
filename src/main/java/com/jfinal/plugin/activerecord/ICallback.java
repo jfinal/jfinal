@@ -22,6 +22,7 @@ import java.sql.SQLException;
 /**
  * ICallback provide a JDBC Connection if you need it or the active record plugin can not satisfy you requirement.
  */
+@FunctionalInterface
 public interface ICallback {
 	
 	/**

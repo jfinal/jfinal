@@ -27,6 +27,7 @@ package com.jfinal.plugin.ehcache;
  * }});
  * </pre>
  */
+@FunctionalInterface
 public interface IDataLoader {
 	public Object load();
 }

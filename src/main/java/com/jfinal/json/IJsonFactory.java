@@ -19,6 +19,7 @@ package com.jfinal.json;
 /**
  * IJsonFactory.
  */
+@FunctionalInterface
 public interface IJsonFactory {
 	Json getJson();
 }

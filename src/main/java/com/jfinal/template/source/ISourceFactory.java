@@ -25,6 +25,7 @@ package com.jfinal.template.source;
  * 配置示例：
  * engine.setSourceFactory(new ClassPathSourceFactory());
  */
+@FunctionalInterface
 public interface ISourceFactory {
 	ISource getSource(String baseTemplatePath, String fileName, String encoding);
 }
