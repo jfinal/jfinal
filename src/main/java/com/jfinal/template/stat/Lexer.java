@@ -167,7 +167,10 @@ class Lexer {
 					paraToken = new ParaToken(para, beginRow);
 					return addIdParaToken(idToken, paraToken);
 				}
-				throw new ParseException("#" + id + " directive requires parentheses \"()\"", new Location(fileName, beginRow));
+				
+				// throw new ParseException("#" + id + " directive requires parentheses \"()\"", new Location(fileName, beginRow));
+				return fail();	// 2020-02-28: 关键字指令在没有左括号的情况下也当作普通文本
+				
 			case 11: 	// 用户自定义指令必须有参数
 				skipBlanks();
 				if (peek() == '(') {
