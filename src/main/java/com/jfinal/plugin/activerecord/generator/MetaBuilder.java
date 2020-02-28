@@ -75,7 +75,7 @@ public class MetaBuilder {
 	public void addExcludedTable(String... excludedTables) {
 		if (excludedTables != null) {
 			for (String table : excludedTables) {
-				this.excludedTables.add(table);
+				this.excludedTables.add(table.trim());
 			}
 		}
 	}
