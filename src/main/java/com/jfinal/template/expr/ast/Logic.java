@@ -102,6 +102,7 @@ public class Logic extends Expr {
 		if (v instanceof Boolean) {
 			return (Boolean)v;
 		}
+		
 		if (v instanceof CharSequence) {
 			return ((CharSequence)v).length() > 0;
 		}
