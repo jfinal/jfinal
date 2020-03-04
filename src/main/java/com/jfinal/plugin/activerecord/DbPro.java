@@ -795,16 +795,44 @@ public class DbPro {
 		}
 	}
 	
-	public boolean tx(int transactionLevel, IAtom atom) {
-		return tx(config, transactionLevel, atom);
-	}
-	
 	/**
 	 * Execute transaction with default transaction level.
 	 * @see #tx(int, IAtom)
 	 */
 	public boolean tx(IAtom atom) {
 		return tx(config, config.getTransactionLevel(), atom);
+	}
+	
+	public boolean tx(int transactionLevel, IAtom atom) {
+		return tx(config, transactionLevel, atom);
+	}
+	
+	/**
+	 * 主要用于嵌套事务场景
+	 * 
+	 * 实例：https://jfinal.com/feedback/4008
+	 * 
+	 * 默认情况下嵌套事务会被合并成为一个事务，那么内层与外层任何地方回滚事务
+	 * 所有嵌套层都将回滚事务，也就是说嵌套事务无法独立提交与回滚
+	 * 
+	 * 使用 txInNewThread(...) 方法可以实现层之间的事务控制的独立性
+	 * 由于事务处理是将 Connection 绑定到线程上的，所以 txInNewThread(...)
+	 * 通过建立新线程来实现嵌套事务的独立控制
+	 */
+	public void txInNewThread(IAtom atom) {
+		Thread thread = new Thread(() -> {
+			tx(config, config.getTransactionLevel(), atom);
+		});
+		thread.setDaemon(true);
+		thread.start();
+	}
+	
+	public void txInNewThread(int transactionLevel, IAtom atom) {
+		Thread thread = new Thread(() -> {
+			tx(config, transactionLevel, atom);
+		});
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
 	/**
