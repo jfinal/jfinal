@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.cache.ICache;
@@ -819,20 +821,20 @@ public class DbPro {
 	 * 由于事务处理是将 Connection 绑定到线程上的，所以 txInNewThread(...)
 	 * 通过建立新线程来实现嵌套事务的独立控制
 	 */
-	public void txInNewThread(IAtom atom) {
-		Thread thread = new Thread(() -> {
-			tx(config, config.getTransactionLevel(), atom);
-		});
+	public Future<Boolean> txInNewThread(IAtom atom) {
+		FutureTask<Boolean> task = new FutureTask<>(() -> tx(config, config.getTransactionLevel(), atom));
+		Thread thread = new Thread(task);
 		thread.setDaemon(true);
 		thread.start();
+		return task;
 	}
 	
-	public void txInNewThread(int transactionLevel, IAtom atom) {
-		Thread thread = new Thread(() -> {
-			tx(config, transactionLevel, atom);
-		});
+	public Future<Boolean> txInNewThread(int transactionLevel, IAtom atom) {
+		FutureTask<Boolean> task = new FutureTask<>(() -> tx(config, transactionLevel, atom));
+		Thread thread = new Thread(task);
 		thread.setDaemon(true);
 		thread.start();
+		return task;
 	}
 	
 	/**
