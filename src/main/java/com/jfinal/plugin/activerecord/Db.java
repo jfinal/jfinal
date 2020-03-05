@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 import com.jfinal.kit.SyncWriteMap;
 
 /**
@@ -557,12 +558,12 @@ public class Db {
 	 * 由于事务处理是将 Connection 绑定到线程上的，所以 txInNewThread(...)
 	 * 通过建立新线程来实现嵌套事务的独立控制
 	 */
-	public static void txInNewThread(IAtom atom) {
-		MAIN.txInNewThread(atom);
+	public static Future<Boolean> txInNewThread(IAtom atom) {
+		return MAIN.txInNewThread(atom);
 	}
 	
-	public static void txInNewThread(int transactionLevel, IAtom atom) {
-		MAIN.txInNewThread(transactionLevel, atom);
+	public static Future<Boolean> txInNewThread(int transactionLevel, IAtom atom) {
+		return MAIN.txInNewThread(transactionLevel, atom);
 	}
 	
 	/**
