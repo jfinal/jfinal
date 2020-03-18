@@ -293,7 +293,7 @@ public class Engine {
 	 * public enum UserType {
 	 * 
 	 *   ADMIN,
-	 *   USER
+	 *   USER;
 	 *   
 	 *   public String hello() {
 	 *      return "hello";
@@ -304,6 +304,7 @@ public class Engine {
 	 * engine.addEnum(UserType.class);
 	 * 
 	 * 3：模板中使用
+	 * ### 以下的对象 u 通过 Controller 中的 setAttr("u", UserType.ADMIN) 传递
 	 * #if( u == UserType.ADMIN )
 	 *    #(UserType.ADMIN)
 	 *    
@@ -316,12 +317,10 @@ public class Engine {
 	 */
 	public Engine addEnum(Class<? extends Enum<?>> enumClass) {
 		Map<String, Enum<?>> map = new HashMap<>();
-		
 		Enum<?>[] es = enumClass.getEnumConstants();
 		for (Enum<?> e : es) {
 			map.put(e.name(), e);
 		}
-		
 		return addSharedObject(enumClass.getSimpleName(), map);
 	}
 	
