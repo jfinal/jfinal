@@ -285,6 +285,47 @@ public class Engine {
 	}
 	
 	/**
+	 * 添加枚举类型，便于在模板中使用
+	 * 
+	 * <pre>
+	 * 例子：
+	 * 1：定义枚举类型
+	 * public enum UserType {
+	 * 
+	 *   ADMIN,
+	 *   USER
+	 *   
+	 *   public String hello() {
+	 *      return "hello";
+	 *   }
+	 * }
+	 * 
+	 * 2：配置
+	 * engine.addEnum(UserType.class);
+	 * 
+	 * 3：模板中使用
+	 * #if( u == UserType.ADMIN )
+	 *    #(UserType.ADMIN)
+	 *    
+	 *    #(UserType.ADMIN.name())
+	 *    
+	 *    #(UserType.ADMIN.hello())
+	 * #end
+	 * 
+	 * </pre>
+	 */
+	public Engine addEnum(Class<? extends Enum<?>> enumClass) {
+		Map<String, Enum<?>> map = new HashMap<>();
+		
+		Enum<?>[] es = enumClass.getEnumConstants();
+		for (Enum<?> e : es) {
+			map.put(e.name(), e);
+		}
+		
+		return addSharedObject(enumClass.getSimpleName(), map);
+	}
+	
+	/**
 	 * Set output directive factory
 	 */
 	public Engine setOutputDirectiveFactory(OutputDirectiveFactory outputDirectiveFactory) {
