@@ -39,8 +39,19 @@ public class FileRender extends Render {
 	protected static String baseDownloadPath;
 	protected static ServletContext servletContext;
 	
+	// 是否只支持普通渲染，用于强制客户端只能单线程下载
+	protected static boolean normalRenderOnly = false;
+	
 	protected File file;
 	protected String downloadFileName = null;
+	
+	/**
+	 * 设置为 true 时，客户端只能单线程下载，用于减轻服务器压力
+	 * 默认值为 false
+	 */
+	public static void setNormalRenderOnly(boolean normalRenderOnly) {
+		FileRender.normalRenderOnly = normalRenderOnly;
+	}
 	
 	public FileRender(File file) {
 		if (file == null) {
@@ -106,7 +117,7 @@ public class FileRender extends Render {
 		response.setContentType(contentType != null ? contentType : DEFAULT_CONTENT_TYPE);
 		
 		// ---------
-		if (StrKit.isBlank(request.getHeader("Range"))) {
+		if (normalRenderOnly || StrKit.isBlank(request.getHeader("Range"))) {
 			normalRender();
 		} else {
 			rangeRender();
