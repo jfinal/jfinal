@@ -17,6 +17,7 @@
 package com.jfinal.plugin.activerecord;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -302,8 +303,15 @@ public class Record implements Serializable {
 	/**
 	 * Get column of mysql type: decimal, numeric
 	 */
-	public java.math.BigDecimal getBigDecimal(String column) {
-		return (java.math.BigDecimal)getColumns().get(column);
+	public BigDecimal getBigDecimal(String column) {
+		Object n = getColumns().get(column);
+		if (n instanceof BigDecimal) {
+			return (BigDecimal)n;
+		} else if (n != null) {
+			return new BigDecimal(n.toString());
+		} else {
+			return null;
+		}
 	}
 	
 	/**
