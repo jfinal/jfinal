@@ -17,6 +17,7 @@
 package com.jfinal.plugin.activerecord;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -402,8 +403,15 @@ public abstract class Model<M extends Model> implements Serializable {
 	/**
 	 * Get attribute of mysql type: decimal, numeric
 	 */
-	public java.math.BigDecimal getBigDecimal(String attr) {
-		return (java.math.BigDecimal)attrs.get(attr);
+	public BigDecimal getBigDecimal(String attr) {
+		Object n = attrs.get(attr);
+		if (n instanceof BigDecimal) {
+			return (BigDecimal)n;
+		} else if (n != null) {
+			return new BigDecimal(n.toString());
+		} else {
+			return null;
+		}
 	}
 	
 	/**
