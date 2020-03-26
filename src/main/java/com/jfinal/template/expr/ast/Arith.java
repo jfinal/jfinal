@@ -50,8 +50,8 @@ public class Arith extends Expr {
 	/**
 	 * 设置 BigDecimal 除法使用的最小 scale 值，默认为 5
 	 */
-	public static void setBigDecimalDivideMinScale(int bigDecimalDivideMinScale) {
-		Arith.bigDecimalDivideMinScale = bigDecimalDivideMinScale;
+	public static void setBigDecimalDivideMinScale(int scale) {
+		Arith.bigDecimalDivideMinScale = scale;
 	}
 	
 	/**
