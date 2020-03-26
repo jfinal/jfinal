@@ -18,6 +18,7 @@ package com.jfinal.template.expr.ast;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Objects;
 import com.jfinal.template.TemplateException;
 import com.jfinal.template.expr.Sym;
 import com.jfinal.template.stat.Location;
@@ -40,6 +41,26 @@ public class Arith extends Expr {
 	private Sym op;
 	private Expr left;
 	private Expr right;
+	
+	// BigDecimal 除法使用的最小 scale 值，默认为 5
+	protected static int bigDecimalDivideMinScale = 5;
+	// BigDecimal 除法使用的舍入模式，默认为四舍五入
+	protected static RoundingMode bigDecimalDivideRoundingMode = RoundingMode.HALF_UP;
+	
+	/**
+	 * 设置 BigDecimal 除法使用的最小 scale 值，默认为 5
+	 */
+	public static void setBigDecimalDivideMinScale(int bigDecimalDivideMinScale) {
+		Arith.bigDecimalDivideMinScale = bigDecimalDivideMinScale;
+	}
+	
+	/**
+	 * 设置 BigDecimal 除法使用的舍入模式，默认为四舍五入
+	 */
+	public static void setBigDecimalDivideRoundingMode(RoundingMode roundingMode) {
+		Objects.requireNonNull(roundingMode, "roundingMode can not be null");
+		Arith.bigDecimalDivideRoundingMode = roundingMode;
+	}
 	
 	public Arith(Sym op, Expr left, Expr right, Location location) {
 		if (left == null || right == null) {
@@ -80,7 +101,7 @@ public class Arith extends Expr {
 			case DIV:
 				return div(maxType, l, r);
 			case MOD:
-				return mod(maxType, l, r);
+				return remainder(maxType, l, r);
 			default :
 				throw new TemplateException("Unsupported operator: " + op.value(), location);
 			}
@@ -201,12 +222,13 @@ public class Arith extends Expr {
 		case BIGDECIMAL:
 			BigDecimal[] bd = toBigDecimals(left, right);
 			// return (bd[0]).divide(bd[1]);
-			return (bd[0]).divide(bd[1], RoundingMode.HALF_EVEN);	// 银行家舍入法
+			int scale = Math.max(bigDecimalDivideMinScale, bd[0].scale());
+			return (bd[0]).divide(bd[1], scale, bigDecimalDivideRoundingMode);
 		}
 		throw new TemplateException("Unsupported data type", location);
 	}
 	
-	private Number mod(int maxType, Number left, Number right) {
+	private Number remainder(int maxType, Number left, Number right) {
 		switch (maxType) {
 		case INT:
 			return Integer.valueOf(left.intValue() % right.intValue());
