@@ -107,5 +107,9 @@ public abstract class CPI {
 	public static void setTablePrimaryKey(Table table, String primaryKey) {
 		table.setPrimaryKey(primaryKey);
 	}
+	
+	public static void addModelToConfigMapping(Class<? extends Model> modelClass, Config config) {
+		DbKit.addModelToConfigMapping(modelClass, config);
+	}
 }
 
