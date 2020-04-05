@@ -119,8 +119,9 @@ public class Define extends Stat {
 	}
 	
 	// -----------------------------------------------------------------------
+	
 	/**
-	 * envForDevMode 属性性以及相关方法仅用于 devMode 判断当前 #define 指令所在资源是否被修改
+	 * envForDevMode 属性以及相关方法仅用于 devMode 判断当前 #define 指令所在资源是否被修改
 	 * 仅用于 EngineConfig 中处理 shared function 的逻辑
 	 */
 	private Env envForDevMode;
