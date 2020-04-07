@@ -311,7 +311,7 @@ public class EngineConfig {
 	}
 	
 	/**
-	 * 添加自己的 WriterBuffer 实现，配置方法：
+	 * 配置自己的 WriterBuffer 实现，配置方法：
 	 * engine.getEngineConfig().setWriterBuffer(...);
 	 */
 	public void setWriterBuffer(WriterBuffer writerBuffer) {
