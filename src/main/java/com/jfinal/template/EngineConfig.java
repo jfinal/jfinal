@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.ExprList;
@@ -307,6 +308,15 @@ public class EngineConfig {
 	
 	public void setWriterBufferSize(int bufferSize) {
 		writerBuffer.setBufferSize(bufferSize);
+	}
+	
+	/**
+	 * 添加自己的 WriterBuffer 实现，配置方法：
+	 * engine.getEngineConfig().setWriterBuffer(...);
+	 */
+	public void setWriterBuffer(WriterBuffer writerBuffer) {
+		Objects.requireNonNull(writerBuffer, "writerBuffer can not be null");
+		this.writerBuffer = writerBuffer;
 	}
 	
 	public String getEncoding() {
