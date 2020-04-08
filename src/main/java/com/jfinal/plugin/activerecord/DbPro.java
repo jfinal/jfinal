@@ -1192,7 +1192,7 @@ public class DbPro {
      * Ensure all the record can use the same sql as the first record.
      * @param tableName the table name
      */
-    public int[] batchSave(String tableName, List<Record> recordList, int batchSize) {
+    public int[] batchSave(String tableName, List<? extends Record> recordList, int batchSize) {
     	if (recordList == null || recordList.size() == 0)
     		return new int[0];
     	
@@ -1260,7 +1260,7 @@ public class DbPro {
      * @param tableName the table name
      * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
      */
-    public int[] batchUpdate(String tableName, String primaryKey, List<Record> recordList, int batchSize) {
+    public int[] batchUpdate(String tableName, String primaryKey, List<? extends Record> recordList, int batchSize) {
     	if (recordList == null || recordList.size() == 0)
     		return new int[0];
     	
@@ -1292,7 +1292,7 @@ public class DbPro {
      * Ensure all the records can use the same sql as the first record.
      * @param tableName the table name
      */
-    public int[] batchUpdate(String tableName, List<Record> recordList, int batchSize) {
+    public int[] batchUpdate(String tableName, List<? extends Record> recordList, int batchSize) {
     	return batchUpdate(tableName, config.dialect.getDefaultPrimaryKey(),recordList, batchSize);
     }
     

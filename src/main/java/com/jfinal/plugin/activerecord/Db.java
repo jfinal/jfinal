@@ -655,7 +655,7 @@ public class Db {
     /**
 	 * @see DbPro#batchSave(String, List, int)
      */
-    public static int[] batchSave(String tableName, List<Record> recordList, int batchSize) {
+    public static int[] batchSave(String tableName, List<? extends Record> recordList, int batchSize) {
     	return MAIN.batchSave(tableName, recordList, batchSize);
     }
     
@@ -669,14 +669,14 @@ public class Db {
     /**
 	 * @see DbPro#batchUpdate(String, String, List, int)
      */
-    public static int[] batchUpdate(String tableName, String primaryKey, List<Record> recordList, int batchSize) {
+    public static int[] batchUpdate(String tableName, String primaryKey, List<? extends Record> recordList, int batchSize) {
     	return MAIN.batchUpdate(tableName, primaryKey, recordList, batchSize);
     }
     
     /**
 	 * @see DbPro#batchUpdate(String, List, int)
      */
-    public static int[] batchUpdate(String tableName, List<Record> recordList, int batchSize) {
+    public static int[] batchUpdate(String tableName, List<? extends Record> recordList, int batchSize) {
     	return MAIN.batchUpdate(tableName, recordList, batchSize);
     }
     
