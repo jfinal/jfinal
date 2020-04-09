@@ -114,6 +114,10 @@ public final class DbKit {
 		if (st != null) {st.close();}
 	}
 	
+	static final void close(ResultSet rs) throws SQLException {
+		if (rs != null) {rs.close();}
+	}
+	
 	static final void close(Statement st) throws SQLException {
 		if (st != null) {st.close();}
 	}
