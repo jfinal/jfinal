@@ -283,11 +283,11 @@ public class DbPro {
 	 * Execute sql update
 	 */
 	protected int update(Config config, Connection conn, String sql, Object... paras) throws SQLException {
-		PreparedStatement pst = conn.prepareStatement(sql);
-		config.dialect.fillStatement(pst, paras);
-		int result = pst.executeUpdate();
-		DbKit.close(pst);
-		return result;
+		try (PreparedStatement pst = conn.prepareStatement(sql)) {
+			config.dialect.fillStatement(pst, paras);
+			int result = pst.executeUpdate();
+			return result;
+		}
 	}
 	
 	/**
@@ -623,17 +623,15 @@ public class DbPro {
 		StringBuilder sql = new StringBuilder();
 		config.dialect.forDbSave(tableName, pKeys, record, sql, paras);
 		
-		PreparedStatement pst;
-		if (config.dialect.isOracle()) {
-			pst = conn.prepareStatement(sql.toString(), pKeys);
-		} else {
-			pst = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+		try (PreparedStatement pst =
+				config.dialect.isOracle() ?
+				conn.prepareStatement(sql.toString(), pKeys) :
+				conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS)) {
+			config.dialect.fillStatement(pst, paras);
+			int result = pst.executeUpdate();
+			config.dialect.getRecordGeneratedKey(pst, record, pKeys);
+			return result >= 1;
 		}
-		config.dialect.fillStatement(pst, paras);
-		int result = pst.executeUpdate();
-		config.dialect.getRecordGeneratedKey(pst, record, pKeys);
-		DbKit.close(pst);
-		return result >= 1;
 	}
 	
 	/**
@@ -935,44 +933,45 @@ public class DbPro {
 		int counter = 0;
 		int pointer = 0;
 		int[] result = new int[paras.length];
-		PreparedStatement pst = conn.prepareStatement(sql);
-		for (int i=0; i<paras.length; i++) {
-			for (int j=0; j<paras[i].length; j++) {
-				Object value = paras[i][j];
-				if (value instanceof java.util.Date) {
-					if (value instanceof java.sql.Date) {
-						pst.setDate(j + 1, (java.sql.Date)value);
-					} else if (value instanceof java.sql.Timestamp) {
-						pst.setTimestamp(j + 1, (java.sql.Timestamp)value);
-					} else {
-						// Oracle、SqlServer 中的 TIMESTAMP、DATE 支持 new Date() 给值
-						java.util.Date d = (java.util.Date)value;
-						pst.setTimestamp(j + 1, new java.sql.Timestamp(d.getTime()));
+		try (PreparedStatement pst = conn.prepareStatement(sql)) {
+			for (int i=0; i<paras.length; i++) {
+				for (int j=0; j<paras[i].length; j++) {
+					Object value = paras[i][j];
+					if (value instanceof java.util.Date) {
+						if (value instanceof java.sql.Date) {
+							pst.setDate(j + 1, (java.sql.Date)value);
+						} else if (value instanceof java.sql.Timestamp) {
+							pst.setTimestamp(j + 1, (java.sql.Timestamp)value);
+						} else {
+							// Oracle、SqlServer 中的 TIMESTAMP、DATE 支持 new Date() 给值
+							java.util.Date d = (java.util.Date)value;
+							pst.setTimestamp(j + 1, new java.sql.Timestamp(d.getTime()));
+						}
+					}
+					else {
+						pst.setObject(j + 1, value);
 					}
 				}
-				else {
-					pst.setObject(j + 1, value);
+				pst.addBatch();
+				if (++counter >= batchSize) {
+					counter = 0;
+					int[] r = pst.executeBatch();
+					if (isInTransaction == false)
+						conn.commit();
+					for (int k=0; k<r.length; k++)
+						result[pointer++] = r[k];
 				}
 			}
-			pst.addBatch();
-			if (++counter >= batchSize) {
-				counter = 0;
+			if (counter != 0) {
 				int[] r = pst.executeBatch();
 				if (isInTransaction == false)
 					conn.commit();
-				for (int k=0; k<r.length; k++)
+				for (int k = 0; k < r.length; k++)
 					result[pointer++] = r[k];
 			}
+			
+			return result;
 		}
-		if (counter != 0) {
-			int[] r = pst.executeBatch();
-			if (isInTransaction == false)
-				conn.commit();
-			for (int k = 0; k < r.length; k++)
-				result[pointer++] = r[k];
-		}
-		DbKit.close(pst);
-		return result;
 	}
 	
     /**
@@ -1022,45 +1021,46 @@ public class DbPro {
 		int pointer = 0;
 		int size = list.size();
 		int[] result = new int[size];
-		PreparedStatement pst = conn.prepareStatement(sql);
-		for (int i=0; i<size; i++) {
-			Map map = isModel ? ((Model)list.get(i))._getAttrs() : ((Record)list.get(i)).getColumns();
-			for (int j=0; j<columnArray.length; j++) {
-				Object value = map.get(columnArray[j]);
-				if (value instanceof java.util.Date) {
-					if (value instanceof java.sql.Date) {
-						pst.setDate(j + 1, (java.sql.Date)value);
-					} else if (value instanceof java.sql.Timestamp) {
-						pst.setTimestamp(j + 1, (java.sql.Timestamp)value);
-					} else {
-						// Oracle、SqlServer 中的 TIMESTAMP、DATE 支持 new Date() 给值
-						java.util.Date d = (java.util.Date)value;
-						pst.setTimestamp(j + 1, new java.sql.Timestamp(d.getTime()));
+		try (PreparedStatement pst = conn.prepareStatement(sql)) {
+			for (int i=0; i<size; i++) {
+				Map map = isModel ? ((Model)list.get(i))._getAttrs() : ((Record)list.get(i)).getColumns();
+				for (int j=0; j<columnArray.length; j++) {
+					Object value = map.get(columnArray[j]);
+					if (value instanceof java.util.Date) {
+						if (value instanceof java.sql.Date) {
+							pst.setDate(j + 1, (java.sql.Date)value);
+						} else if (value instanceof java.sql.Timestamp) {
+							pst.setTimestamp(j + 1, (java.sql.Timestamp)value);
+						} else {
+							// Oracle、SqlServer 中的 TIMESTAMP、DATE 支持 new Date() 给值
+							java.util.Date d = (java.util.Date)value;
+							pst.setTimestamp(j + 1, new java.sql.Timestamp(d.getTime()));
+						}
+					}
+					else {
+						pst.setObject(j + 1, value);
 					}
 				}
-				else {
-					pst.setObject(j + 1, value);
+				pst.addBatch();
+				if (++counter >= batchSize) {
+					counter = 0;
+					int[] r = pst.executeBatch();
+					if (isInTransaction == false)
+						conn.commit();
+					for (int k=0; k<r.length; k++)
+						result[pointer++] = r[k];
 				}
 			}
-			pst.addBatch();
-			if (++counter >= batchSize) {
-				counter = 0;
+			if (counter != 0) {
 				int[] r = pst.executeBatch();
 				if (isInTransaction == false)
 					conn.commit();
-				for (int k=0; k<r.length; k++)
+				for (int k = 0; k < r.length; k++)
 					result[pointer++] = r[k];
 			}
+			
+			return result;
 		}
-		if (counter != 0) {
-			int[] r = pst.executeBatch();
-			if (isInTransaction == false)
-				conn.commit();
-			for (int k = 0; k < r.length; k++)
-				result[pointer++] = r[k];
-		}
-		DbKit.close(pst);
-		return result;
 	}
 	
 	/**
@@ -1104,27 +1104,28 @@ public class DbPro {
 		int pointer = 0;
 		int size = sqlList.size();
 		int[] result = new int[size];
-		Statement st = conn.createStatement();
-		for (int i=0; i<size; i++) {
-			st.addBatch(sqlList.get(i));
-			if (++counter >= batchSize) {
-				counter = 0;
+		try (Statement st = conn.createStatement()) {
+			for (int i=0; i<size; i++) {
+				st.addBatch(sqlList.get(i));
+				if (++counter >= batchSize) {
+					counter = 0;
+					int[] r = st.executeBatch();
+					if (isInTransaction == false)
+						conn.commit();
+					for (int k=0; k<r.length; k++)
+						result[pointer++] = r[k];
+				}
+			}
+			if (counter != 0) {
 				int[] r = st.executeBatch();
 				if (isInTransaction == false)
 					conn.commit();
-				for (int k=0; k<r.length; k++)
+				for (int k = 0; k < r.length; k++)
 					result[pointer++] = r[k];
 			}
+			
+			return result;
 		}
-		if (counter != 0) {
-			int[] r = st.executeBatch();
-			if (isInTransaction == false)
-				conn.commit();
-			for (int k = 0; k < r.length; k++)
-				result[pointer++] = r[k];
-		}
-		DbKit.close(st);
-		return result;
 	}
 	
     /**
