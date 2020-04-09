@@ -109,13 +109,13 @@ public final class DbKit {
 		return modelToConfig.get(modelClass);
 	}
 	
-	static final void close(ResultSet rs, Statement st) {
-		if (rs != null) {try {rs.close();} catch (SQLException e) {throw new ActiveRecordException(e);}}
-		if (st != null) {try {st.close();} catch (SQLException e) {throw new ActiveRecordException(e);}}
+	static final void close(ResultSet rs, Statement st) throws SQLException {
+		if (rs != null) {rs.close();}
+		if (st != null) {st.close();}
 	}
 	
-	static final void close(Statement st) {
-		if (st != null) {try {st.close();} catch (SQLException e) {throw new ActiveRecordException(e);}}
+	static final void close(Statement st) throws SQLException {
+		if (st != null) {st.close();}
 	}
 	
 	public static Set<Map.Entry<String, Config>> getConfigSet() {
