@@ -62,26 +62,27 @@ public class DbPro {
 	
 	protected <T> List<T> query(Config config, Connection conn, String sql, Object... paras) throws SQLException {
 		List result = new ArrayList();
-		PreparedStatement pst = conn.prepareStatement(sql);
-		config.dialect.fillStatement(pst, paras);
-		ResultSet rs = pst.executeQuery();
-		int colAmount = rs.getMetaData().getColumnCount();
-		if (colAmount > 1) {
-			while (rs.next()) {
-				Object[] temp = new Object[colAmount];
-				for (int i=0; i<colAmount; i++) {
-					temp[i] = rs.getObject(i + 1);
+		try (PreparedStatement pst = conn.prepareStatement(sql)) {
+			config.dialect.fillStatement(pst, paras);
+			ResultSet rs = pst.executeQuery();
+			int colAmount = rs.getMetaData().getColumnCount();
+			if (colAmount > 1) {
+				while (rs.next()) {
+					Object[] temp = new Object[colAmount];
+					for (int i=0; i<colAmount; i++) {
+						temp[i] = rs.getObject(i + 1);
+					}
+					result.add(temp);
 				}
-				result.add(temp);
 			}
-		}
-		else if(colAmount == 1) {
-			while (rs.next()) {
-				result.add(rs.getObject(1));
+			else if(colAmount == 1) {
+				while (rs.next()) {
+					result.add(rs.getObject(1));
+				}
 			}
+			DbKit.close(rs);
+			return result;
 		}
-		DbKit.close(rs, pst);
-		return result;
 	}
 	
 	/**
@@ -319,12 +320,13 @@ public class DbPro {
 	}
 	
 	protected List<Record> find(Config config, Connection conn, String sql, Object... paras) throws SQLException {
-		PreparedStatement pst = conn.prepareStatement(sql);
-		config.dialect.fillStatement(pst, paras);
-		ResultSet rs = pst.executeQuery();
-		List<Record> result = config.dialect.buildRecordList(config, rs);	// RecordBuilder.build(config, rs);
-		DbKit.close(rs, pst);
-		return result;
+		try (PreparedStatement pst = conn.prepareStatement(sql)) {
+			config.dialect.fillStatement(pst, paras);
+			ResultSet rs = pst.executeQuery();
+			List<Record> result = config.dialect.buildRecordList(config, rs);	// RecordBuilder.build(config, rs);
+			DbKit.close(rs);
+			return result;
+		}
 	}
 	
 	/**
