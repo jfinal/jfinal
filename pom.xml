@@ -172,7 +172,7 @@
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>cos</artifactId>
-			<version>2019.8</version>
+			<version>2020.4</version>
 			<scope>provided</scope>
 		</dependency>
 		
