@@ -10,12 +10,8 @@ public class ExceededSizeException extends com.oreilly.servlet.multipart.Exceede
 	
 	private static final long serialVersionUID = -3493615798872340918L;
 	
-	public ExceededSizeException(Throwable t) {
+	ExceededSizeException(Throwable t) {
 		super(t);
-	}
-	
-	public ExceededSizeException(String s) {
-		super(s);
 	}
 }
 
