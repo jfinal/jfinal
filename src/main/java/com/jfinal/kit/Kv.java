@@ -94,6 +94,16 @@ public class Kv extends HashMap {
 		return n != null ? n.longValue() : null;
 	}
 	
+	public Double getDouble(Object key) {
+		Number n = (Number)get(key);
+		return n != null ? n.doubleValue() : null;
+	}
+	
+	public Float getFloat(Object key) {
+		Number n = (Number)get(key);
+		return n != null ? n.floatValue() : null;
+	}
+	
 	public Number getNumber(Object key) {
 		return (Number)get(key);
 	}
