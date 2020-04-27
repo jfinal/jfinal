@@ -38,7 +38,7 @@ public abstract class Routes {
 	
 	private String baseViewPath = null;
 	private List<Route> routeItemList = new ArrayList<Route>();
-	private List<Interceptor> injectInters = new ArrayList<Interceptor>();
+	private List<Interceptor> interList = new ArrayList<Interceptor>();
 	
 	private boolean clearAfterMapping = false;
 	
@@ -102,13 +102,13 @@ public abstract class Routes {
 	}
 	
 	/**
-	 * Add inject interceptor for controller in this Routes
+	 * Add interceptor for controller in this Routes
 	 */
 	public Routes addInterceptor(Interceptor interceptor) {
 		if (com.jfinal.aop.AopManager.me().isInjectDependency()) {
 			com.jfinal.aop.Aop.inject(interceptor);
 		}
-		injectInters.add(interceptor);
+		interList.add(interceptor);
 		return this;
 	}
 	
@@ -141,8 +141,8 @@ public abstract class Routes {
 	}
 	
 	public Interceptor[] getInterceptors() {
-		return injectInters.size() > 0 ?
-				injectInters.toArray(new Interceptor[injectInters.size()]) :
+		return interList.size() > 0 ?
+				interList.toArray(new Interceptor[interList.size()]) :
 				InterceptorManager.NULL_INTERS;
 	}
 	
@@ -170,7 +170,7 @@ public abstract class Routes {
 			controllerKeySet = null;
 			baseViewPath = null;
 			routeItemList = null;
-			injectInters = null;
+			interList = null;
 		}
 	}
 	
