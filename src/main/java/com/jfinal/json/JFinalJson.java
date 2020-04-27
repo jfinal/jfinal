@@ -307,8 +307,7 @@ public class JFinalJson extends Json {
 			if (indexOfGet == 0 && methodName.length() > 3) {	// Only getter
 				String attrName = methodName.substring(3);
 				if (!attrName.equals("Class")) {				// Ignore Object.getClass()
-					Class<?>[] types = m.getParameterTypes();
-					if (types.length == 0) {
+					if (m.getParameterCount() == 0) {
 						try {
 							Object value = m.invoke(model);
 							map.put(StrKit.firstCharToLowerCase(attrName), value);
@@ -322,8 +321,7 @@ public class JFinalJson extends Json {
                int indexOfIs = methodName.indexOf("is");
                if (indexOfIs == 0 && methodName.length() > 2) {
                   String attrName = methodName.substring(2);
-                  Class<?>[] types = m.getParameterTypes();
-                  if (types.length == 0) {
+                  if (m.getParameterCount() == 0) {
                       try {
                           Object value = m.invoke(model);
                           map.put(StrKit.firstCharToLowerCase(attrName), value);
