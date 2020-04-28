@@ -88,6 +88,7 @@ public class Compressor {
 			}
 		}
 		
+		// 空白行可出现 start 大于 end 的情况
 		if (start <= end) {
 			for (int i = start; i <= end; i++) {
 				result.append(content.charAt(i));
