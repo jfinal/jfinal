@@ -37,6 +37,7 @@ import com.jfinal.template.source.FileSourceFactory;
 import com.jfinal.template.source.ISource;
 import com.jfinal.template.source.ISourceFactory;
 import com.jfinal.template.source.StringSource;
+import com.jfinal.template.stat.Compressor;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.OutputDirectiveFactory;
 import com.jfinal.template.stat.Parser;
@@ -51,6 +52,8 @@ public class EngineConfig {
 	public static final String DEFAULT_ENCODING = "UTF-8";
 	
 	WriterBuffer writerBuffer = new WriterBuffer();
+	
+	Compressor compressor = null;
 	
 	private Map<String, Define> sharedFunctionMap = createSharedFunctionMap();		// new HashMap<String, Define>(512, 0.25F);
 	private List<ISource> sharedFunctionSourceList = new ArrayList<ISource>();		// for devMode only
@@ -424,6 +427,14 @@ public class EngineConfig {
 	
 	public SharedMethodKit getSharedMethodKit() {
 		return sharedMethodKit;
+	}
+	
+	public void setCompressor(Compressor compressor) {
+		this.compressor = compressor;
+	}
+	
+	public Compressor getCompressor() {
+		return compressor;
 	}
 }
 

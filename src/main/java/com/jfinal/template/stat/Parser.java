@@ -19,6 +19,7 @@ package com.jfinal.template.stat;
 import java.util.ArrayList;
 import java.util.List;
 import com.jfinal.template.Directive;
+import com.jfinal.template.EngineConfig;
 import com.jfinal.template.Env;
 import com.jfinal.template.expr.ExprParser;
 import com.jfinal.template.expr.ast.ExprList;
@@ -71,7 +72,8 @@ public class Parser {
 	}
 	
 	public StatList parse() {
-		tokenList = new Lexer(content, fileName, env.getEngineConfig().getKeepLineBlankDirectives()).scan();
+		EngineConfig ec = env.getEngineConfig();
+		tokenList = new Lexer(content, fileName, ec.getKeepLineBlankDirectives(), ec.getCompressor()).scan();
 		tokenList.add(EOF);
 		StatList statList = statList();
 		if (peek() != EOF) {

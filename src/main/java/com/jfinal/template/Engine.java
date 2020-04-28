@@ -31,6 +31,7 @@ import com.jfinal.template.source.ClassPathSourceFactory;
 import com.jfinal.template.source.ISource;
 import com.jfinal.template.source.ISourceFactory;
 import com.jfinal.template.source.StringSource;
+import com.jfinal.template.stat.Compressor;
 import com.jfinal.template.stat.OutputDirectiveFactory;
 import com.jfinal.template.stat.Parser;
 import com.jfinal.template.stat.ast.Stat;
@@ -547,6 +548,41 @@ public class Engine {
 	public Engine setWriterBufferSize(int bufferSize) {
 		config.setWriterBufferSize(bufferSize);
 		return this;
+	}
+	
+	/**
+	 * 配置 Compressor 可对模板中的静态内容进行压缩
+	 * 
+	 * <pre>
+	 * 例如：
+	 *   engine.setCompressor(new Compressor('\n'));
+	 *   
+	 *  以上配置将使用分隔字符 '\n' 对压缩后的内容进行分隔，还可配置为 ' '：
+	 *    engine.setCompressor(new Compressor(' '));
+	 *  
+	 *  分隔字符配置为 '\n' 可支持 js 代码使用换行代替分号的情况
+	 * </pre>
+	 */
+	public Engine setCompressor(Compressor compressor) {
+		config.setCompressor(compressor);
+		return this;
+	}
+	
+	/**
+	 * 设置开启压缩功能
+	 * @param separator 压缩使用的分隔字符，常用配置值为 '\n' 与 ' '。
+	 *         其中配置 '\n' 在对 js 内容进行压缩时支持 js 代码中回车代替
+	 *         分号的情况
+	 */
+	public Engine setCompressorOn(char separator) {
+		return setCompressor(new Compressor(separator));
+	}
+	
+	/**
+	 * 设置开启压缩功能。separator 配置使用默认值 '\n'
+	 */
+	public Engine setCompressorOn() {
+		return setCompressor(new Compressor());
 	}
 	
 	/**
