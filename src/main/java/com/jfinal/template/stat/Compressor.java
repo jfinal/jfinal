@@ -59,6 +59,12 @@ public class Compressor {
 			}
 		}
 		
+		// 最后一行压缩左侧空白
+		if (compressLeft) {
+			while (begin < len && content.charAt(begin) <= ' ') {
+				begin++;
+			}
+		}
 		// 最后一行不压缩右侧
 		for (int i = begin; i < len; i++) {
 			result.append(content.charAt(i));
