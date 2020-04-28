@@ -59,16 +59,16 @@ public class Compressor {
 	 * @param result 存放压缩结果
 	 */
 	protected void compressLine(StringBuilder content, int start, int end, boolean compressLeft, StringBuilder result) {
-		// 压缩右侧空白
-		while (end >= start && content.charAt(end) <= ' ') {
-			end--;
-		}
-		
 		// 压缩左侧空白
 		if (compressLeft) {
 			while (start < end && content.charAt(start) <= ' ') {
 				start++;
 			}
+		}
+		
+		// 压缩右侧空白
+		while (end >= start && content.charAt(end) <= ' ') {
+			end--;
 		}
 		
 		if (start <= end) {
