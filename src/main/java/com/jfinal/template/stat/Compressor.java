@@ -34,7 +34,6 @@ public class Compressor {
 		while (forward < len) {
 			if (content.charAt(forward) == '\n') {
 				compressLine(content, begin, forward - 1, compressLeft, result);
-				result.append(separator);
 				
 				begin = forward + 1;
 				forward = begin;
@@ -76,6 +75,7 @@ public class Compressor {
 			for (int i = start; i <= end; i++) {
 				result.append(content.charAt(i));
 			}
+			result.append(separator);
 		}
 	}
 }
