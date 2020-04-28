@@ -22,7 +22,7 @@ package com.jfinal.template.stat;
  * 1：为追求性能极致，只压缩 Text 节点，所以压缩结果会存在一部分空白字符
  * 2：每次读取一行，按行进行压缩
  * 3：第一行左侧空白不压缩
- * 4：最后一行右侧空白不压缩（注意：最后一行在以字符 '\n' 结尾时不算最后一行）
+ * 4：最后一行右侧空白不压缩（注意：最后一行以字符 '\n' 结尾时不算最后一行）
  * 5：第一行、最后一行以外的其它行左右侧都压缩
  * 6：文本之内的空白不压缩，例如字符串 "abc  def" 中的 "abc" 与 "def" 之间的空格不压缩
  * 7：压缩后内容的默认分隔字符为 '\n'，对 js 语句缺少分号的支持更友好。还可配置为空格 ' ' 等分隔字符
@@ -46,29 +46,21 @@ public class Compressor {
 		
 		int begin = 0;
 		int forward = 0;
-		boolean compressLeft = false;	// 第一行不压缩左侧
+		int compressMode = 1;		// 1 表示第一行
 		while (forward < len) {
 			if (content.charAt(forward) == '\n') {
-				compressLine(content, begin, forward - 1, compressLeft, result);
+				compressLine(content, begin, forward - 1, compressMode, result);
 				
 				begin = forward + 1;
 				forward = begin;
-				compressLeft = true;
+				compressMode = 2;	// 2 表示中间行
 			} else {
 				forward++;
 			}
 		}
 		
-		// 最后一行压缩左侧空白
-		if (compressLeft) {
-			while (begin < len && content.charAt(begin) <= ' ') {
-				begin++;
-			}
-		}
-		// 最后一行不压缩右侧
-		for (int i = begin; i < len; i++) {
-			result.append(content.charAt(i));
-		}
+		compressMode = 3;			// 3 表示最后一行
+		compressLine(content, begin, forward - 1, compressMode, result);
 		
 		return result;
 	}
@@ -78,27 +70,33 @@ public class Compressor {
 	 * @param content 被处理行文本所在的 StringBuilder 对象
 	 * @param start 被处理行文本的开始下标
 	 * @param end 被处理行文本的结束下标（注意 end 下标所指向的字符被包含在处理的范围之内）
-	 * @param compressLeft 是否压缩左侧
+	 * @param compressMode 1 表示第一行，2 表示中间行，3 表示最后一行
 	 * @param result 存放压缩结果
 	 */
-	protected void compressLine(StringBuilder content, int start, int end, boolean compressLeft, StringBuilder result) {
-		// 压缩左侧空白
-		if (compressLeft) {
+	protected void compressLine(StringBuilder content, int start, int end, int compressMode, StringBuilder result) {
+		// 第一行不压缩左侧空白
+		if (compressMode != 1) {
 			while (start < end && content.charAt(start) <= ' ') {
 				start++;
 			}
 		}
 		
-		// 压缩右侧空白
-		while (end >= start && content.charAt(end) <= ' ') {
-			end--;
+		// 最后一行不压缩右侧空白
+		if (compressMode != 3) {
+			while (end >= start && content.charAt(end) <= ' ') {
+				end--;
+			}
 		}
 		
 		if (start <= end) {
 			for (int i = start; i <= end; i++) {
 				result.append(content.charAt(i));
 			}
-			result.append(separator);
+			
+			// 最后一行右侧未压缩，不能添加分隔字符。最后一行以 '\n' 结尾时 compressMode 一定不为 3
+			if (compressMode != 3) {
+				result.append(separator);
+			}
 		}
 	}
 }
