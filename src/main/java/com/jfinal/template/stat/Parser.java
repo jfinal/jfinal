@@ -73,7 +73,7 @@ public class Parser {
 	
 	public StatList parse() {
 		EngineConfig ec = env.getEngineConfig();
-		tokenList = new Lexer(content, fileName, ec.getKeepLineBlankDirectives(), ec.getCompressor()).scan();
+		tokenList = new Lexer(content, fileName, ec.getKeepLineBlankDirectives()).scan();
 		tokenList.add(EOF);
 		StatList statList = statList();
 		if (peek() != EOF) {
@@ -110,7 +110,7 @@ public class Parser {
 		switch (name.symbol) {
 		case TEXT:
 			move();
-			return new Text(((TextToken)name).getContent(), env.getEngineConfig().getEncoding()).setLocation(getLocation(name.row));
+			return new Text(((TextToken)name).getContent(), env.getEngineConfig()).setLocation(getLocation(name.row));
 		case OUTPUT:
 			move();
 			Token para = matchPara(name);
