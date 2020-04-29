@@ -62,8 +62,7 @@ public class Compressor {
 			}
 		}
 		
-		// 如果 compressMode 为 1，表明当前既是第一行也是最后一行
-		if (compressMode == 1) {
+		if (compressMode == 1) {	// 此时为 1，表示既是第一行也是最后一行
 			return content;
 		}
 		
