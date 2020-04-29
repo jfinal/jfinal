@@ -38,23 +38,17 @@ class Lexer {
 	
 	String fileName;
 	Set<String> keepLineBlankDirectives;
-	Compressor compressor;
 	
 	List<Token> tokens = new ArrayList<Token>();
 	
-	public Lexer(StringBuilder content, String fileName, Set<String> keepLineBlankDirectives, Compressor compressor) {
+	public Lexer(StringBuilder content, String fileName, Set<String> keepLineBlankDirectives) {
 		this.keepLineBlankDirectives = keepLineBlankDirectives;
-		this.compressor = compressor;
 		
 		int len = content.length();
 		buf = new char[len + 1];
 		content.getChars(0, content.length(), buf, 0);
 		buf[len] = EOF;
 		this.fileName = fileName;
-	}
-	
-	public Lexer(StringBuilder content, String fileName, Set<String> keepLineBlankDirectives) {
-		this(content, fileName, keepLineBlankDirectives, null);
 	}
 	
 	/**
@@ -477,10 +471,6 @@ class Lexer {
 	void addTextToken(StringBuilder text) {
 		if (text == null || text.length() == 0) {
 			return ;
-		}
-		
-		if (compressor != null) {
-			text = compressor.compress(text);
 		}
 		
 		if (previousTextToken != null) {
