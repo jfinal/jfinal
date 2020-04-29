@@ -41,12 +41,12 @@ public class Compressor {
 	}
 	
 	public StringBuilder compress(StringBuilder content) {
-		int len = content.length();
 		StringBuilder result = null;
 		
 		int begin = 0;
 		int forward = 0;
 		int compressMode = 1;		// 1 表示第一行
+		int len = content.length();
 		while (forward < len) {
 			if (content.charAt(forward) == '\n') {
 				if (result == null) {
