@@ -45,12 +45,18 @@ public class Compressor {
 	}
 	
 	public StringBuilder compress(StringBuilder content) {
-		StringBuilder result = null;
+		int len = content.length();
+		
+		// 仅包含一个字符 '\n'，原样返回，否则会返回空字符串
+		// 测试用例: "#date()\n#date()" "#(1)\n#(2)"
+		if (len == 1 && content.charAt(0) == '\n') {
+			return content;
+		}
 		
 		int begin = 0;
 		int forward = 0;
 		int compressMode = 1;		// 1 表示第一行
-		int len = content.length();
+		StringBuilder result = null;
 		while (forward < len) {
 			if (content.charAt(forward) == '\n') {
 				if (result == null) {
@@ -90,7 +96,7 @@ public class Compressor {
 	protected void compressLine(StringBuilder content, int start, int end, int compressMode, StringBuilder result) {
 		// 第一行不压缩左侧空白
 		if (compressMode != 1) {
-			while (start < end && content.charAt(start) <= ' ') {
+			while (start <= end && content.charAt(start) <= ' ') {
 				start++;
 			}
 		}
