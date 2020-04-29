@@ -26,6 +26,10 @@ package com.jfinal.template.stat;
  * 5：第一行、最后一行以外的其它行左右侧都压缩
  * 6：文本之内的空白不压缩，例如字符串 "abc  def" 中的 "abc" 与 "def" 之间的空格不压缩
  * 7：压缩后内容的默认分隔字符为 '\n'，对 js 语句缺少分号的支持更友好。还可配置为空格 ' ' 等分隔字符
+ * 8：可通过 Engine.setCompressor(Compressor) 来定制自己的实现类
+ *    可使用第三方的压缩框架来定制，例如使用 google 的压缩框架:
+ *      压缩 html: com.googlecode.htmlcompressor:htmlcompressor
+ *      压缩 javascript: com.google.javascript:closure-compiler
  */
 public class Compressor {
 	
