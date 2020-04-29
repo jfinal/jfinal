@@ -42,13 +42,16 @@ public class Compressor {
 	
 	public StringBuilder compress(StringBuilder content) {
 		int len = content.length();
-		StringBuilder result = new StringBuilder(len);
+		StringBuilder result = null;
 		
 		int begin = 0;
 		int forward = 0;
 		int compressMode = 1;		// 1 表示第一行
 		while (forward < len) {
 			if (content.charAt(forward) == '\n') {
+				if (result == null) {
+					result = new StringBuilder(len);		// 延迟创建
+				}
 				compressLine(content, begin, forward - 1, compressMode, result);
 				
 				begin = forward + 1;
@@ -57,6 +60,11 @@ public class Compressor {
 			} else {
 				forward++;
 			}
+		}
+		
+		// 如果 compressMode 为 1，表明当前既是第一行也是最后一行
+		if (compressMode == 1) {
+			return content;
 		}
 		
 		compressMode = 3;			// 3 表示最后一行
