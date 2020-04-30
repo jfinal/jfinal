@@ -188,6 +188,13 @@
 			<artifactId>fst</artifactId>
 			<version>2.29</version>
 			<scope>provided</scope>
+			
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		
 		<!--
@@ -203,7 +210,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.10.3</version>
+			<version>2.11.0</version>
 			<scope>provided</scope>
 		</dependency>
 		
