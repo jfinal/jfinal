@@ -264,6 +264,13 @@ public class Scope {
 		}
 		return false;
 	}
+	
+	/**
+	 * 获取共享对象
+	 */
+	public Object getSharedObject(String key) {
+		return sharedObjectMap != null ? sharedObjectMap.get(key) : null;
+	}
 }
 
 
