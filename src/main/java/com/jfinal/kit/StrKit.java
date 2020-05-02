@@ -111,15 +111,16 @@ public class StrKit {
 		
 		char ch;
 		int index = 0;
-		int forward = 0;
 		char[] buf = new char[len];
-		for (; forward < len; forward++) {
-			ch = str.charAt(forward);
+		
+		int i = 0;
+		for (; i < len; i++) {
+			ch = str.charAt(i);
 			if (ch == '_') {
 				// 当前字符为下划线时，将指针后移一位，将紧随下划线后面一个字符转成大写并存放
-				forward++;
-				if (forward < len) {
-					ch = str.charAt(forward);
+				i++;
+				if (i < len) {
+					ch = str.charAt(i);
 					buf[index] = (
 							index == 0 ?	// 首字母无条件变小写
 							Character.toLowerCase(ch) :
@@ -133,9 +134,9 @@ public class StrKit {
 			}
 		}
 		
-		// forward == index 时，表明字符串中不存在字符 '_'
+		// i == index 时，表明字符串中不存在字符 '_'
 		// 无下划线的字符串原本可能就是驼峰形式，所以原样返回
-		return forward == index ? str : new String(buf, 0, index);
+		return i == index ? str : new String(buf, 0, index);
 	}
 	
 	public static String join(String[] stringArray) {
