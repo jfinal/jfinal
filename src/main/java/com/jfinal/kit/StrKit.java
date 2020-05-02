@@ -106,28 +106,42 @@ public class StrKit {
 		return isBlank(str) ? defaultValue : str;
 	}
 	
-	public static String toCamelCase(String stringWithUnderline) {
-		if (stringWithUnderline.indexOf('_') == -1) {
-			return stringWithUnderline;
+	/**
+	 * 将包含下划线字符 '_' 的字符串转成驼峰格式，不包含下划线则原样返回
+	 */
+	public static String toCamelCase(String str) {
+		int len = str.length();
+		if (len <= 1) {
+			return str;
 		}
 		
-		stringWithUnderline = stringWithUnderline.toLowerCase();
-		char[] fromArray = stringWithUnderline.toCharArray();
-		char[] toArray = new char[fromArray.length];
-		int j = 0;
-		for (int i=0; i<fromArray.length; i++) {
-			if (fromArray[i] == '_') {
+		char ch;
+		int index = 0;
+		int forward = 0;
+		char[] buf = new char[len];
+		for (; forward < len; forward++) {
+			ch = str.charAt(forward);
+			if (ch == '_') {
 				// 当前字符为下划线时，将指针后移一位，将紧随下划线后面一个字符转成大写并存放
-				i++;
-				if (i < fromArray.length) {
-					toArray[j++] = Character.toUpperCase(fromArray[i]);
+				forward++;
+				if (forward < len) {
+					ch = str.charAt(forward);
+					buf[index] = (
+							index == 0 ?	// 首字母无条件变小写
+							Character.toLowerCase(ch) :
+							Character.toUpperCase(ch)
+						);
+					index++;
 				}
 			}
 			else {
-				toArray[j++] = fromArray[i];
+				buf[index++] = Character.toLowerCase(ch);
 			}
 		}
-		return new String(toArray, 0, j);
+		
+		// forward == index 时，表明字符串中不存在字符 '_'
+		// 无下划线的字符串原本可能就是驼峰形式，所以原样返回
+		return forward == index ? str : new String(buf, 0, index);
 	}
 	
 	public static String join(String[] stringArray) {
