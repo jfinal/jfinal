@@ -77,14 +77,6 @@ public class JFinalJson extends Json {
 		return this;
 	}
 	
-	public Json setDatePattern(String datePattern) {
-		if (StrKit.isBlank(datePattern)) {
-			throw new IllegalArgumentException("datePattern can not be blank.");
-		}
-		this.datePattern = datePattern;
-		return this;
-	}
-	
 	public static JFinalJson getJson() {
 		return new JFinalJson();
 	}
