@@ -311,12 +311,12 @@ public class JFinalJson extends Json {
 			if (indexOfGet == 0 && methodName.length() > 3) {	// Only getter
 				String attrName = methodName.substring(3);
 				if (!attrName.equals("Class")) {				// Ignore Object.getClass()
-						try {
-							Object value = m.invoke(model);
-							map.put(StrKit.firstCharToLowerCase(attrName), value);
-						} catch (Exception e) {
-							throw new RuntimeException(e.getMessage(), e);
-						}
+					try {
+						Object value = m.invoke(model);
+						map.put(StrKit.firstCharToLowerCase(attrName), value);
+					} catch (Exception e) {
+						throw new RuntimeException(e.getMessage(), e);
+					}
 				}
 			}
 			else {
