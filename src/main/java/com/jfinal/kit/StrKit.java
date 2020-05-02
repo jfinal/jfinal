@@ -54,20 +54,14 @@ public class StrKit {
 		if (str == null) {
 			return true;
 		}
+		
 		int len = str.length();
 		if (len == 0) {
 			return true;
 		}
+		
 		for (int i = 0; i < len; i++) {
-			switch (str.charAt(i)) {
-			case ' ':
-			case '\t':
-			case '\n':
-			case '\r':
-			// case '\b':
-			// case '\f':
-				break;
-			default:
+			if (str.charAt(i) > ' ') {
 				return false;
 			}
 		}
