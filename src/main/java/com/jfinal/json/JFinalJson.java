@@ -302,35 +302,35 @@ public class JFinalJson extends Json {
 		Map map = new HashMap();
 		Method[] methods = model.getClass().getMethods();
 		for (Method m : methods) {
+			if (m.getParameterCount() != 0) {
+				continue ;
+			}
+			
 			String methodName = m.getName();
 			int indexOfGet = methodName.indexOf("get");
 			if (indexOfGet == 0 && methodName.length() > 3) {	// Only getter
 				String attrName = methodName.substring(3);
 				if (!attrName.equals("Class")) {				// Ignore Object.getClass()
-					if (m.getParameterCount() == 0) {
 						try {
 							Object value = m.invoke(model);
 							map.put(StrKit.firstCharToLowerCase(attrName), value);
 						} catch (Exception e) {
 							throw new RuntimeException(e.getMessage(), e);
 						}
-					}
 				}
 			}
 			else {
-               int indexOfIs = methodName.indexOf("is");
-               if (indexOfIs == 0 && methodName.length() > 2) {
-                  String attrName = methodName.substring(2);
-                  if (m.getParameterCount() == 0) {
-                      try {
-                          Object value = m.invoke(model);
-                          map.put(StrKit.firstCharToLowerCase(attrName), value);
-                      } catch (Exception e) {
-                          throw new RuntimeException(e.getMessage(), e);
-                      }
-                  }
-               }
-            }
+				int indexOfIs = methodName.indexOf("is");
+				if (indexOfIs == 0 && methodName.length() > 2) {
+					String attrName = methodName.substring(2);
+					try {
+						Object value = m.invoke(model);
+						map.put(StrKit.firstCharToLowerCase(attrName), value);
+					} catch (Exception e) {
+						throw new RuntimeException(e.getMessage(), e);
+					}
+				}
+			}
 		}
 		return mapToJson(map, depth);
 	}
