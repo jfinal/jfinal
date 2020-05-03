@@ -55,12 +55,7 @@ public class StrKit {
 			return true;
 		}
 		
-		int len = str.length();
-		if (len == 0) {
-			return true;
-		}
-		
-		for (int i = 0; i < len; i++) {
+		for (int i = 0, len = str.length(); i < len; i++) {
 			if (str.charAt(i) > ' ') {
 				return false;
 			}
