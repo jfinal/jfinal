@@ -41,6 +41,9 @@ public class MixedJson extends Json {
 		if (jFinalJson == null) {
 			jFinalJson = JFinalJson.getJson();
 		}
+		if (datePattern != null) {
+			jFinalJson.setDatePattern(datePattern);
+		}
 		return jFinalJson;
 	}
 	
@@ -48,17 +51,10 @@ public class MixedJson extends Json {
 		if (fastJson == null) {
 			fastJson = FastJson.getJson();
 		}
+		if (datePattern != null) {
+			fastJson.setDatePattern(datePattern);
+		}
 		return fastJson;
-	}
-	
-	public Json setDatePattern(String datePattern) {
-		getJFinalJson().setDatePattern(datePattern);
-		getFastJson().setDatePattern(datePattern);
-		return this;
-	}
-	
-	public String getDatePattern() {
-		return getJFinalJson().getDatePattern();
 	}
 }
 
