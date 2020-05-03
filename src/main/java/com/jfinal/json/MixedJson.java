@@ -29,6 +29,10 @@ public class MixedJson extends Json {
 	private JFinalJson jFinalJson;
 	private FastJson fastJson;
 	
+	public static MixedJson getJson() {
+		return new MixedJson();
+	}
+	
 	public String toJson(Object object) {
 		return getJFinalJson().toJson(object);
 	}
