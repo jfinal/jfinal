@@ -55,29 +55,29 @@ public class Compressor {
 		
 		int begin = 0;
 		int forward = 0;
-		int compressMode = 1;		// 1 表示第一行
+		int lineType = 1;		// 1 表示第一行
 		StringBuilder result = null;
 		while (forward < len) {
 			if (content.charAt(forward) == '\n') {
 				if (result == null) {
 					result = new StringBuilder(len);		// 延迟创建
 				}
-				compressLine(content, begin, forward - 1, compressMode, result);
+				compressLine(content, begin, forward - 1, lineType, result);
 				
 				begin = forward + 1;
 				forward = begin;
-				compressMode = 2;	// 2 表示中间行
+				lineType = 2;	// 2 表示中间行
 			} else {
 				forward++;
 			}
 		}
 		
-		if (compressMode == 1) {	// 此时为 1，表示既是第一行也是最后一行
+		if (lineType == 1) {	// 此时为 1，表示既是第一行也是最后一行
 			return content;
 		}
 		
-		compressMode = 3;			// 3 表示最后一行
-		compressLine(content, begin, forward - 1, compressMode, result);
+		lineType = 3;			// 3 表示最后一行
+		compressLine(content, begin, forward - 1, lineType, result);
 		
 		return result;
 	}
@@ -90,19 +90,19 @@ public class Compressor {
 	 * @param content 被处理行文本所在的 StringBuilder 对象
 	 * @param start 被处理行文本的开始下标
 	 * @param end 被处理行文本的结束下标（注意 end 下标所指向的字符被包含在处理的范围之内）
-	 * @param compressMode 1 表示第一行，2 表示中间行，3 表示最后一行
+	 * @param lineType 1 表示第一行，2 表示中间行，3 表示最后一行
 	 * @param result 存放压缩结果
 	 */
-	protected void compressLine(StringBuilder content, int start, int end, int compressMode, StringBuilder result) {
+	protected void compressLine(StringBuilder content, int start, int end, int lineType, StringBuilder result) {
 		// 第一行不压缩左侧空白
-		if (compressMode != 1) {
+		if (lineType != 1) {
 			while (start <= end && content.charAt(start) <= ' ') {
 				start++;
 			}
 		}
 		
 		// 最后一行不压缩右侧空白
-		if (compressMode != 3) {
+		if (lineType != 3) {
 			while (end >= start && content.charAt(end) <= ' ') {
 				end--;
 			}
@@ -114,8 +114,8 @@ public class Compressor {
 				result.append(content.charAt(i));
 			}
 			
-			// 最后一行右侧未压缩，不能添加分隔字符。最后一行以 '\n' 结尾时 compressMode 一定不为 3
-			if (compressMode != 3) {
+			// 最后一行右侧未压缩，不能添加分隔字符。最后一行以 '\n' 结尾时 lineType 一定不为 3
+			if (lineType != 3) {
 				result.append(separator);
 			}
 		}
