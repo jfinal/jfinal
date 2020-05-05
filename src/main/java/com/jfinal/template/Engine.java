@@ -317,7 +317,7 @@ public class Engine {
 	 * </pre>
 	 */
 	public Engine addEnum(Class<? extends Enum<?>> enumClass) {
-		Map<String, Enum<?>> map = new HashMap<>();
+		Map<String, Enum<?>> map = new java.util.LinkedHashMap<>();
 		Enum<?>[] es = enumClass.getEnumConstants();
 		for (Enum<?> e : es) {
 			map.put(e.name(), e);
