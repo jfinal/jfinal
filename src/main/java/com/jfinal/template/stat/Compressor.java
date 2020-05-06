@@ -94,6 +94,26 @@ public class Compressor {
 	 * @param result 存放压缩结果
 	 */
 	protected void compressLine(StringBuilder content, int start, int end, int lineType, StringBuilder result) {
+		// 第一行如果是空行，则不压缩，测试用例：
+		// "id=#(123)\nand"    "id=#(123)   \nand"
+		if (lineType == 1) {
+			boolean isBlank = true;
+			for (int i=start; i<=end; i++) {
+				if (content.charAt(i) > ' ') {
+					isBlank = false;
+					break ;
+				}
+			}
+			
+			if (isBlank) {
+				for (int i = start; i <= end; i++) {
+					result.append(content.charAt(i));
+				}
+				result.append(separator);
+				return ;
+			}
+		}
+		
 		// 第一行不压缩左侧空白
 		if (lineType != 1) {
 			while (start <= end && content.charAt(start) <= ' ') {
