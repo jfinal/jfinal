@@ -98,7 +98,7 @@ public class Compressor {
 		// "id=#(123)\nand"    "id=#(123)   \nand"
 		if (lineType == 1) {
 			boolean isBlank = true;
-			for (int i=start; i<=end; i++) {
+			for (int i = start; i <= end; i++) {
 				if (content.charAt(i) > ' ') {
 					isBlank = false;
 					break ;
