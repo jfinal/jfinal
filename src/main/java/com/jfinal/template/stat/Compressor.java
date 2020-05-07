@@ -25,7 +25,7 @@ package com.jfinal.template.stat;
  * 4：最后一行右侧空白不压缩（注意：最后一行以字符 '\n' 结尾时不算最后一行）
  * 5：第一行、最后一行以外的其它行左右侧都压缩
  * 6：文本之内的空白不压缩，例如字符串 "abc  def" 中的 "abc" 与 "def" 之间的空格不压缩
- * 7：压缩分隔符默认配置为 ' '。如果模板中的 javascript 代码未严格使用分号作为语句分隔符，需要将其配置为 '\n'
+ * 7：压缩分隔符默认配置为 '\n'，还可配置为 ' '。如果模板中含有 javascript 脚本，需配置为 '\n'
  * 8：可通过 Engine.setCompressor(Compressor) 来定制自己的实现类
  *    可使用第三方的压缩框架来定制，例如使用 google 的压缩框架:
  *      压缩 html: com.googlecode.htmlcompressor:htmlcompressor
@@ -33,7 +33,7 @@ package com.jfinal.template.stat;
  */
 public class Compressor {
 	
-	protected char separator = ' ';
+	protected char separator = '\n';
 	
 	public Compressor() {}
 	

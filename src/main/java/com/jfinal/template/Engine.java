@@ -553,16 +553,16 @@ public class Engine {
 	/**
 	 * 设置开启压缩功能
 	 * 
-	 * @param separator 压缩使用的分隔符，常用配置为 ' ' 与 '\n'。
-	 *         一般配置成 ' ' 即可。如果模板中存在 javascript 脚本，
-	 *         并且其使用了回车代替分号作为语句的分隔符，则需要配置成 '\n'
+	 * @param separator 压缩使用的分隔符，常用配置为 '\n' 与 ' '。
+	 *        如果模板中存在 javascript 脚本，需要配置为 '\n'
+	 *        两种配置的压缩率是完全一样的
 	 */
 	public Engine setCompressorOn(char separator) {
 		return setCompressor(new Compressor(separator));
 	}
 	
 	/**
-	 * 设置开启压缩功能。压缩分隔符使用默认值 ' '
+	 * 设置开启压缩功能。压缩分隔符使用默认值 '\n'
 	 */
 	public Engine setCompressorOn() {
 		return setCompressor(new Compressor());
