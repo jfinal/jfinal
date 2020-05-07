@@ -49,7 +49,7 @@ public class Compressor {
 		
 		// 仅包含一个字符 '\n'，原样返回，否则会返回空字符串
 		// 测试用例: "#date()\n#date()" "#(1)\n#(2)"
-		if (len == 1 && content.charAt(0) == '\n') {
+		if (len == 1 /* && content.charAt(0) == '\n' */) {
 			return content;
 		}
 		
@@ -94,23 +94,6 @@ public class Compressor {
 	 * @param result 存放压缩结果
 	 */
 	protected void compressLine(StringBuilder content, int start, int end, int lineType, StringBuilder result) {
-		// 第一行如果是空行，需要添加分隔字符，否则会被压缩去除掉该空行，测试用例：
-		// "id=#(123)\nand"    "id=#(123)   \nand"
-		if (lineType == 1) {
-			boolean isBlank = true;
-			for (int i = start; i <= end; i++) {
-				if (content.charAt(i) > ' ') {
-					isBlank = false;
-					break ;
-				}
-			}
-			
-			if (isBlank) {
-				result.append(separator);
-				return ;
-			}
-		}
-		
 		// 第一行不压缩左侧空白
 		if (lineType != 1) {
 			while (start <= end && content.charAt(start) <= ' ') {
@@ -133,6 +116,14 @@ public class Compressor {
 			
 			// 最后一行右侧未压缩，不能添加分隔字符。最后一行以 '\n' 结尾时 lineType 一定不为 3
 			if (lineType != 3) {
+				result.append(separator);
+			}
+		}
+		// 空白行，且是第一行，需要添加分隔字符，否则会被压缩去除掉该空行
+		// 测试用例："id=#(123)\nand"    "id=#(123)   \nand"
+		// 按照第一行不压缩左侧空白的规则，未来考虑原样保留左侧空白
+		else {
+			if (lineType == 1) {
 				result.append(separator);
 			}
 		}
