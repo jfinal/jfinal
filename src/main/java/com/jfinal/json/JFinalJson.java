@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2020, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,10 @@
 
 package com.jfinal.json;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.function.Function;
+import com.jfinal.json.JFinalJsonKit.JsonResult;
+import com.jfinal.json.JFinalJsonKit.ToJson;
 import com.jfinal.kit.StrKit;
-import com.jfinal.plugin.activerecord.Model;
-import com.jfinal.plugin.activerecord.Record;
 
 /**
  * Json 转换 JFinal 实现.
@@ -42,14 +32,45 @@ import com.jfinal.plugin.activerecord.Record;
  * array			java.util.List
  * object			java.util.Map
  */
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class JFinalJson extends Json {
+	
+	protected static final JFinalJsonKit kit = JFinalJsonKit.me;
+	
+	protected static final ThreadLocal<JsonResult> TL = ThreadLocal.withInitial(() -> new JsonResult());
 	
 	protected static int defaultConvertDepth = 16;
 	
 	protected int convertDepth = defaultConvertDepth;
 	protected String timestampPattern = "yyyy-MM-dd HH:mm:ss";
-	// protected String datePattern = "yyyy-MM-dd";
+	
+	public static JFinalJson getJson() {
+		return new JFinalJson();
+	}
+	
+	@Override
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public String toJson(Object object) {
+		if (useOldVersion) {
+			return toJsonUseOldVersion(object);
+		}
+		
+		if (object == null) {
+			return "null";
+		}
+		
+		JsonResult ret = TL.get();
+		try {
+			// 优先使用对象级的属性 datePattern, 然后才是全局性的 defaultDatePattern
+			String dp = datePattern != null ? datePattern : getDefaultDatePattern();
+			ret.init(dp, timestampPattern);
+			ToJson toJson = kit.getToJson(object);
+			toJson.toJson(object, convertDepth, ret);
+			return ret.toString();
+		}
+		finally {
+			ret.clear();
+		}
+	}
 	
 	/**
 	 * 设置全局性默认转换深度
@@ -77,254 +98,50 @@ public class JFinalJson extends Json {
 		return this;
 	}
 	
-	public static JFinalJson getJson() {
-		return new JFinalJson();
-	}
-	
-	protected String mapToJson(Map map, int depth) {
-		if(map == null) {
-			return "null";
-		}
-        StringBuilder sb = new StringBuilder();
-        boolean first = true;
-		Iterator iter = map.entrySet().iterator();
-		
-        sb.append('{');
-		while(iter.hasNext()){
-            if(first)
-                first = false;
-            else
-                sb.append(',');
-            
-			Map.Entry entry = (Map.Entry)iter.next();
-			toKeyValue(String.valueOf(entry.getKey()),entry.getValue(), sb, depth);
-		}
-        sb.append('}');
-		return sb.toString();
-	}
-	
-	protected void toKeyValue(String key, Object value, StringBuilder sb, int depth){
-		sb.append('\"');
-        if(key == null)
-            sb.append("null");
-        else
-            escape(key, sb);
-		sb.append('\"').append(':');
-		
-		sb.append(toJson(value, depth));
-	}
-	
-	protected String iteratorToJson(Iterator iter, int depth) {
-        boolean first = true;
-        StringBuilder sb = new StringBuilder();
-        
-        sb.append('[');
-		while(iter.hasNext()){
-            if(first)
-                first = false;
-            else
-                sb.append(',');
-            
-			Object value = iter.next();
-			if(value == null){
-				sb.append("null");
-				continue;
-			}
-			sb.append(toJson(value, depth));
-		}
-        sb.append(']');
-		return sb.toString();
+	public static void setMaxBufferSize(int maxBufferSize) {
+		JFinalJsonKit.setMaxBufferSize(maxBufferSize);
 	}
 	
 	/**
-	 * Escape quotes, \, /, \r, \n, \b, \f, \t and other control characters (U+0000 through U+001F).
+	 * 将 Model 当成 Bean 只对 getter 方法进行转换
+	 * 
+	 * 默认值为 false，将使用 Model 内的 Map attrs 属性进行转换，不对 getter 方法进行转换
+	 * 优点是可以转换 sql 关联查询产生的动态字段，还可以转换 Model.put(...) 进来的数据
+	 * 
+	 * 配置为 true 时，将 Model 当成是传统的 java bean 对其 getter 方法进行转换，
+	 * 使用生成器生成过 base model 的情况下才可以使用此配置
 	 */
-	protected String escape(String s) {
-		if(s == null)
-			return null;
-        StringBuilder sb = new StringBuilder();
-        escape(s, sb);
-        return sb.toString();
-    }
-	
-	protected void escape(String s, StringBuilder sb) {
-		for(int i=0; i<s.length(); i++){
-			char ch = s.charAt(i);
-			switch(ch){
-			case '"':
-				sb.append("\\\"");
-				break;
-			case '\\':
-				sb.append("\\\\");
-				break;
-			case '\b':
-				sb.append("\\b");
-				break;
-			case '\f':
-				sb.append("\\f");
-				break;
-			case '\n':
-				sb.append("\\n");
-				break;
-			case '\r':
-				sb.append("\\r");
-				break;
-			case '\t':
-				sb.append("\\t");
-				break;
-			//case '/':
-			//	sb.append("\\/");
-			//	break;
-			default:
-				if((ch >= '\u0000' && ch <= '\u001F') || (ch >= '\u007F' && ch <= '\u009F') || (ch >= '\u2000' && ch <= '\u20FF')) {
-					String str = Integer.toHexString(ch);
-					sb.append("\\u");
-					for(int k=0; k<4-str.length(); k++) {
-						sb.append('0');
-					}
-					sb.append(str.toUpperCase());
-				}
-				else{
-					sb.append(ch);
-				}
-			}
-		}
+	public static void setTreatModelAsBean(boolean treatModelAsBean) {
+		JFinalJsonKit.setTreatModelAsBean(treatModelAsBean);
 	}
 	
-	public String toJson(Object object) {
-		return toJson(object, convertDepth);
+	/**
+	 * 配置 Model、Record 字段名的转换函数
+	 * 
+	 * <pre>
+	 * 例子：
+	 *    JFinalJson.setModelAndRecordFieldNameConverter(fieldName -> {
+	 *		   return StrKit.toCamelCase(fieldName, true);
+	 *	  });
+	 *  
+	 *  以上例子中的方法 StrKit.toCamelCase(...) 的第二个参数可以控制大小写转化的细节
+	 *  可以查看其方法上方注释中的说明了解详情
+	 * </pre>
+	 */
+	public static void setModelAndRecordFieldNameConverter(Function<String, String>converter) {
+		JFinalJsonKit.setModelAndRecordFieldNameConverter(converter);
 	}
 	
-	protected String toJson(Object value, int depth) {
-		if(value == null || (depth--) < 0)
-			return "null";
-		
-		if(value instanceof String)
-			return "\"" + escape((String)value) + "\"";
-		
-		if(value instanceof Double){
-			if(((Double)value).isInfinite() || ((Double)value).isNaN())
-				return "null";
-			else
-				return value.toString();
-		}
-		
-		if(value instanceof Float){
-			if(((Float)value).isInfinite() || ((Float)value).isNaN())
-				return "null";
-			else
-				return value.toString();
-		}
-		
-		if(value instanceof Number)
-			return value.toString();
-		
-		if(value instanceof Boolean)
-			return value.toString();
-		
-		if (value instanceof java.util.Date) {
-			if (value instanceof java.sql.Timestamp) {
-				return "\"" + new SimpleDateFormat(timestampPattern).format(value) + "\"";
-			}
-			if (value instanceof java.sql.Time) {
-				return "\"" + value.toString() + "\"";
-			}
-			// 优先使用对象级的属性 datePattern, 然后才是全局性的 defaultDatePattern
-			String dp = datePattern != null ? datePattern : getDefaultDatePattern();
-			if (dp != null) {
-				return "\"" + new SimpleDateFormat(dp).format(value) + "\"";
-			} else {
-				return "" + ((java.util.Date)value).getTime();
-			}
-		}
-		
-		if(value instanceof Collection) {
-			return iteratorToJson(((Collection)value).iterator(), depth);
-		}
-		
-		if(value instanceof Map) {
-			return mapToJson((Map)value, depth);
-		}
-		
-		String result = otherToJson(value, depth);
-		if (result != null)
-			return result;
-		
-		// 类型无法处理时当作字符串处理,否则ajax调用返回时js无法解析
-		// return value.toString();
-		return "\"" + escape(value.toString()) + "\"";
-	}
-	
-	protected String otherToJson(Object value, int depth) {
-		if (value instanceof Character) {
-			return "\"" + escape(value.toString()) + "\"";
-		}
-		
-		if (value instanceof Model) {
-			Map map = com.jfinal.plugin.activerecord.CPI.getAttrs((Model)value);
-			return mapToJson(map, depth);
-		}
-		if (value instanceof Record) {
-			Map map = ((Record)value).getColumns();
-			return mapToJson(map, depth);
-		}
-		if (value.getClass().isArray()) {
-			int len = Array.getLength(value);
-			List<Object> list = new ArrayList<Object>(len);
-			for (int i=0; i<len; i++) {
-				list.add(Array.get(value, i));
-			}
-			return iteratorToJson(list.iterator(), depth);
-		}
-		if (value instanceof Iterator) {
-			return iteratorToJson((Iterator)value, depth);
-		}
-		if (value instanceof Enumeration) {
-			ArrayList<?> list = Collections.list((Enumeration<?>)value);
-			return iteratorToJson(list.iterator(), depth);
-		}
-		if (value instanceof Enum) {
-			return "\"" + ((Enum)value).toString() + "\"";
-		}
-		
-		return beanToJson(value, depth);
-	}
-	
-	protected String beanToJson(Object model, int depth) {
-		Map map = new HashMap();
-		Method[] methods = model.getClass().getMethods();
-		for (Method m : methods) {
-			if (m.getParameterCount() != 0) {
-				continue ;
-			}
-			
-			String methodName = m.getName();
-			int indexOfGet = methodName.indexOf("get");
-			if (indexOfGet == 0 && methodName.length() > 3) {	// Only getter
-				String attrName = methodName.substring(3);
-				if (!attrName.equals("Class")) {				// Ignore Object.getClass()
-					try {
-						Object value = m.invoke(model);
-						map.put(StrKit.firstCharToLowerCase(attrName), value);
-					} catch (Exception e) {
-						throw new RuntimeException(e.getMessage(), e);
-					}
-				}
-			}
-			else {
-				int indexOfIs = methodName.indexOf("is");
-				if (indexOfIs == 0 && methodName.length() > 2) {
-					String attrName = methodName.substring(2);
-					try {
-						Object value = m.invoke(model);
-						map.put(StrKit.firstCharToLowerCase(attrName), value);
-					} catch (Exception e) {
-						throw new RuntimeException(e.getMessage(), e);
-					}
-				}
-			}
-		}
-		return mapToJson(map, depth);
+	/**
+	 * 配置将 Model、Record 字段名转换为驼峰格式
+	 * 
+	 * 转换用到了 StrKit.toCamelCase(fieldName, true)，具体转换规则参考
+	 * 该方法注释中的说明，注意字段名首先会被转换成小写字母，如果要改变转换规则
+	 * 可以使用 setModelAndRecordFieldNameConverter(Function func)
+	 * 定制自己的转换函数
+	 */
+	public static void setModelAndRecordFieldNameToCamelCase() {
+		JFinalJsonKit.setModelAndRecordFieldNameToCamelCase();
 	}
 	
 	public <T> T parse(String jsonString, Class<T> type) {
@@ -332,11 +149,32 @@ public class JFinalJson extends Json {
 		"默认 json 实现暂不支持 json 到 object 的转换,建议使用 active recrord 的 Generator 生成 base model，" +
 		"再通过 me.setJsonFactory(new MixedJsonFactory()) 来支持");
 	}
+	
+	// 以下代码用于切换回老版本实现 ----------------------------------------------------------------------------
+	
+	protected static boolean useOldVersion = false;
+	
+	public static void setToUseOldVersion() {
+		useOldVersion = true;
+	}
+	
+	/**
+	 * 由于 jfinal 4.9 版本对 JFinalJson 做了彻底的重构、优化，为确保兼容老版本，
+	 * 暂时保留老版本的 JFinalJson 实现，并提供该切回老版本的方法
+	 * 
+	 * 新版本实现在转换规则上与老版本完全一样，仅仅只做了重构与优化，所以大概率不用切换，
+	 * 经过几个迭代周期确认没有兼容性问题以后再删除，保障升级安全
+	 */
+	private String toJsonUseOldVersion(Object object) {
+		JFinalJsonOld json = JFinalJsonOld.getJson();
+		json.setConvertDepth(convertDepth);
+		json.setTimestampPattern(timestampPattern);
+		if (datePattern != null) {
+			json.setDatePattern(datePattern);
+		}
+		return json.toJson(object);
+	}
 }
-
-
-
-
 
 
 
