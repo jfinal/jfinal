@@ -108,7 +108,7 @@ public class StrKit {
 	 * <pre>
 	 * toLowerCaseAnyway 参数的作用如下：
 	 * 
-	 * 1：当待转换字符串中包含下划线字符 '_' 时，无需关心 toLowerCaseAnyway 参数的值，转换结果始一样
+	 * 1：当待转换字符串中包含下划线字符 '_' 时，无需关心 toLowerCaseAnyway 参数的值，转换结果始终一样
 	 * 
 	 * 2：当待转换字符串中不包含下划线字符 '_' 时，toLowerCaseAnyway 参数规则如下：
 	 *    true 值:  将待转换字符串全部转换成小与字母，适用于 oralce 数据库字段转换的场景
