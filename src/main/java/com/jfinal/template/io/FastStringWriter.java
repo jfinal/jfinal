@@ -36,7 +36,7 @@ public class FastStringWriter extends Writer {
 	private char[] value;
 	private int len;
 	
-	private static int MAX_BUFFER_SIZE = 1024 * 256;		// 1024 * 64;
+	private static int MAX_BUFFER_SIZE = 1024 * 512;		// 1024 * 64;
 	
 	public static void setMaxBufferSize(int maxBufferSize) {
 		int min = 256;
