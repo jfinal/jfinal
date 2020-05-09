@@ -74,6 +74,17 @@ public class JFinalJson extends Json {
 	
 	/**
 	 * 添加 ToJson 转换接口实现类，自由定制任意类型数据的转换规则
+	 * <pre>
+	 * 例子：
+	 *     ToJson<Timestamp> toJson = (value, depth, ret) -> {
+	 *       ret.addLong(value.getTime());
+	 *     };
+	 *     
+	 *     JFinalJson.addToJson(Timestamp.class, toJson);
+	 *     
+	 *     以上代码为 Timestamp 类型的 json 转换定制了转换规则
+	 *     将其转换成了 long 型数据
+	 * </pre>
 	 */
 	public static void addToJson(Class<?> type, ToJson<?> toJson) {
 		JFinalJsonKit.addToJson(type, toJson);
