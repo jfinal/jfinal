@@ -19,6 +19,7 @@ package com.jfinal.json;
 import java.text.SimpleDateFormat;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 /**
  * Json 转换 jackson 实现.
@@ -52,6 +53,9 @@ public class Jackson extends Json {
 	protected void config() {
 		objectMapper.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 		objectMapper.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
+		
+		// 没有 getter 方法时不抛异常
+		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 	}
 	
 	public static void setDefaultGenerateNullValue(boolean defaultGenerateNullValue) {
