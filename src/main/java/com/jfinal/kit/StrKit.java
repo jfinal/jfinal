@@ -96,9 +96,29 @@ public class StrKit {
 	}
 	
 	/**
-	 * 将包含下划线字符 '_' 的字符串转成驼峰格式，不包含下划线则原样返回
+	 * 将包含下划线字符 '_' 的字符串转换成驼峰格式，不包含下划线则原样返回
 	 */
 	public static String toCamelCase(String str) {
+		return toCamelCase(str, false);
+	}
+	
+	/**
+	 * 字符串转换成驼峰格式
+	 * 
+	 * <pre>
+	 * toLowerCaseAnyway 参数的作用如下：
+	 * 
+	 * 1：当待转换字符串中包含下划线字符 '_' 时，无需关心 toLowerCaseAnyway 参数的值，转换结果始一样
+	 * 
+	 * 2：当待转换字符串中不包含下划线字符 '_' 时，toLowerCaseAnyway 参数规则如下：
+	 *    true 值:  将待转换字符串全部转换成小与字母，适用于 oralce 数据库字段转换的场景
+	 *              因为 oracle 字段全是大写字母
+	 *                 
+	 *    false 值: 则原样返回待转换字符串，适用于待转换字符串可能原本就是驼峰格式的场景
+	 *              如果原本就是驼峰，全部转成小写字母显然不合理
+	 * </pre>
+	 */
+	public static String toCamelCase(String str, boolean toLowerCaseAnyway) {
 		int len = str.length();
 		if (len <= 1) {
 			return str;
@@ -127,6 +147,10 @@ public class StrKit {
 			else {
 				buf[index++] = Character.toLowerCase(ch);
 			}
+		}
+		
+		if (toLowerCaseAnyway) {
+			return new String(buf, 0, index);
 		}
 		
 		// i == index 时，表明字符串中不存在字符 '_'
