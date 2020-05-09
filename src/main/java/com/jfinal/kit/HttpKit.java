@@ -73,6 +73,9 @@ public class HttpKit {
 	private static final String POST = "POST";
 	private static String CHARSET = "UTF-8";
 	
+	private static int connectTimeout = 19000;	// 连接超时，单位毫秒
+	private static int readTimeout = 19000;		// 读取超时，单位毫秒
+	
 	private static final SSLSocketFactory sslSocketFactory = initSSLSocketFactory();
 	private static final TrustAnyHostnameVerifier trustAnyHostnameVerifier = new HttpKit.TrustAnyHostnameVerifier();
 	
@@ -95,6 +98,14 @@ public class HttpKit {
 		HttpKit.CHARSET = charSet;
 	}
 	
+	public static void setConnectTimeout(int connectTimeout) {
+		HttpKit.connectTimeout = connectTimeout;
+	}
+	
+	public static void setReadTimeout(int readTimeout) {
+		HttpKit.readTimeout = readTimeout;
+	}
+	
 	private static HttpURLConnection getHttpConnection(String url, String method, Map<String, String> headers) throws IOException, NoSuchAlgorithmException, NoSuchProviderException, KeyManagementException {
 		URL _url = new URL(url);
 		HttpURLConnection conn = (HttpURLConnection)_url.openConnection();
@@ -107,8 +118,8 @@ public class HttpKit {
 		conn.setDoOutput(true);
 		conn.setDoInput(true);
 		
-		conn.setConnectTimeout(19000);
-		conn.setReadTimeout(19000);
+		conn.setConnectTimeout(connectTimeout);
+		conn.setReadTimeout(readTimeout);
 		
 		conn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
 		conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.146 Safari/537.36");
