@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import com.jfinal.kit.StrKit;
 import com.jfinal.kit.SyncWriteMap;
@@ -68,6 +69,15 @@ public class JFinalJsonKit {
 			map.putIfAbsent(object.getClass(), ret);
 		}
 		return ret;
+	}
+	
+	/**
+	 * 添加 ToJson 转换接口实现类，自由定制任意类型数据的转换规则
+	 */
+	public static void addToJson(Class<?> type, ToJson<?> toJson) {
+		Objects.requireNonNull(type, "type can not be null");
+		Objects.requireNonNull(toJson, "toJson can not be null");
+		map.put(type, toJson);
 	}
 	
 	protected ToJson<?> createToJson(Object value) {

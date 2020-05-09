@@ -73,6 +73,13 @@ public class JFinalJson extends Json {
 	}
 	
 	/**
+	 * 添加 ToJson 转换接口实现类，自由定制任意类型数据的转换规则
+	 */
+	public static void addToJson(Class<?> type, ToJson<?> toJson) {
+		JFinalJsonKit.addToJson(type, toJson);
+	}
+	
+	/**
 	 * 设置全局性默认转换深度
 	 */
 	public static void setDefaultConvertDepth(int defaultConvertDepth) {
