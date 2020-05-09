@@ -47,7 +47,7 @@ public class JFinalJsonKit {
 	public static final JFinalJsonKit me = new JFinalJsonKit();
 	
 	// 缓存 ToJson 对象
-	protected static SyncWriteMap<Class<?>, ToJson<?>> map = new SyncWriteMap<>(512, 0.25F);
+	protected static SyncWriteMap<Class<?>, ToJson<?>> cache = new SyncWriteMap<>(512, 0.25F);
 	
 	// StringBuilder 最大缓冲区大小
 	protected static int maxBufferSize = 1024 * 512;
@@ -63,10 +63,10 @@ public class JFinalJsonKit {
 	}
 	
 	public ToJson<?> getToJson(Object object) {
-		ToJson<?> ret = map.get(object.getClass());
+		ToJson<?> ret = cache.get(object.getClass());
 		if (ret == null) {
 			ret = createToJson(object);
-			map.putIfAbsent(object.getClass(), ret);
+			cache.putIfAbsent(object.getClass(), ret);
 		}
 		return ret;
 	}
@@ -88,7 +88,7 @@ public class JFinalJsonKit {
 	public static void addToJson(Class<?> type, ToJson<?> toJson) {
 		Objects.requireNonNull(type, "type can not be null");
 		Objects.requireNonNull(toJson, "toJson can not be null");
-		map.put(type, toJson);
+		cache.put(type, toJson);
 	}
 	
 	protected ToJson<?> createToJson(Object value) {
