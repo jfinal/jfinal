@@ -19,7 +19,6 @@ package com.jfinal.json;
 import java.util.function.Function;
 import com.jfinal.json.JFinalJsonKit.JsonResult;
 import com.jfinal.json.JFinalJsonKit.ToJson;
-import com.jfinal.kit.StrKit;
 
 /**
  * Json 转换 JFinal 实现.
@@ -109,9 +108,6 @@ public class JFinalJson extends Json {
 	}
 	
 	public JFinalJson setTimestampPattern(String timestampPattern) {
-		if (StrKit.isBlank(timestampPattern)) {
-			throw new IllegalArgumentException("timestampPattern can not be blank.");
-		}
 		this.timestampPattern = timestampPattern;
 		return this;
 	}
