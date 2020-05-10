@@ -16,7 +16,7 @@
 
 package com.jfinal.json;
 
-import com.jfinal.kit.StrKit;
+import java.util.Objects;
 
 /**
  * json string 与 object 互转抽象
@@ -38,23 +38,15 @@ public abstract class Json {
 	protected String datePattern = null;
 	
 	static void setDefaultJsonFactory(IJsonFactory defaultJsonFactory) {
-		if (defaultJsonFactory == null) {
-			throw new IllegalArgumentException("defaultJsonFactory can not be null.");
-		}
+		Objects.requireNonNull(defaultJsonFactory, "defaultJsonFactory can not be null");
 		Json.defaultJsonFactory = defaultJsonFactory;
 	}
 	
 	static void setDefaultDatePattern(String defaultDatePattern) {
-		if (StrKit.isBlank(defaultDatePattern)) {
-			throw new IllegalArgumentException("defaultDatePattern can not be blank.");
-		}
 		Json.defaultDatePattern = defaultDatePattern;
 	}
 	
 	public Json setDatePattern(String datePattern) {
-		if (StrKit.isBlank(datePattern)) {
-			throw new IllegalArgumentException("datePattern can not be blank.");
-		}
 		this.datePattern = datePattern;
 		return this;
 	}
