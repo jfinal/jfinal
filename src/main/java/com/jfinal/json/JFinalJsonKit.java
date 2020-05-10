@@ -307,7 +307,7 @@ public class JFinalJsonKit {
 			if (modelAndRecordFieldNameConverter != null) {
 				fieldName = modelAndRecordFieldNameConverter.apply(fieldName);
 			}
-			ret.addStrNoEsc(fieldName);
+			ret.addStrNoEscape(fieldName);
 			
 			ret.addChar(':');
 			
@@ -473,7 +473,7 @@ public class JFinalJsonKit {
 						ret.addChar(',');
 					}
 					
-					ret.addStrNoEsc(fields[i]);
+					ret.addStrNoEscape(fields[i]);
 					ret.addChar(':');
 					
 					Object value = methods[i].invoke(bean, NULL_ARGS);
@@ -541,7 +541,7 @@ public class JFinalJsonKit {
 	/**
 	 * JsonResult 用于存放 json 生成结果，结合 ThreadLocal 进行资源重用
 	 */
-	static class JsonResult {
+	public static class JsonResult {
 		
 		// 缓存 SimpleDateFormat
 		Map<String, SimpleDateFormat> formats = new HashMap<>();
@@ -579,7 +579,11 @@ public class JFinalJsonKit {
 			sb.append("null");
 		}
 		
-		public void addStrNoEsc(String str) {
+		public void addStr(String str) {
+			escape(str, sb);
+		}
+		
+		public void addStrNoEscape(String str) {
 			sb.append('\"').append(str).append('\"');
 		}
 		
@@ -611,7 +615,7 @@ public class JFinalJsonKit {
 			sb.append('\"').append(en.toString()).append('\"');
 		}
 		
-		SimpleDateFormat getFormat(String pattern) {
+		public SimpleDateFormat getFormat(String pattern) {
 			SimpleDateFormat ret = formats.get(pattern);
 			if (ret == null) {
 				ret = new SimpleDateFormat(pattern);
@@ -620,12 +624,16 @@ public class JFinalJsonKit {
 			return ret;
 		}
 		
-		public void addTimestamp(Timestamp ts) {
-			sb.append('\"').append(getFormat(timestampPattern).format(ts)).append('\"');
-		}
-		
 		public void addTime(Time t) {
 			sb.append('\"').append(t.toString()).append('\"');
+		}
+		
+		public void addTimestamp(Timestamp ts) {
+			if (timestampPattern != null) {
+				sb.append('\"').append(getFormat(timestampPattern).format(ts)).append('\"');
+			} else {
+				sb.append(ts.getTime());
+			}
 		}
 		
 		public void addDate(Date d) {
