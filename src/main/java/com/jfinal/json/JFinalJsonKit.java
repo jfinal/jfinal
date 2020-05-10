@@ -615,6 +615,14 @@ public class JFinalJsonKit {
 			sb.append('\"').append(en.toString()).append('\"');
 		}
 		
+		public String getDatePattern() {
+			return datePattern;
+		}
+		
+		public String getTimestampPattern() {
+			return timestampPattern;
+		}
+		
 		public SimpleDateFormat getFormat(String pattern) {
 			SimpleDateFormat ret = formats.get(pattern);
 			if (ret == null) {
