@@ -50,6 +50,7 @@ public class Jackson extends Json {
 	}
 	
 	// https://gitee.com/jfinal/jfinal-weixin/issues/I875U
+	@SuppressWarnings("deprecation")
 	protected void config() {
 		objectMapper.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
 		objectMapper.configure(com.fasterxml.jackson.core.JsonParser.Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
