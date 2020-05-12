@@ -111,5 +111,9 @@ public abstract class CPI {
 	public static void addModelToConfigMapping(Class<? extends Model> modelClass, Config config) {
 		DbKit.addModelToConfigMapping(modelClass, config);
 	}
+	
+	public static void setContainerFactory(Config config, IContainerFactory containerFactory) {
+		config.setContainerFactory(containerFactory);
+	}
 }
 
