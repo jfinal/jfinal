@@ -58,6 +58,7 @@ public class Engine {
 	
 	private String name;
 	private boolean devMode = false;
+	private boolean cacheStringTemplate = false;
 	private EngineConfig config = new EngineConfig();
 	private ISourceFactory sourceFactory = config.getSourceFactory();
 	
@@ -171,7 +172,7 @@ public class Engine {
 	 * Get template by string content and do not cache the template
 	 */
 	public Template getTemplateByString(String content) {
-		return getTemplateByString(content, false);
+		return getTemplateByString(content, cacheStringTemplate);
 	}
 	
 	/**
@@ -464,6 +465,15 @@ public class Engine {
 	
 	public boolean getDevMode() {
 		return devMode;
+	}
+	
+	/**
+	 * 配置是否缓存字符串模板，也即是否缓存通过 getTemplateByString(String content)
+	 * 方法获取的模板，默认配置为 false
+	 */
+	public Engine setCacheStringTemplate(boolean cacheStringTemplate) {
+		this.cacheStringTemplate = cacheStringTemplate;
+		return this;
 	}
 	
 	/**
