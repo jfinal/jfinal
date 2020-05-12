@@ -168,10 +168,6 @@ public class Config {
 		return containerFactory;
 	}
 	
-	void setContainerFactory(IContainerFactory containerFactory) {
-		this.containerFactory = containerFactory;
-	}
-	
 	public IDbProFactory getDbProFactory() {
 		return dbProFactory;
 	}
