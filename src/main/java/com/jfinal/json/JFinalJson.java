@@ -49,10 +49,6 @@ public class JFinalJson extends Json {
 	@Override
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public String toJson(Object object) {
-		if (useOldVersion) {
-			return toJsonUseOldVersion(object);
-		}
-		
 		if (object == null) {
 			return "null";
 		}
@@ -162,31 +158,6 @@ public class JFinalJson extends Json {
 		throw new RuntimeException("jfinal " + com.jfinal.core.Const.JFINAL_VERSION + 
 		"默认 json 实现暂不支持 json 到 object 的转换,建议使用 active recrord 的 Generator 生成 base model，" +
 		"再通过 me.setJsonFactory(new MixedJsonFactory()) 来支持");
-	}
-	
-	// 以下代码用于切换回老版本实现 ----------------------------------------------------------------------------
-	
-	protected static boolean useOldVersion = false;
-	
-	public static void setToUseOldVersion() {
-		useOldVersion = true;
-	}
-	
-	/**
-	 * 由于 jfinal 4.9 版本对 JFinalJson 做了彻底的重构、优化，为确保兼容老版本，
-	 * 暂时保留老版本的 JFinalJson 实现，并提供该切回老版本的方法
-	 * 
-	 * 新版本实现在转换规则上与老版本完全一样，仅仅只做了重构与优化，所以大概率不用切换，
-	 * 经过几个迭代周期确认没有兼容性问题以后再删除，保障升级安全
-	 */
-	private String toJsonUseOldVersion(Object object) {
-		JFinalJsonOld json = JFinalJsonOld.getJson();
-		json.setConvertDepth(convertDepth);
-		json.setTimestampPattern(timestampPattern);
-		if (datePattern != null) {
-			json.setDatePattern(datePattern);
-		}
-		return json.toJson(object);
 	}
 }
 
