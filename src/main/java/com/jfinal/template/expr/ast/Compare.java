@@ -100,7 +100,7 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) == Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() == r.doubleValue();
 			case Arith.BIGDECIMAL:
-				BigDecimal[] bd = toBigDecimals(l, r);
+				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) == 0;
 			}
 			throw new TemplateException("Equal comparison support types of int long float double and BigDeciaml", location);
@@ -127,7 +127,7 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) > Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() > r.doubleValue();
 			case Arith.BIGDECIMAL:
-				BigDecimal[] bd = toBigDecimals(l, r);
+				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) > 0;
 			}
 			throw new TemplateException("Unsupported operation: " + l.getClass().getSimpleName() + " \">\" " + r.getClass().getSimpleName(), location);
@@ -160,7 +160,7 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) >= Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() >= r.doubleValue();
 			case Arith.BIGDECIMAL:
-				BigDecimal[] bd = toBigDecimals(l, r);
+				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) >= 0;
 			}
 			throw new TemplateException("Unsupported operation: " + l.getClass().getSimpleName() + " \">=\" " + r.getClass().getSimpleName(), location);
@@ -193,7 +193,7 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) < Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() < r.doubleValue();
 			case Arith.BIGDECIMAL:
-				BigDecimal[] bd = toBigDecimals(l, r);
+				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) < 0;
 			}
 			throw new TemplateException("Unsupported operation: " + l.getClass().getSimpleName() + " \"<\" " + r.getClass().getSimpleName(), location);
@@ -226,7 +226,7 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) <= Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() <= r.doubleValue();
 			case Arith.BIGDECIMAL:
-				BigDecimal[] bd = toBigDecimals(l, r);
+				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) <= 0;
 			}
 			throw new TemplateException("Unsupported operation: " + l.getClass().getSimpleName() + " \"<=\" " + r.getClass().getSimpleName(), location);
@@ -265,13 +265,6 @@ public class Compare extends Expr {
 			return Arith.INT;	// short byte 用 int 支持，java 表达式亦如此
 		}
 		throw new TemplateException("Unsupported data type: " + obj.getClass().getName(), location);
-	}
-	
-	BigDecimal[] toBigDecimals(Number left, Number right) {
-		BigDecimal[] ret = new BigDecimal[2];
-		ret[0] = (left instanceof BigDecimal ? (BigDecimal)left : new BigDecimal(left.toString()));
-		ret[1] = (right instanceof BigDecimal ? (BigDecimal)right : new BigDecimal(right.toString()));
-		return ret;
 	}
 	
 	private Boolean checkComparisonValue(Object leftValue, Object rightValue) {
