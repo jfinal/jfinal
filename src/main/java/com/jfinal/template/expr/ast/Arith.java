@@ -108,9 +108,11 @@ public class Arith extends Expr {
 		}
 		
 		// 字符串加法运算
-		if (leftValue instanceof String || rightValue instanceof String) {
-            return String.valueOf(leftValue).concat(String.valueOf(rightValue));
-        }
+		if (op == Sym.ADD) {
+			if (leftValue instanceof String || rightValue instanceof String) {
+				return String.valueOf(leftValue).concat(String.valueOf(rightValue));
+			}
+		}
 		
 		String leftObj = leftValue != null ? leftValue.getClass().getName() : "null";
 		String rightObj = rightValue != null ? rightValue.getClass().getName() : "null";
