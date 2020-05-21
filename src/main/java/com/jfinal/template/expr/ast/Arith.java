@@ -160,7 +160,7 @@ public class Arith extends Expr {
 		} else if (obj instanceof BigDecimal) {
 			return BIGDECIMAL;
 		} else if (obj instanceof Short || obj instanceof Byte) {
-			return INT;	// short byte 用 int 支持，java 表达式亦如此
+			return INT;			// short byte 用 int 支持，java 表达式亦如此
 		} else if (obj instanceof BigInteger) {
 			return BIGINTEGER;	// 新增 BigInteger 支持
 		}

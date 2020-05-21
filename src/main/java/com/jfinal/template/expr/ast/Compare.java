@@ -17,6 +17,7 @@
 package com.jfinal.template.expr.ast;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import com.jfinal.template.TemplateException;
 import com.jfinal.template.expr.Sym;
 import com.jfinal.template.stat.Location;
@@ -100,6 +101,7 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) == Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() == r.doubleValue();
 			case Arith.BIGDECIMAL:
+			case Arith.BIGINTEGER:
 				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) == 0;
 			}
@@ -127,6 +129,7 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) > Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() > r.doubleValue();
 			case Arith.BIGDECIMAL:
+			case Arith.BIGINTEGER:
 				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) > 0;
 			}
@@ -160,6 +163,7 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) >= Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() >= r.doubleValue();
 			case Arith.BIGDECIMAL:
+			case Arith.BIGINTEGER:
 				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) >= 0;
 			}
@@ -193,6 +197,7 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) < Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() < r.doubleValue();
 			case Arith.BIGDECIMAL:
+			case Arith.BIGINTEGER:
 				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) < 0;
 			}
@@ -226,6 +231,7 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) <= Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() <= r.doubleValue();
 			case Arith.BIGDECIMAL:
+			case Arith.BIGINTEGER:
 				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) <= 0;
 			}
@@ -262,8 +268,11 @@ public class Compare extends Expr {
 		} else if (obj instanceof BigDecimal) {
 			return Arith.BIGDECIMAL;
 		} else if (obj instanceof Short || obj instanceof Byte) {
-			return Arith.INT;	// short byte 用 int 支持，java 表达式亦如此
+			return Arith.INT;			// short byte 用 int 支持，java 表达式亦如此
+		} else if (obj instanceof BigInteger) {
+			return Arith.BIGINTEGER;	// 新增 BigInteger 支持
 		}
+		
 		throw new TemplateException("Unsupported data type: " + obj.getClass().getName(), location);
 	}
 	
