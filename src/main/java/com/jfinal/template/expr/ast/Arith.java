@@ -17,6 +17,7 @@
 package com.jfinal.template.expr.ast;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Objects;
 import com.jfinal.template.TemplateException;
@@ -36,7 +37,8 @@ public class Arith extends Expr {
 	public static final int LONG = 1;
 	public static final int FLOAT = 2;
 	public static final int DOUBLE = 3;
-	public static final int BIGDECIMAL = 4;
+	public static final int BIGINTEGER = 4;
+	public static final int BIGDECIMAL = 5;
 	
 	private Sym op;
 	private Expr left;
@@ -159,7 +161,10 @@ public class Arith extends Expr {
 			return BIGDECIMAL;
 		} else if (obj instanceof Short || obj instanceof Byte) {
 			return INT;	// short byte 用 int 支持，java 表达式亦如此
+		} else if (obj instanceof BigInteger) {
+			return BIGINTEGER;	// 新增 BigInteger 支持
 		}
+		
 		throw new TemplateException("Unsupported data type: " + obj.getClass().getName(), location);
 	}
 	
@@ -174,6 +179,7 @@ public class Arith extends Expr {
 		case DOUBLE:
 			return Double.valueOf(left.doubleValue() + right.doubleValue());
 		case BIGDECIMAL:
+		case BIGINTEGER:	// 新增 BigInteger 支持
 			BigDecimal[] bd = toBigDecimals(left, right);
 			return (bd[0]).add(bd[1]);
 		}
@@ -191,6 +197,7 @@ public class Arith extends Expr {
 		case DOUBLE:
 			return Double.valueOf(left.doubleValue() - right.doubleValue());
 		case BIGDECIMAL:
+		case BIGINTEGER:	// 新增 BigInteger 支持
 			BigDecimal[] bd = toBigDecimals(left, right);
 			return (bd[0]).subtract(bd[1]);
 		}
@@ -208,6 +215,7 @@ public class Arith extends Expr {
 		case DOUBLE:
 			return Double.valueOf(left.doubleValue() * right.doubleValue());
 		case BIGDECIMAL:
+		case BIGINTEGER:	// 新增 BigInteger 支持
 			BigDecimal[] bd = toBigDecimals(left, right);
 			return (bd[0]).multiply(bd[1]);
 		}
@@ -225,6 +233,7 @@ public class Arith extends Expr {
 		case DOUBLE:
 			return Double.valueOf(left.doubleValue() / right.doubleValue());
 		case BIGDECIMAL:
+		case BIGINTEGER:	// 新增 BigInteger 支持
 			BigDecimal[] bd = toBigDecimals(left, right);
 			// return (bd[0]).divide(bd[1]);
 			int scale = Math.max(bigDecimalDivideMinScale, bd[0].scale());
@@ -244,6 +253,7 @@ public class Arith extends Expr {
 		case DOUBLE:
 			return Double.valueOf(left.doubleValue() % right.doubleValue());
 		case BIGDECIMAL:
+		case BIGINTEGER:	// 新增 BigInteger 支持
 			BigDecimal[] bd = toBigDecimals(left, right);
 			return (bd[0]).divideAndRemainder(bd[1])[1];
 		}
