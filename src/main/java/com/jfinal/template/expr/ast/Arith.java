@@ -121,15 +121,6 @@ public class Arith extends Expr {
 		throw new TemplateException("Unsupported operation type: " + leftObj + " " +  op.value() + " " + rightObj, location);
 	}
 	
-	private int getMaxType(Number obj1, Number obj2) {
-		int t1 = getType(obj1);
-		if (t1 == BIGDECIMAL) {
-			return BIGDECIMAL;
-		}
-		int t2 = getType(obj2);
-		return t1 > t2 ? t1 : t2;
-	}
-	
 	static BigDecimal[] toBigDecimals(Number left, Number right) {
 		BigDecimal[] ret = new BigDecimal[2];
 		
@@ -146,6 +137,15 @@ public class Arith extends Expr {
 		}
 		
 		return ret;
+	}
+	
+	private int getMaxType(Number obj1, Number obj2) {
+		int t1 = getType(obj1);
+		if (t1 == BIGDECIMAL) {
+			return BIGDECIMAL;
+		}
+		int t2 = getType(obj2);
+		return t1 > t2 ? t1 : t2;
 	}
 	
 	private int getType(Number obj) {
