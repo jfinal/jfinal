@@ -128,18 +128,21 @@ public class Arith extends Expr {
 		return t1 > t2 ? t1 : t2;
 	}
 	
-	/**
-	 * 注意：调用此方法的前提是，其中有一个对象的类型已经确定是 BigDecimal
-	 */
-	private BigDecimal[] toBigDecimals(Number left, Number right) {
+	static BigDecimal[] toBigDecimals(Number left, Number right) {
 		BigDecimal[] ret = new BigDecimal[2];
+		
 		if (left instanceof BigDecimal) {
 			ret[0] = (BigDecimal)left;
-			ret[1] = new BigDecimal(right.toString());
 		} else {
 			ret[0] = new BigDecimal(left.toString());
-			ret[1] = (BigDecimal)right;
 		}
+		
+		if (right instanceof BigDecimal) {
+			ret[1] = (BigDecimal)right;
+		} else {
+			ret[1] = new BigDecimal(right.toString());
+		}
+		
 		return ret;
 	}
 	
