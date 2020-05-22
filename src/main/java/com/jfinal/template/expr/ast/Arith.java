@@ -28,7 +28,7 @@ import com.jfinal.template.stat.Scope;
 
 /**
  * Arithmetic
- * 1：支持 byte short int long float double BigDecimal 的 + - * / % 运算
+ * 1：支持 byte short int long float double BigInteger BigDecimal 的 + - * / % 运算
  * 2：支持字符串加法运算
  */
 public class Arith extends Expr {
@@ -39,6 +39,7 @@ public class Arith extends Expr {
 	public static final int DOUBLE = 3;
 	public static final int BIGINTEGER = 4;
 	public static final int BIGDECIMAL = 5;
+	public static final int UNKNOWN = 99;
 	
 	private Sym op;
 	private Expr left;
@@ -92,6 +93,9 @@ public class Arith extends Expr {
 			Number l = (Number)leftValue;
 			Number r = (Number)rightValue;
 			int maxType = getMaxType(l, r);
+			if (maxType == UNKNOWN) {
+				throw unsupportedTypeException(l, r, location);
+			}
 			
 			switch (op) {
 			case ADD:
@@ -139,16 +143,47 @@ public class Arith extends Expr {
 		return ret;
 	}
 	
-	private int getMaxType(Number obj1, Number obj2) {
-		int t1 = getType(obj1);
-		if (t1 == BIGDECIMAL) {
-			return BIGDECIMAL;
+	static BigInteger[] toBigIntegers(Number left, Number right) {
+		BigInteger[] ret = new BigInteger[2];
+		
+		if (left instanceof BigInteger) {
+			ret[0] = (BigInteger)left;
+		} else {
+			ret[0] = new BigInteger(left.toString());
 		}
-		int t2 = getType(obj2);
-		return t1 > t2 ? t1 : t2;
+		
+		if (right instanceof BigInteger) {
+			ret[1] = (BigInteger)right;
+		} else {
+			ret[1] = new BigInteger(right.toString());
+		}
+		
+		return ret;
 	}
 	
-	private int getType(Number obj) {
+	static int getMaxType(Number obj1, Number obj2) {
+		int t1 = getType(obj1);
+		int t2 = getType(obj2);
+		int ret = t1 > t2 ? t1 : t2;
+		if (ret != BIGINTEGER) {
+			return ret;
+		}
+		
+		// BigInteger 在与 Double、Float 运算时，需要升级为 BigDecimal
+		if (t1 == BIGINTEGER) {
+			if (t2 == DOUBLE || t2 == FLOAT) {
+				return BIGDECIMAL;	// 升级为 BigDecimal
+			}
+		} else {
+			if (t1 == DOUBLE || t1 == FLOAT) {
+				return BIGDECIMAL;	// 升级为 BigDecimal
+			}
+		}
+		
+		return ret;
+	}
+	
+	static int getType(Number obj) {
 		if (obj instanceof Integer) {
 			return INT;
 		} else if (obj instanceof Long) {
@@ -165,7 +200,8 @@ public class Arith extends Expr {
 			return BIGINTEGER;	// 新增 BigInteger 支持
 		}
 		
-		throw new TemplateException("Unsupported data type: " + obj.getClass().getName(), location);
+		// throw new TemplateException("Unsupported data type: " + obj.getClass().getName(), location);
+		return UNKNOWN;
 	}
 	
 	private Number add(int maxType, Number left, Number right) {
@@ -179,9 +215,11 @@ public class Arith extends Expr {
 		case DOUBLE:
 			return Double.valueOf(left.doubleValue() + right.doubleValue());
 		case BIGDECIMAL:
-		case BIGINTEGER:	// 新增 BigInteger 支持
 			BigDecimal[] bd = toBigDecimals(left, right);
 			return (bd[0]).add(bd[1]);
+		case BIGINTEGER:	// 新增 BigInteger 支持
+			BigInteger[] bi = toBigIntegers(left, right);
+			return (bi[0]).add(bi[1]);
 		}
 		throw new TemplateException("Unsupported data type", location);
 	}
@@ -197,9 +235,11 @@ public class Arith extends Expr {
 		case DOUBLE:
 			return Double.valueOf(left.doubleValue() - right.doubleValue());
 		case BIGDECIMAL:
-		case BIGINTEGER:	// 新增 BigInteger 支持
 			BigDecimal[] bd = toBigDecimals(left, right);
 			return (bd[0]).subtract(bd[1]);
+		case BIGINTEGER:	// 新增 BigInteger 支持
+			BigInteger[] bi = toBigIntegers(left, right);
+			return (bi[0]).subtract(bi[1]);
 		}
 		throw new TemplateException("Unsupported data type", location);
 	}
@@ -215,9 +255,11 @@ public class Arith extends Expr {
 		case DOUBLE:
 			return Double.valueOf(left.doubleValue() * right.doubleValue());
 		case BIGDECIMAL:
-		case BIGINTEGER:	// 新增 BigInteger 支持
 			BigDecimal[] bd = toBigDecimals(left, right);
 			return (bd[0]).multiply(bd[1]);
+		case BIGINTEGER:	// 新增 BigInteger 支持
+			BigInteger[] bi = toBigIntegers(left, right);
+			return (bi[0]).multiply(bi[1]);
 		}
 		throw new TemplateException("Unsupported data type", location);
 	}
@@ -233,11 +275,13 @@ public class Arith extends Expr {
 		case DOUBLE:
 			return Double.valueOf(left.doubleValue() / right.doubleValue());
 		case BIGDECIMAL:
-		case BIGINTEGER:	// 新增 BigInteger 支持
 			BigDecimal[] bd = toBigDecimals(left, right);
 			// return (bd[0]).divide(bd[1]);
 			int scale = Math.max(bigDecimalDivideMinScale, bd[0].scale());
 			return (bd[0]).divide(bd[1], scale, bigDecimalDivideRoundingMode);
+		case BIGINTEGER:	// 新增 BigInteger 支持
+			BigInteger[] bi = toBigIntegers(left, right);
+			return (bi[0]).divide(bi[1]);
 		}
 		throw new TemplateException("Unsupported data type", location);
 	}
@@ -253,11 +297,30 @@ public class Arith extends Expr {
 		case DOUBLE:
 			return Double.valueOf(left.doubleValue() % right.doubleValue());
 		case BIGDECIMAL:
-		case BIGINTEGER:	// 新增 BigInteger 支持
 			BigDecimal[] bd = toBigDecimals(left, right);
 			return (bd[0]).divideAndRemainder(bd[1])[1];
+		case BIGINTEGER:	// 新增 BigInteger 支持
+			BigInteger[] bi = toBigIntegers(left, right);
+			return (bi[0]).divideAndRemainder(bi[1])[1];
 		}
 		throw new TemplateException("Unsupported data type", location);
+	}
+	
+	static TemplateException unsupportedTypeException(Number left, Number right, Location location) {
+		Number unsupportedType;
+		if (left instanceof Integer
+			|| left instanceof Long
+			|| left instanceof Float
+			|| left instanceof Double
+			|| left instanceof BigDecimal
+			|| left instanceof Short
+			|| left instanceof Byte
+			|| left instanceof BigInteger) {
+			unsupportedType = right;
+		} else {
+			unsupportedType = left;
+		}
+		return new TemplateException("Unsupported data type: " + unsupportedType.getClass().getName(), location);
 	}
 }
 
