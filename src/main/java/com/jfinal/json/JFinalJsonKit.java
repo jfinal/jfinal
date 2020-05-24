@@ -178,7 +178,7 @@ public class JFinalJsonKit {
 		return new UnknownToJson();
 	}
 	
-	static boolean checkDepth(int depth, JsonResult ret) {
+	public static boolean checkDepth(int depth, JsonResult ret) {
 		if (depth < 0) {
 			ret.addNull();
 			return true;
@@ -290,7 +290,7 @@ public class JFinalJsonKit {
 		}
 	}
 	
-	static void modelAndRecordToJson(Map<String, Object> map, int depth, JsonResult ret) {
+	public static void modelAndRecordToJson(Map<String, Object> map, int depth, JsonResult ret) {
 		Iterator iter = map.entrySet().iterator();
 		boolean first = true;
 		ret.addChar('{');
@@ -332,7 +332,7 @@ public class JFinalJsonKit {
 		}
 	}
 	
-	static void mapToJson(Map<?, ?> map, int depth, JsonResult ret) {
+	public static void mapToJson(Map<?, ?> map, int depth, JsonResult ret) {
 		Iterator iter = map.entrySet().iterator();
 		boolean first = true;
 		ret.addChar('{');
@@ -416,7 +416,7 @@ public class JFinalJsonKit {
 		}
 	}
 	
-	static void iteratorToJson(Iterator it, int depth, JsonResult ret) {
+	public static void iteratorToJson(Iterator it, int depth, JsonResult ret) {
 		boolean first = true;
 		ret.addChar('[');
 		while (it.hasNext()) {
