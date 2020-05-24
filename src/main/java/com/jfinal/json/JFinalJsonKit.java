@@ -308,13 +308,18 @@ public class JFinalJsonKit {
 		boolean first = true;
 		ret.addChar('{');
 		while (iter.hasNext()) {
+			Map.Entry<String, Object> entry = (Map.Entry)iter.next();
+			Object value = entry.getValue();
+			
+			if (value == null && skipNullValueField) {
+				continue ;
+			}
+			
 			if (first) {
 				first = false;
 			} else {
 				ret.addChar(',');
 			}
-			
-			Map.Entry<String, Object> entry = (Map.Entry)iter.next();
 			
 			String fieldName = entry.getKey();
 			if (modelAndRecordFieldNameConverter != null) {
@@ -324,7 +329,6 @@ public class JFinalJsonKit {
 			
 			ret.addChar(':');
 			
-			Object value = entry.getValue();
 			if (value != null) {
 				ToJson tj = me.getToJson(value);
 				tj.toJson(value, depth, ret);
@@ -350,17 +354,23 @@ public class JFinalJsonKit {
 		boolean first = true;
 		ret.addChar('{');
 		while (iter.hasNext()) {
+			Map.Entry entry = (Map.Entry)iter.next();
+			Object value = entry.getValue();
+			
+			if (value == null && skipNullValueField) {
+				continue ;
+			}
+			
 			if (first) {
 				first = false;
 			} else {
 				ret.addChar(',');
 			}
 			
-			Map.Entry entry = (Map.Entry)iter.next();
 			ret.addMapKey(entry.getKey());
 			ret.addChar(':');
 			
-			Object value = entry.getValue();
+			
 			if (value != null) {
 				ToJson tj = me.getToJson(value);
 				tj.toJson(value, depth, ret);
@@ -482,6 +492,12 @@ public class JFinalJsonKit {
 			try {
 				ret.addChar('{');
 				for (int i = 0; i < fields.length; i++) {
+					Object value = methods[i].invoke(bean, NULL_ARGS);
+					
+					if (value == null && skipNullValueField) {
+						continue ;
+					}
+					
 					if (i > 0) {
 						ret.addChar(',');
 					}
@@ -489,7 +505,6 @@ public class JFinalJsonKit {
 					ret.addStrNoEscape(fields[i]);
 					ret.addChar(':');
 					
-					Object value = methods[i].invoke(bean, NULL_ARGS);
 					if (value != null) {
 						ToJson tj = me.getToJson(value);
 						tj.toJson(value, depth, ret);
