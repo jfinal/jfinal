@@ -167,7 +167,7 @@ public class JFinalJson extends Json {
 	 *            // 返回 null 时将使用系统默认的转换类
 	 *            return null;
 	 *        }
-	 *	  });
+	 *    });
 	 * </pre>
 	 */
 	public static void setToJsonFactory(Function<Object, ToJson<?>> toJsonFactory) {
