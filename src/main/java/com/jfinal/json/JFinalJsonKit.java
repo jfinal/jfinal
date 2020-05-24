@@ -58,6 +58,8 @@ public class JFinalJsonKit {
 	// 对 Model 和 Record 的字段名进行转换的函数。例如转成驼峰形式对 oracle 支持更友好
 	protected static Function<String, String> modelAndRecordFieldNameConverter = null;
 	
+	protected static Function<Object, ToJson<?>> toJsonFactory = null;
+	
 	public interface ToJson<T> {
 		void toJson(T value, int depth, JsonResult ret);
 	}
@@ -92,6 +94,14 @@ public class JFinalJsonKit {
 	}
 	
 	protected ToJson<?> createToJson(Object value) {
+		// 优先使用 toJsonFactory 创建 ToJson 实例，方便用户优先接管 ToJson 转换器的创建
+		if (toJsonFactory != null) {
+			ToJson<?> tj = toJsonFactory.apply(value);
+			if (tj != null) {
+				return tj;
+			}
+		}
+		
 		// 基础类型 -----------------------------------------
 		if (value instanceof String) {
 			return new StrToJson();
@@ -762,6 +772,10 @@ public class JFinalJsonKit {
 		modelAndRecordFieldNameConverter = (fieldName) -> {
 			return StrKit.toCamelCase(fieldName, true);
 		};
+	}
+	
+	public static void setToJsonFactory(Function<Object, ToJson<?>> toJsonFactory) {
+		JFinalJsonKit.toJsonFactory = toJsonFactory;
 	}
 }
 

@@ -154,6 +154,26 @@ public class JFinalJson extends Json {
 		JFinalJsonKit.setModelAndRecordFieldNameToCamelCase();
 	}
 	
+	/**
+	 * 配置 ToJsonFactory，便于接管 ToJson 对象的创建
+	 * 
+	 * <pre>
+	 * 例子：
+	 *    JFinalJson.setToJsonFactory(value -> {
+	 *        if (value instanceof Model) {
+	 *            // 返回 MyModelToJson 接管对于 Model 类型的转换
+	 *            return new MyModelToJson();
+	 *        } else {
+	 *            // 返回 null 时将使用系统默认的转换类
+	 *            return null;
+	 *        }
+	 *	  });
+	 * </pre>
+	 */
+	public static void setToJsonFactory(Function<Object, ToJson<?>> toJsonFactory) {
+		JFinalJsonKit.setToJsonFactory(toJsonFactory);
+	}
+	
 	public <T> T parse(String jsonString, Class<T> type) {
 		throw new RuntimeException("jfinal " + com.jfinal.core.Const.JFINAL_VERSION + 
 		"默认 json 实现暂不支持 json 到 object 的转换,建议使用 active recrord 的 Generator 生成 base model，" +
