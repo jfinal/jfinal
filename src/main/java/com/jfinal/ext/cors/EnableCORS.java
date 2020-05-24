@@ -19,8 +19,8 @@ import java.lang.annotation.*;
 
 /**
  * @author Michael Yang 杨福海 （fuhai999@gmail.com）
- * @version V1.0
- * detail : https://developer.mozilla.org/en-US/docs/Glossary/CORS
+ * 
+ * 每个参数意义的详情 : https://developer.mozilla.org/en-US/docs/Glossary/CORS
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
