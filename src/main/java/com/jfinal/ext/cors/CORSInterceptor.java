@@ -22,8 +22,13 @@ import com.jfinal.kit.StrKit;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * @author Michael Yang 杨福海 （fuhai999@gmail.com）
- * @Title: CORS 处理相关 拦截器
+ * use:
+ * 1、在 JFInalConfig 的 在 configInterceptor(Interceptors me) 中添加全局拦截器：me.add(new CORSIntercetpro());
+ * 2、在需要支持跨域的 Action 方法中添加 @EnableCORS
+ * 
+ * PS：
+ * 1、如果在 Controller 中添加 @EnableCORS，则该 Controller 下的所有方法都支持跨域
+ * 2、通过 @EnableCORS 的参数可以对 Action 进行更加详细的配置，@EnableCORS 每个参数的配置，请参考 https://developer.mozilla.org/en-US/docs/Glossary/CORS
  */
 public class CORSInterceptor implements Interceptor {
 
