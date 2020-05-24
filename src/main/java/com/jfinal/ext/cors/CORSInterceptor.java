@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @author Michael Yang 杨福海 （fuhai999@gmail.com）
  * 
- * use:
- * 1、在 JFInalConfig 的 在 configInterceptor(Interceptors me) 中添加全局拦截器：me.add(new CORSIntercetpro());
+ * 使用方法:
+ * 1、在 JFInalConfig 的 在 configInterceptor(Interceptors me) 中添加全局拦截器（也可以不是全局拦截器）：me.add(new CORSIntercetpro());
  * 2、在需要支持跨域的 Action 方法中添加 @EnableCORS
  * 
  * PS：
@@ -57,8 +57,8 @@ public class CORSInterceptor implements Interceptor {
     }
     
     private EnableCORS getAnnotation(Invocation inv) {
-    	 EnableCORS enableCORS = inv.getMethod().getAnnotation(EnableCORS.class);
-    	 return enableCORS != null ? enableCORS : inv.getController().getClass().getAnnotation(EnableCORS.class);
+    	 EnableCORS enableCORS = inv.getController().getClass().getAnnotation(EnableCORS.class);
+    	 return enableCORS != null ? enableCORS : inv.getMethod().getAnnotation(EnableCORS.class);
     }
 
     private void doConfigCORS(Invocation inv, EnableCORS enableCORS) {
