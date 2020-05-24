@@ -491,6 +491,7 @@ public class JFinalJsonKit {
 			
 			try {
 				ret.addChar('{');
+				boolean first = true;
 				for (int i = 0; i < fields.length; i++) {
 					Object value = methods[i].invoke(bean, NULL_ARGS);
 					
@@ -498,7 +499,9 @@ public class JFinalJsonKit {
 						continue ;
 					}
 					
-					if (i > 0) {
+					if (first) {
+						first = false;
+					} else {
 						ret.addChar(',');
 					}
 					
