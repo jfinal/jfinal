@@ -174,6 +174,14 @@ public class JFinalJson extends Json {
 		JFinalJsonKit.setToJsonFactory(toJsonFactory);
 	}
 	
+	/**
+	 * 是否跳过 null 值的字段，配置为 true 值将跳过，默认值为 false
+	 * 本配置作用于 Model、Record、Map、java bean(getter 方法对应的属性) 这四种类型
+	 */
+	public static void setSkipNullValueField(boolean skipNullValueField) {
+		JFinalJsonKit.setSkipNullValueField(skipNullValueField);
+	}
+	
 	public <T> T parse(String jsonString, Class<T> type) {
 		throw new RuntimeException("jfinal " + com.jfinal.core.Const.JFINAL_VERSION + 
 		"默认 json 实现暂不支持 json 到 object 的转换,建议使用 active recrord 的 Generator 生成 base model，" +

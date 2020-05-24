@@ -55,6 +55,9 @@ public class JFinalJsonKit {
 	// 将 Model 当成 Bean 只对 getter 方法进行转换
 	protected static boolean treatModelAsBean = false;
 	
+	// 是否跳过 null 值的字段，不对其进行转换
+	protected static boolean skipNullValueField = false;
+	
 	// 对 Model 和 Record 的字段名进行转换的函数。例如转成驼峰形式对 oracle 支持更友好
 	protected static Function<String, String> modelAndRecordFieldNameConverter = null;
 	
@@ -776,6 +779,10 @@ public class JFinalJsonKit {
 	
 	public static void setToJsonFactory(Function<Object, ToJson<?>> toJsonFactory) {
 		JFinalJsonKit.toJsonFactory = toJsonFactory;
+	}
+	
+	public static void setSkipNullValueField(boolean skipNullValueField) {
+		JFinalJsonKit.skipNullValueField = skipNullValueField;
 	}
 }
 
