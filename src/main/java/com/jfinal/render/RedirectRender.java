@@ -70,7 +70,7 @@ public class RedirectRender extends Render {
 			return ret;
 		}
 		
-		// http 跳过无需处理
+		// 非 https 跳过无需处理
 		if ( ! HttpKit.isHttps(request) ) {
 			return ret;
 		}
