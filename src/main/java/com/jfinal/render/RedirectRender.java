@@ -18,6 +18,7 @@ package com.jfinal.render;
 
 import java.io.IOException;
 import com.jfinal.core.JFinal;
+import com.jfinal.kit.HttpKit;
 
 /**
  * RedirectRender with status: 302 Found.
@@ -27,24 +28,6 @@ public class RedirectRender extends Render {
 	protected String url;
 	protected boolean withQueryString;
 	protected static final String contextPath = getContxtPath();
-	
-	protected static String protocol = null;
-	
-	/**
-	 * 配置重定向时使用的协议，只允许配置为 http 与 https
-	 * 
-	 * 该配置将协议添加到未指定协议的 url 之中，主要用于解决 nginx 代理做 https 时无法重定向到 https 的问题
-	 * 
-	 * 
-	 * 注意：当 url 中已经包含协议时，该配置无效，因为要支持跨域名重定向
-	 *      例如： redirect("https://jfinal.com");
-	 */
-	public static void setProtocol(String protocol) {
-		if (!"http".equalsIgnoreCase(protocol) && !"https".equalsIgnoreCase(protocol)) {
-			throw new IllegalArgumentException("protocol must be \"http\" or \"https\"");
-		}
-		RedirectRender.protocol = protocol.toLowerCase() + "://";
-	}
 	
 	static String getContxtPath() {
 		String cp = JFinal.me().getContextPath();
@@ -83,28 +66,39 @@ public class RedirectRender extends Render {
 		}
 		
 		// 跳过 http/https 已指定过协议类型的 url，用于支持跨域名重定向
-		if (protocol == null || ret.toLowerCase().startsWith("http")) {
+		if (ret.toLowerCase().startsWith("http")) {
+			return ret;
+		}
+		
+		// http 跳过无需处理
+		if ( ! HttpKit.isHttps(request) ) {
 			return ret;
 		}
 		
 		/**
 		 * 支持 https 协议下的重定向
-		 *     https://jfinal.com/feedback/6939
 		 * 
-		 * PS：nginx 层面配置 http 重定向到 https 的方法为：
-		 *     proxy_redirect http:// https://;
+		 * nginx 代理实现 https 的场景，需要对 nginx 进行如下配置：
+		 *     proxy_set_header X-Forwarded-Proto https;
+		 * 或者配置:
+		 *     proxy_set_header X-Forwarded-Proto $scheme;
+		 * 
+		 * 
+		 * PS：nginx 将 http 重定向到 https 的配置为：
+		 *    proxy_redirect http:// https://;
+		 *    注意: 同时支持 http 与 https 的场景需要去除该配置
 		 */
 		String serverName = request.getServerName();
 		
 		int port = request.getServerPort();
-		if (port != 80 && port != 443) {
+		if (port != 443) {
 			serverName = serverName + ":" + port;
 		}
 		
 		if (ret.charAt(0) != '/') {
-			return protocol + serverName + "/" + ret;
+			return "https://" + serverName + "/" + ret;
 		} else {
-			return protocol + serverName + ret;
+			return "https://" + serverName + ret;
 		}
 	}
 	

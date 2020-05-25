@@ -305,6 +305,11 @@ public class HttpKit {
 	
 	/**
 	 * 检测是否为 https 请求
+	 * 
+	 * nginx 代理实现 https 的场景，需要对 nginx 进行如下配置：
+	 *     proxy_set_header X-Forwarded-Proto https;
+	 * 或者配置:
+	 *     proxy_set_header X-Forwarded-Proto $scheme;
 	 */
 	public static boolean isHttps(HttpServletRequest request) {
 		return  "https".equalsIgnoreCase(request.getHeader("X-Forwarded-Proto"))
