@@ -52,6 +52,18 @@ public class RenderManager {
 		this.renderFactory = renderFactory;
 	}
 	
+	/**
+	 * 配置重定向时使用的协议，只允许配置为 http 与 https
+	 * 
+	 * 该配置将协议添加到未指定协议的 url 之中，主要用于解决 nginx 代理做 https 时无法重定向到 https 的问题
+	 * 
+	 * 注意：当 url 中已经包含协议时，该配置无效，因为要支持跨域名重定向
+	 *      例如： redirect("https://jfinal.com");
+	 */
+	public void setRedirectProtocol(String protocol) {
+		RedirectRender.setProtocol(protocol);
+	}
+	
 	public void init(Engine engine, Constants constants, ServletContext servletContext) {
 		this.engine = engine;
 		this.constants = constants;

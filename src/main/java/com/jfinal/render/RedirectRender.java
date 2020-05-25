@@ -28,6 +28,24 @@ public class RedirectRender extends Render {
 	protected boolean withQueryString;
 	protected static final String contextPath = getContxtPath();
 	
+	protected static String protocol = null;
+	
+	/**
+	 * 配置重定向时使用的协议，只允许配置为 http 与 https
+	 * 
+	 * 该配置将协议添加到未指定协议的 url 之中，主要用于解决 nginx 代理做 https 时无法重定向到 https 的问题
+	 * 
+	 * 
+	 * 注意：当 url 中已经包含协议时，该配置无效，因为要支持跨域名重定向
+	 *      例如： redirect("https://jfinal.com");
+	 */
+	public static void setProtocol(String protocol) {
+		if (!"http".equalsIgnoreCase(protocol) && !"https".equalsIgnoreCase(protocol)) {
+			throw new IllegalArgumentException("protocol must be \"http\" or \"https\"");
+		}
+		RedirectRender.protocol = protocol.toLowerCase() + "://";
+	}
+	
 	static String getContxtPath() {
 		String cp = JFinal.me().getContextPath();
 		return ("".equals(cp) || "/".equals(cp)) ? null : cp;
@@ -44,54 +62,50 @@ public class RedirectRender extends Render {
 	}
 	
 	public String buildFinalUrl() {
-		String result;
+		String ret;
 		// 如果一个url为/login/connect?goto=http://www.jfinal.com，则有错误
 		// ^((https|http|ftp|rtsp|mms)?://)$   ==> indexOf 取值为 (3, 5)
 		if (contextPath != null && (url.indexOf("://") == -1 || url.indexOf("://") > 5)) {
-			result = contextPath + url;
+			ret = contextPath + url;
 		} else {
-			result = url;
+			ret = url;
 		}
 		
 		if (withQueryString) {
 			String queryString = request.getQueryString();
 			if (queryString != null) {
-				if (result.indexOf('?') == -1) {
-					result = result + "?" + queryString;
+				if (ret.indexOf('?') == -1) {
+					ret = ret + "?" + queryString;
 				} else {
-					result = result + "&" + queryString;
+					ret = ret + "&" + queryString;
 				}
 			}
 		}
 		
+		// 跳过 http/https 已指定过协议类型的 url，用于支持跨域名重定向
+		if (protocol == null || ret.toLowerCase().startsWith("http")) {
+			return ret;
+		}
 		
 		/**
 		 * 支持 https 协议下的重定向
 		 *     https://jfinal.com/feedback/6939
 		 * 
-		 * 注意：
-		 *     如果是 nginx 做的 https，需要如下配置才能使重定向保持为 https
+		 * PS：nginx 层面配置 http 重定向到 https 的方法为：
 		 *     proxy_redirect http:// https://;
-		 * 
 		 */
-		if (!result.startsWith("http")) {	// 跳过 http/https 已指定过协议类型的 url
-			if ("https".equals(request.getScheme())) {
-				String serverName = request.getServerName();
-				int port = request.getServerPort();
-				if (port != 443) {
-					serverName = serverName + ":" + port;
-				}
-				
-				if (result.charAt(0) != '/') {
-					result = "https://" + serverName + "/" + result;
-				} else {
-					result = "https://" + serverName + result;
-				}
-			}
+		String serverName = request.getServerName();
+		
+		int port = request.getServerPort();
+		if (port != 80 && port != 443) {
+			serverName = serverName + ":" + port;
 		}
 		
-		
-		return result;
+		if (ret.charAt(0) != '/') {
+			return protocol + serverName + "/" + ret;
+		} else {
+			return protocol + serverName + ret;
+		}
 	}
 	
 	public void render() {
