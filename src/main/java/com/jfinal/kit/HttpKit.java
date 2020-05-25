@@ -302,6 +302,15 @@ public class HttpKit {
 	public static String readIncommingRequestData(HttpServletRequest request) {
 		return readData(request);
 	}
+	
+	/**
+	 * 检测是否为 https 请求
+	 */
+	public static boolean isHttps(HttpServletRequest request) {
+		return  "https".equalsIgnoreCase(request.getHeader("X-Forwarded-Proto"))
+				||
+				"https".equalsIgnoreCase(request.getScheme());
+	}
 }
 
 
