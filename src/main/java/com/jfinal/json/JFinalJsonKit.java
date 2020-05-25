@@ -368,8 +368,8 @@ public class JFinalJsonKit {
 			}
 			
 			ret.addMapKey(entry.getKey());
-			ret.addChar(':');
 			
+			ret.addChar(':');
 			
 			if (value != null) {
 				ToJson tj = me.getToJson(value);
@@ -506,6 +506,7 @@ public class JFinalJsonKit {
 					}
 					
 					ret.addStrNoEscape(fields[i]);
+					
 					ret.addChar(':');
 					
 					if (value != null) {
