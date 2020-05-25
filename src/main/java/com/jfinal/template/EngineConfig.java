@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.expr.ast.ExprList;
@@ -36,6 +37,7 @@ import com.jfinal.template.source.FileSourceFactory;
 import com.jfinal.template.source.ISource;
 import com.jfinal.template.source.ISourceFactory;
 import com.jfinal.template.source.StringSource;
+import com.jfinal.template.stat.Compressor;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.OutputDirectiveFactory;
 import com.jfinal.template.stat.Parser;
@@ -50,6 +52,8 @@ public class EngineConfig {
 	public static final String DEFAULT_ENCODING = "UTF-8";
 	
 	WriterBuffer writerBuffer = new WriterBuffer();
+	
+	Compressor compressor = null;
 	
 	private Map<String, Define> sharedFunctionMap = createSharedFunctionMap();		// new HashMap<String, Define>(512, 0.25F);
 	private List<ISource> sharedFunctionSourceList = new ArrayList<ISource>();		// for devMode only
@@ -309,6 +313,15 @@ public class EngineConfig {
 		writerBuffer.setBufferSize(bufferSize);
 	}
 	
+	/**
+	 * 配置自己的 WriterBuffer 实现，配置方法：
+	 * engine.getEngineConfig().setWriterBuffer(...);
+	 */
+	public void setWriterBuffer(WriterBuffer writerBuffer) {
+		Objects.requireNonNull(writerBuffer, "writerBuffer can not be null");
+		this.writerBuffer = writerBuffer;
+	}
+	
 	public String getEncoding() {
 		return encoding;
 	}
@@ -414,6 +427,14 @@ public class EngineConfig {
 	
 	public SharedMethodKit getSharedMethodKit() {
 		return sharedMethodKit;
+	}
+	
+	public void setCompressor(Compressor compressor) {
+		this.compressor = compressor;
+	}
+	
+	public Compressor getCompressor() {
+		return compressor;
 	}
 }
 

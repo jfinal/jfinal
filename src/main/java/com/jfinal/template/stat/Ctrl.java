@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,18 @@ public class Ctrl {
 	private int jump = JUMP_NONE;
 	private int assignmentType = WISDOM_ASSIGNMENT;
 	private boolean nullSafe = false;
+	
+	// 附加对象，可穿透 Scope 传递数据，可传递任意类型数据
+	public Object attachment;
+	
+	public void setAttachment(Object attachment) {
+		this.attachment = attachment;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T getAttachment() {
+		return (T)attachment;
+	}
 	
 	public boolean isJump() {
 		return jump != JUMP_NONE;

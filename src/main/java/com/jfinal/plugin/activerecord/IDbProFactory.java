@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ package com.jfinal.plugin.activerecord;
  * 
  * 注意：每个 ActiveRecordPlugin 对象拥有独立的 IDbProFactory 对象，多数据源使用时注意要对每个 arp 进行配置
  */
+@FunctionalInterface
 public interface IDbProFactory {
 	
 	DbPro getDbPro(String configName);

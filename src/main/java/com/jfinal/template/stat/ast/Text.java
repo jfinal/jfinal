@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,12 @@ package com.jfinal.template.stat.ast;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import com.jfinal.template.EngineConfig;
 import com.jfinal.template.Env;
 import com.jfinal.template.TemplateException;
 import com.jfinal.template.io.IWritable;
 import com.jfinal.template.io.Writer;
+import com.jfinal.template.stat.Compressor;
 import com.jfinal.template.stat.Scope;
 
 /**
@@ -37,9 +39,10 @@ public class Text extends Stat implements IWritable {
 	private char[] chars;
 	
 	// content 初始值在 Lexer 中已确保不为 null
-	public Text(StringBuilder content, String encoding) {
-		this.content = content;
-		this.charset = Charset.forName(encoding);
+	public Text(StringBuilder content, EngineConfig ec) {
+		Compressor c = ec.getCompressor();
+		this.content = (c != null ? c.compress(content) : content);
+		this.charset = Charset.forName(ec.getEncoding());
 		this.bytes = null;
 		this.chars = null;
 	}

@@ -4,7 +4,7 @@
 	
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
-	<version>4.8</version>
+	<version>4.9</version>
 	<packaging>jar</packaging>
 	
 	<name>JFinal</name>
@@ -172,7 +172,7 @@
 		<dependency>
 			<groupId>com.jfinal</groupId>
 			<artifactId>cos</artifactId>
-			<version>2019.8</version>
+			<version>2020.4</version>
 			<scope>provided</scope>
 		</dependency>
 		
@@ -188,6 +188,13 @@
 			<artifactId>fst</artifactId>
 			<version>2.29</version>
 			<scope>provided</scope>
+			
+			<exclusions>
+				<exclusion>
+					<groupId>com.fasterxml.jackson.core</groupId>
+					<artifactId>jackson-core</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		
 		<!--
@@ -203,7 +210,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.10.2</version>
+			<version>2.11.0</version>
 			<scope>provided</scope>
 		</dependency>
 		
@@ -320,5 +327,6 @@
 		</plugins>
 	</build>
 </project>
+
 
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,15 +38,21 @@ public abstract class InterceptorStack implements Interceptor {
 		interList = null;
 	}
 	
-	protected final InterceptorStack addInterceptors(Interceptor... interceptors) {
-		if (interceptors == null || interceptors.length == 0)
+	protected InterceptorStack addInterceptors(Interceptor... interceptors) {
+		if (interceptors == null || interceptors.length == 0) {
 			throw new IllegalArgumentException("Interceptors can not be null");
+		}
 		
-		if (interList == null)
+		if (interList == null) {
 			interList = new ArrayList<Interceptor>();
+		}
 		
-		for (Interceptor ref : interceptors)
+		for (Interceptor ref : interceptors) {
+			if (AopManager.me().isInjectDependency()) {
+				Aop.inject(ref);
+			}
 			interList.add(ref);
+		}
 		
 		return this;
 	}

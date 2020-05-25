@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,20 +54,9 @@ public class StrKit {
 		if (str == null) {
 			return true;
 		}
-		int len = str.length();
-		if (len == 0) {
-			return true;
-		}
-		for (int i = 0; i < len; i++) {
-			switch (str.charAt(i)) {
-			case ' ':
-			case '\t':
-			case '\n':
-			case '\r':
-			// case '\b':
-			// case '\f':
-				break;
-			default:
+		
+		for (int i = 0, len = str.length(); i < len; i++) {
+			if (str.charAt(i) > ' ') {
 				return false;
 			}
 		}
@@ -106,28 +95,67 @@ public class StrKit {
 		return isBlank(str) ? defaultValue : str;
 	}
 	
-	public static String toCamelCase(String stringWithUnderline) {
-		if (stringWithUnderline.indexOf('_') == -1) {
-			return stringWithUnderline;
+	/**
+	 * 将包含下划线字符 '_' 的字符串转换成驼峰格式，不包含下划线则原样返回
+	 */
+	public static String toCamelCase(String str) {
+		return toCamelCase(str, false);
+	}
+	
+	/**
+	 * 字符串转换成驼峰格式
+	 * 
+	 * <pre>
+	 * toLowerCaseAnyway 参数的作用如下：
+	 * 
+	 * 1：当待转换字符串中包含下划线字符 '_' 时，无需关心 toLowerCaseAnyway 参数的值，转换结果始终一样
+	 * 
+	 * 2：当待转换字符串中不包含下划线字符 '_' 时，toLowerCaseAnyway 参数规则如下：
+	 *    true 值:  将待转换字符串全部转换成小与字母，适用于 oralce 数据库字段转换的场景
+	 *              因为 oracle 字段全是大写字母
+	 *                 
+	 *    false 值: 则原样返回待转换字符串，适用于待转换字符串可能原本就是驼峰格式的场景
+	 *              如果原本就是驼峰，全部转成小写字母显然不合理
+	 * </pre>
+	 */
+	public static String toCamelCase(String str, boolean toLowerCaseAnyway) {
+		int len = str.length();
+		if (len <= 1) {
+			return str;
 		}
 		
-		stringWithUnderline = stringWithUnderline.toLowerCase();
-		char[] fromArray = stringWithUnderline.toCharArray();
-		char[] toArray = new char[fromArray.length];
-		int j = 0;
-		for (int i=0; i<fromArray.length; i++) {
-			if (fromArray[i] == '_') {
+		char ch;
+		int index = 0;
+		char[] buf = new char[len];
+		
+		int i = 0;
+		for (; i < len; i++) {
+			ch = str.charAt(i);
+			if (ch == '_') {
 				// 当前字符为下划线时，将指针后移一位，将紧随下划线后面一个字符转成大写并存放
 				i++;
-				if (i < fromArray.length) {
-					toArray[j++] = Character.toUpperCase(fromArray[i]);
+				if (i < len) {
+					ch = str.charAt(i);
+					buf[index] = (
+							index == 0 ?	// 首字母无条件变小写
+							Character.toLowerCase(ch) :
+							Character.toUpperCase(ch)
+						);
+					index++;
 				}
 			}
 			else {
-				toArray[j++] = fromArray[i];
+				buf[index++] = Character.toLowerCase(ch);
 			}
 		}
-		return new String(toArray, 0, j);
+		
+		if (toLowerCaseAnyway) {
+			return new String(buf, 0, index);
+		}
+		
+		// i == index 时，表明字符串中不存在字符 '_'
+		// 无下划线的字符串原本可能就是驼峰形式，所以原样返回
+		return i == index ? str : new String(buf, 0, index);
 	}
 	
 	public static String join(String[] stringArray) {

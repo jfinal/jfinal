@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.jfinal.plugin.activerecord;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -402,8 +403,15 @@ public abstract class Model<M extends Model> implements Serializable {
 	/**
 	 * Get attribute of mysql type: decimal, numeric
 	 */
-	public java.math.BigDecimal getBigDecimal(String attr) {
-		return (java.math.BigDecimal)attrs.get(attr);
+	public BigDecimal getBigDecimal(String attr) {
+		Object n = attrs.get(attr);
+		if (n instanceof BigDecimal) {
+			return (BigDecimal)n;
+		} else if (n != null) {
+			return new BigDecimal(n.toString());
+		} else {
+			return null;
+		}
 	}
 	
 	/**
@@ -673,12 +681,13 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Find model.
 	 */
 	private List<M> find(Config config, Connection conn, String sql, Object... paras) throws Exception {
-		PreparedStatement pst = conn.prepareStatement(sql);
-		config.dialect.fillStatement(pst, paras);
-		ResultSet rs = pst.executeQuery();
-		List<M> result = config.dialect.buildModelList(rs, _getUsefulClass());	// ModelBuilder.build(rs, getUsefulClass());
-		DbKit.close(rs, pst);
-		return result;
+		try (PreparedStatement pst = conn.prepareStatement(sql)) {
+			config.dialect.fillStatement(pst, paras);
+			ResultSet rs = pst.executeQuery();
+			List<M> result = config.dialect.buildModelList(rs, _getUsefulClass());	// ModelBuilder.build(rs, getUsefulClass());
+			DbKit.close(rs);
+			return result;
+		}
 	}
 	
 	protected List<M> find(Config config, String sql, Object... paras) {
@@ -1084,7 +1093,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * 
 	 * <pre>
 	 * 例子：
-	 * dao.template("blog.find", Kv.by("id", 123).find();
+	 * dao.template("blog.find", Kv.by("id", 123)).find();
 	 * </pre>
 	 */
 	public DaoTemplate<M> template(String key, Map data) {
@@ -1116,7 +1125,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * <pre>
 	 * 例子：
 	 * String sql = "select * from blog where id = #para(id)";
-	 * dao.templateByString(sql, Kv.by("id", 123).find();
+	 * dao.templateByString(sql, Kv.by("id", 123)).find();
 	 * </pre>
 	 */
 	public DaoTemplate<M> templateByString(String content, Map data) {

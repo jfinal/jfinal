@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +91,7 @@ class Lexer {
 	 *   #else / #end
 	 *   
 	 * 2：关键字类型指令在获取到关键字以后，必须要正确解析出后续内容，否则抛异常
+	 *    2020-02-28: 该规则改为与 "非关键字指令" 一样
 	 * 
 	 * 3：非关键字类型指令只有在本行内出现 # id ( 三个序列以后，才要求正确解析出后续内容
 	 *    否则当成普通文本 
@@ -167,7 +168,10 @@ class Lexer {
 					paraToken = new ParaToken(para, beginRow);
 					return addIdParaToken(idToken, paraToken);
 				}
-				throw new ParseException("#" + id + " directive requires parentheses \"()\"", new Location(fileName, beginRow));
+				
+				// throw new ParseException("#" + id + " directive requires parentheses \"()\"", new Location(fileName, beginRow));
+				return fail();	// 2020-02-28: 关键字指令在没有左括号的情况下也当作普通文本。支持更多应用场景，例如：jquery id 选择器用法 $("#if")
+				
 			case 11: 	// 用户自定义指令必须有参数
 				skipBlanks();
 				if (peek() == '(') {

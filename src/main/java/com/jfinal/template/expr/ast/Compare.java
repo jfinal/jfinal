@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.jfinal.template.expr.ast;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import com.jfinal.template.TemplateException;
 import com.jfinal.template.expr.Sym;
 import com.jfinal.template.stat.Location;
@@ -26,7 +27,7 @@ import com.jfinal.template.stat.Scope;
 /**
  * Compare
  * 
- * 1：支持 byte short int long float double BigDecimal 的 == != > >= < <= 操作
+ * 1：支持 byte short int long float double BigInteger BigDecimal 的 == != > >= < <= 操作
  * 2：== != 作用于 string，调用其 equals 方法进行比较
  * 3：> >= < <= 可以比较实现了 Comparable 接口的对象
  * 
@@ -56,7 +57,7 @@ public class Compare extends Expr {
 		case EQUAL:
 			return equal(leftValue, rightValue);
 		case NOTEQUAL:
-			return ! equal(leftValue, rightValue);
+			return equal(leftValue, rightValue) ? Boolean.FALSE : Boolean.TRUE;
 		case GT:
 			return gt(leftValue, rightValue);
 		case GE:
@@ -85,7 +86,7 @@ public class Compare extends Expr {
 		if (leftValue instanceof Number && rightValue instanceof Number) {
 			Number l = (Number)leftValue;
 			Number r = (Number)rightValue;
-			int maxType = getMaxType(l, r);
+			int maxType = Arith.getMaxType(l, r);
 			switch (maxType) {
 			case Arith.INT:
 				return l.intValue() == r.intValue();
@@ -100,10 +101,15 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) == Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() == r.doubleValue();
 			case Arith.BIGDECIMAL:
-				BigDecimal[] bd = toBigDecimals(l, r);
+				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) == 0;
+			case Arith.BIGINTEGER:
+				BigInteger[] bi = Arith.toBigIntegers(l, r);
+				return (bi[0]).compareTo(bi[1]) == 0;
+			case Arith.UNKNOWN:
+				throw Arith.unsupportedTypeException(l, r, location);
 			}
-			throw new TemplateException("Equal comparison support types of int long float double and BigDeciaml", location);
+			throw new TemplateException("Equal comparison support types of int long float double BigInteger and BigDeciaml", location);
 		}
 		
 		return Boolean.FALSE;
@@ -114,7 +120,7 @@ public class Compare extends Expr {
 		if (leftValue instanceof Number && rightValue instanceof Number) {
 			Number l = (Number)leftValue;
 			Number r = (Number)rightValue;
-			int maxType = getMaxType(l, r);
+			int maxType = Arith.getMaxType(l, r);
 			switch (maxType) {
 			case Arith.INT:
 				return l.intValue() > r.intValue();
@@ -127,8 +133,13 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) > Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() > r.doubleValue();
 			case Arith.BIGDECIMAL:
-				BigDecimal[] bd = toBigDecimals(l, r);
+				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) > 0;
+			case Arith.BIGINTEGER:
+				BigInteger[] bi = Arith.toBigIntegers(l, r);
+				return (bi[0]).compareTo(bi[1]) > 0;
+			case Arith.UNKNOWN:
+				throw Arith.unsupportedTypeException(l, r, location);
 			}
 			throw new TemplateException("Unsupported operation: " + l.getClass().getSimpleName() + " \">\" " + r.getClass().getSimpleName(), location);
 		}
@@ -147,7 +158,7 @@ public class Compare extends Expr {
 		if (leftValue instanceof Number && rightValue instanceof Number) {
 			Number l = (Number)leftValue;
 			Number r = (Number)rightValue;
-			int maxType = getMaxType(l, r);
+			int maxType = Arith.getMaxType(l, r);
 			switch (maxType) {
 			case Arith.INT:
 				return l.intValue() >= r.intValue();
@@ -160,8 +171,13 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) >= Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() >= r.doubleValue();
 			case Arith.BIGDECIMAL:
-				BigDecimal[] bd = toBigDecimals(l, r);
+				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) >= 0;
+			case Arith.BIGINTEGER:
+				BigInteger[] bi = Arith.toBigIntegers(l, r);
+				return (bi[0]).compareTo(bi[1]) >= 0;
+			case Arith.UNKNOWN:
+				throw Arith.unsupportedTypeException(l, r, location);
 			}
 			throw new TemplateException("Unsupported operation: " + l.getClass().getSimpleName() + " \">=\" " + r.getClass().getSimpleName(), location);
 		}
@@ -180,7 +196,7 @@ public class Compare extends Expr {
 		if (leftValue instanceof Number && rightValue instanceof Number) {
 			Number l = (Number)leftValue;
 			Number r = (Number)rightValue;
-			int maxType = getMaxType(l, r);
+			int maxType = Arith.getMaxType(l, r);
 			switch (maxType) {
 			case Arith.INT:
 				return l.intValue() < r.intValue();
@@ -193,8 +209,13 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) < Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() < r.doubleValue();
 			case Arith.BIGDECIMAL:
-				BigDecimal[] bd = toBigDecimals(l, r);
+				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) < 0;
+			case Arith.BIGINTEGER:
+				BigInteger[] bi = Arith.toBigIntegers(l, r);
+				return (bi[0]).compareTo(bi[1]) < 0;
+			case Arith.UNKNOWN:
+				throw Arith.unsupportedTypeException(l, r, location);
 			}
 			throw new TemplateException("Unsupported operation: " + l.getClass().getSimpleName() + " \"<\" " + r.getClass().getSimpleName(), location);
 		}
@@ -213,7 +234,7 @@ public class Compare extends Expr {
 		if (leftValue instanceof Number && rightValue instanceof Number) {
 			Number l = (Number)leftValue;
 			Number r = (Number)rightValue;
-			int maxType = getMaxType(l, r);
+			int maxType = Arith.getMaxType(l, r);
 			switch (maxType) {
 			case Arith.INT:
 				return l.intValue() <= r.intValue();
@@ -226,8 +247,13 @@ public class Compare extends Expr {
 				// return Double.doubleToLongBits(l.doubleValue()) <= Double.doubleToLongBits(r.doubleValue());
 				return l.doubleValue() <= r.doubleValue();
 			case Arith.BIGDECIMAL:
-				BigDecimal[] bd = toBigDecimals(l, r);
+				BigDecimal[] bd = Arith.toBigDecimals(l, r);
 				return (bd[0]).compareTo(bd[1]) <= 0;
+			case Arith.BIGINTEGER:
+				BigInteger[] bi = Arith.toBigIntegers(l, r);
+				return (bi[0]).compareTo(bi[1]) <= 0;
+			case Arith.UNKNOWN:
+				throw Arith.unsupportedTypeException(l, r, location);
 			}
 			throw new TemplateException("Unsupported operation: " + l.getClass().getSimpleName() + " \"<=\" " + r.getClass().getSimpleName(), location);
 		}
@@ -239,39 +265,6 @@ public class Compare extends Expr {
 		}
 		
 		return checkComparisonValue(leftValue, rightValue);
-	}
-	
-	private int getMaxType(Number obj1, Number obj2) {
-		int t1 = getType(obj1);
-		if (t1 == Arith.BIGDECIMAL) {
-			return Arith.BIGDECIMAL;
-		}
-		int t2 = getType(obj2);
-		return t1 > t2 ? t1 : t2;
-	}
-	
-	private int getType(Number obj) {
-		if (obj instanceof Integer) {
-			return Arith.INT;
-		} else if (obj instanceof Long) {
-			return Arith.LONG;
-		} else if (obj instanceof Float) {
-			return Arith.FLOAT;
-		} else if (obj instanceof Double) {
-			return Arith.DOUBLE;
-		} else if (obj instanceof BigDecimal) {
-			return Arith.BIGDECIMAL;
-		} else if (obj instanceof Short || obj instanceof Byte) {
-			return Arith.INT;	// short byte 用 int 支持，java 表达式亦如此
-		}
-		throw new TemplateException("Unsupported data type: " + obj.getClass().getName(), location);
-	}
-	
-	BigDecimal[] toBigDecimals(Number left, Number right) {
-		BigDecimal[] ret = new BigDecimal[2];
-		ret[0] = (left instanceof BigDecimal ? (BigDecimal)left : new BigDecimal(left.toString()));
-		ret[1] = (right instanceof BigDecimal ? (BigDecimal)right : new BigDecimal(right.toString()));
-		return ret;
 	}
 	
 	private Boolean checkComparisonValue(Object leftValue, Object rightValue) {

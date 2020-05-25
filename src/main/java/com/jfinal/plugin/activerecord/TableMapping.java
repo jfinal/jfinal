@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,9 @@ public class TableMapping {
 	
 	public void putTable(Table table) {
 		if (modelToTableMap.containsKey(table.getModelClass())) {
-			throw new RuntimeException("Model mapping already exists : " + table.getModelClass().getName());
+			// 支持运行时动态添加 Table 映射，不再抛出异常
+			// throw new RuntimeException("Model mapping already exists : " + table.getModelClass().getName());
+			System.err.println("Model mapping already exists : " + table.getModelClass().getName());
 		}
 		
 		modelToTableMap.put(table.getModelClass(), table);

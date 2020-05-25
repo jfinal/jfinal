@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,6 +106,10 @@ public abstract class CPI {
 	
 	public static void setTablePrimaryKey(Table table, String primaryKey) {
 		table.setPrimaryKey(primaryKey);
+	}
+	
+	public static void addModelToConfigMapping(Class<? extends Model> modelClass, Config config) {
+		DbKit.addModelToConfigMapping(modelClass, config);
 	}
 }
 

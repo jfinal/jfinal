@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,6 @@
 
 package com.jfinal.template.expr.ast;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
 import com.jfinal.template.TemplateException;
 import com.jfinal.template.expr.Sym;
 import com.jfinal.template.stat.Location;
@@ -36,16 +32,6 @@ public class Logic extends Expr {
 	private Sym op;
 	private Expr left;		// ! 运算没有 left 参数
 	private Expr right;
-	
-	// 默认为新工作模式
-	private static boolean newWorkMode = true;
-	/**
-	 * 设置为旧工作模式，为了兼容 jfinal 3.3 之前的版本
-	 */
-	@Deprecated
-	public static void setToOldWorkMode() {
-		newWorkMode = false;
-	}
 	
 	/**
 	 * 构造 || && 结点
@@ -107,12 +93,6 @@ public class Logic extends Expr {
 	 * 2：boolean 类型，原值返回
 	 * 3：String、StringBuilder 等一切继承自 CharSequence 类的对象，返回 length > 0
 	 * 4：其它返回 true
-	 * 
-	 * 通过 Logic.setToOldWorkMode() 设置，可支持老版本中的以下四个规则：
-	 * 1：Number 类型，返回 value != 0
-	 * 2：Map、Collection(List被包括在内) 返回 size() > 0
-	 * 3：数组，返回 length > 0
-	 * 4：Iterator 返回 hasNext() 值
 	 */
 	public static boolean isTrue(Object v) {
 		if (v == null) {
@@ -122,36 +102,9 @@ public class Logic extends Expr {
 		if (v instanceof Boolean) {
 			return (Boolean)v;
 		}
+		
 		if (v instanceof CharSequence) {
 			return ((CharSequence)v).length() > 0;
-		}
-		
-		// 如果不是新工作模式，则对下面类型进行判断
-		if ( !newWorkMode ) {
-			if (v instanceof Number) {
-				if (v instanceof Double) {
-					return ((Number)v).doubleValue() != 0;
-				}
-				if (v instanceof Float) {
-					return ((Number)v).floatValue() != 0;
-				}
-				return ((Number)v).intValue() != 0;
-			}
-			
-			// 下面四种类型的判断已提供了 shared method 扩展，用法如下：
-			// #if(notEmpty(object)) 以及 #if(isEmpty(object))
-			if (v instanceof Collection) {
-				return ((Collection<?>)v).size() > 0;
-			}
-			if (v instanceof Map) {
-				return ((Map<?, ?>)v).size() > 0;
-			}
-			if (v.getClass().isArray()) {
-				return Array.getLength(v) > 0;
-			}
-			if (v instanceof Iterator) {
-				return ((Iterator<?>)v).hasNext();
-			}
 		}
 		
 		return true;

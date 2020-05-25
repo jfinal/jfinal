@@ -5,7 +5,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 
 #### JFinal有如下主要特点
 - MVC 架构，设计精巧，使用简单
-- 遵循 COC 原则，零配置，无 XML
+- 遵循 COC 原则，支持零配置，无 XML
 - 独创 Db + Record 模式，灵活便利
 - ActiveRecord 支持，使数据库开发极致快速
 - 极简、强大、高性能模板引擎 Enjoy，十分钟内掌握 90% 用法
@@ -25,7 +25,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 <dependency>
     <groupId>com.jfinal</groupId>
     <artifactId>jfinal</artifactId>
-    <version>4.8</version>
+    <version>4.9</version>
 </dependency>
 ```
 

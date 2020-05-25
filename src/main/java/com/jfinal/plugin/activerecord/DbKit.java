@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,13 +109,17 @@ public final class DbKit {
 		return modelToConfig.get(modelClass);
 	}
 	
-	static final void close(ResultSet rs, Statement st) {
-		if (rs != null) {try {rs.close();} catch (SQLException e) {throw new ActiveRecordException(e);}}
-		if (st != null) {try {st.close();} catch (SQLException e) {throw new ActiveRecordException(e);}}
+	static final void close(ResultSet rs, Statement st) throws SQLException {
+		if (rs != null) {rs.close();}
+		if (st != null) {st.close();}
 	}
 	
-	static final void close(Statement st) {
-		if (st != null) {try {st.close();} catch (SQLException e) {throw new ActiveRecordException(e);}}
+	static final void close(ResultSet rs) throws SQLException {
+		if (rs != null) {rs.close();}
+	}
+	
+	static final void close(Statement st) throws SQLException {
+		if (st != null) {st.close();}
 	}
 	
 	public static Set<Map.Entry<String, Config>> getConfigSet() {

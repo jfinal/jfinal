@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@ import java.util.List;
 /**
  * TableBuilder build the mapping of model between class and table.
  */
-class TableBuilder {
+public class TableBuilder {
 	
-	private JavaType javaType = new JavaType();
+	protected JavaType javaType = new JavaType();
 	
-	void build(List<Table> tableList, Config config) {
+	public void build(List<Table> tableList, Config config) {
 		// 支持 useAsDataTransfer(...) 中的 arp.start() 正常运作
 		if (config.dataSource instanceof NullDataSource) {
 			return ;
@@ -60,7 +60,7 @@ class TableBuilder {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void doBuild(Table table, Connection conn, Config config) throws SQLException {
+	protected void doBuild(Table table, Connection conn, Config config) throws SQLException {
 		table.setColumnTypeMap(config.containerFactory.getAttrsMap());
 		if (table.getPrimaryKey() == null) {
 			table.setPrimaryKey(config.dialect.getDefaultPrimaryKey());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.jfinal.template.stat;
 import java.util.ArrayList;
 import java.util.List;
 import com.jfinal.template.Directive;
+import com.jfinal.template.EngineConfig;
 import com.jfinal.template.Env;
 import com.jfinal.template.expr.ExprParser;
 import com.jfinal.template.expr.ast.ExprList;
@@ -71,7 +72,8 @@ public class Parser {
 	}
 	
 	public StatList parse() {
-		tokenList = new Lexer(content, fileName, env.getEngineConfig().getKeepLineBlankDirectives()).scan();
+		EngineConfig ec = env.getEngineConfig();
+		tokenList = new Lexer(content, fileName, ec.getKeepLineBlankDirectives()).scan();
 		tokenList.add(EOF);
 		StatList statList = statList();
 		if (peek() != EOF) {
@@ -108,7 +110,7 @@ public class Parser {
 		switch (name.symbol) {
 		case TEXT:
 			move();
-			return new Text(((TextToken)name).getContent(), env.getEngineConfig().getEncoding()).setLocation(getLocation(name.row));
+			return new Text(((TextToken)name).getContent(), env.getEngineConfig()).setLocation(getLocation(name.row));
 		case OUTPUT:
 			move();
 			Token para = matchPara(name);

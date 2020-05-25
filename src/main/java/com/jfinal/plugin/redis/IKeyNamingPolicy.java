@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ package com.jfinal.plugin.redis;
  * 例如 Integer、String、OtherType 这些不同类型的对象
  * 选择不同的命名方式，默认命名方式是  Object.toString()
  */
+@FunctionalInterface
 public interface IKeyNamingPolicy {
 	
 	String getKeyName(Object key);

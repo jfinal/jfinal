@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2019, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class FastStringWriter extends Writer {
 	private char[] value;
 	private int len;
 	
-	private static int MAX_BUFFER_SIZE = 1024 * 256;		// 1024 * 64;
+	private static int MAX_BUFFER_SIZE = 1024 * 512;		// 1024 * 64;
 	
 	public static void setMaxBufferSize(int maxBufferSize) {
 		int min = 256;
