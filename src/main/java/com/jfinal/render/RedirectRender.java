@@ -21,6 +21,17 @@ import com.jfinal.core.JFinal;
 
 /**
  * RedirectRender with status: 302 Found.
+ * 
+ * 
+ * 注意：使用 nginx 实现 https 的场景下，解决 https 重定向到 http 的问题，需要在 nginx 中添加如下配置：
+ *      proxy_set_header X-Forwarded-Proto $scheme;
+ *      proxy_set_header X-Forwarded-Port $server_port;
+ *      
+ *      
+ * PS：nginx 将 http 重定向到 https 的配置为：
+ *     proxy_redirect http:// https://;
+ *     注意: 需要同时支持 http 与 https 的场景需要去除该配置
+ *     
  */
 public class RedirectRender extends Render {
 	
@@ -87,7 +98,7 @@ public class RedirectRender extends Render {
 			} else {
 				return "https://" + serverName + ret;
 			}
-		
+			
 		} else {
 			return ret;
 		}
