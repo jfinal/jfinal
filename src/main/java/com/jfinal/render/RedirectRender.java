@@ -18,19 +18,20 @@ package com.jfinal.render;
 
 import java.io.IOException;
 import com.jfinal.core.JFinal;
+import com.jfinal.kit.StrKit;
 
 /**
  * RedirectRender with status: 302 Found.
  * 
  * 
- * 注意：使用 nginx 实现 https 的场景下，解决 https 重定向到 http 的问题，需要在 nginx 中添加如下配置：
+ * 注意：使用 nginx 代理实现 https 的场景，解决 https 被重定向到了 http 的问题，需要在 nginx 中添加如下配置：
  *      proxy_set_header X-Forwarded-Proto $scheme;
  *      proxy_set_header X-Forwarded-Port $server_port;
  *      
  *      
  * PS：nginx 将 http 重定向到 https 的配置为：
  *     proxy_redirect http:// https://;
- *     注意: 需要同时支持 http 与 https 的场景需要去除该配置
+ *     注意: 需要同时支持 http 与 https 的场景不能使用该配置
  *     
  */
 public class RedirectRender extends Render {
@@ -81,15 +82,19 @@ public class RedirectRender extends Render {
 		}
 		
 		/**
-		 * 注意：nginx 配置 https 的场景下，需要使用如下配置:
+		 * 注意：nginx 代理 https 的场景，需要使用如下配置:
 		 *       proxy_set_header X-Forwarded-Proto $scheme;
 		 *       proxy_set_header X-Forwarded-Port $server_port;
 		 */
 		if ("https".equalsIgnoreCase(request.getHeader("X-Forwarded-Proto"))) {
 			String serverName = request.getServerName();
 			
-			Integer port = getForwardedPort();
-			if (port != null) {
+			/**
+			 * 获取 nginx 端通过配置 proxy_set_header X-Forwarded-Port $server_port;
+			 * 传递过来的端口号，保障重定向时端口号是正确的
+			 */
+			String port = request.getHeader("X-Forwarded-Port");
+			if (StrKit.notBlank(port)) {
 				serverName = serverName + ":" + port;
 			}
 			
@@ -101,19 +106,6 @@ public class RedirectRender extends Render {
 			
 		} else {
 			return ret;
-		}
-	}
-	
-	/**
-	 * 获取 nginx 端通过配置 proxy_set_header X-Forwarded-Port $server_port;
-	 * 传递过来的端口号，保障重定向时端口号是正确的
-	 */
-	protected Integer getForwardedPort() {
-		try {
-			int port = Integer.parseInt(request.getHeader("X-Forwarded-Port"));
-			return port > 0 ? port : null;
-		} catch (Exception e) {
-			return null;
 		}
 	}
 	
