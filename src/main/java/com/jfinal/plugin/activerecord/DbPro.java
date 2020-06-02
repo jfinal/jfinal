@@ -17,6 +17,7 @@
 package com.jfinal.plugin.activerecord;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -211,6 +212,20 @@ public class DbPro {
 	
 	public BigDecimal queryBigDecimal(String sql) {
 		return queryBigDecimal(sql, NULL_PARA_ARRAY);
+	}
+	
+	public BigInteger queryBigInteger(String sql, Object... paras) {
+		Object n = queryColumn(sql, paras);
+		if (n instanceof BigInteger) {
+			return (BigInteger)n;
+		} else if (n != null) {
+			return new BigInteger(n.toString());
+		} else {
+			return null;
+		}
+	}
+	public BigInteger queryBigInteger(String sql) {
+		return queryBigInteger(sql, NULL_PARA_ARRAY);
 	}
 	
 	public byte[] queryBytes(String sql, Object... paras) {
