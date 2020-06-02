@@ -224,6 +224,7 @@ public class DbPro {
 			return null;
 		}
 	}
+	
 	public BigInteger queryBigInteger(String sql) {
 		return queryBigInteger(sql, NULL_PARA_ARRAY);
 	}
