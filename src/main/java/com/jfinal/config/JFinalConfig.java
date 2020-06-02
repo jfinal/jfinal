@@ -86,6 +86,23 @@ public abstract class JFinalConfig {
 	protected Prop prop = null;
 	
 	/**
+	 * Use the first found properties file
+	 */
+	public Prop useFirstFound(String... fileNames) {
+		for (String fn : fileNames) {
+			try {
+				prop = new Prop(fn, Const.DEFAULT_ENCODING);
+				return prop;
+			} catch (Exception e) {
+				prop = null;
+				continue ;
+			}
+		}
+		
+		throw new IllegalArgumentException("没有配置文件可被使用");
+	}
+	
+	/**
 	 * Load property file.
 	 * @see #loadPropertyFile(String, String)
 	 */
