@@ -30,7 +30,7 @@ import com.jfinal.kit.StrKit;
  *      
  *      
  * PS：nginx 将 http 重定向到 https 的配置为：
- *     proxy_redirect http:// https://;
+ *     rewrite ^(.*)$ https://$host$1;
  *     注意: 需要同时支持 http 与 https 的场景不能使用该配置
  *     
  */
