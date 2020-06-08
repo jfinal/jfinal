@@ -16,6 +16,7 @@
 
 package com.jfinal.template.ext.directive;
 
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
@@ -73,25 +74,32 @@ public class NumberDirective extends Directive {
 			return ;
 		}
 		
+		RoundingMode roundingMode = env.getEngineConfig().getRoundingMode();
 		if (patternExpr == null) {
-			outputWithoutPattern(writer, value);
+			outputWithoutPattern(value, roundingMode, writer);
 		} else {
-			outputWithPattern(scope, writer, value);
+			outputWithPattern(value, roundingMode, scope, writer);
 		}
 	}
 	
-	private void outputWithoutPattern(Writer writer, Object value) {	
-		String ret = new DecimalFormat().format(value);
+	private void outputWithoutPattern(Object value, RoundingMode roundingMode, Writer writer) {
+		DecimalFormat df = new DecimalFormat();
+		df.setRoundingMode(roundingMode);
+		
+		String ret = df.format(value);
 		write(writer, ret);
 	}
 	
-	private void outputWithPattern(Scope scope, Writer writer, Object value) {
+	private void outputWithPattern(Object value, RoundingMode roundingMode, Scope scope, Writer writer) {
 		Object pattern = patternExpr.eval(scope);
 		if ( !(pattern instanceof String) ) {
 			throw new TemplateException("The sencond parameter pattern of #number directive must be String", location);
 		}
 		
-		String ret = new DecimalFormat((String)pattern).format(value);
+		DecimalFormat df = new DecimalFormat((String)pattern);
+		df.setRoundingMode(roundingMode);
+		
+		String ret = df.format(value);
 		write(writer, ret);
 	}
 }
