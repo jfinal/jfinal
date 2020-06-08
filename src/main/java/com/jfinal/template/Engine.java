@@ -17,6 +17,7 @@
 package com.jfinal.template;
 
 import java.lang.reflect.Method;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 import com.jfinal.kit.HashKit;
@@ -534,6 +535,14 @@ public class Engine {
 	
 	public String getEncoding() {
 		return config.getEncoding();
+	}
+	
+	/**
+	 * 设置 #number 指令与 Arith 中浮点数的舍入规则，默认为 RoundingMode.HALF_UP "四舍五入"
+	 */
+	public Engine setRoundingMode(RoundingMode roundingMode) {
+		config.setRoundingMode(roundingMode);
+		return this;
 	}
 	
 	/**
