@@ -47,7 +47,8 @@ import com.jfinal.upload.UploadFile;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public abstract class Controller {
 	
-	private Action action;
+	// 可通过 CPI.getAction(Controller) 获取
+	Action action;
 	
 	private HttpServletRequest request;
 	private HttpServletResponse response;
@@ -104,10 +105,6 @@ public abstract class Controller {
 	
 	public String getControllerKey() {
 		return action.getControllerKey();
-	}
-	
-	public String getMethodName() {
-		return action.getMethodName();
 	}
 	
 	public String getViewPath() {

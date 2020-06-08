@@ -40,6 +40,10 @@ public class CPI {
 	public static void _clear_(Controller controller) {
 		controller._clear_();
 	}
+	
+	public static Action getAction(Controller controller) {
+		return controller.action;
+	}
 }
 
 
