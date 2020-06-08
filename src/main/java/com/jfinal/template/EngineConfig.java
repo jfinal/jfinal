@@ -17,6 +17,7 @@
 package com.jfinal.template;
 
 import java.lang.reflect.Method;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import com.jfinal.kit.StrKit;
+import com.jfinal.template.expr.ast.Arith;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.SharedMethodKit;
 import com.jfinal.template.ext.directive.*;
@@ -73,6 +75,9 @@ public class EngineConfig {
 	private String baseTemplatePath = null;
 	private String encoding = DEFAULT_ENCODING;
 	private String datePattern = "yyyy-MM-dd HH:mm";
+	
+	// 浮点数输出与运算时使用的舍入模式，默认值为 "四舍五入"
+	private RoundingMode roundingMode = RoundingMode.HALF_UP;
 	
 	public EngineConfig() {
 		// 内置指令 #() 与 #include() 需要配置，保留指令所在行前后空白字符以及行尾换行字符 '\n'
@@ -435,6 +440,18 @@ public class EngineConfig {
 	
 	public Compressor getCompressor() {
 		return compressor;
+	}
+	
+	/**
+	 * 设置 #number 指令与 Arith 中浮点数的舍入规则，默认为 RoundingMode.HALF_UP "四舍五入"
+	 */
+	public void setRoundingMode(RoundingMode roundingMode) {
+		this.roundingMode = roundingMode;
+		Arith.setBigDecimalDivideRoundingMode(roundingMode);
+	}
+	
+	public RoundingMode getRoundingMode() {
+		return roundingMode;
 	}
 }
 
