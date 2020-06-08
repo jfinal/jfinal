@@ -30,6 +30,8 @@ import com.jfinal.template.stat.Scope;
 /**
  * #number 数字格式化输出指令
  * 
+ * 优化时要注意 DecimalFormat 并非线程安全
+ * 
  * 两种用法：
  * 1：#number(n) 用默认 pattern 输出变量中的值
  * 2：#number(n, "#.##") 用第二个参数指定的 pattern 输出变量中的值
