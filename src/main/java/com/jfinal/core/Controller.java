@@ -106,6 +106,10 @@ public abstract class Controller {
 		return action.getControllerKey();
 	}
 	
+	public String getMethodName() {
+		return action.getMethodName();
+	}
+	
 	public String getViewPath() {
 		return action.getViewPath();
 	}
