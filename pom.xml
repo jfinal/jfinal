@@ -4,7 +4,7 @@
 	
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
-	<version>4.9</version>
+	<version>4.9.1</version>
 	<packaging>jar</packaging>
 	
 	<name>JFinal</name>
@@ -118,7 +118,7 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>1.2.68</version>
+			<version>1.2.70</version>
 			<scope>provided</scope>
 		</dependency>
 		
