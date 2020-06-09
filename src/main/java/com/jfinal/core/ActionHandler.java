@@ -33,7 +33,6 @@ import com.jfinal.render.RenderManager;
 public class ActionHandler extends Handler {
 	
 	protected boolean devMode;
-	protected boolean injectDependency;
 	protected ActionMapping actionMapping;
 	protected ControllerFactory controllerFactory;
 	protected static final RenderManager renderManager = RenderManager.me();
@@ -42,7 +41,6 @@ public class ActionHandler extends Handler {
 	protected void init(ActionMapping actionMapping, Constants constants) {
 		this.actionMapping = actionMapping;
 		this.devMode = constants.getDevMode();
-		this.injectDependency = constants.getInjectDependency();
 		this.controllerFactory = constants.getControllerFactory();
 	}
 	
@@ -81,7 +79,6 @@ public class ActionHandler extends Handler {
 		try {
 			// Controller controller = action.getControllerClass().newInstance();
 			controller = controllerFactory.getController(action.getControllerClass());
-			if (injectDependency) {com.jfinal.aop.Aop.inject(controller);}
 			controller._init_(action, request, response, urlPara[0]);
 			
 			if (devMode) {
