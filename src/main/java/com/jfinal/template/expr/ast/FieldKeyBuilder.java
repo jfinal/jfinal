@@ -94,16 +94,16 @@ public abstract class FieldKeyBuilder {
 	 */
 	public static class FieldKey {
 		
-		final long classHash;
+		final int classHash;
 		final long fieldHash;
 		
-		public FieldKey(long classHash, long fieldHash) {
+		public FieldKey(int classHash, long fieldHash) {
 			this.classHash = classHash;
 			this.fieldHash = fieldHash;
 		}
 		
 		public int hashCode() {
-			return (int)(classHash ^ fieldHash);
+			return classHash ^ (int)fieldHash;
 		}
 		
 		/**
