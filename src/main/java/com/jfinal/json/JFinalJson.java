@@ -55,6 +55,12 @@ public class JFinalJson extends Json {
 		
 		JsonResult ret = TL.get();
 		try {
+			
+			// 重入型转换场景，需要新建对象使用
+			if (ret.isInUse()) {
+				ret = new JsonResult();
+			}
+			
 			// 优先使用对象级的属性 datePattern, 然后才是全局性的 defaultDatePattern
 			String dp = datePattern != null ? datePattern : getDefaultDatePattern();
 			ret.init(dp, timestampPattern);

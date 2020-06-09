@@ -583,23 +583,36 @@ public class JFinalJsonKit {
 		
 		String datePattern;
 		String timestampPattern;
+		boolean inUse = false;
 		
 		public void init(String datePattern, String timestampPattern) {
 			this.datePattern = datePattern;
 			this.timestampPattern = timestampPattern;
+			inUse = true;
 		}
 		
-		public String toString() {
-			return sb.toString();
+		// 用来判断当前是否处于重入型转换状态，如果为 true，则要使用 new JsonResult()
+		public boolean isInUse() {
+			return inUse;
 		}
 		
 		public void clear() {
+			inUse = false;
+			
 			// 释放空间占用过大的缓存
 			if (sb.length() > maxBufferSize) {
 				sb = new StringBuilder(Math.max(1024, maxBufferSize / 2));
 			} else {
 				sb.setLength(0);
 			}
+		}
+		
+		public String toString() {
+			return sb.toString();
+		}
+		
+		public int length() {
+			return sb.length();
 		}
 		
 		public void addChar(char ch) {
