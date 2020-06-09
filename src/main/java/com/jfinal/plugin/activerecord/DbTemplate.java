@@ -16,6 +16,8 @@
 
 package com.jfinal.plugin.activerecord;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -96,6 +98,14 @@ public class DbTemplate {
 	
 	public Long queryLong() {
 		return db.queryLong(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public BigDecimal queryBigDecimal() {
+		return db.queryBigDecimal(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public BigInteger queryBigInteger() {
+		return db.queryBigInteger(sqlPara.getSql(), sqlPara.getPara());
 	}
 	
 	// ---------
