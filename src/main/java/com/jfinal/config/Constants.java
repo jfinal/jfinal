@@ -197,6 +197,7 @@ final public class Constants {
 	}
 	
 	public ControllerFactory getControllerFactory() {
+		controllerFactory.setInjectDependency(getInjectDependency());
 		return controllerFactory;
 	}
 	
@@ -211,6 +212,7 @@ final public class Constants {
 	 */
 	public void setInjectDependency(boolean injectDependency) {
 		AopManager.me().setInjectDependency(injectDependency);
+		controllerFactory.setInjectDependency(injectDependency);
 	}
 	
 	public boolean getInjectDependency() {

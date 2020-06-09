@@ -21,8 +21,22 @@ package com.jfinal.core;
  */
 public class ControllerFactory {
 	
+	protected boolean injectDependency = false;
+	
+	public void setInjectDependency(boolean injectDependency) {
+		this.injectDependency = injectDependency;
+	}
+	
+	public boolean isInjectDependency() {
+		return injectDependency;
+	}
+	
 	public Controller getController(Class<? extends Controller> controllerClass) throws ReflectiveOperationException {
-		return controllerClass.newInstance();
+		Controller ret = controllerClass.newInstance();
+		if (injectDependency) {
+			com.jfinal.aop.Aop.inject(ret);
+		}
+		return ret;
 	}
 	
 	/**
