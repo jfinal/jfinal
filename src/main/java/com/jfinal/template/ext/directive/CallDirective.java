@@ -55,14 +55,14 @@ public class CallDirective extends Directive {
 	public void setExprList(ExprList exprList) {
 		int len = exprList.length();
 		if (len == 0) {
-			throw new ParseException("模板函数名不能缺失", location);
+			throw new ParseException("Template function name required", location);
 		}
 		
 		int index = 0;
 		Expr expr = exprList.getExpr(index);
 		if (expr instanceof Const && ((Const)expr).isBoolean()) {
 			if (len == 1) {
-				throw new ParseException("模板函数名不能缺失", location);
+				throw new ParseException("Template function name required", location);
 			}
 			
 			nullSafe = ((Const)expr).getBoolean();
@@ -84,11 +84,11 @@ public class CallDirective extends Directive {
 			if (nullSafe) {
 				return ;
 			}
-			throw new TemplateException("模板函数名为 null", location);
+			throw new TemplateException("Template function name can not be null", location);
 		}
 		
 		if (!(funcNameValue instanceof String)) {
-			throw new TemplateException("模板函数名必须是字符串", location);
+			throw new TemplateException("Template function name must be String", location);
 		}
 		
 		Define func = env.getFunction(funcNameValue.toString());
@@ -97,7 +97,7 @@ public class CallDirective extends Directive {
 			if (nullSafe) {
 				return ;
 			}
-			throw new TemplateException("模板函数未找到 : " + funcNameValue, location);
+			throw new TemplateException("Template function not found : " + funcNameValue, location);
 		}
 		
 		func.call(env, scope, paraExpr, writer);
