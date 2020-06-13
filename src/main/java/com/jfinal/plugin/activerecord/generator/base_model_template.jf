@@ -40,7 +40,7 @@ public abstract class #(tableMeta.baseModelName)<M extends #(tableMeta.baseModel
 	public #(cm.javaType) get#(firstCharToUpperCase(cm.attrName))() {
 		return #(getterOfModel)("#(cm.name)");
 	}
-
+	
 #end
 }
 
