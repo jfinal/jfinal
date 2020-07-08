@@ -156,7 +156,7 @@ public class AopManager {
 	 * 
 	 * 以上代码的参数 "com.xxx.MyService" 可通过外部配置文件传入，便于通过配置文件切换接口的
 	 * 实现类：
-	 * AopManager.me().addMapping(IService.class, PropKit.get("ServiceImpl");
+	 * AopManager.me().addMapping(IService.class, PropKit.get("ServiceImpl"));
 	 * 
 	 * </pre>
 	 */
