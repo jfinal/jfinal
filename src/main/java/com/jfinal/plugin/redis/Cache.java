@@ -597,8 +597,14 @@ public class Cache {
 	public Long hgetCounter(Object key, Object field) {
 		Jedis jedis = getJedis();
 		try {
-			String ret = jedis.hget(keyNamingPolicy.getKeyName(key), keyNamingPolicy.getKeyName(field));
-			return ret != null ? Long.parseLong(ret) : null;
+			Object ret = valueFromBytes(jedis.hget(keyToBytes(keyNamingPolicy.getKeyName(key)), fieldToBytes(keyNamingPolicy.getKeyName(field))));
+			if (ret instanceof String) {
+				return Long.parseLong((String)ret);
+			} else if (ret instanceof Long) {
+				return (Long)ret;
+			} else {
+				return null;
+			}
 		}
 		finally {close(jedis);}
 	}
@@ -649,8 +655,14 @@ public class Cache {
 	public Long getCounter(Object key) {
 		Jedis jedis = getJedis();
 		try {
-			String ret = (String)jedis.get(keyNamingPolicy.getKeyName(key));
-			return ret != null ? Long.parseLong(ret) : null;
+			Object ret = valueFromBytes(jedis.get(keyToBytes(keyNamingPolicy.getKeyName(key))));
+			if (ret instanceof String) {
+				return Long.parseLong((String)ret);
+			} else if (ret instanceof Long) {
+				return (Long)ret;
+			} else {
+				return null;
+			}
 		}
 		finally {close(jedis);}
 	}
