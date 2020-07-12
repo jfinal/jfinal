@@ -83,6 +83,7 @@ public class Unary extends Expr {
 				return ((BigInteger)n).negate();
 			}
 			if (n instanceof Short || n instanceof Byte) {
+				// short、byte 取负时转换为 int 型， java 语言亦如此
 				return Integer.valueOf(-((Number)n).intValue());
 			}
 			
