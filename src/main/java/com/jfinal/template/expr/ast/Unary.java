@@ -17,6 +17,7 @@
 package com.jfinal.template.expr.ast;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import com.jfinal.template.TemplateException;
 import com.jfinal.template.expr.Sym;
 import com.jfinal.template.stat.Location;
@@ -55,7 +56,7 @@ public class Unary extends Expr {
 			throw new TemplateException("The parameter of \"" + op.value() + "\" operator can not be blank", location);
 		}
 		if (! (value instanceof Number) ) {
-			throw new TemplateException(op.value() + " operator only support int long float double BigDecimal type", location);
+			throw new TemplateException(op.value() + " operator only support int long float double short byte BigDecimal BigInteger type", location);
 		}
 		
 		switch (op) {
@@ -78,6 +79,13 @@ public class Unary extends Expr {
 			if (n instanceof BigDecimal) {
             	return ((BigDecimal)n).negate();
 			}
+			if (n instanceof BigInteger) {
+				return ((BigInteger)n).negate();
+			}
+			if (n instanceof Short || n instanceof Byte) {
+				return Integer.valueOf(-((Number)n).intValue());
+			}
+			
             throw new TemplateException("Unsupported data type: " + n.getClass().getName(), location);
 		default :
 			throw new TemplateException("Unsupported operator: " + op.value(), location);
