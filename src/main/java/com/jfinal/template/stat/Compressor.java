@@ -49,10 +49,12 @@ public class Compressor {
 		
 		// 仅包含一个字符 '\n'，需单独处理，否则会返回空字符串 ""
 		// 测试用例: "#date()\n#date()" "#(1)\n#(2)"
-		if (len == 1 /* && content.charAt(0) == '\n' */) {
-			// 仅 '\n' 需替换为 separator，空白字符无需替换，因为第一行空白字符已经约定不压缩
+		if (len == 1) {
+			// 换行字符 '\n' 替换为 separator。空格除外的空白字符替换为 ' ' 压缩效果更好，例如 '\t'
 			if (content.charAt(0) == '\n') {
 				content.setCharAt(0, separator);
+			} else if (content.charAt(0) < ' ') {
+				content.setCharAt(0, ' ');
 			}
 			return content;
 		}
