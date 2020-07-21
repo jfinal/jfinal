@@ -47,9 +47,13 @@ public class Compressor {
 	public StringBuilder compress(StringBuilder content) {
 		int len = content.length();
 		
-		// 仅包含一个字符 '\n'，原样返回，否则会返回空字符串
+		// 仅包含一个字符 '\n'，需单独处理，否则会返回空字符串 ""
 		// 测试用例: "#date()\n#date()" "#(1)\n#(2)"
 		if (len == 1 /* && content.charAt(0) == '\n' */) {
+			// 仅 '\n' 需替换为 separator，空白字符无需替换，因为第一行空白字符已经约定不压缩
+			if (content.charAt(0) == '\n') {
+				content.setCharAt(0, separator);
+			}
 			return content;
 		}
 		
