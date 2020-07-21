@@ -82,6 +82,8 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	protected int maxPoolPreparedStatementPerConnectionSize = -1;
 	
 	protected Integer defaultTransactionIsolation = null;
+	protected Integer validationQueryTimeout = null;
+	protected Boolean keepAlive = null;
 	
 	// 配置监控统计拦截的filters
 	protected String filters;	// 监控统计："stat"    防SQL注入："wall"     组合使用： "stat,wall"
@@ -216,6 +218,12 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		if (defaultTransactionIsolation != null) {
 			ds.setDefaultTransactionIsolation(defaultTransactionIsolation);
 		}
+		if (validationQueryTimeout != null) {
+			ds.setValidationQueryTimeout(validationQueryTimeout);
+		}
+		if (keepAlive != null) {
+			ds.setKeepAlive(keepAlive);
+		}
 		
 		boolean hasSetConnectionProperties = false;
 		if (StrKit.notBlank(filters)){
@@ -313,6 +321,16 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	
 	public DruidPlugin setDefaultTransactionIsolation(int defaultTransactionIsolation) {
 		this.defaultTransactionIsolation = defaultTransactionIsolation;
+		return this;
+	}
+	
+	public DruidPlugin setValidationQueryTimeout(int validationQueryTimeout) {
+		this.validationQueryTimeout = validationQueryTimeout;
+		return this;
+	}
+	
+	public DruidPlugin setKeepAlive(boolean keepAlive) {
+		this.keepAlive = keepAlive;
 		return this;
 	}
 	
