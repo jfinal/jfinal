@@ -83,6 +83,7 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	
 	protected Integer defaultTransactionIsolation = null;
 	protected Integer validationQueryTimeout = null;
+	protected Integer timeBetweenLogStatsMillis = null;
 	protected Boolean keepAlive = null;
 	
 	// 配置监控统计拦截的filters
@@ -221,6 +222,9 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		if (validationQueryTimeout != null) {
 			ds.setValidationQueryTimeout(validationQueryTimeout);
 		}
+		if (timeBetweenLogStatsMillis != null) {
+			ds.setTimeBetweenLogStatsMillis(timeBetweenLogStatsMillis);
+		}
 		if (keepAlive != null) {
 			ds.setKeepAlive(keepAlive);
 		}
@@ -326,6 +330,11 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	
 	public DruidPlugin setValidationQueryTimeout(int validationQueryTimeout) {
 		this.validationQueryTimeout = validationQueryTimeout;
+		return this;
+	}
+	
+	public DruidPlugin setTimeBetweenLogStatsMillis(int timeBetweenLogStatsMillis) {
+		this.timeBetweenLogStatsMillis = timeBetweenLogStatsMillis;
 		return this;
 	}
 	
