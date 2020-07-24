@@ -17,6 +17,7 @@
 package com.jfinal.render;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,7 +58,9 @@ public class TemplateRender extends Render {
 		
 		try {
 			
-			engine.getTemplate(view).render(data, response.getOutputStream());
+			OutputStream os = response.getOutputStream();
+			engine.getTemplate(view).render(data, os);
+			os.flush();
 			
 		} catch (RuntimeException e) {	// 捕获 ByteWriter.close() 抛出的 RuntimeException
 			Throwable cause = e.getCause();
