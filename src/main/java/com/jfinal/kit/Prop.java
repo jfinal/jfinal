@@ -168,13 +168,14 @@ public class Prop {
 	}
 	
 	public String get(String key) {
+		// 下面这行代码只要 key 存在，就不会返回 null。未给定 value 或者给定一个或多个空格都将返回 ""
 		String value = properties.getProperty(key);
-		return value != null ? value.trim() : null;
+		return value != null && value.length() != 0 ? value.trim() : null;
 	}
 	
 	public String get(String key, String defaultValue) {
 		String value = properties.getProperty(key);
-		return value != null ? value.trim() : defaultValue;
+		return value != null && value.length() != 0 ? value.trim() : defaultValue;
 	}
 	
 	public Integer getInt(String key) {
