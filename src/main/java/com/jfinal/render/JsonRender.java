@@ -138,7 +138,7 @@ public class JsonRender extends Render {
 			response.setContentType(forIE ? contentTypeForIE : contentType);
 			writer = response.getWriter();
 			writer.write(jsonText);
-			// writer.flush();
+			writer.flush();
 		} catch (IOException e) {
 			throw new RenderException(e);
 		}
