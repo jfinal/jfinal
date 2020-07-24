@@ -168,11 +168,13 @@ public class Prop {
 	}
 	
 	public String get(String key) {
-		return properties.getProperty(key);
+		String value = properties.getProperty(key);
+		return value != null ? value.trim() : null;
 	}
 	
 	public String get(String key, String defaultValue) {
-		return properties.getProperty(key, defaultValue);
+		String value = properties.getProperty(key);
+		return value != null ? value.trim() : defaultValue;
 	}
 	
 	public Integer getInt(String key) {
