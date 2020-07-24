@@ -27,6 +27,7 @@ import java.util.Set;
 import com.jfinal.plugin.redis.serializer.ISerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPubSub;
 
 /**
  * Cache.
@@ -1186,7 +1187,66 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
+	/**
+	 * subscribe channel [channel …] 订阅一个或多个频道 <br/>
+	 * PS：<br/>
+	 *    取消订阅在 jedisPubSub 中的 unsubscribe 方法。<br/>
+	 *    重要：订阅后代码会阻塞监听发布的内容<br/>
+	 */
+	public void subscribe(final JedisPubSub jedisPubSub, final String... channels) {
+		Jedis jedis = getJedis();
+		try {
+			jedis.subscribe(jedisPubSub, channels);
+		}
+		finally {close(jedis);}
+	}
+
+	/**
+	 * subscribe channel [channel …] 订阅一个或多个频道<br/>
+	 * PS：<br/>
+	 *    取消订阅在 jedisPubSub 中的 unsubscribe 方法。<br/>
+	 */
+	public JedisPubSub subscribeThread(final JedisPubSub jedisPubSub, final String... channels) {
+		new Thread(() -> subscribe(jedisPubSub, channels)).start();
+		return jedisPubSub;
+	}
+
+	/**
+	 * psubscribe pattern [pattern …] 订阅给定模式相匹配的所有频道<br/>
+	 * PS：<br/>
+	 *     取消订阅在 jedisPubSub 中的 punsubscribe 方法。<br/>
+	 *     重要：订阅后代码会阻塞监听发布的内容<br/>
+	 */
+	public void psubscribe(final JedisPubSub jedisPubSub, final String... patterns) {
+		Jedis jedis = getJedis();
+		try {
+			jedis.psubscribe(jedisPubSub, patterns);
+		}
+		finally {close(jedis);}
+	}
+
+	/**
+	 * psubscribe pattern [pattern …] 订阅给定模式相匹配的所有频道<br/>
+	 * PS：<br/>
+	 *     取消订阅在 jedisPubSub 中的 punsubscribe 方法。<br/>
+	 */
+	public JedisPubSub psubscribeThread(final JedisPubSub jedisPubSub, final String... patterns) {
+		new Thread(() -> psubscribe(jedisPubSub, patterns)).start();
+		return jedisPubSub;
+	}
+
+	/**
+	 * publish channel message 给指定的频道发消息
+	 */
+	public Long publish(final String channel, final String message) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.publish(channel, message);
+		}
+		finally {close(jedis);}
+	}
+
 	// ---------
 	
 	protected byte[] keyToBytes(Object key) {

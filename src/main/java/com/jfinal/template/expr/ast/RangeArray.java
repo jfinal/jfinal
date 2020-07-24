@@ -68,12 +68,12 @@ public class RangeArray extends Expr {
 		
 		final int start;
 		final int size;
-		final int increment;
+		final boolean increase;
 		final Location location;
 		
 		public RangeList(int start, int end, Location location) {
 			this.start = start;
-			this.increment = start <= end ? 1 : -1;
+			this.increase = (start <= end);
 			this.size = Math.abs(end - start) + 1;
 			this.location = location;
 		}
@@ -82,7 +82,7 @@ public class RangeArray extends Expr {
 			if (index < 0 || index >= size) {
 				throw new TemplateException("Index out of bounds. Index: " + index + ", Size: " + size, location);
 			}
-			return start + index * increment;
+			return increase ? start + index : start - index;
 		}
 		
 		public int size() {

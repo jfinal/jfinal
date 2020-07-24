@@ -34,7 +34,12 @@ public class FastJson extends Json {
 		SerializeConfig.getGlobalInstance().put(Record.class, new FastJsonRecordSerializer());
 		
 		// 完全禁用 autoType，提升安全性
-		ParserConfig.getGlobalInstance().setSafeMode(true);
+		try {
+			ParserConfig.getGlobalInstance().setSafeMode(true);
+		} catch (Exception e) {
+			// 老版本 fastjson 无 setSafeMode(boolean) 方法
+			com.jfinal.kit.LogKit.logNothing(e);
+		}
 	}
 	
 	public static FastJson getJson() {

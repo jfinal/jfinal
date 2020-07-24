@@ -47,8 +47,6 @@ public class EscapeDirective extends Directive {
 					writer.write((Double)value);
 				} else if (c == Float.class) {
 					writer.write((Float)value);
-				} else if (c == Short.class) {
-					writer.write((Short)value);
 				} else {
 					writer.write(value.toString());
 				}
