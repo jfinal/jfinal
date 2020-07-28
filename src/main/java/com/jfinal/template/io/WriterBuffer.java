@@ -24,7 +24,7 @@ public class WriterBuffer {
 	private static final int MIN_BUFFER_SIZE = 64;					// 缓冲区最小 64 字节
 	private static final int MAX_BUFFER_SIZE = 1024 * 1024 * 2;		// 缓冲区最大 2M 字节
 	
-	private int bufferSize = 2048;									// 缓冲区大小
+	private int bufferSize = 1024;									// 缓冲区大小
 	
 	private EncoderFactory encoderFactory = new EncoderFactory();
 	
