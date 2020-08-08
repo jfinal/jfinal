@@ -47,10 +47,6 @@ public class DateDirective extends Directive {
 	
 	public void setExprList(ExprList exprList) {
 		int paraNum = exprList.length();
-		if (paraNum > 2) {
-			throw new ParseException("Wrong number parameter of #date directive, two parameters allowed at most", location);
-		}
-		
 		if (paraNum == 0) {
 			this.dateExpr = null;
 			this.patternExpr = null;
@@ -60,6 +56,8 @@ public class DateDirective extends Directive {
 		} else if (paraNum == 2) {
 			this.dateExpr = exprList.getExpr(0);
 			this.patternExpr = exprList.getExpr(1);
+		} else {
+			throw new ParseException("Wrong number parameter of #date directive, two parameters allowed at most", location);
 		}
 	}
 	
