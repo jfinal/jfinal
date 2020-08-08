@@ -16,7 +16,6 @@
 
 package com.jfinal.template.ext.directive;
 
-import java.io.IOException;
 import java.util.Date;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
@@ -54,7 +53,7 @@ public class NowDirective extends Directive {
 		
 		try {
 			writer.write(new Date(), datePattern);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}
 	}
