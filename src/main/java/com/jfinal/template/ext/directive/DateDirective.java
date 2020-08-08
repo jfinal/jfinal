@@ -70,7 +70,7 @@ public class DateDirective extends Directive {
 		if (dateExpr != null) {
 			date = dateExpr.eval(scope);
 		} else {
-			date = new Date();;
+			date = new Date();
 		}
 		
 		if (patternExpr != null) {
@@ -97,10 +97,10 @@ public class DateDirective extends Directive {
 			} else if (date != null) {
 				throw new TemplateException("The first parameter of #date directive can not be " + date.getClass().getName(), location);
 			}
-		
-		} catch(TemplateException e) {
+			
+		} catch (TemplateException e) {
 			throw e;
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}
 	}
