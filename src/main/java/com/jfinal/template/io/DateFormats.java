@@ -26,7 +26,7 @@ import java.util.Map;
 public class DateFormats {
 	
 	/**
-	 * SimpleDateFormat 非线程安全，结合 WriterBuffer 中的 ThreadLocal 才能确保线程安全
+	 * SimpleDateFormat 非线程安全，结合 WriterBuffer 中的 ThreadLocal 确保线程安全
 	 */
 	private Map<String, SimpleDateFormat> map = new HashMap<String, SimpleDateFormat>(16, 0.25F);
 	
