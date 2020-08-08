@@ -58,6 +58,13 @@ public abstract class Writer {
 		String str = formats.getDateFormat(datePattern).format(date);
 		write(str, 0, str.length());
 	}
+	
+	/**
+	 * 格式化输出 LocalDateTime、LocalDate、LocalTime
+	 */
+	public void write(java.time.temporal.Temporal temporal, String pattern) throws IOException {
+		write(com.jfinal.kit.TimeKit.getFormatter(pattern).format(temporal));
+	}
 }
 
 
