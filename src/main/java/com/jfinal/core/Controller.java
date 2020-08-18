@@ -167,7 +167,7 @@ public abstract class Controller {
 	public String getPara(String name) {
 		// return request.getParameter(name);
 		String result = request.getParameter(name);
-		return "".equals(result) ? null : result;
+		return result != null && result.length() != 0 ? result : null;
 	}
 	
 	/**
