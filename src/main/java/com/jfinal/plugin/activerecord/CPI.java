@@ -67,6 +67,10 @@ public abstract class CPI {
 	public static <T> List<T> query(String configName, Connection conn, String sql, Object... paras) throws SQLException {
 		return Db.query(DbKit.getConfig(configName), conn, sql, paras);
 	}
+
+	public static <T> List<T> query(Config config, Connection conn, String sql, Object... paras) throws SQLException {
+		return Db.query(config, conn, sql, paras);
+	}
 	
 	/**
 	 * Return the columns map of the record
