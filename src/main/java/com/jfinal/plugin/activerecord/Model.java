@@ -680,7 +680,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	/**
 	 * Find model.
 	 */
-	private List<M> find(Config config, Connection conn, String sql, Object... paras) throws Exception {
+	List<M> find(Config config, Connection conn, String sql, Object... paras) throws Exception {
 		try (PreparedStatement pst = conn.prepareStatement(sql)) {
 			config.dialect.fillStatement(pst, paras);
 			ResultSet rs = pst.executeQuery();

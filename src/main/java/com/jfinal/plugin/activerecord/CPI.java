@@ -92,6 +92,10 @@ public abstract class CPI {
 		return Db.find(DbKit.getConfig(configName), conn, sql, paras);
 	}
 	
+	public static List<Model> find(Model model, Config config, Connection conn, String sql, Object... paras) throws Exception {
+		return model.find(config, conn, sql, paras);
+	}
+	
 	public static Page<Record> paginate(Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
 		return Db.paginate(DbKit.config, conn, pageNumber, pageSize, select, sqlExceptSelect, paras);
 	}
