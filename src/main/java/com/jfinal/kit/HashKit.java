@@ -25,7 +25,7 @@ public class HashKit {
 	
 	private static final java.security.SecureRandom random = new java.security.SecureRandom();
 	private static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
-	private static final char[] CHAR_ARRAY = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+	private static final char[] CHAR_ARRAY = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 	
 	public static long fnv1a64(String key) {
 		long hash = FNV_OFFSET_BASIS_64;
