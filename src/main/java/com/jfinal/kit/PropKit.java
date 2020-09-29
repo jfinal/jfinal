@@ -220,6 +220,14 @@ public class PropKit {
 		return getProp().getLong(key, defaultValue);
 	}
 	
+	public static Double getDouble(String key) {
+		return getProp().getDouble(key);
+	}
+	
+	public static Double getDouble(String key, Double defaultValue) {
+		return getProp().getDouble(key, defaultValue);
+	}
+	
 	public static Boolean getBoolean(String key) {
 		return getProp().getBoolean(key);
 	}
