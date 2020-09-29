@@ -55,6 +55,8 @@ public interface Const {
 	
 	ControllerFactory DEFAULT_CONTROLLER_FACTORY = new ControllerFactory();
 	
+	ActionReporter DEFAULT_ACTION_REPORTER = new ActionReporter();
+	
 	boolean DEFAULT_INJECT_DEPENDENCY = false;
 }
 
