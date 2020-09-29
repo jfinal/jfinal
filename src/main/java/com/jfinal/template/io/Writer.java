@@ -63,7 +63,7 @@ public abstract class Writer {
 	 * 格式化输出 LocalDateTime、LocalDate、LocalTime
 	 */
 	public void write(java.time.temporal.Temporal temporal, String pattern) throws IOException {
-		write(com.jfinal.kit.TimeKit.getFormatter(pattern).format(temporal));
+		write(com.jfinal.kit.TimeKit.getDateTimeFormatter(pattern).format(temporal));
 	}
 }
 

@@ -48,7 +48,7 @@ public class TimeKit {
 	 */
 	private static final Map<String, DateTimeFormatter> formaters = new SyncWriteMap<>();
 	
-	public static DateTimeFormatter getFormatter(String pattern) {
+	public static DateTimeFormatter getDateTimeFormatter(String pattern) {
 		DateTimeFormatter ret = formaters.get(pattern);
 		if (ret == null) {
 			ret = DateTimeFormatter.ofPattern(pattern);
@@ -77,7 +77,7 @@ public class TimeKit {
 	 * 例如：now("yyyy-MM-dd HH:mm:ss")
 	 */
 	public static String now(String pattern) {
-		return LocalDateTime.now().format(getFormatter(pattern));
+		return LocalDateTime.now().format(getDateTimeFormatter(pattern));
 	}
 	
 	/**
@@ -85,21 +85,21 @@ public class TimeKit {
 	 * 例如：format(LocalDateTime.now(), "yyyy-MM-dd HH:mm:ss")
 	 */
 	public static String format(LocalDateTime localDateTime, String pattern) {
-		return localDateTime.format(getFormatter(pattern));
+		return localDateTime.format(getDateTimeFormatter(pattern));
 	}
 	
 	/**
 	 * LocalDate 按指定 pattern 转换成 String
 	 */
 	public static String format(LocalDate localDate, String pattern) {
-		return localDate.format(getFormatter(pattern));
+		return localDate.format(getDateTimeFormatter(pattern));
 	}
 	
 	/**
 	 * LocalTime 按指定 pattern 转换成 String
 	 */
 	public static String format(LocalTime localTime, String pattern) {
-		return localTime.format(getFormatter(pattern));
+		return localTime.format(getDateTimeFormatter(pattern));
 	}
 	
 	/**
@@ -127,21 +127,21 @@ public class TimeKit {
 	 * 按指定 pattern 将 String 转换成 LocalDateTime
 	 */
 	public static LocalDateTime parseLocalDateTime(String localDateTimeString, String pattern) {
-		return LocalDateTime.parse(localDateTimeString, getFormatter(pattern));
+		return LocalDateTime.parse(localDateTimeString, getDateTimeFormatter(pattern));
 	}
 	
 	/**
 	 * 按指定 pattern 将 String 转换成 LocalDate
 	 */
 	public static LocalDate parseLocalDate(String localDateString, String pattern) {
-		return LocalDate.parse(localDateString, getFormatter(pattern));
+		return LocalDate.parse(localDateString, getDateTimeFormatter(pattern));
 	}
 	
 	/**
 	 * 按指定 pattern 将 String 转换成 LocalTime
 	 */
 	public static LocalTime parseLocalTime(String localTimeString, String pattern) {
-		return LocalTime.parse(localTimeString, getFormatter(pattern));
+		return LocalTime.parse(localTimeString, getDateTimeFormatter(pattern));
 	}
 	
 	/**
