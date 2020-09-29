@@ -16,10 +16,10 @@
 
 package com.jfinal.json;
 
-import java.text.SimpleDateFormat;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.jfinal.kit.TimeKit;
 
 /**
  * Json 转换 jackson 实现.
@@ -84,7 +84,7 @@ public class Jackson extends Json {
 			// 优先使用对象级的属性 datePattern, 然后才是全局性的 defaultDatePattern
 			String dp = datePattern != null ? datePattern : getDefaultDatePattern();
 			if (dp != null) {
-				objectMapper.setDateFormat(new SimpleDateFormat(dp));
+				objectMapper.setDateFormat(TimeKit.getSimpleDateFormat(dp));
 			}
 			
 			// 优先使用对象属性 generateNullValue，决定转换 json时是否生成 null value
