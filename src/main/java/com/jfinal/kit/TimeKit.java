@@ -63,11 +63,10 @@ public class TimeKit {
 	private static final ThreadLocal<HashMap<String, SimpleDateFormat>> TL = ThreadLocal.withInitial(() -> new HashMap<>());
 	
 	public static SimpleDateFormat getSimpleDateFormat(String pattern) {
-		HashMap<String, SimpleDateFormat> map = TL.get();
-		SimpleDateFormat ret = map.get(pattern);
+		SimpleDateFormat ret = TL.get().get(pattern);
 		if (ret == null) {
 			ret = new SimpleDateFormat(pattern);
-			map.put(pattern, ret);
+			TL.get().put(pattern, ret);
 		}
 		return ret;
 	}
