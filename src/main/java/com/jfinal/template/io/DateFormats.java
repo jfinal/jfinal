@@ -22,6 +22,9 @@ import java.util.Map;
 
 /**
  * DateFormats
+ * 
+ * 备忘：请勿使用 TimeKit.getSimpleDateFormat(String) 优化这里，可减少一次
+ *      ThreadLocal.get() 调用
  */
 public class DateFormats {
 	

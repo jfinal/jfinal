@@ -575,7 +575,12 @@ public class JFinalJsonKit {
 	 */
 	public static class JsonResult {
 		
-		// 缓存 SimpleDateFormat
+		/**
+		 * 缓存 SimpleDateFormat
+		 * 
+		 * 备忘：请勿使用 TimeKit.getSimpleDateFormat(String) 优化这里，可减少一次
+		 *      ThreadLocal.get() 调用
+		 */
 		Map<String, SimpleDateFormat> formats = new HashMap<>();
 		
 		// StringBuilder 内部对 int、long、double、float 数据写入有优化
