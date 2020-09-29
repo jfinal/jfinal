@@ -17,6 +17,7 @@
 package com.jfinal.kit;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ import java.time.ZoneId;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import com.jfinal.kit.SyncWriteMap;
 
@@ -41,17 +43,31 @@ import com.jfinal.kit.SyncWriteMap;
  */
 public class TimeKit {
 	
+	/**
+	 * 缓存线程安全的 DateTimeFormatter
+	 */
 	private static final Map<String, DateTimeFormatter> formaters = new SyncWriteMap<>();
 	
-	/**
-	 * 缓存共享线程安全的 DateTimeFormatter
-	 * 不能缓存 "非线程安全" 的 SimpleDateFormat，除非配合 ThreadLocal 来缓存
-	 */
 	public static DateTimeFormatter getFormatter(String pattern) {
 		DateTimeFormatter ret = formaters.get(pattern);
 		if (ret == null) {
 			ret = DateTimeFormatter.ofPattern(pattern);
 			formaters.put(pattern, ret);
+		}
+		return ret;
+	}
+	
+	/**
+	 * 结合 ThreadLocal 缓存 "非线程安全" 的 SimpleDateFormat
+	 */
+	private static final ThreadLocal<HashMap<String, SimpleDateFormat>> TL = ThreadLocal.withInitial(() -> new HashMap<>());
+	
+	public static SimpleDateFormat getSimpleDateFormat(String pattern) {
+		HashMap<String, SimpleDateFormat> map = TL.get();
+		SimpleDateFormat ret = map.get(pattern);
+		if (ret == null) {
+			ret = new SimpleDateFormat(pattern);
+			map.put(pattern, ret);
 		}
 		return ret;
 	}
