@@ -30,6 +30,8 @@ public class ByteWriter extends Writer {
 	char[] chars;
 	byte[] bytes;
 	
+	boolean inUse;	// 支持 reentrant
+	
 	public ByteWriter(Encoder encoder, int bufferSize) {
 		this.encoder = encoder;
 		this.chars = new char[bufferSize];
@@ -37,16 +39,22 @@ public class ByteWriter extends Writer {
 	}
 	
 	public ByteWriter init(OutputStream outputStream) {
+		inUse = true;
 		this.out = outputStream;
 		return this;
 	}
 	
-	public void flush() throws IOException {
-		out.flush();
+	public void close() {
+		inUse = false;
+		out = null;
 	}
 	
-	public void close() {
-		out = null;
+	public boolean isInUse() {
+		return inUse;
+	}
+	
+	public void flush() throws IOException {
+		out.flush();
 	}
 	
 	public void write(String str, int offset, int len) throws IOException {
