@@ -442,6 +442,18 @@ final public class Constants {
 	public ActionReporter getActionReporter() {
 		return actionReporter;
 	}
+	
+	/**
+	 * 设置 Headless Mode，以免在缺少显示设备时验证码功能不能使用，否则会抛出
+	 * java.awt.HeadlessException
+	 * 
+	 * Headless 模式是系统的一种配置模式。在该模式下，系统缺少显示设备、键盘或鼠标。
+	 * 配置为 "true" 时 Graphics、Font、Color、ImageIO、Print、Graphics2D
+	 * 等等 API 仍然能够使用
+	 */
+	public void setJavaAwtHeadless(boolean b) {
+		System.setProperty("java.awt.headless", b ? "true" : "false");
+	}
 }
 
 
