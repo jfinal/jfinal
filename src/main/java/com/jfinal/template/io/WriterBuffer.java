@@ -47,15 +47,27 @@ public class WriterBuffer {
 	};
 	
 	public ByteWriter getByteWriter(java.io.OutputStream outputStream) {
-		return byteWriters.get().init(outputStream);
+		ByteWriter ret = byteWriters.get();
+		if (ret.isInUse()) {
+			ret = new ByteWriter(encoderFactory.getEncoder(), bufferSize);
+		}
+		return ret.init(outputStream);
 	}
 	
 	public CharWriter getCharWriter(java.io.Writer writer) {
-		return charWriters.get().init(writer);
+		CharWriter ret = charWriters.get();
+		if (ret.isInUse()) {
+			ret = new CharWriter(bufferSize);
+		}
+		return ret.init(writer);
 	}
 	
 	public FastStringWriter getFastStringWriter() {
-		return fastStringWriters.get();
+		FastStringWriter ret = fastStringWriters.get();
+		if (ret.isInUse()) {
+			ret = new FastStringWriter();
+		}
+		return ret.init();
 	}
 	
 	public void setBufferSize(int bufferSize) {
