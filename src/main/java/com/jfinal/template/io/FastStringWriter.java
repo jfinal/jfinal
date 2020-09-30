@@ -36,6 +36,8 @@ public class FastStringWriter extends Writer {
 	private char[] value;
 	private int len;
 	
+	boolean inUse;	// 支持 reentrant
+	
 	private static int MAX_BUFFER_SIZE = 1024 * 512;		// 1024 * 64;
 	
 	public static void setMaxBufferSize(int maxBufferSize) {
@@ -46,14 +48,24 @@ public class FastStringWriter extends Writer {
 		MAX_BUFFER_SIZE = maxBufferSize;
 	}
 	
+	public FastStringWriter init() {
+		inUse = true;
+		return this;
+	}
+	
 	@Override
 	public void close() /* throws IOException */ {
+		inUse = false;
 		len = 0;
 		
 		// 释放空间占用过大的缓存
 		if (value.length > MAX_BUFFER_SIZE) {
 			value = new char[Math.max(256, MAX_BUFFER_SIZE / 2)];
 		}
+	}
+	
+	public boolean isInUse() {
+		return inUse;
 	}
 	
 	public String toString() {
