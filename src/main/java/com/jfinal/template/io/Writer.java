@@ -22,13 +22,11 @@ import java.util.Date;
 /**
  * Writer
  */
-public abstract class Writer {
+public abstract class Writer implements AutoCloseable {
 	
 	protected DateFormats formats = new DateFormats();
 	
 	public abstract void flush() throws IOException;
-	
-	public abstract void close();
 	
 	public abstract void write(IWritable writable) throws IOException;
 	
