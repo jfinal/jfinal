@@ -19,7 +19,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 
 **JFinal 极速开发微信公众号欢迎你的加入: JFinal**
 
-## Maven 坐标
+## Maven Dependency坐标
 
 ```java
 <dependency>
