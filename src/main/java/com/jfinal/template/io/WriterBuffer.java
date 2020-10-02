@@ -49,7 +49,7 @@ public class WriterBuffer {
 	public ByteWriter getByteWriter(java.io.OutputStream outputStream) {
 		ByteWriter ret = byteWriters.get();
 		if (ret.isInUse()) {
-			ret = new ByteWriter(encoderFactory.getEncoder(), bufferSize);
+			ret = new ByteWriter(encoderFactory.getEncoder(), MIN_BUFFER_SIZE);
 		}
 		return ret.init(outputStream);
 	}
@@ -57,7 +57,7 @@ public class WriterBuffer {
 	public CharWriter getCharWriter(java.io.Writer writer) {
 		CharWriter ret = charWriters.get();
 		if (ret.isInUse()) {
-			ret = new CharWriter(bufferSize);
+			ret = new CharWriter(MIN_BUFFER_SIZE);
 		}
 		return ret.init(writer);
 	}
