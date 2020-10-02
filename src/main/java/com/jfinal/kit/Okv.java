@@ -152,6 +152,24 @@ public class Okv extends LinkedHashMap {
 	public boolean equals(Object okv) {
 		return okv instanceof Okv && super.equals(okv);
 	}
+	
+	public Okv keep(String... keys) {
+		if (keys != null && keys.length > 0) {
+			Okv newOkv = Okv.create();
+			for (String k : keys) {
+				if (containsKey(k)) {	// 避免将并不存在的变量存为 null
+					newOkv.put(k, get(k));
+				}
+			}
+			
+			clear();
+			putAll(newOkv);
+		} else {
+			clear();
+		}
+		
+		return this;
+	}
 }
 
 
