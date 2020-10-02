@@ -566,8 +566,13 @@ public class Engine {
 		return this;
 	}
 	
-	public Engine setWriterBufferSize(int bufferSize) {
-		config.setWriterBufferSize(bufferSize);
+	public Engine setBufferSize(int bufferSize) {
+		config.setBufferSize(bufferSize);
+		return this;
+	}
+	
+	public Engine setReentrantBufferSize(int reentrantBufferSize) {
+		config.setReentrantBufferSize(reentrantBufferSize);
 		return this;
 	}
 	
