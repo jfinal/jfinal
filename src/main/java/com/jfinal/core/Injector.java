@@ -51,7 +51,7 @@ public class Injector {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static final <T> T injectBean(Class<T> beanClass, String beanName, HttpServletRequest request, boolean skipConvertError) {
+	public static <T> T injectBean(Class<T> beanClass, String beanName, HttpServletRequest request, boolean skipConvertError) {
 		Object bean = createInstance(beanClass);
 		String modelNameAndDot = StrKit.notBlank(beanName) ? beanName + "." : null;
 		TypeConverter converter = TypeConverter.me();
@@ -76,7 +76,8 @@ public class Injector {
 					method.invoke(bean, value);
 				} catch (Exception e) {
 					if (skipConvertError == false) {
-						throw new RuntimeException(e);
+						// throw new RuntimeException(e);
+						throw new RuntimeException("Can not convert parameter: " + paraName, e);
 					}
 				}
 			}
@@ -86,7 +87,7 @@ public class Injector {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static final <T> T injectModel(Class<T> modelClass, String modelName, HttpServletRequest request, boolean skipConvertError) {
+	public static <T> T injectModel(Class<T> modelClass, String modelName, HttpServletRequest request, boolean skipConvertError) {
 		Object temp = createInstance(modelClass);
 		if (temp instanceof Model == false) {
 			throw new IllegalArgumentException("getModel only support class of Model, using getBean for other class.");
