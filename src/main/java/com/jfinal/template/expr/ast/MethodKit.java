@@ -265,7 +265,7 @@ public class MethodKit {
 			
 			// Extension method 第一个参数必须与当前对象的类型一致，在调用时会将当前对象自身传给扩展方法的第一个参数
 			// if (targetClass != extensionMethodParaTypes[0]) {
-			if (!extensionMethodParaTypes[0].isAssignableFrom(targetClass)) {	// 支持第一个参数为被扩物尽其用类的父类，注意在注册时仍要确切的子类
+			if (!extensionMethodParaTypes[0].isAssignableFrom(targetClass)) {	// 支持第一个参数为被扩展类的父类，注意在注册时仍要确切的子类
 				throw new RuntimeException(buildMethodSignatureForException("The first argument type of : " + extensionClass.getName() + ".", methodName, extensionMethodParaTypes) + " must be: " + targetClass.getName());
 			}
 			
