@@ -968,23 +968,23 @@ public abstract class Controller {
 	 * @param tokenName the token name used in view
 	 * @param secondsOfTimeOut the seconds of time out, secondsOfTimeOut >= Const.MIN_SECONDS_OF_TOKEN_TIME_OUT
 	 */
-	public void createToken(String tokenName, int secondsOfTimeOut) {
-		com.jfinal.token.TokenManager.createToken(this, tokenName, secondsOfTimeOut);
+	public String createToken(String tokenName, int secondsOfTimeOut) {
+		return com.jfinal.token.TokenManager.createToken(this, tokenName, secondsOfTimeOut);
 	}
 	
 	/**
 	 * Create a token with default token name and with default seconds of time out.
 	 */
-	public void createToken() {
-		createToken(Const.DEFAULT_TOKEN_NAME, Const.DEFAULT_SECONDS_OF_TOKEN_TIME_OUT);
+	public String createToken() {
+		return createToken(Const.DEFAULT_TOKEN_NAME, Const.DEFAULT_SECONDS_OF_TOKEN_TIME_OUT);
 	}
 	
 	/**
 	 * Create a token with default seconds of time out.
 	 * @param tokenName the token name used in view
 	 */
-	public void createToken(String tokenName) {
-		createToken(tokenName, Const.DEFAULT_SECONDS_OF_TOKEN_TIME_OUT);
+	public String createToken(String tokenName) {
+		return createToken(tokenName, Const.DEFAULT_SECONDS_OF_TOKEN_TIME_OUT);
 	}
 	
 	/**
