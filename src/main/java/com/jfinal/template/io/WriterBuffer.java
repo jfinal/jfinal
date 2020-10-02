@@ -25,6 +25,7 @@ public class WriterBuffer {
 	private static final int MAX_BUFFER_SIZE = 1024 * 1024 * 2;		// 缓冲区最大 2M 字节
 	
 	private int bufferSize = 1024;									// 缓冲区大小
+	private int reentrantBufferSize = 128;							// 可重入缓冲区大小
 	
 	private EncoderFactory encoderFactory = new EncoderFactory();
 	
@@ -49,7 +50,7 @@ public class WriterBuffer {
 	public ByteWriter getByteWriter(java.io.OutputStream outputStream) {
 		ByteWriter ret = byteWriters.get();
 		if (ret.isInUse()) {
-			ret = new ByteWriter(encoderFactory.getEncoder(), MIN_BUFFER_SIZE);
+			ret = new ByteWriter(encoderFactory.getEncoder(), reentrantBufferSize);
 		}
 		return ret.init(outputStream);
 	}
@@ -57,7 +58,7 @@ public class WriterBuffer {
 	public CharWriter getCharWriter(java.io.Writer writer) {
 		CharWriter ret = charWriters.get();
 		if (ret.isInUse()) {
-			ret = new CharWriter(MIN_BUFFER_SIZE);
+			ret = new CharWriter(reentrantBufferSize);
 		}
 		return ret.init(writer);
 	}
@@ -75,6 +76,14 @@ public class WriterBuffer {
 			throw new IllegalArgumentException("bufferSize must between " + (MIN_BUFFER_SIZE-1) + " and " + (MAX_BUFFER_SIZE+1));
 		}
 		this.bufferSize = bufferSize;
+	}
+	
+	public void setReentrantBufferSize(int reentrantBufferSize) {
+		int min = 64, max = 2048;
+		if (reentrantBufferSize < min || reentrantBufferSize > max) {
+			throw new IllegalArgumentException("reentrantBufferSize must between " + (min-1) + " and " + (max+1));
+		}
+		this.reentrantBufferSize = reentrantBufferSize;
 	}
 	
 	public void setEncoderFactory(EncoderFactory encoderFactory) {
