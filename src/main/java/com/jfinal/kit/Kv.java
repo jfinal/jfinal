@@ -74,24 +74,7 @@ public class Kv extends HashMap {
 		super.remove(key);
 		return this;
 	}
-
-	public Kv keep(String... attrs){
-		if (attrs != null && attrs.length > 0) {
-			Kv t = Kv.create();
-			for (Object o : attrs) {
-				if(super.containsKey(o)){
-					t.set(o, get(o));
-				}				
-			}
-			super.clear();
-			super.putAll(t);
-		}
-		else {
-			super.clear();
-		}
-		return this;
-	}
-    
+	
 	public <T> T getAs(Object key) {
 		return (T)get(key);
 	}
@@ -165,6 +148,24 @@ public class Kv extends HashMap {
 	
 	public boolean equals(Object kv) {
 		return kv instanceof Kv && super.equals(kv);
+	}
+	
+	public Kv keep(String... keys) {
+		if (keys != null && keys.length > 0) {
+			Kv newKv = Kv.create();
+			for (String k : keys) {
+				if (containsKey(k)) {	// 避免将并不存在的变量存为 null
+					newKv.put(k, get(k));
+				}
+			}
+			
+			clear();
+			putAll(newKv);
+		} else {
+			clear();
+		}
+		
+		return this;
 	}
 }
 
