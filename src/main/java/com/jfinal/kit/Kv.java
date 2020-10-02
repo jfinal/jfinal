@@ -74,7 +74,24 @@ public class Kv extends HashMap {
 		super.remove(key);
 		return this;
 	}
-	
+
+	public Kv keep(String... attrs){
+		if (attrs != null && attrs.length > 0) {
+			Kv t = Kv.create();
+			for (Object o : attrs) {
+				if(super.containsKey(o)){
+					t.set(o, get(o));
+				}				
+			}
+			super.clear();
+			super.putAll(t);
+		}
+		else {
+			super.clear();
+		}
+		return this;
+	}
+    
 	public <T> T getAs(Object key) {
 		return (T)get(key);
 	}
