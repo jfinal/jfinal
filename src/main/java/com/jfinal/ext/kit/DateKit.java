@@ -20,6 +20,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import com.jfinal.kit.StrKit;
+import com.jfinal.kit.TimeKit;
 
 /**
  * DateKit.
@@ -52,7 +53,7 @@ public class DateKit {
 		int length = dateStr.length();
 		try {
 			if (length == timeStampPattern.length()) {
-				SimpleDateFormat sdf = new SimpleDateFormat(timeStampPattern);
+				SimpleDateFormat sdf = TimeKit.getSimpleDateFormat(timeStampPattern);
 				try {
 					return sdf.parse(dateStr);
 				} catch (ParseException e) {
@@ -61,7 +62,7 @@ public class DateKit {
 					return sdf.parse(dateStr);
 				}
 			} else if (length == datePattern.length()) {
-				SimpleDateFormat sdfDate = new SimpleDateFormat(datePattern);
+				SimpleDateFormat sdfDate = TimeKit.getSimpleDateFormat(datePattern);
 				try {
 					return sdfDate.parse(dateStr);
 				} catch (ParseException e) {
@@ -82,7 +83,7 @@ public class DateKit {
 	}
 	
 	public static String toStr(Date date, String pattern) {
-		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+		SimpleDateFormat sdf = TimeKit.getSimpleDateFormat(pattern);
 		return sdf.format(date);
 	}
 }

@@ -29,12 +29,12 @@ import com.jfinal.aop.Interceptor;
  */
 public class ActionReporter {
 	
-	private static final String title = "\nJFinal-" + Const.JFINAL_VERSION + " action report -------- ";
-	private static boolean reportAfterInvocation = true;
-	private static int maxOutputLengthOfParaValue = 512;
-	private static Writer writer = new SystemOutWriter();
+	protected static final String title = "\nJFinal-" + Const.JFINAL_VERSION + " action report -------- ";
+	protected static boolean reportAfterInvocation = true;
+	protected static int maxOutputLengthOfParaValue = 512;
+	protected static Writer writer = new SystemOutWriter();
 	
-	private static final ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<SimpleDateFormat>() {
+	protected static final ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<SimpleDateFormat>() {
 		protected SimpleDateFormat initialValue() {
 			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		}
@@ -58,7 +58,7 @@ public class ActionReporter {
 		ActionReporter.writer = writer;
 	}
 	
-	public static boolean isReportAfterInvocation(HttpServletRequest request) {
+	public boolean isReportAfterInvocation(HttpServletRequest request) {
 		if (reportAfterInvocation) {
 			return true;
 		} else {
@@ -74,7 +74,7 @@ public class ActionReporter {
 	/**
 	 * Report the action
 	 */
-	public static final void report(String target, Controller controller, Action action) {
+	public void report(String target, Controller controller, Action action) {
 		StringBuilder sb = new StringBuilder(title).append(sdf.get().format(new Date())).append(" --------------------------\n");
 		sb.append("Url         : ").append(controller.getRequest().getMethod()).append(" ").append(target).append("\n");
 		Class<? extends Controller> cc = action.getControllerClass();

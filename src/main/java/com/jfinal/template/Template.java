@@ -53,11 +53,8 @@ public class Template {
 	 * 渲染到 OutputStream 中去
 	 */
 	public void render(Map<?, ?> data, OutputStream outputStream) {
-		ByteWriter byteWriter = env.engineConfig.writerBuffer.getByteWriter(outputStream);
-		try {
+		try (ByteWriter byteWriter = env.engineConfig.writerBuffer.getByteWriter(outputStream)) {
 			ast.exec(env, new Scope(data, env.engineConfig.sharedObjectMap), byteWriter);
-		} finally {
-			byteWriter.close();
 		}
 	}
 	
@@ -73,11 +70,8 @@ public class Template {
 	 * 渲染到 Writer 中去
 	 */
 	public void render(Map<?, ?> data, Writer writer) {
-		CharWriter charWriter = env.engineConfig.writerBuffer.getCharWriter(writer);
-		try {
+		try (CharWriter charWriter = env.engineConfig.writerBuffer.getCharWriter(writer)) {
 			ast.exec(env, new Scope(data, env.engineConfig.sharedObjectMap), charWriter);
-		} finally {
-			charWriter.close();
 		}
 	}
 	
@@ -93,12 +87,9 @@ public class Template {
 	 * 渲染到 String 中去
 	 */
 	public String renderToString(Map<?, ?> data) {
-		FastStringWriter fsw = env.engineConfig.writerBuffer.getFastStringWriter();
-		try {
+		try (FastStringWriter fsw = env.engineConfig.writerBuffer.getFastStringWriter()) {
 			render(data, fsw);
 			return fsw.toString();
-		} finally {
-			fsw.close();
 		}
 	}
 	
@@ -178,19 +169,10 @@ public class Template {
 	 * </pre>
 	 */
 	public String renderToString(Map<?, ?> data, Func<CharWriter> func) {
-		FastStringWriter fsw = env.engineConfig.writerBuffer.getFastStringWriter();
-		try {
-			
-			CharWriter charWriter = env.engineConfig.writerBuffer.getCharWriter(fsw);
-			try {
-				func.call(ast, env, new Scope(data, env.engineConfig.sharedObjectMap), charWriter);
-			} finally {
-				charWriter.close();
-			}
-			
+		try (FastStringWriter fsw = env.engineConfig.writerBuffer.getFastStringWriter();
+				CharWriter charWriter = env.engineConfig.writerBuffer.getCharWriter(fsw)) {
+			func.call(ast, env, new Scope(data, env.engineConfig.sharedObjectMap), charWriter);
 			return fsw.toString();
-		} finally {
-			fsw.close();
 		}
 	}
 	
@@ -198,11 +180,8 @@ public class Template {
 	 * 渲染到 OutputStream 中去
 	 */
 	public void render(Map<?, ?> data, OutputStream outputStream, Func<ByteWriter> func) {
-		ByteWriter byteWriter = env.engineConfig.writerBuffer.getByteWriter(outputStream);
-		try {
+		try (ByteWriter byteWriter = env.engineConfig.writerBuffer.getByteWriter(outputStream)) {
 			func.call(ast, env, new Scope(data, env.engineConfig.sharedObjectMap), byteWriter);
-		} finally {
-			byteWriter.close();
 		}
 	}
 	
@@ -210,11 +189,8 @@ public class Template {
 	 * 渲染到 Writer 中去
 	 */
 	public void render(Map<?, ?> data, Writer writer, Func<CharWriter> func) {
-		CharWriter charWriter = env.engineConfig.writerBuffer.getCharWriter(writer);
-		try {
+		try (CharWriter charWriter = env.engineConfig.writerBuffer.getCharWriter(writer)) {
 			func.call(ast, env, new Scope(data, env.engineConfig.sharedObjectMap), charWriter);
-		} finally {
-			charWriter.close();
 		}
 	}
 	
@@ -223,15 +199,9 @@ public class Template {
 	 * 适用于代码生成器类似应用场景
 	 */
 	public void render(Map<?, ?> data, File file, Func<ByteWriter> func) {
-		try (FileOutputStream fos = new FileOutputStream(file)) {
-			
-			ByteWriter byteWriter = env.engineConfig.writerBuffer.getByteWriter(fos);
-			try {
-				func.call(ast, env, new Scope(data, env.engineConfig.sharedObjectMap), byteWriter);
-			} finally {
-				byteWriter.close();
-			}
-			
+		try (FileOutputStream fos = new FileOutputStream(file);
+				ByteWriter byteWriter = env.engineConfig.writerBuffer.getByteWriter(fos)) {
+			func.call(ast, env, new Scope(data, env.engineConfig.sharedObjectMap), byteWriter);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

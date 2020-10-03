@@ -28,10 +28,12 @@ import com.jfinal.template.expr.ast.FieldKeyBuilder;
 import com.jfinal.template.expr.ast.FieldKit;
 import com.jfinal.template.expr.ast.MethodKit;
 import com.jfinal.template.io.EncoderFactory;
+import com.jfinal.template.io.JdkEncoderFactory;
 import com.jfinal.template.source.ClassPathSourceFactory;
 import com.jfinal.template.source.ISource;
 import com.jfinal.template.source.ISourceFactory;
 import com.jfinal.template.source.StringSource;
+import com.jfinal.template.stat.CharTable;
 import com.jfinal.template.stat.Compressor;
 import com.jfinal.template.stat.OutputDirectiveFactory;
 import com.jfinal.template.stat.Parser;
@@ -560,12 +562,17 @@ public class Engine {
 	 * 支持各种罕见字符编码
 	 */
 	public Engine setToJdkEncoderFactory() {
-		config.setEncoderFactory(new com.jfinal.template.io.JdkEncoderFactory());
+		config.setEncoderFactory(new JdkEncoderFactory());
 		return this;
 	}
 	
-	public Engine setWriterBufferSize(int bufferSize) {
-		config.setWriterBufferSize(bufferSize);
+	public Engine setBufferSize(int bufferSize) {
+		config.setBufferSize(bufferSize);
+		return this;
+	}
+	
+	public Engine setReentrantBufferSize(int reentrantBufferSize) {
+		config.setReentrantBufferSize(reentrantBufferSize);
 		return this;
 	}
 	
@@ -674,6 +681,13 @@ public class Engine {
 	public static void setFastMode(boolean fastMode) {
 		FieldKit.setFastMode(fastMode);
 		FieldKeyBuilder.setFastFieldKeyBuilder(fastMode);
+	}
+	
+	/**
+	 * 设置为 true 支持表达式、变量名、方法名、模板函数名使用中文
+	 */
+	public static void setChineseExpression(boolean enable) {
+		CharTable.setChineseExpression(enable);
 	}
 }
 

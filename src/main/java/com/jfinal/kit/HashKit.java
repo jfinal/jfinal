@@ -17,15 +17,16 @@
 package com.jfinal.kit;
 
 import java.security.MessageDigest;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class HashKit {
 	
 	public static final long FNV_OFFSET_BASIS_64 = 0xcbf29ce484222325L;
 	public static final long FNV_PRIME_64 = 0x100000001b3L;
 	
-	private static final java.security.SecureRandom random = new java.security.SecureRandom();
+	// private static final java.security.SecureRandom random = new java.security.SecureRandom();
 	private static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
-	private static final char[] CHAR_ARRAY = "_-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+	private static final char[] CHAR_ARRAY = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 	
 	public static long fnv1a64(String key) {
 		long hash = FNV_OFFSET_BASIS_64;
@@ -85,6 +86,7 @@ public class HashKit {
 	 */
 	public static String generateSalt(int saltLength) {
 		StringBuilder salt = new StringBuilder(saltLength);
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 		for (int i=0; i<saltLength; i++) {
 			salt.append(CHAR_ARRAY[random.nextInt(CHAR_ARRAY.length)]);
 		}
@@ -97,6 +99,11 @@ public class HashKit {
 	
 	public static String generateSaltForSha512() {
 		return generateSalt(64);
+	}
+	
+	// 生成随机字符串
+	public static String generateRandomStr(int strLength) {
+		return generateSalt(strLength);
 	}
 	
 	public static boolean slowEquals(byte[] a, byte[] b) {

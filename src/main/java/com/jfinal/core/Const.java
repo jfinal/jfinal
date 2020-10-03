@@ -23,7 +23,7 @@ import com.jfinal.render.ViewType;
  */
 public interface Const {
 	
-	String JFINAL_VERSION = "4.9.01";
+	String JFINAL_VERSION = "4.9.02";
 	
 	ViewType DEFAULT_VIEW_TYPE = ViewType.JFINAL_TEMPLATE;
 	
@@ -54,6 +54,8 @@ public interface Const {
 	int DEFAULT_CONFIG_PLUGIN_ORDER = 3;
 	
 	ControllerFactory DEFAULT_CONTROLLER_FACTORY = new ControllerFactory();
+	
+	ActionReporter DEFAULT_ACTION_REPORTER = new ActionReporter();
 	
 	boolean DEFAULT_INJECT_DEPENDENCY = false;
 }

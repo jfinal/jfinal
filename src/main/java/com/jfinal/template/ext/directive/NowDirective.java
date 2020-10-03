@@ -16,7 +16,6 @@
 
 package com.jfinal.template.ext.directive;
 
-import java.io.IOException;
 import java.util.Date;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
@@ -27,8 +26,16 @@ import com.jfinal.template.stat.ParseException;
 import com.jfinal.template.stat.Scope;
 
 /**
- * 输出当前时间，默认考虑是输出时间，给 pattern 输出可能是 Date、DateTime、Timestamp
- * 带 String 参数，表示 pattern
+ * 根据 datePattern 参数输出当前时间，未指定 datePattern 参数时默认使用以下配置
+ * env.getEngineConfig().getDatePattern()
+ * 
+ * 注意该指令需要配置才能使用：
+ * engine.addDirective("now", NowDirective.class, true);
+ * 
+ * 例子：
+ * 1：#now()
+ * 2：#now("HH:mm:ss")
+ * 3：#now("yyyy-MM-dd HH:mm:ss")
  */
 public class NowDirective extends Directive {
 	
@@ -54,7 +61,7 @@ public class NowDirective extends Directive {
 		
 		try {
 			writer.write(new Date(), datePattern);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}
 	}

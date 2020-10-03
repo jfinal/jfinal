@@ -56,15 +56,17 @@ public class TokenManager {
 	 * @param tokenName token name
 	 * @param secondsOfTimeOut seconds of time out, for ITokenCache only.
 	 */
-	public static void createToken(Controller controller, String tokenName, int secondsOfTimeOut) {
+	public static String createToken(Controller controller, String tokenName, int secondsOfTimeOut) {
 		if (tokenCache == null) {
 			String tokenId = String.valueOf(random.nextLong());
 			controller.setAttr(tokenName, tokenId);
 			controller.setSessionAttr(tokenName, tokenId);
 			createTokenHiddenField(controller, tokenName, tokenId);
+			
+			return tokenId;
 		}
 		else {
-			createTokenUseTokenIdGenerator(controller, tokenName, secondsOfTimeOut);
+			return createTokenByGenerator(controller, tokenName, secondsOfTimeOut);
 		}
 	}
 	
@@ -77,7 +79,7 @@ public class TokenManager {
 		controller.setAttr("token", sb.toString());
 	}
 	
-	private static void createTokenUseTokenIdGenerator(Controller controller, String tokenName, int secondsOfTimeOut) {
+	private static String createTokenByGenerator(Controller controller, String tokenName, int secondsOfTimeOut) {
 		if (secondsOfTimeOut < Const.MIN_SECONDS_OF_TOKEN_TIME_OUT) {
 			secondsOfTimeOut = Const.MIN_SECONDS_OF_TOKEN_TIME_OUT;
 		}
@@ -96,6 +98,8 @@ public class TokenManager {
 		controller.setAttr(tokenName, tokenId);
 		tokenCache.put(token);
 		createTokenHiddenField(controller, tokenName, tokenId);
+		
+		return tokenId;
 	}
 	
 	/**

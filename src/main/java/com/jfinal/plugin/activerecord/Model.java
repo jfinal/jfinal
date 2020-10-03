@@ -679,8 +679,11 @@ public abstract class Model<M extends Model> implements Serializable {
 	
 	/**
 	 * Find model.
+	 * 
+	 * 警告：传入的 Connection 参数需要由传入者在 try finally 块中自行
+	 *      关闭掉，否则将出现 Connection 资源不能及时回收的问题
 	 */
-	private List<M> find(Config config, Connection conn, String sql, Object... paras) throws Exception {
+	protected List<M> find(Config config, Connection conn, String sql, Object... paras) throws Exception {
 		try (PreparedStatement pst = conn.prepareStatement(sql)) {
 			config.dialect.fillStatement(pst, paras);
 			ResultSet rs = pst.executeQuery();

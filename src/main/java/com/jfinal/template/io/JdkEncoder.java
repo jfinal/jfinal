@@ -26,7 +26,7 @@ import java.nio.charset.CoderResult;
 /**
  * JdkEncoder
  */
-public class JdkEncoder extends Encoder {
+public class JdkEncoder implements Encoder {
 	
 	private CharsetEncoder ce;
 	

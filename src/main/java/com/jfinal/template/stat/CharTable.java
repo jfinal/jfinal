@@ -23,18 +23,49 @@ package com.jfinal.template.stat;
  */
 public class CharTable {
 	
-	private static final char[] letterChars = buildLetterChars();
-	private static final char[] letterOrDigitChars = buildLetterOrDigitChars();
-	private static final char[] exprChars = buildExprChars();
 	private static final char NULL = 0;
-	private static final char SIZE = 128;
-	private CharTable(){}
+	private static final char EN_SIZE = 128;
+	private static final char CH_SIZE = 0x9FA5 + 1;
+	
+	private static char size = EN_SIZE;
+	private static char[] letterChars = buildLetterChars();
+	private static char[] letterOrDigitChars = buildLetterOrDigitChars();
+	private static char[] exprChars = buildExprChars();
+	
+	private CharTable() {}
+	
+	/**
+	 * 设置为 true 支持表达式、变量名、方法名、模板函数名使用中文
+	 */
+	public static void setChineseExpression(boolean enable) {
+		if (enable) {
+			size = CH_SIZE;
+		} else {
+			size = EN_SIZE;
+		}
+		
+		letterChars = buildLetterChars();
+		letterOrDigitChars = buildLetterOrDigitChars();
+		exprChars = buildExprChars();
+	}
+	
+	// 添加中文字符，Unicode 编码范围：4E00-9FA5
+	private static void addChineseChar(char[] ret) {
+		if (ret.length == CH_SIZE) {
+			for (char i=0x4E00; i<CH_SIZE; i++) {
+				ret[i] = i;
+			}
+		}
+	}
 	
 	private static char[] createCharArray() {
-		char[] ret = new char[SIZE];
-		for (char i=0; i<SIZE; i++) {
+		char[] ret = new char[size];
+		for (char i=0; i<size; i++) {
 			ret[i] = NULL;
 		}
+		
+		addChineseChar(ret);
+		
 		return ret;
 	}
 	
@@ -77,15 +108,15 @@ public class CharTable {
 	}
 	
 	public static boolean isLetter(char c) {
-		return c < SIZE && letterChars[c] != NULL;
+		return c < size && letterChars[c] != NULL;
 	}
 	
 	public static boolean isLetterOrDigit(char c) {
-		return c < SIZE && letterOrDigitChars[c] != NULL;
+		return c < size && letterOrDigitChars[c] != NULL;
 	}
 	
 	public static boolean isExprChar(char c) {
-		return c < SIZE && exprChars[c] != NULL;
+		return c < size && exprChars[c] != NULL;
 	}
 	
 	public static boolean isDigit(char c) {

@@ -55,6 +55,7 @@ final public class Constants {
 	private int freeMarkerTemplateUpdateDelay = Const.DEFAULT_FREEMARKER_TEMPLATE_UPDATE_DELAY;	// just for not devMode
 	
 	private ControllerFactory controllerFactory = Const.DEFAULT_CONTROLLER_FACTORY;
+	private ActionReporter actionReporter = Const.DEFAULT_ACTION_REPORTER;
 	private int configPluginOrder = Const.DEFAULT_CONFIG_PLUGIN_ORDER;
 	
 	private boolean denyAccessJsp = true;	// 默认拒绝直接访问 jsp 文件
@@ -429,6 +430,29 @@ final public class Constants {
 	
 	public boolean getDenyAccessJsp() {
 		return denyAccessJsp;
+	}
+	
+	/**
+	 * 设置自定义的 ActionReporter 用于定制 action report 输出功能
+	 */
+	public void setActionReporter(ActionReporter actionReporter) {
+		this.actionReporter = actionReporter;
+	}
+	
+	public ActionReporter getActionReporter() {
+		return actionReporter;
+	}
+	
+	/**
+	 * 设置为 Headless Mode，否则在缺少显示设备时验证码功能不能使用，并抛出异常
+	 * java.awt.HeadlessException
+	 * 
+	 * Headless 模式是系统的一种配置模式。在该模式下，系统缺少显示设备、键盘或鼠标。
+	 * 配置为 "true" 时 Graphics、Font、Color、ImageIO、Print、Graphics2D
+	 * 等等 API 仍然能够使用
+	 */
+	public void setToJavaAwtHeadless() {
+		System.setProperty("java.awt.headless", "true");
 	}
 }
 

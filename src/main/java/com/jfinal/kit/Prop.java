@@ -202,6 +202,18 @@ public class Prop {
 		return defaultValue;
 	}
 	
+	public Double getDouble(String key) {
+		return getDouble(key, null);
+	}
+	
+	public Double getDouble(String key, Double defaultValue) {
+		String value = properties.getProperty(key);
+		if (value != null) {
+			return Double.parseDouble(value.trim());
+		}
+		return defaultValue;
+	}
+	
 	public Boolean getBoolean(String key) {
 		return getBoolean(key, null);
 	}

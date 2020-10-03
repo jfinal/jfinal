@@ -18,6 +18,7 @@ package com.jfinal.core.converter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import com.jfinal.kit.TimeKit;
 
 /**
  * 针对 Integer、Long、Date 等类型实现 IConverter 接口
@@ -32,6 +33,10 @@ public class Converters {
 	private static final int timeWithoutSecPatternLen = "hh:mm".length();
 	
 	private Converters() {}
+	
+	private static SimpleDateFormat getFormat(String pattern) {
+		return TimeKit.getSimpleDateFormat(pattern);
+	}
 	
 	public static class IntegerConverter implements IConverter<Integer> {
 		// mysql type: int, integer, tinyint(n) n > 1, smallint, mediumint
@@ -135,11 +140,11 @@ public class Converters {
 			if (s.length() > dateLen) {	// if (x < timeStampLen) 改用 datePattern 转换，更智能
 				// Timestamp format must be yyyy-mm-dd hh:mm:ss[.fffffffff]
 				// return new java.util.Date(java.sql.Timestamp.valueOf(s).getTime());	// error under jdk 64bit(maybe)
-				return new SimpleDateFormat(timeStampPattern).parse(s);
+				return getFormat(timeStampPattern).parse(s);
 			}
 			else {
 				// return new java.util.Date(java.sql.Date.valueOf(s).getTime());	// error under jdk 64bit
-				return new SimpleDateFormat(datePattern).parse(s);
+				return getFormat(datePattern).parse(s);
 			}
 		}
 	}
@@ -155,11 +160,11 @@ public class Converters {
 			}
 			if (s.length() > dateLen) {	// if (x < timeStampLen) 改用 datePattern 转换，更智能
 				// return new java.sql.Date(java.sql.Timestamp.valueOf(s).getTime());	// error under jdk 64bit(maybe)
-				return new java.sql.Date(new SimpleDateFormat(timeStampPattern).parse(s).getTime());
+				return new java.sql.Date(getFormat(timeStampPattern).parse(s).getTime());
 			}
 			else {
 				// return new java.sql.Date(java.sql.Date.valueOf(s).getTime());	// error under jdk 64bit
-				return new java.sql.Date(new SimpleDateFormat(datePattern).parse(s).getTime());
+				return new java.sql.Date(getFormat(datePattern).parse(s).getTime());
 			}
 		}
 	}
@@ -192,7 +197,7 @@ public class Converters {
 				return java.sql.Timestamp.valueOf(s);
 			}
 			else {
-				return new java.sql.Timestamp(new SimpleDateFormat(datePattern).parse(s).getTime());
+				return new java.sql.Timestamp(getFormat(datePattern).parse(s).getTime());
 			}
 		}
 	}

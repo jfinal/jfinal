@@ -22,9 +22,15 @@ import java.util.Map;
 
 /**
  * DateFormats
+ * 
+ * 备忘：请勿使用 TimeKit.getSimpleDateFormat(String) 优化这里，可减少一次
+ *      ThreadLocal.get() 调用
  */
 public class DateFormats {
 	
+	/**
+	 * SimpleDateFormat 非线程安全，结合 WriterBuffer 中的 ThreadLocal 确保线程安全
+	 */
 	private Map<String, SimpleDateFormat> map = new HashMap<String, SimpleDateFormat>(16, 0.25F);
 	
 	public SimpleDateFormat getDateFormat(String datePattern) {

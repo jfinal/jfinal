@@ -314,8 +314,12 @@ public class EngineConfig {
 		writerBuffer.setEncoding(encoding);		// 间接设置 EncoderFactory.encoding
 	}
 	
-	public void setWriterBufferSize(int bufferSize) {
+	public void setBufferSize(int bufferSize) {
 		writerBuffer.setBufferSize(bufferSize);
+	}
+	
+	public void setReentrantBufferSize(int reentrantBufferSize) {
+		writerBuffer.setReentrantBufferSize(reentrantBufferSize);
 	}
 	
 	/**

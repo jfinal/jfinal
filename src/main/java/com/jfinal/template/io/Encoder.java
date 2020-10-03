@@ -19,10 +19,10 @@ package com.jfinal.template.io;
 /**
  * Encoder
  */
-public abstract class Encoder {
+public interface Encoder {
 	
-	public abstract float maxBytesPerChar();
+	public float maxBytesPerChar();
 	
-	public abstract int encode(char[] chars, int offset, int len, byte[] bytes);
+	public int encode(char[] chars, int offset, int len, byte[] bytes);
 }
 

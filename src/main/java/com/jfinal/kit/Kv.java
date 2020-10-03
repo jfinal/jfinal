@@ -149,6 +149,24 @@ public class Kv extends HashMap {
 	public boolean equals(Object kv) {
 		return kv instanceof Kv && super.equals(kv);
 	}
+	
+	public Kv keep(String... keys) {
+		if (keys != null && keys.length > 0) {
+			Kv newKv = Kv.create();
+			for (String k : keys) {
+				if (containsKey(k)) {	// 避免将并不存在的变量存为 null
+					newKv.put(k, get(k));
+				}
+			}
+			
+			clear();
+			putAll(newKv);
+		} else {
+			clear();
+		}
+		
+		return this;
+	}
 }
 
 
