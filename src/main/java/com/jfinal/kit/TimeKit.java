@@ -80,7 +80,7 @@ public class TimeKit {
 	}
 	
 	/**
-	 * LocalDateTime 按指定 pattern 转换成 String
+	 * 按指定 pattern 将 LocalDateTime 转换成 String
 	 * 例如：format(LocalDateTime.now(), "yyyy-MM-dd HH:mm:ss")
 	 */
 	public static String format(LocalDateTime localDateTime, String pattern) {
@@ -88,21 +88,21 @@ public class TimeKit {
 	}
 	
 	/**
-	 * LocalDate 按指定 pattern 转换成 String
+	 * 按指定 pattern 将 LocalDate 转换成 String
 	 */
 	public static String format(LocalDate localDate, String pattern) {
 		return localDate.format(getDateTimeFormatter(pattern));
 	}
 	
 	/**
-	 * LocalTime 按指定 pattern 转换成 String
+	 * 按指定 pattern 将 LocalTime 转换成 String
 	 */
 	public static String format(LocalTime localTime, String pattern) {
 		return localTime.format(getDateTimeFormatter(pattern));
 	}
 	
 	/**
-	 * Date 按指定 pattern 转换成 String
+	 * 按指定 pattern 将 Date 转换成 String
 	 * 例如：format(new Date(), "yyyy-MM-dd HH:mm:ss")
 	 */
 	public static String format(Date date, String pattern) {
