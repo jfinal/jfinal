@@ -27,8 +27,10 @@ import com.jfinal.json.Json;
  *    Kv para = Kv.by("id", 123);
  *    User user = user.findFirst(getSqlPara("find", para));
  */
-@SuppressWarnings({"serial", "rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Kv extends HashMap {
+	
+	private static final long serialVersionUID = -6086130186405306902L;
 	
 	public Kv() {
 	}

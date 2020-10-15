@@ -30,8 +30,10 @@ import com.jfinal.json.Json;
  *    Okv para = Okv.by("id", 123);
  *    User user = user.findFirst(getSqlPara("find", para));
  */
-@SuppressWarnings({"serial", "rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Okv extends LinkedHashMap {
+	
+	private static final long serialVersionUID = 485147547719011382L;
 	
 	public Okv() {
 	}
