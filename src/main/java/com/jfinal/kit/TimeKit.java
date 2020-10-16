@@ -106,8 +106,7 @@ public class TimeKit {
 	 * 例如：format(new Date(), "yyyy-MM-dd HH:mm:ss")
 	 */
 	public static String format(Date date, String pattern) {
-		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat(pattern);
-		return df.format(date);
+		return getSimpleDateFormat(pattern).format(date);
 	}
 	
 	/**
@@ -115,8 +114,7 @@ public class TimeKit {
 	 */
 	public static Date parse(String dateString, String pattern) {
 		try {
-			java.text.SimpleDateFormat df = new java.text.SimpleDateFormat(pattern);
-			return df.parse(dateString);
+			return getSimpleDateFormat(pattern).parse(dateString);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
