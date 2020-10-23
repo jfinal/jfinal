@@ -178,7 +178,7 @@ public abstract class Controller {
 	 */
 	public String getPara(String name, String defaultValue) {
 		String result = request.getParameter(name);
-		return result != null && !"".equals(result) ? result : defaultValue;
+		return result != null && result.length() != 0 ? result : defaultValue;
 	}
 	
 	/**
@@ -714,7 +714,7 @@ public abstract class Controller {
 	 */
 	public String getPara(int index, String defaultValue) {
 		String result = getPara(index);
-		return result != null && !"".equals(result) ? result : defaultValue;
+		return result != null && result.length() != 0 ? result : defaultValue;
 	}
 	
 	/**
