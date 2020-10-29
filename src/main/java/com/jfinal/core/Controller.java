@@ -69,7 +69,14 @@ public abstract class Controller {
 		this.request = request;
 		this.response = response;
 		this.urlPara = urlPara;
-		urlParaArray = null;
+		
+		/**
+		*把getPara(int index)方法里面的重复处理移到上面只处理一次，不必每次调用getPara(xx)的时候，都要重新赋值一遍
+		*/
+		urlParaArray = StrKit.isBlank(urlPara)?NULL_URL_PARA_ARRAY:urlPara.split(URL_PARA_SEPARATOR);
+		for (int i=0; i<urlParaArray.length; i++){
+			if ("".equals(urlParaArray[i])) urlParaArray[i] = null;	
+		}	
 		render = null;
 	}
 	
@@ -693,19 +700,8 @@ public abstract class Controller {
 	 * Get para from url. The index of first url para is 0.
 	 */
 	public String getPara(int index) {
-		if (index < 0)
-			return getPara();
-		
-		if (urlParaArray == null) {
-			if (urlPara == null || "".equals(urlPara))	// urlPara maybe is "" see ActionMapping.getAction(String)
-				urlParaArray = NULL_URL_PARA_ARRAY;
-			else
-				urlParaArray = urlPara.split(URL_PARA_SEPARATOR);
-			
-			for (int i=0; i<urlParaArray.length; i++)
-				if ("".equals(urlParaArray[i]))
-					urlParaArray[i] = null;
-		}
+		if (index < 0) return getPara();
+		//把以前的重复处理split的过程移到到初始化函数里，避免重复操作
 		return urlParaArray.length > index ? urlParaArray[index] : null;
 	}
 	
