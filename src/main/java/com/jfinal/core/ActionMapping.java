@@ -79,7 +79,7 @@ public class ActionMapping {
 				}
 				
 				Interceptor[] actionInters = interMan.buildControllerActionInterceptor(routes.getInterceptors(), controllerInters, controllerClass, method);
-				String controllerKey = route.getControllerKey();
+				String controllerKey = route.getControllerPath();
 				
 				String methodName = method.getName();
 				ActionKey ak = method.getAnnotation(ActionKey.class);

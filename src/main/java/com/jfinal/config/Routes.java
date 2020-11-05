@@ -17,9 +17,7 @@
 package com.jfinal.config;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.InterceptorManager;
 import com.jfinal.core.Controller;
@@ -31,7 +29,6 @@ import com.jfinal.kit.StrKit;
 public abstract class Routes {
 	
 	private static List<Routes> routesList = new ArrayList<Routes>();
-	private static Set<String> controllerKeySet = new HashSet<String>();
 	
 	static final boolean DEFAULT_MAPPING_SUPER_CLASS = false;	// 是否映射超类中的方法为路由的默认值
 	Boolean mappingSuperClass = null;							// 是否映射超类中的方法为路由
@@ -83,22 +80,22 @@ public abstract class Routes {
 	
 	/**
 	 * Add route
-	 * @param controllerKey A key can find controller
+	 * @param controllerPath path of controller
 	 * @param controllerClass Controller Class
 	 * @param viewPath View path for this Controller
 	 */
-	public Routes add(String controllerKey, Class<? extends Controller> controllerClass, String viewPath) {
-		routeItemList.add(new Route(controllerKey, controllerClass, viewPath));
+	public Routes add(String controllerPath, Class<? extends Controller> controllerClass, String viewPath) {
+		routeItemList.add(new Route(controllerPath, controllerClass, viewPath));
 		return this;
 	}
 	
 	/**
-	 * Add route. The viewPath is controllerKey
-	 * @param controllerKey A key can find controller
+	 * Add route. The viewPath is controllerPath
+	 * @param controllerPath path of controller
 	 * @param controllerClass Controller Class
 	 */
-	public Routes add(String controllerKey, Class<? extends Controller> controllerClass) {
-		return add(controllerKey, controllerClass, controllerKey);
+	public Routes add(String controllerPath, Class<? extends Controller> controllerClass) {
+		return add(controllerPath, controllerClass, controllerPath);
 	}
 	
 	/**
@@ -150,10 +147,6 @@ public abstract class Routes {
 		return routesList;
 	}
 	
-	public static Set<String> getControllerKeySet() {
-		return controllerKeySet;
-	}
-	
 	/**
 	 * 配置是否在路由映射完成之后清除内部数据，以回收内存，默认值为 false.
 	 * 
@@ -167,7 +160,6 @@ public abstract class Routes {
 	public void clear() {
 		if (clearAfterMapping) {
 			routesList = null;
-			controllerKeySet = null;
 			baseViewPath = null;
 			routeItemList = null;
 			interList = null;
@@ -176,13 +168,13 @@ public abstract class Routes {
 	
 	public static class Route {
 		
-		private String controllerKey;
+		private String controllerPath;
 		private Class<? extends Controller> controllerClass;
 		private String viewPath;
 		
-		public Route(String controllerKey, Class<? extends Controller> controllerClass, String viewPath) {
-			if (StrKit.isBlank(controllerKey)) {
-				throw new IllegalArgumentException("controllerKey can not be blank");
+		public Route(String controllerPath, Class<? extends Controller> controllerClass, String viewPath) {
+			if (StrKit.isBlank(controllerPath)) {
+				throw new IllegalArgumentException("controllerPath can not be blank");
 			}
 			if (controllerClass == null) {
 				throw new IllegalArgumentException("controllerClass can not be null");
@@ -192,21 +184,17 @@ public abstract class Routes {
 				viewPath = "/";
 			}
 			
-			this.controllerKey = processControllerKey(controllerKey);
+			this.controllerPath = processControllerPath(controllerPath);
 			this.controllerClass = controllerClass;
 			this.viewPath = processViewPath(viewPath);
 		}
 		
-		private String processControllerKey(String controllerKey) {
-			controllerKey = controllerKey.trim();
-			if (!controllerKey.startsWith("/")) {
-				controllerKey = "/" + controllerKey;
+		private String processControllerPath(String controllerPath) {
+			controllerPath = controllerPath.trim();
+			if (!controllerPath.startsWith("/")) {
+				controllerPath = "/" + controllerPath;
 			}
-			if (controllerKeySet.contains(controllerKey)) {
-				throw new IllegalArgumentException("controllerKey already exists: " + controllerKey);
-			}
-			controllerKeySet.add(controllerKey);
-			return controllerKey;
+			return controllerPath;
 		}
 		
 		private String processViewPath(String viewPath) {
@@ -220,8 +208,8 @@ public abstract class Routes {
 			return viewPath;
 		}
 		
-		public String getControllerKey() {
-			return controllerKey;
+		public String getControllerPath() {
+			return controllerPath;
 		}
 		
 		public Class<? extends Controller> getControllerClass() {
