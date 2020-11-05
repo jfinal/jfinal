@@ -189,7 +189,7 @@ public class Invocation {
 	
 	/**
 	 * Return the action key.
-	 * actionKey = controllerKey + methodName
+	 * actionKey = controllerPath + methodName
 	 */
 	public String getActionKey() {
 		if (action == null)

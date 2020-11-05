@@ -79,7 +79,7 @@ public class ActionMapping {
 				}
 				
 				Interceptor[] actionInters = interMan.buildControllerActionInterceptor(routes.getInterceptors(), controllerInters, controllerClass, method);
-				String controllerKey = route.getControllerPath();
+				String controllerPath = route.getControllerPath();
 				
 				String methodName = method.getName();
 				ActionKey ak = method.getAnnotation(ActionKey.class);
@@ -93,13 +93,13 @@ public class ActionMapping {
 						actionKey = SLASH + actionKey;
 				}
 				else if (methodName.equals("index")) {
-					actionKey = controllerKey;
+					actionKey = controllerPath;
 				}
 				else {
-					actionKey = controllerKey.equals(SLASH) ? SLASH + methodName : controllerKey + SLASH + methodName;
+					actionKey = controllerPath.equals(SLASH) ? SLASH + methodName : controllerPath + SLASH + methodName;
 				}
 				
-				Action action = new Action(controllerKey, actionKey, controllerClass, method, methodName, actionInters, route.getFinalViewPath(routes.getBaseViewPath()));
+				Action action = new Action(controllerPath, actionKey, controllerClass, method, methodName, actionInters, route.getFinalViewPath(routes.getBaseViewPath()));
 				if (mapping.put(actionKey, action) != null) {
 					throw new RuntimeException(buildMsg(actionKey, controllerClass, method));
 				}
@@ -108,7 +108,7 @@ public class ActionMapping {
 		}
 		routes.clear();
 		
-		// support url = controllerKey + urlParas with "/" of controllerKey
+		// support url = controllerPath + urlParas with "/" of controllerPath
 		Action action = mapping.get("/");
 		if (action != null) {
 			mapping.put("", action);
@@ -128,11 +128,11 @@ public class ActionMapping {
 	
 	/**
 	 * Support four types of url
-	 * 1: http://abc.com/controllerKey                 ---> 00
-	 * 2: http://abc.com/controllerKey/para            ---> 01
-	 * 3: http://abc.com/controllerKey/method          ---> 10
-	 * 4: http://abc.com/controllerKey/method/para     ---> 11
-	 * The controllerKey can also contains "/"
+	 * 1: http://abc.com/controllerPath                 ---> 00
+	 * 2: http://abc.com/controllerPath/para            ---> 01
+	 * 3: http://abc.com/controllerPath/method          ---> 10
+	 * 4: http://abc.com/controllerPath/method/para     ---> 11
+	 * The controllerPath can also contains "/"
 	 * Example: http://abc.com/uvw/xyz/method/para
 	 */
 	public Action getAction(String url, String[] urlPara) {

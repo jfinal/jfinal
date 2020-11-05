@@ -119,7 +119,7 @@ class InvocationWrapper extends Invocation {
 	
 	/**
 	 * Return the action key.
-	 * actionKey = controllerKey + methodName
+	 * actionKey = controllerPath + methodName
 	 */
 	@Override
 	public String getActionKey() {
