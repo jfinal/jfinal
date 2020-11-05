@@ -103,6 +103,14 @@ public abstract class Controller {
 		return rawData;
 	}
 	
+	public String getControllerPath() {
+		return action.getControllerPath();
+	}
+	
+	/**
+	 * 该方法已改名为 getControllerPath()
+	 */
+	@Deprecated
 	public String getControllerKey() {
 		return action.getControllerKey();
 	}

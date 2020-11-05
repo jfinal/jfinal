@@ -57,7 +57,7 @@ public class Action {
 	}
 	
 	/**
-	 * 该方法已被改名为 getControllerPath()
+	 * 该方法已改名为 getControllerPath()
 	 */
 	@Deprecated
 	public String getControllerKey() {
