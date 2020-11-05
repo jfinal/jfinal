@@ -198,12 +198,20 @@ public class Invocation {
 	}
 	
 	/**
-	 * Return the controller key.
+	 * Return the controller path.
 	 */
-	public String getControllerKey() {
+	public String getControllerPath() {
 		if (action == null)
 			throw new RuntimeException("This method can only be used for action interception");
-		return action.getControllerKey();
+		return action.getControllerPath();
+	}
+	
+	/**
+	 * 该方法已改名为 getControllerPath()
+	 */
+	@Deprecated
+	public String getControllerKey() {
+		return getControllerPath();
 	}
 	
 	/**

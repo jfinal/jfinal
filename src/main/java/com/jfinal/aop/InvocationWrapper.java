@@ -127,11 +127,11 @@ class InvocationWrapper extends Invocation {
 	}
 	
 	/**
-	 * Return the controller key.
+	 * Return the controller path.
 	 */
 	@Override
-	public String getControllerKey() {
-		return invocation.getControllerKey();
+	public String getControllerPath() {
+		return invocation.getControllerPath();
 	}
 	
 	/**
