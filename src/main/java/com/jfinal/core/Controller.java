@@ -112,7 +112,7 @@ public abstract class Controller {
 	 */
 	@Deprecated
 	public String getControllerKey() {
-		return action.getControllerKey();
+		return action.getControllerPath();
 	}
 	
 	public String getViewPath() {
