@@ -28,11 +28,11 @@ import com.jfinal.handler.Handler;
  */
 public class RoutesHandler extends Handler {
 	
-	public void addRoute(String regex, String controllerKey) {
+	public void addRoute(String regex, String controllerPath) {
 		throw new RuntimeException("Not finished");
 	}
 	
-	public void addRoute(String regex, String controllerKey, String method) {
+	public void addRoute(String regex, String controllerPath, String method) {
 		throw new RuntimeException("Not finished");
 	}
 	
