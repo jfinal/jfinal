@@ -166,6 +166,10 @@ public class TimeKit {
 	 * java.util.Date --> java.time.LocalDateTime
 	 */
 	public static LocalDateTime toLocalDateTime(Date date) {
+		if (date instanceof java.sql.Date) {
+			date = new Date(date.getTime());
+		}
+		
 		Instant instant = date.toInstant();
 		ZoneId zone = ZoneId.systemDefault();
 		return LocalDateTime.ofInstant(instant, zone);
@@ -175,6 +179,10 @@ public class TimeKit {
 	 * java.util.Date --> java.time.LocalDate
 	 */
 	public static LocalDate toLocalDate(Date date) {
+		if (date instanceof java.sql.Date) {
+			date = new Date(date.getTime());
+		}
+		
 		Instant instant = date.toInstant();
 		ZoneId zone = ZoneId.systemDefault();
 		LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
@@ -185,6 +193,10 @@ public class TimeKit {
 	 * java.util.Date --> java.time.LocalTime
 	 */
 	public static LocalTime toLocalTime(Date date) {
+		if (date instanceof java.sql.Date) {
+			date = new Date(date.getTime());
+		}
+		
 		Instant instant = date.toInstant();
 		ZoneId zone = ZoneId.systemDefault();
 		LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
