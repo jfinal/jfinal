@@ -18,9 +18,11 @@ package com.jfinal.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.InterceptorManager;
 import com.jfinal.core.Controller;
+import com.jfinal.core.PathScanner;
 import com.jfinal.kit.StrKit;
 
 /**
@@ -56,6 +58,70 @@ public abstract class Routes {
 	
 	public boolean getMappingSuperClass() {
 		return mappingSuperClass != null ? mappingSuperClass : DEFAULT_MAPPING_SUPER_CLASS;
+	}
+	
+	/**
+	 * 扫描路由
+	 * 
+	 * <pre>
+	   1：路由不拆分例子：
+	     routes.setBaseViewPath("/_view");
+	     routes.scan("com.jfinal.club.");
+	   
+	   2：前后台路由拆分例子（例子来源于俱乐部项目源码 jfinal-club）：
+		// 扫描后台路由
+		me.add(new Routes() {
+			public void config() {
+				// 添加后台管理拦截器，将拦截在此方法中注册的所有 Controller
+				addInterceptor(new AdminAuthInterceptor());
+				addInterceptor(new PjaxInterceptor());
+				
+				setBaseViewPath("/_view/_admin");
+				
+				// 如果被扫描的包在 jar 文件之中，需要添加如下配置：
+				// undertow.hotSwapClassPrefix = com.jfinal.club._admin.
+				scan("com.jfinal.club._admin.");
+			}
+		});
+		
+		
+		// 扫描前台路由
+		me.add(new Routes() {
+			public void config() {
+				setBaseViewPath("/_view");
+				
+				// 如果被扫描的包在 jar 文件之中，需要添加如下配置：
+				// undertow.hotSwapClassPrefix = com.jfinal.club.
+				scan("com.jfinal.club.", className -> {
+					// className 为当前正扫描的类名，返回 true 时表示过滤掉不扫描当前类
+					return className.startsWith("com.jfinal.club._admin.");
+				});
+			}
+		});
+		
+		注意：
+		1：拆分路由是为了可以独立配置 setBaseViewPath(...)、addInterceptor(...)
+		2：scan(...) 方法要添加过滤，过滤掉后台路由，否则后台路由会被扫描到，
+		   造成 baseViewPath 以及 routes 级别的拦截器配置错误
+		3: 由于 scan(...) 内部避免了重复扫描同一个类，所以需要将扫描前台路由代码
+		   放在扫描后台路由之前才能验证没有过滤造成的后果
+		
+	 * </pre>
+	 * 
+	 * @param basePackage 进行扫描的基础 package，仅扫描该包及其子包下面的路由
+	 * @param filter 用于过滤不需要被扫描的目标
+	 */
+	public Routes scan(String basePackage, Predicate<String> filter) {
+		new PathScanner(basePackage, this, filter).scan();
+		return this;
+	}
+	
+	/**
+	 * 扫描路由
+	 * @param basePackage 进行扫描的基础 package，仅扫描该包及其子包下面的路由
+	 */
+	public Routes scan(String basePackage) {
+		return scan(basePackage, null);
 	}
 	
 	/**
