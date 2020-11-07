@@ -1,5 +1,6 @@
 package com.jfinal.aop;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -10,6 +11,7 @@ import java.lang.annotation.Target;
  * Inject is used to inject dependent object
  */
 @Inherited
+@Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 public @interface Inject {
