@@ -223,7 +223,7 @@ public class PathScanner {
 	/**
 	 * 支持路径中存在空格百分号等等字符
 	 */
-	private static String decodeUrl(String url) {
+	private String decodeUrl(String url) {
 		try {
 			return URLDecoder.decode(url, "UTF-8");
 		} catch (java.io.UnsupportedEncodingException e) {
