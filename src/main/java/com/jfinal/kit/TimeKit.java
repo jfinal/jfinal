@@ -166,6 +166,7 @@ public class TimeKit {
 	 * java.util.Date --> java.time.LocalDateTime
 	 */
 	public static LocalDateTime toLocalDateTime(Date date) {
+		// java.sql.Date 不支持 toInstant()，需要先转换成 java.util.Date
 		if (date instanceof java.sql.Date) {
 			date = new Date(date.getTime());
 		}
@@ -179,6 +180,7 @@ public class TimeKit {
 	 * java.util.Date --> java.time.LocalDate
 	 */
 	public static LocalDate toLocalDate(Date date) {
+		// java.sql.Date 不支持 toInstant()，需要先转换成 java.util.Date
 		if (date instanceof java.sql.Date) {
 			date = new Date(date.getTime());
 		}
@@ -193,6 +195,7 @@ public class TimeKit {
 	 * java.util.Date --> java.time.LocalTime
 	 */
 	public static LocalTime toLocalTime(Date date) {
+		// java.sql.Date 不支持 toInstant()，需要先转换成 java.util.Date
 		if (date instanceof java.sql.Date) {
 			date = new Date(date.getTime());
 		}
