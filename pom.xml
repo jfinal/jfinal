@@ -114,6 +114,14 @@
 			<scope>provided</scope>
 		</dependency>
 		
+		<!-- HikariCP 数据源连接池 -->
+		<dependency>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<version>2.3.13</version>
+			<scope>provided</scope>
+		</dependency>
+		
 		<!-- c3p0 数据源连接池 -->
 		<dependency>
 			<groupId>com.mchange</groupId>
@@ -127,14 +135,6 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 			<version>1.2.73</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<!-- HikariCP 数据源连接池 -->
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-			<version>2.3.13</version>
 			<scope>provided</scope>
 		</dependency>
 		
