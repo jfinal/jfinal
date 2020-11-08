@@ -92,7 +92,9 @@ public class PathScanner {
 	private List<URL> getResources() throws IOException {
 		List<URL> ret = new ArrayList<>();
 		
-		Set<String> urlSet = new HashSet<>();			// 用于去除重复
+		// 用于去除重复
+		Set<String> urlSet = new HashSet<>();
+		// ClassLoader.getResources(...) 参数只支持包路径分隔符为 '/'，而不支持 '\'
 		Enumeration<URL> urls = getClassLoader().getResources(basePackage);
 		while (urls.hasMoreElements()) {
 			URL url = urls.nextElement();
