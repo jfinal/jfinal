@@ -109,10 +109,10 @@ public abstract class Routes {
 	 * </pre>
 	 * 
 	 * @param basePackage 进行扫描的基础 package，仅扫描该包及其子包下面的路由
-	 * @param filter 用于过滤不需要被扫描的目标
+	 * @param classFilter 过滤不需要被扫描的类
 	 */
-	public Routes scan(String basePackage, Predicate<String> filter) {
-		new PathScanner(basePackage, this, filter).scan();
+	public Routes scan(String basePackage, Predicate<String> classFilter) {
+		new PathScanner(basePackage, this, classFilter).scan();
 		return this;
 	}
 	

@@ -46,14 +46,14 @@ public class PathScanner {
 	private String basePackage;
 	
 	// 过滤不需要被扫描的类
-	private Predicate<String> filter;
+	private Predicate<String> classFilter;
 	
 	// 调用 Routes.add(...) 添加扫描结果
 	private Routes routes;
 	
 	private ClassLoader classLoader;
 	
-	public PathScanner(String basePackage, Routes routes, Predicate<String> filter) {
+	public PathScanner(String basePackage, Routes routes, Predicate<String> classFilter) {
 		if (StrKit.isBlank(basePackage)) {
 			throw new IllegalArgumentException("basePackage can not be blank");
 		}
@@ -67,7 +67,7 @@ public class PathScanner {
 		
 		this.basePackage = bp;
 		this.routes = routes;
-		this.filter = filter;
+		this.classFilter = classFilter;
 	}
 	
 	public PathScanner(String basePackage, Routes routes) {
@@ -183,7 +183,7 @@ public class PathScanner {
 	@SuppressWarnings("unchecked")
 	private void scanController(String className) {
 		// 过滤不需要扫描的 className
-		if (filter != null && filter.test(className)) {
+		if (classFilter != null && classFilter.test(className)) {
 			return ;
 		}
 		
