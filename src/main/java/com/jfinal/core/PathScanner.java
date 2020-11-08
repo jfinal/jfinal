@@ -127,8 +127,9 @@ public class PathScanner {
 				continue ;
 			}
 			
-			if ( ! urlSet.contains(url.toString()) ) {
-				urlSet.add(url.toString());
+			String urlStr = url.toString();
+			if ( ! urlSet.contains(urlStr) ) {
+				urlSet.add(urlStr);
 				ret.add(url);
 			}
 		}
