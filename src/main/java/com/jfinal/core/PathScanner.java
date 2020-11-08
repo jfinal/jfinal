@@ -42,6 +42,9 @@ public class PathScanner {
 	// 存放已被扫描过的 controller，避免被多次扫描
 	private static final Set<Class<?>> scannedController = new HashSet<>();
 	
+	// 过滤不需要被扫描的资源
+	private static Predicate<URL> resourceFilter = null;
+	
 	// 扫描的基础 package，只扫描该包及其子包之下的类
 	private String basePackage;
 	
@@ -74,6 +77,10 @@ public class PathScanner {
 		this(basePackage, routes, null);
 	}
 	
+	public static void setResourceFilter(Predicate<URL> resourceFilter) {
+		PathScanner.resourceFilter = resourceFilter;
+	}
+	
 	public void scan() {
 		try {
 			classLoader = getClassLoader();
@@ -98,6 +105,12 @@ public class PathScanner {
 		Enumeration<URL> urls = classLoader.getResources(basePackage);
 		while (urls.hasMoreElements()) {
 			URL url = urls.nextElement();
+			
+			// 过滤不需要扫描的资源
+			if (resourceFilter != null && resourceFilter.test(url)) {
+				continue ;
+			}
+			
 			if ( ! urlSet.contains(url.toString()) ) {
 				urlSet.add(url.toString());
 				ret.add(url);
