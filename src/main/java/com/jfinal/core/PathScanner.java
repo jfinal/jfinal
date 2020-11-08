@@ -124,8 +124,8 @@ public class PathScanner {
 			try (JarFile jarFile = jarUrlConn.getJarFile()) {
 				Enumeration<JarEntry> jarFileEntries = jarFile.entries();
 				while (jarFileEntries.hasMoreElements()) {
-					JarEntry je = jarFileEntries.nextElement();
-					String en = je.getName();
+					JarEntry jarEntry = jarFileEntries.nextElement();
+					String en = jarEntry.getName();
 					// 只扫描 basePackage 之下的类
 					if (en.endsWith(".class") && en.startsWith(basePackage)) {
 						// JarEntry.getName() 返回值中的路径分隔符在所有操作系统下都是 '/'
