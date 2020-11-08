@@ -77,6 +77,22 @@ public class PathScanner {
 		this(basePackage, routes, null);
 	}
 	
+	/**
+	 * resourceFilter 过滤不需要被扫描的资源，提升安全性
+	 * 
+	 * <pre>
+	 * 例子:
+	 *  PathScanner.setResourceFilter(url -> {
+	 *      String res = url.toString();
+	 *      // 如果资源在 jar 包之中，并且 jar 包文件名不包含 "my-project" 则过滤掉
+	 *      // 避免第三方 jar 包中的 Controller 被扫描到，提高安全性
+	 *      if (res.contains(".jar") && !res.contains("my-project")) {
+	 *          return true;
+	 *      }
+	 *      return false;
+	 *  });
+	 * </pre>
+	 */
 	public static void setResourceFilter(Predicate<URL> resourceFilter) {
 		PathScanner.resourceFilter = resourceFilter;
 	}
