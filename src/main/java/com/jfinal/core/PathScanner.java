@@ -118,13 +118,10 @@ public class PathScanner {
 	}
 	
 	private void scanJar(URL url) throws IOException {
-		JarFile jarFile = null;
-		try {
-			URLConnection urlConn = url.openConnection();
-			if (urlConn instanceof JarURLConnection) {
-				JarURLConnection jarUrlConn = (JarURLConnection)urlConn;
-				jarFile = jarUrlConn.getJarFile();
-				
+		URLConnection urlConn = url.openConnection();
+		if (urlConn instanceof JarURLConnection) {
+			JarURLConnection jarUrlConn = (JarURLConnection)urlConn;
+			try (JarFile jarFile = jarUrlConn.getJarFile()) {
 				Enumeration<JarEntry> jarFileEntries = jarFile.entries();
 				while (jarFileEntries.hasMoreElements()) {
 					JarEntry je = jarFileEntries.nextElement();
@@ -136,10 +133,6 @@ public class PathScanner {
 						scanController(en);
 					}
 				}
-			}
-		} finally {
-			if (jarFile != null) {
-				jarFile.close();
 			}
 		}
 	}
