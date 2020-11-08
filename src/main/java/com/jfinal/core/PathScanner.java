@@ -131,7 +131,8 @@ public class PathScanner {
 					String en = je.getName();
 					// 只扫描 basePackage 之下的类
 					if (en.endsWith(".class") && en.startsWith(basePackage)) {
-						en = en.substring(0, en.length() - 6).replace(File.separatorChar, '.');
+						// JarEntry.getName() 返回值中的路径分隔符在所有操作系统下都是 '/'
+						en = en.substring(0, en.length() - 6).replace('/', '.');
 						scanController(en);
 					}
 				}
