@@ -170,16 +170,14 @@ public class PathScanner {
 	}
 	
 	private String getClassPath(File file) {
-		// 将 basePackage 中的路径分隔字符转换成与 OS 相同，方便处理路径
-		String bp = basePackage.replace('/', File.separatorChar);
-		
 		String ret = file.getAbsolutePath();
-		
 		// 添加后缀，以便后续的 indexOf(bp) 可以正确获得下标值，因为 bp 确定有后缀
 		if ( ! ret.endsWith(File.separator) ) {
 			ret = ret + File.separator;
 		}
 		
+		// 将 basePackage 中的路径分隔字符转换成与 OS 相同，方便处理路径
+		String bp = basePackage.replace('/', File.separatorChar);
 		int index = ret.lastIndexOf(bp);
 		if (index != -1) {
 			ret = ret.substring(0, index);
