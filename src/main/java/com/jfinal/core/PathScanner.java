@@ -180,12 +180,12 @@ public class PathScanner {
 			ret = ret + File.separator;
 		}
 		
-		int index = ret.indexOf(bp);
-		if (index != 0) {
+		int index = ret.lastIndexOf(bp);
+		if (index != -1) {
 			ret = ret.substring(0, index);
 		}
 		
-		return ret.endsWith(File.separator) ? ret : ret + File.separator;
+		return ret;
 	}
 	
 	@SuppressWarnings("unchecked")
