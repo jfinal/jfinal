@@ -226,9 +226,12 @@ public class PathScanner {
 			if (Modifier.isPublic(mod) && ! Modifier.isAbstract(mod)) {
 				Path path = c.getAnnotation(Path.class);
 				if (path != null) {
-					String pa = path.value();
-					String vp = path.viewPath();
-					routes.add(pa, (Class<? extends Controller>)c, vp.length() != 0 ? vp : pa);
+					String viewPath = path.viewPath();
+					if (Path.NULL_VIEW_PATH.equals(viewPath)) {
+						routes.add(path.value(), (Class<? extends Controller>)c);
+					} else {
+						routes.add(path.value(), (Class<? extends Controller>)c, viewPath);
+					}
 				}
 			}
 		}

@@ -32,7 +32,27 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface Path {
+	
+	/**
+	 * 由于空字符串可以被用于配置 viewPath，所以使用如下字符串表示默认值
+	 */
+	String NULL_VIEW_PATH = "*";
+	
+	/**
+	 * 配置 Controller 的访问路径 controllerPath，该路径与 Controller 中的方法名组合成 actionKey
+	 */
 	String value();
-	String viewPath() default "";
+	
+	/**
+	 * 配置 Controller.render(String) 所使用模板文件的路径，省略该配置时默认使用 controllerPath
+	 */
+	String viewPath() default NULL_VIEW_PATH;
 }
+
+
+
+
+
+
+
 
