@@ -95,7 +95,7 @@ public class PathScanner {
 		// 用于去除重复
 		Set<String> urlSet = new HashSet<>();
 		// ClassLoader.getResources(...) 参数只支持包路径分隔符为 '/'，而不支持 '\'
-		Enumeration<URL> urls = getClassLoader().getResources(basePackage);
+		Enumeration<URL> urls = classLoader.getResources(basePackage);
 		while (urls.hasMoreElements()) {
 			URL url = urls.nextElement();
 			if ( ! urlSet.contains(url.toString()) ) {
