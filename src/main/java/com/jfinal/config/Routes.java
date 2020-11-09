@@ -73,14 +73,14 @@ public abstract class Routes {
 		me.add(new Routes() {
 			public void config() {
 				// 添加后台管理拦截器，将拦截在此方法中注册的所有 Controller
-				addInterceptor(new AdminAuthInterceptor());
-				addInterceptor(new PjaxInterceptor());
+				this.addInterceptor(new AdminAuthInterceptor());
+				this.addInterceptor(new PjaxInterceptor());
 				
-				setBaseViewPath("/_view/_admin");
+				this.setBaseViewPath("/_view/_admin");
 				
 				// 如果被扫描的包在 jar 文件之中，需要添加如下配置：
 				// undertow.hotSwapClassPrefix = com.jfinal.club._admin.
-				scan("com.jfinal.club._admin.");
+				this.scan("com.jfinal.club._admin.");
 			}
 		});
 		
@@ -88,11 +88,11 @@ public abstract class Routes {
 		// 扫描前台路由
 		me.add(new Routes() {
 			public void config() {
-				setBaseViewPath("/_view");
+				this.setBaseViewPath("/_view");
 				
 				// 如果被扫描的包在 jar 文件之中，需要添加如下配置：
 				// undertow.hotSwapClassPrefix = com.jfinal.club.
-				scan("com.jfinal.club.", className -> {
+				this.scan("com.jfinal.club.", className -> {
 					// className 为当前正扫描的类名，返回 true 时表示过滤掉不扫描当前类
 					return className.startsWith("com.jfinal.club._admin.");
 				});
