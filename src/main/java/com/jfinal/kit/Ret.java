@@ -57,8 +57,10 @@ import com.jfinal.json.Json;
  *   
  * </pre>
  */
-@SuppressWarnings({"serial", "rawtypes", "unchecked"})
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class Ret extends HashMap {
+	
+	private static final long serialVersionUID = -3021472182023759198L;
 	
 	private static final String STATE = "state";
 	private static final String STATE_OK = "ok";

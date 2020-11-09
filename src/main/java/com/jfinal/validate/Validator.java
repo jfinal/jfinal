@@ -167,10 +167,18 @@ public abstract class Validator implements Interceptor {
 	}
 	
 	/**
-	 * Return the controller key of this action.
+	 * Return the controller path of this action.
 	 */
+	protected String getControllerPath() {
+		return invocation.getControllerPath();
+	}
+	
+	/**
+	 * 该方法已改名为 getControllerPath()
+	 */
+	@Deprecated
 	protected String getControllerKey() {
-		return invocation.getControllerKey();
+		return invocation.getControllerPath();
 	}
 	
 	/**

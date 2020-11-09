@@ -27,7 +27,7 @@ import com.jfinal.core.paragetter.ParaProcessorBuilder;
 public class Action {
 	
 	private final Class<? extends Controller> controllerClass;
-	private final String controllerKey;
+	private final String controllerPath;
 	private final String actionKey;
 	private final Method method;
 	private final String methodName;
@@ -36,8 +36,8 @@ public class Action {
 	
 	private final ParaProcessor parameterGetter;
 	
-	public Action(String controllerKey, String actionKey, Class<? extends Controller> controllerClass, Method method, String methodName, Interceptor[] interceptors, String viewPath) {
-		this.controllerKey = controllerKey;
+	public Action(String controllerPath, String actionKey, Class<? extends Controller> controllerClass, Method method, String methodName, Interceptor[] interceptors, String viewPath) {
+		this.controllerPath = controllerPath;
 		this.actionKey = actionKey;
 		this.controllerClass = controllerClass;
 		this.method = method;
@@ -52,8 +52,16 @@ public class Action {
 		return controllerClass;
 	}
 	
+	public String getControllerPath() {
+		return controllerPath;
+	}
+	
+	/**
+	 * 该方法已改名为 getControllerPath()
+	 */
+	@Deprecated
 	public String getControllerKey() {
-		return controllerKey;
+		return controllerPath;
 	}
 	
 	public String getActionKey() {

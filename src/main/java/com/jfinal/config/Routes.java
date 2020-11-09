@@ -17,12 +17,12 @@
 package com.jfinal.config;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.function.Predicate;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.InterceptorManager;
 import com.jfinal.core.Controller;
+import com.jfinal.core.PathScanner;
 import com.jfinal.kit.StrKit;
 
 /**
@@ -31,7 +31,6 @@ import com.jfinal.kit.StrKit;
 public abstract class Routes {
 	
 	private static List<Routes> routesList = new ArrayList<Routes>();
-	private static Set<String> controllerKeySet = new HashSet<String>();
 	
 	static final boolean DEFAULT_MAPPING_SUPER_CLASS = false;	// 是否映射超类中的方法为路由的默认值
 	Boolean mappingSuperClass = null;							// 是否映射超类中的方法为路由
@@ -62,6 +61,70 @@ public abstract class Routes {
 	}
 	
 	/**
+	 * 扫描路由
+	 * 
+	 * <pre>
+	   1：路由不拆分例子：
+	     routes.setBaseViewPath("/_view");
+	     routes.scan("com.jfinal.club.");
+	   
+	   2：前后台路由拆分例子（例子来源于俱乐部项目源码 jfinal-club）：
+		// 扫描后台路由
+		me.add(new Routes() {
+			public void config() {
+				// 添加后台管理拦截器，将拦截在此方法中注册的所有 Controller
+				addInterceptor(new AdminAuthInterceptor());
+				addInterceptor(new PjaxInterceptor());
+				
+				setBaseViewPath("/_view/_admin");
+				
+				// 如果被扫描的包在 jar 文件之中，需要添加如下配置：
+				// undertow.hotSwapClassPrefix = com.jfinal.club._admin.
+				scan("com.jfinal.club._admin.");
+			}
+		});
+		
+		
+		// 扫描前台路由
+		me.add(new Routes() {
+			public void config() {
+				setBaseViewPath("/_view");
+				
+				// 如果被扫描的包在 jar 文件之中，需要添加如下配置：
+				// undertow.hotSwapClassPrefix = com.jfinal.club.
+				scan("com.jfinal.club.", className -> {
+					// className 为当前正扫描的类名，返回 true 时表示过滤掉不扫描当前类
+					return className.startsWith("com.jfinal.club._admin.");
+				});
+			}
+		});
+		
+		注意：
+		1：拆分路由是为了可以独立配置 setBaseViewPath(...)、addInterceptor(...)
+		2：scan(...) 方法要添加过滤，过滤掉后台路由，否则后台路由会被扫描到，
+		   造成 baseViewPath 以及 routes 级别的拦截器配置错误
+		3: 由于 scan(...) 内部避免了重复扫描同一个类，所以需要将扫描前台路由代码
+		   放在扫描后台路由之前才能验证没有过滤造成的后果
+		
+	 * </pre>
+	 * 
+	 * @param basePackage 进行扫描的基础 package，仅扫描该包及其子包下面的路由
+	 * @param classFilter 过滤不需要被扫描的类
+	 */
+	public Routes scan(String basePackage, Predicate<String> classFilter) {
+		new PathScanner(basePackage, this, classFilter).scan();
+		return this;
+	}
+	
+	/**
+	 * 扫描路由
+	 * @param basePackage 进行扫描的基础 package，仅扫描该包及其子包下面的路由
+	 */
+	public Routes scan(String basePackage) {
+		return scan(basePackage, null);
+	}
+	
+	/**
 	 * Add Routes
 	 */
 	public Routes add(Routes routes) {
@@ -83,22 +146,22 @@ public abstract class Routes {
 	
 	/**
 	 * Add route
-	 * @param controllerKey A key can find controller
+	 * @param controllerPath path of controller
 	 * @param controllerClass Controller Class
 	 * @param viewPath View path for this Controller
 	 */
-	public Routes add(String controllerKey, Class<? extends Controller> controllerClass, String viewPath) {
-		routeItemList.add(new Route(controllerKey, controllerClass, viewPath));
+	public Routes add(String controllerPath, Class<? extends Controller> controllerClass, String viewPath) {
+		routeItemList.add(new Route(controllerPath, controllerClass, viewPath));
 		return this;
 	}
 	
 	/**
-	 * Add route. The viewPath is controllerKey
-	 * @param controllerKey A key can find controller
+	 * Add route. The viewPath is controllerPath
+	 * @param controllerPath path of controller
 	 * @param controllerClass Controller Class
 	 */
-	public Routes add(String controllerKey, Class<? extends Controller> controllerClass) {
-		return add(controllerKey, controllerClass, controllerKey);
+	public Routes add(String controllerPath, Class<? extends Controller> controllerClass) {
+		return add(controllerPath, controllerClass, controllerPath);
 	}
 	
 	/**
@@ -150,10 +213,6 @@ public abstract class Routes {
 		return routesList;
 	}
 	
-	public static Set<String> getControllerKeySet() {
-		return controllerKeySet;
-	}
-	
 	/**
 	 * 配置是否在路由映射完成之后清除内部数据，以回收内存，默认值为 false.
 	 * 
@@ -167,7 +226,6 @@ public abstract class Routes {
 	public void clear() {
 		if (clearAfterMapping) {
 			routesList = null;
-			controllerKeySet = null;
 			baseViewPath = null;
 			routeItemList = null;
 			interList = null;
@@ -176,13 +234,13 @@ public abstract class Routes {
 	
 	public static class Route {
 		
-		private String controllerKey;
+		private String controllerPath;
 		private Class<? extends Controller> controllerClass;
 		private String viewPath;
 		
-		public Route(String controllerKey, Class<? extends Controller> controllerClass, String viewPath) {
-			if (StrKit.isBlank(controllerKey)) {
-				throw new IllegalArgumentException("controllerKey can not be blank");
+		public Route(String controllerPath, Class<? extends Controller> controllerClass, String viewPath) {
+			if (StrKit.isBlank(controllerPath)) {
+				throw new IllegalArgumentException("controllerPath can not be blank");
 			}
 			if (controllerClass == null) {
 				throw new IllegalArgumentException("controllerClass can not be null");
@@ -192,21 +250,17 @@ public abstract class Routes {
 				viewPath = "/";
 			}
 			
-			this.controllerKey = processControllerKey(controllerKey);
+			this.controllerPath = processControllerPath(controllerPath);
 			this.controllerClass = controllerClass;
 			this.viewPath = processViewPath(viewPath);
 		}
 		
-		private String processControllerKey(String controllerKey) {
-			controllerKey = controllerKey.trim();
-			if (!controllerKey.startsWith("/")) {
-				controllerKey = "/" + controllerKey;
+		private String processControllerPath(String controllerPath) {
+			controllerPath = controllerPath.trim();
+			if (!controllerPath.startsWith("/")) {
+				controllerPath = "/" + controllerPath;
 			}
-			if (controllerKeySet.contains(controllerKey)) {
-				throw new IllegalArgumentException("controllerKey already exists: " + controllerKey);
-			}
-			controllerKeySet.add(controllerKey);
-			return controllerKey;
+			return controllerPath;
 		}
 		
 		private String processViewPath(String viewPath) {
@@ -220,8 +274,8 @@ public abstract class Routes {
 			return viewPath;
 		}
 		
-		public String getControllerKey() {
-			return controllerKey;
+		public String getControllerPath() {
+			return controllerPath;
 		}
 		
 		public Class<? extends Controller> getControllerClass() {

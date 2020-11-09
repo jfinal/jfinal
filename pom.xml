@@ -4,7 +4,7 @@
 	
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
-	<version>4.9.02</version>
+	<version>4.9.03</version>
 	<packaging>jar</packaging>
 	
 	<name>JFinal</name>
@@ -98,11 +98,11 @@
 			<scope>provided</scope>
 		</dependency>
 		
-		<!-- c3p0 数据源连接池 -->
+		<!-- cos 文件上传 -->
 		<dependency>
-			<groupId>com.mchange</groupId>
-			<artifactId>c3p0</artifactId>
-			<version>0.9.5.3</version>
+			<groupId>com.jfinal</groupId>
+			<artifactId>cos</artifactId>
+			<version>2020.4</version>
 			<scope>provided</scope>
 		</dependency>
 		
@@ -114,19 +114,27 @@
 			<scope>provided</scope>
 		</dependency>
 		
-		<!-- fastjson json 转换 -->
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>1.2.73</version>
-			<scope>provided</scope>
-		</dependency>
-		
 		<!-- HikariCP 数据源连接池 -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<version>2.3.13</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- c3p0 数据源连接池 -->
+		<dependency>
+			<groupId>com.mchange</groupId>
+			<artifactId>c3p0</artifactId>
+			<version>0.9.5.3</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- fastjson json 转换 -->
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.73</version>
 			<scope>provided</scope>
 		</dependency>
 		
@@ -165,14 +173,6 @@
 			<groupId>org.apache.velocity</groupId>
 			<artifactId>velocity-tools</artifactId>
 			<version>2.0</version>
-			<scope>provided</scope>
-		</dependency>
-		
-		<!-- cos 文件上传 -->
-		<dependency>
-			<groupId>com.jfinal</groupId>
-			<artifactId>cos</artifactId>
-			<version>2020.4</version>
 			<scope>provided</scope>
 		</dependency>
 		

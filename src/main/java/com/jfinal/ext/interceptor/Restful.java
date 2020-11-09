@@ -78,29 +78,29 @@ public class Restful implements Interceptor {
 			return ;
 		}
 		
-		String controllerKey = inv.getControllerKey();
+		String controllerPath = inv.getControllerPath();
 		String method = controller.getRequest().getMethod().toUpperCase();
 		String urlPara = controller.getPara();
 		if ("GET".equals(method)) {
 			if (urlPara != null && !"edit".equals(methodName)) {
 				controller.setAttr(isRestfulForwardKey, Boolean.TRUE);
-				controller.forwardAction(controllerKey + "/show/" + urlPara);
+				controller.forwardAction(controllerPath + "/show/" + urlPara);
 				return ;
 			}
 		}
 		else if ("POST".equals(method)) {
 			controller.setAttr(isRestfulForwardKey, Boolean.TRUE);
-			controller.forwardAction(controllerKey + "/save");
+			controller.forwardAction(controllerPath + "/save");
 			return ;
 		}
 		else if ("PUT".equals(method)) {
 			controller.setAttr(isRestfulForwardKey, Boolean.TRUE);
-			controller.forwardAction(controllerKey + "/update/" + urlPara);
+			controller.forwardAction(controllerPath + "/update/" + urlPara);
 			return ;
 		}
 		else if ("DELETE".equals(method)) {
 			controller.setAttr(isRestfulForwardKey, Boolean.TRUE);
-			controller.forwardAction(controllerKey + "/delete/" + urlPara);
+			controller.forwardAction(controllerPath + "/delete/" + urlPara);
 			return ;
 		}
 		

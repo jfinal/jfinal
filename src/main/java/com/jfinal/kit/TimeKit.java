@@ -80,7 +80,7 @@ public class TimeKit {
 	}
 	
 	/**
-	 * LocalDateTime 按指定 pattern 转换成 String
+	 * 按指定 pattern 将 LocalDateTime 转换成 String
 	 * 例如：format(LocalDateTime.now(), "yyyy-MM-dd HH:mm:ss")
 	 */
 	public static String format(LocalDateTime localDateTime, String pattern) {
@@ -88,26 +88,25 @@ public class TimeKit {
 	}
 	
 	/**
-	 * LocalDate 按指定 pattern 转换成 String
+	 * 按指定 pattern 将 LocalDate 转换成 String
 	 */
 	public static String format(LocalDate localDate, String pattern) {
 		return localDate.format(getDateTimeFormatter(pattern));
 	}
 	
 	/**
-	 * LocalTime 按指定 pattern 转换成 String
+	 * 按指定 pattern 将 LocalTime 转换成 String
 	 */
 	public static String format(LocalTime localTime, String pattern) {
 		return localTime.format(getDateTimeFormatter(pattern));
 	}
 	
 	/**
-	 * Date 按指定 pattern 转换成 String
+	 * 按指定 pattern 将 Date 转换成 String
 	 * 例如：format(new Date(), "yyyy-MM-dd HH:mm:ss")
 	 */
 	public static String format(Date date, String pattern) {
-		java.text.SimpleDateFormat df = new java.text.SimpleDateFormat(pattern);
-		return df.format(date);
+		return getSimpleDateFormat(pattern).format(date);
 	}
 	
 	/**
@@ -115,8 +114,7 @@ public class TimeKit {
 	 */
 	public static Date parse(String dateString, String pattern) {
 		try {
-			java.text.SimpleDateFormat df = new java.text.SimpleDateFormat(pattern);
-			return df.parse(dateString);
+			return getSimpleDateFormat(pattern).parse(dateString);
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
@@ -168,6 +166,11 @@ public class TimeKit {
 	 * java.util.Date --> java.time.LocalDateTime
 	 */
 	public static LocalDateTime toLocalDateTime(Date date) {
+		// java.sql.Date 不支持 toInstant()，需要先转换成 java.util.Date
+		if (date instanceof java.sql.Date) {
+			date = new Date(date.getTime());
+		}
+		
 		Instant instant = date.toInstant();
 		ZoneId zone = ZoneId.systemDefault();
 		return LocalDateTime.ofInstant(instant, zone);
@@ -177,6 +180,11 @@ public class TimeKit {
 	 * java.util.Date --> java.time.LocalDate
 	 */
 	public static LocalDate toLocalDate(Date date) {
+		// java.sql.Date 不支持 toInstant()，需要先转换成 java.util.Date
+		if (date instanceof java.sql.Date) {
+			date = new Date(date.getTime());
+		}
+		
 		Instant instant = date.toInstant();
 		ZoneId zone = ZoneId.systemDefault();
 		LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);
@@ -187,6 +195,11 @@ public class TimeKit {
 	 * java.util.Date --> java.time.LocalTime
 	 */
 	public static LocalTime toLocalTime(Date date) {
+		// java.sql.Date 不支持 toInstant()，需要先转换成 java.util.Date
+		if (date instanceof java.sql.Date) {
+			date = new Date(date.getTime());
+		}
+		
 		Instant instant = date.toInstant();
 		ZoneId zone = ZoneId.systemDefault();
 		LocalDateTime localDateTime = LocalDateTime.ofInstant(instant, zone);

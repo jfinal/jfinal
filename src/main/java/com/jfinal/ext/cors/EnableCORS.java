@@ -23,6 +23,7 @@ import java.lang.annotation.*;
  * 每个参数意义的详情 : https://developer.mozilla.org/en-US/docs/Glossary/CORS
  */
 @Inherited
+@Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface EnableCORS {

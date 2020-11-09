@@ -26,8 +26,7 @@ import com.jfinal.log.Log;
  *      与方法信息，LogKit 可以做成通过反射机制来输出类信息与方法信息，但会损失性能
  *      
  *      用户自己的代码中应该使用如下形式来做日志：
- *        Log log = Log.getLog(...);
- *        log.error(...);
+ *        Log.getLog(...).error(...);
  */
 public class LogKit {
 	

@@ -79,6 +79,19 @@ public class StrKit {
 		return true;
 	}
 	
+	public static boolean hasBlank(String... strings) {
+		if (strings == null || strings.length == 0) {
+			return true;
+		}
+		
+		for (String str : strings) {
+			if (isBlank(str)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public static boolean notNull(Object... paras) {
 		if (paras == null) {
 			return false;
