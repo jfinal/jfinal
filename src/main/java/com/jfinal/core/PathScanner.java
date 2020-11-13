@@ -240,11 +240,9 @@ public class PathScanner {
 	private Class<?> loadClass(String className) {
 		try {
 			return classLoader.loadClass(className);
-		} catch (NoClassDefFoundError | UnsupportedClassVersionError e) {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-		return null;
 	}
 	
 	/**
