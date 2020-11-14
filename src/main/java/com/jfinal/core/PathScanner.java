@@ -240,7 +240,7 @@ public class PathScanner {
 	private Class<?> loadClass(String className) {
 		try {
 			return classLoader.loadClass(className);
-		} catch (Exception e) {
+		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
