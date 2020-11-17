@@ -18,6 +18,7 @@ package com.jfinal.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Modifier;
 import java.net.JarURLConnection;
 import java.net.URL;
@@ -240,11 +241,9 @@ public class PathScanner {
 	private Class<?> loadClass(String className) {
 		try {
 			return classLoader.loadClass(className);
-		} catch (NoClassDefFoundError | UnsupportedClassVersionError e) {
-		} catch (Exception e) {
+		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
-		return null;
 	}
 	
 	/**
@@ -253,7 +252,7 @@ public class PathScanner {
 	private String decodeUrl(String url) {
 		try {
 			return URLDecoder.decode(url, "UTF-8");
-		} catch (java.io.UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
 	}
