@@ -18,6 +18,7 @@ package com.jfinal.plugin.activerecord;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +118,7 @@ public class DbTemplate {
 		return db.queryDate(sqlPara.getSql(), sqlPara.getPara());
 	}
 	
-	public java.sql.Timestamp queryTimestamp() {
+	public Timestamp queryTimestamp() {
 		return db.queryTimestamp(sqlPara.getSql(), sqlPara.getPara());
 	}
 	
