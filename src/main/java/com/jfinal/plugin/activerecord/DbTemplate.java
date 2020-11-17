@@ -18,6 +18,7 @@ package com.jfinal.plugin.activerecord;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -100,12 +101,24 @@ public class DbTemplate {
 		return db.queryLong(sqlPara.getSql(), sqlPara.getPara());
 	}
 	
+	public Double queryDouble() {
+		return db.queryDouble(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public Float queryFloat() {
+		return db.queryFloat(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
 	public BigDecimal queryBigDecimal() {
 		return db.queryBigDecimal(sqlPara.getSql(), sqlPara.getPara());
 	}
 	
 	public BigInteger queryBigInteger() {
 		return db.queryBigInteger(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public Date queryDate() {
+		return db.queryDate(sqlPara.getSql(), sqlPara.getPara());
 	}
 	
 	// ---------
