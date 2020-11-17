@@ -105,10 +105,6 @@ public class DbTemplate {
 		return db.queryDouble(sqlPara.getSql(), sqlPara.getPara());
 	}
 	
-	public Float queryFloat() {
-		return db.queryFloat(sqlPara.getSql(), sqlPara.getPara());
-	}
-	
 	public BigDecimal queryBigDecimal() {
 		return db.queryBigDecimal(sqlPara.getSql(), sqlPara.getPara());
 	}
@@ -119,6 +115,14 @@ public class DbTemplate {
 	
 	public Date queryDate() {
 		return db.queryDate(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public java.sql.Timestamp queryTimestamp() {
+		return db.queryTimestamp(sqlPara.getSql(), sqlPara.getPara());
+	}
+	
+	public Boolean queryBoolean() {
+		return db.queryBoolean(sqlPara.getSql(), sqlPara.getPara());
 	}
 	
 	// ---------
