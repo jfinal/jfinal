@@ -238,6 +238,12 @@ public abstract class Routes {
 		private Class<? extends Controller> controllerClass;
 		private String viewPath;
 		
+		/**
+		 * route
+		 * @param controllerPath path of controller
+		 * @param controllerClass Controller Class
+		 * @param viewPath View path for this Controller
+		 */
 		public Route(String controllerPath, Class<? extends Controller> controllerClass, String viewPath) {
 			if (StrKit.isBlank(controllerPath)) {
 				throw new IllegalArgumentException("controllerPath can not be blank");
