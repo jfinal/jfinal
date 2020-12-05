@@ -621,6 +621,15 @@ public class Cache {
 		finally {close(jedis);}
 	}
 	
+	public Double hgetFloatCounter(Object key, Object field) {
+		Jedis jedis = getJedis();
+		try {
+			byte[] ret = jedis.hget(keyToBytes(key), fieldToBytes(field));
+			return ret != null ? Double.parseDouble(SafeEncoder.encode(ret)) : null;
+		}
+		finally {close(jedis);}
+	}
+	
 	/**
 	 * 返回列表 key 中，下标为 index 的元素。
 	 * 下标(index)参数 start 和 stop 都以 0 为底，也就是说，以 0 表示列表的第一个元素，以 1 表示列表的第二个元素，以此类推。
