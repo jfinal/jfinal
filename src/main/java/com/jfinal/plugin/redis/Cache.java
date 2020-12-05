@@ -223,6 +223,18 @@ public class Cache {
 	}
 	
 	/**
+	 * 获取记数器的值
+	 */
+	public Long getCounter(Object key) {
+		Jedis jedis = getJedis();
+		try {
+			String ret = (String)jedis.get(keyNamingPolicy.getKeyName(key));
+			return ret != null ? Long.parseLong(ret) : null;
+		}
+		finally {close(jedis);}
+	}
+	
+	/**
 	 * 将 key 所储存的值加上增量 increment 。
 	 * 如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 INCRBY 命令。
 	 * 如果值包含错误的类型，或字符串类型的值不能表示为数字，那么返回一个错误。
@@ -649,18 +661,6 @@ public class Cache {
 		Jedis jedis = getJedis();
 		try {
 			return (T)valueFromBytes(jedis.lindex(keyToBytes(key), index));
-		}
-		finally {close(jedis);}
-	}
-	
-	/**
-	 * 获取记数器的值
-	 */
-	public Long getCounter(Object key) {
-		Jedis jedis = getJedis();
-		try {
-			String ret = (String)jedis.get(keyNamingPolicy.getKeyName(key));
-			return ret != null ? Long.parseLong(ret) : null;
 		}
 		finally {close(jedis);}
 	}
