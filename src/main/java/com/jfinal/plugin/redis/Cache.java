@@ -28,6 +28,7 @@ import com.jfinal.plugin.redis.serializer.ISerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
+import redis.clients.util.SafeEncoder;
 
 /**
  * Cache.
@@ -597,8 +598,8 @@ public class Cache {
 	public Long hgetCounter(Object key, Object field) {
 		Jedis jedis = getJedis();
 		try {
-			String ret = jedis.hget(keyNamingPolicy.getKeyName(key), keyNamingPolicy.getKeyName(field));
-			return ret != null ? Long.parseLong(ret) : null;
+			byte[] ret = jedis.hget(keyToBytes(key), fieldToBytes(field));
+			return ret != null ? Long.parseLong(SafeEncoder.encode(ret)) : null;
 		}
 		finally {close(jedis);}
 	}
