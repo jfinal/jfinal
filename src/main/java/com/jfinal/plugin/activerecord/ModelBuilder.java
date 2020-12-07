@@ -75,7 +75,7 @@ public class ModelBuilder {
 			if (func == null) {
 				result.add((T)ar);
 			} else {
-				if ( ! func.apply((Model)ar) ) {
+				if ( ! func.apply(ar) ) {
 					break ;
 				}
 			}
