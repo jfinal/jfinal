@@ -743,7 +743,7 @@ public class Db {
 	 * }, sql, paras);
 	 * </pre>
 	 */
-	public void each(Function<Record, Boolean> func, String sql, Object... paras) {
+	public static void each(Function<Record, Boolean> func, String sql, Object... paras) {
 		MAIN.each(func, sql, paras);
 	}
 	
