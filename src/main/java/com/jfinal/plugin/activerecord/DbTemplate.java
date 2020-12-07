@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * DbTemplate
@@ -82,6 +83,12 @@ public class DbTemplate {
 	
 	public Page<Record> paginate(int pageNumber, int pageSize, boolean isGroupBySql) {
 		return db.paginate(pageNumber, pageSize, isGroupBySql, sqlPara);
+	}
+	
+	// ---------
+	
+	public void each(Function<Record, Boolean> func) {
+		db.each(func, sqlPara.getSql(), sqlPara.getPara());
 	}
 	
 	// ---------
