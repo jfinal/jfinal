@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.Model;
@@ -134,8 +135,17 @@ public abstract class Dialect {
 		return modelBuilder.build(rs, modelClass);
 	}
 	
+	@SuppressWarnings("rawtypes")
+	public void eachModel(ResultSet rs, Class<? extends Model> modelClass, Function<Model, Boolean> func) throws SQLException, ReflectiveOperationException {
+		modelBuilder.build(rs, modelClass, func);
+	}
+	
 	public List<Record> buildRecordList(Config config, ResultSet rs) throws SQLException {
 		return recordBuilder.build(config, rs);
+	}
+	
+	public void eachRecord(Config config, ResultSet rs, Function<Record, Boolean> func) throws SQLException {
+		recordBuilder.build(config, rs, func);
 	}
 	
 	/**

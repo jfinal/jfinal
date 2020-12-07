@@ -28,6 +28,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * ModelBuilder.
@@ -36,8 +37,13 @@ public class ModelBuilder {
 	
 	public static final ModelBuilder me = new ModelBuilder();
 	
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings({"rawtypes"})
 	public <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, ReflectiveOperationException {
+		return build(rs, modelClass, null);
+	}
+	
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass, Function<Model, Boolean> func) throws SQLException, ReflectiveOperationException {
 		List<T> result = new ArrayList<T>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
@@ -65,7 +71,14 @@ public class ModelBuilder {
 				
 				attrs.put(labelNames[i], value);
 			}
-			result.add((T)ar);
+			
+			if (func == null) {
+				result.add((T)ar);
+			} else {
+				if ( ! func.apply((Model)ar) ) {
+					break ;
+				}
+			}
 		}
 		return result;
 	}
