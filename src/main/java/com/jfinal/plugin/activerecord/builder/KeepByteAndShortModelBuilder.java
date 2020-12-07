@@ -42,13 +42,15 @@ public class KeepByteAndShortModelBuilder extends ModelBuilder {
 	
 	public static final KeepByteAndShortModelBuilder me = new KeepByteAndShortModelBuilder();
 	
+	@Override
 	@SuppressWarnings({"rawtypes"})
 	public <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, ReflectiveOperationException {
 		return build(rs, modelClass, null);
 	}
 	
+	@Override
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass, Function<Model, Boolean> func) throws SQLException, ReflectiveOperationException {
+	public <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass, Function<T, Boolean> func) throws SQLException, ReflectiveOperationException {
 		List<T> result = new ArrayList<T>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
@@ -91,7 +93,7 @@ public class KeepByteAndShortModelBuilder extends ModelBuilder {
 			if (func == null) {
 				result.add((T)ar);
 			} else {
-				if ( ! func.apply(ar) ) {
+				if ( ! func.apply((T)ar) ) {
 					break ;
 				}
 			}

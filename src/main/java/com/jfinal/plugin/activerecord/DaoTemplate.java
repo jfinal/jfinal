@@ -72,7 +72,7 @@ public class DaoTemplate<M extends Model> {
 	
 	// ---------
 	
-	public void each(Function<Model, Boolean> func) {
+	public void each(Function<M, Boolean> func) {
 		dao.each(func, sqlPara.getSql(), sqlPara.getPara());
 	}
 	

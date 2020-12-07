@@ -1104,7 +1104,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * }, sql, paras);
 	 * </pre>
 	 */
-	public void each(Function<Model, Boolean> func, String sql, Object... paras) {
+	public void each(Function<M, Boolean> func, String sql, Object... paras) {
 		Config config = _getConfig();
 		Connection conn = null;
 		try {

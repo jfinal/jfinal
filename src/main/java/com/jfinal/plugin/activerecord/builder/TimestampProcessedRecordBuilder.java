@@ -39,10 +39,12 @@ public class TimestampProcessedRecordBuilder extends RecordBuilder {
 	
 	public static final TimestampProcessedRecordBuilder me = new TimestampProcessedRecordBuilder();
 	
+	@Override
 	public List<Record> build(Config config, ResultSet rs) throws SQLException {
 		return build(config, rs, null);
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Record> build(Config config, ResultSet rs, Function<Record, Boolean> func) throws SQLException {
 		List<Record> result = new ArrayList<Record>();

@@ -136,7 +136,7 @@ public abstract class Dialect {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void eachModel(ResultSet rs, Class<? extends Model> modelClass, Function<Model, Boolean> func) throws SQLException, ReflectiveOperationException {
+	public <T> void eachModel(ResultSet rs, Class<? extends Model> modelClass, Function<T, Boolean> func) throws SQLException, ReflectiveOperationException {
 		modelBuilder.build(rs, modelClass, func);
 	}
 	
