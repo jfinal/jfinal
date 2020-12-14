@@ -43,7 +43,7 @@ public class PathScanner {
 	// 存放已被扫描过的 controller，避免被多次扫描
 	private static final Set<Class<?>> scannedController = new HashSet<>();
 	
-	// 过滤不需要被扫描的资源
+	// 过滤被扫描的资源
 	private static Predicate<URL> resourceFilter = null;
 	
 	// 扫描的基础 package，只扫描该包及其子包之下的类
