@@ -93,7 +93,7 @@ public abstract class Routes {
 				// 如果被扫描的包在 jar 文件之中，需要添加如下配置：
 				// undertow.hotSwapClassPrefix = com.jfinal.club.
 				this.scan("com.jfinal.club.", className -> {
-					// className 为当前正扫描的类名，返回 true 时表示过滤掉不扫描当前类
+					// className 为当前正扫描的类名，返回 true 时表示跳过当前类不扫描
 					return className.startsWith("com.jfinal.club._admin.");
 				});
 			}
@@ -104,7 +104,7 @@ public abstract class Routes {
 		2：scan(...) 方法要添加 skip 参数，跳过后台路由，否则后台路由会被扫描到，
 		   造成 baseViewPath 以及 routes 级别的拦截器配置错误
 		3: 由于 scan(...) 内部避免了重复扫描同一个类，所以需要将扫描前台路由代码
-		   放在扫描后台路由之前才能验证没有过滤造成的后果
+		   放在扫描后台路由之前才能验证没有 skip 参数造成的后果
 		
 	 * </pre>
 	 * 
