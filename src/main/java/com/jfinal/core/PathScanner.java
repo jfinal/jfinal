@@ -49,15 +49,15 @@ public class PathScanner {
 	// 扫描的基础 package，只扫描该包及其子包之下的类
 	private String basePackage;
 	
-	// 过滤不需要被扫描的类
-	private Predicate<String> classFilter;
+	// 跳过不需要被扫描的类
+	private Predicate<String> classSkip;
 	
 	// 调用 Routes.add(...) 添加扫描结果
 	private Routes routes;
 	
 	private ClassLoader classLoader;
 	
-	public PathScanner(String basePackage, Routes routes, Predicate<String> classFilter) {
+	public PathScanner(String basePackage, Routes routes, Predicate<String> classSkip) {
 		if (StrKit.isBlank(basePackage)) {
 			throw new IllegalArgumentException("basePackage can not be blank");
 		}
@@ -71,7 +71,7 @@ public class PathScanner {
 		
 		this.basePackage = bp;
 		this.routes = routes;
-		this.classFilter = classFilter;
+		this.classSkip = classSkip;
 	}
 	
 	public PathScanner(String basePackage, Routes routes) {
@@ -83,18 +83,20 @@ public class PathScanner {
 	 * 
 	 * <pre>
 	 * 例子:
-	 *  PathScanner.setResourceFilter(url -> {
+	 *  PathScanner.filter(url -> {
 	 *      String res = url.toString();
+	 *      
 	 *      // 如果资源在 jar 包之中，并且 jar 包文件名不包含 "my-project" 则过滤掉
 	 *      // 避免第三方 jar 包中的 Controller 被扫描到，提高安全性
 	 *      if (res.contains(".jar") && !res.contains("my-project")) {
-	 *          return true;
+	 *          return false;	// return false 表示过滤掉当前资源
 	 *      }
-	 *      return false;
+	 *      
+	 *      return true;		// return true 表示保留当前资源
 	 *  });
 	 * </pre>
 	 */
-	public static void setResourceFilter(Predicate<URL> resourceFilter) {
+	public static void filter(Predicate<URL> resourceFilter) {
 		PathScanner.resourceFilter = resourceFilter;
 	}
 	
@@ -124,7 +126,7 @@ public class PathScanner {
 			URL url = urls.nextElement();
 			
 			// 过滤不需要扫描的资源
-			if (resourceFilter != null && resourceFilter.test(url)) {
+			if (resourceFilter != null && !resourceFilter.test(url)) {
 				continue ;
 			}
 			
@@ -213,8 +215,8 @@ public class PathScanner {
 	
 	@SuppressWarnings("unchecked")
 	private void scanController(String className) {
-		// 过滤不需要扫描的 className
-		if (classFilter != null && classFilter.test(className)) {
+		// 跳过不需要被扫描的 className
+		if (classSkip != null && classSkip.test(className)) {
 			return ;
 		}
 		
