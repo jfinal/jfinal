@@ -101,7 +101,7 @@ public abstract class Routes {
 		
 		注意：
 		1：拆分路由是为了可以独立配置 setBaseViewPath(...)、addInterceptor(...)
-		2：scan(...) 方法要添加过滤，过滤掉后台路由，否则后台路由会被扫描到，
+		2：scan(...) 方法要添加 skip 参数，跳过后台路由，否则后台路由会被扫描到，
 		   造成 baseViewPath 以及 routes 级别的拦截器配置错误
 		3: 由于 scan(...) 内部避免了重复扫描同一个类，所以需要将扫描前台路由代码
 		   放在扫描后台路由之前才能验证没有过滤造成的后果
@@ -109,10 +109,10 @@ public abstract class Routes {
 	 * </pre>
 	 * 
 	 * @param basePackage 进行扫描的基础 package，仅扫描该包及其子包下面的路由
-	 * @param classFilter 过滤不需要被扫描的类
+	 * @param skip 跳过不需要被扫描的类
 	 */
-	public Routes scan(String basePackage, Predicate<String> classFilter) {
-		new PathScanner(basePackage, this, classFilter).scan();
+	public Routes scan(String basePackage, Predicate<String> skip) {
+		new PathScanner(basePackage, this, skip).scan();
 		return this;
 	}
 	
