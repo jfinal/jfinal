@@ -79,7 +79,7 @@ public class PathScanner {
 	}
 	
 	/**
-	 * resourceFilter 过滤不需要被扫描的资源，提升安全性
+	 * 过滤不需要被扫描的资源，提升安全性
 	 * 
 	 * <pre>
 	 * 例子:
