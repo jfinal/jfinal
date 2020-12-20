@@ -63,7 +63,6 @@ public class DbTemplate {
 	
 	// ---------
 	
-	
 	public List<Record> find() {
 		return db.find(sqlPara);
 	}
