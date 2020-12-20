@@ -57,13 +57,12 @@ public class DbTemplate {
 		this.sqlPara = db.getSqlParaByString(content, paras);
 	}
 	
-	/*
-	 * 下一版本根据需求强度考虑添加此方法
-	 * TODO 这里要严格测试，因为没有 Map data 值，所以 getSqlPara(...) 不一定可以正常工作
-	public DbTemplate(DbPro db, String key) {
-		this.db = db;
-		this.sqlPara = db.getSqlPara(key);
-	}*/
+	public SqlPara getSqlPara() {
+		return sqlPara;
+	}
+	
+	// ---------
+	
 	
 	public List<Record> find() {
 		return db.find(sqlPara);
