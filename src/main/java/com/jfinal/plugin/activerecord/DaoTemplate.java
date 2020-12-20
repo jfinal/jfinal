@@ -54,6 +54,12 @@ public class DaoTemplate<M extends Model> {
 		this.sqlPara = dao.getSqlParaByString(content, paras);
 	}
 	
+	public SqlPara getSqlPara() {
+		return sqlPara;
+	}
+	
+	// ---------
+	
 	public List<M> find() {
 		return dao.find(sqlPara);
 	}
