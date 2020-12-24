@@ -243,8 +243,13 @@ public class PathScanner {
 	private Class<?> loadClass(String className) {
 		try {
 			return classLoader.loadClass(className);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
+		} catch (Exception e) {
+			/**
+			 * 由于扫描是一种主动行为，所以 pom.xml 中的 provided 依赖会在此被 loadClass
+			 * 从而抛出 ClassNotFoundException、NoClassDefFoundError 异常
+			 * 对于 provided 依赖 return null 跳过这些 class 不处理
+			 */
+			return null;
 		}
 	}
 	
