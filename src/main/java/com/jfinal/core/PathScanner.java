@@ -243,11 +243,17 @@ public class PathScanner {
 	private Class<?> loadClass(String className) {
 		try {
 			return classLoader.loadClass(className);
-		} catch (Exception e) {
+		}
+		// 此处不能 catch Exception，否则抓不到 NoClassDefFoundError，因为它是 Error 的子类
+		catch (Throwable e) {
 			/**
-			 * 由于扫描是一种主动行为，所以 pom.xml 中的 provided 依赖会在此被 loadClass
-			 * 从而抛出 ClassNotFoundException、NoClassDefFoundError 异常
-			 * 对于 provided 依赖 return null 跳过这些 class 不处理
+			 * 由于扫描是一种主动行为，所以 pom.xml 中的 provided 依赖会在此被 loadClass，
+			 * 从而抛出 NoClassDefFoundError、UnsupportedClassVersionError、
+			 * ClassNotFoundException 异常 对于 provided 依赖 return null 跳过这些
+			 * class 不处理
+			 * 
+			 * 如果这些异常并不是 provided 依赖的原因而引发，也会在后续实际用到它们时再次抛出异常，
+			 * 所以 return null 并不会错过这些异常
 			 */
 			return null;
 		}
