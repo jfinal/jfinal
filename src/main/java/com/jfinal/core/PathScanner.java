@@ -34,6 +34,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import com.jfinal.config.Routes;
 import com.jfinal.kit.StrKit;
+import com.jfinal.log.Log;
 
 /**
  * PathScanner 扫描 @Path 注解，实现路由扫描功能
@@ -246,6 +247,8 @@ public class PathScanner {
 		}
 		// 此处不能 catch Exception，否则抓不到 NoClassDefFoundError，因为它是 Error 的子类
 		catch (Throwable e) {
+			Log.getLog(PathScanner.class).debug(e.getMessage(), e);
+			
 			/**
 			 * 由于扫描是一种主动行为，所以 pom.xml 中的 provided 依赖会在此被 loadClass，
 			 * 从而抛出 NoClassDefFoundError、UnsupportedClassVersionError、
