@@ -57,7 +57,7 @@ public class RedirectRender extends Render {
 	
 	public String buildFinalUrl() {
 		String ret;
-		// 如果一个url为/login/connect?goto=http://www.jfinal.com，则有错误
+		// 如果一个url为/login/connect?goto=https://jfinal.com，则有错误
 		// ^((https|http|ftp|rtsp|mms)?://)$   ==> indexOf 取值为 (3, 5)
 		if (contextPath != null && (url.indexOf("://") == -1 || url.indexOf("://") > 5)) {
 			ret = contextPath + url;

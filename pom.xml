@@ -9,7 +9,7 @@
 	
 	<name>JFinal</name>
 	<description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
-	<url>http://www.jfinal.com</url>
+	<url>https://jfinal.com</url>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

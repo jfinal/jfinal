@@ -379,7 +379,7 @@ public class MetaBuilder {
 	 *  3：如果number的长度在1 <= n <= 9
 	 *     number(n) 对应 java.lang.Integer 类型
 	 * 
-	 * 社区分享：《Oracle NUMBER 类型映射改进》http://www.jfinal.com/share/1145
+	 * 社区分享：《Oracle NUMBER 类型映射改进》https://jfinal.com/share/1145
 	 */
 	protected String handleJavaType(String typeStr, ResultSetMetaData rsmd, int column) throws SQLException {
 		// 当前实现只处理 Oracle
