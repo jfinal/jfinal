@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import com.jfinal.plugin.activerecord.cache.ICache;
 import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 
@@ -1087,6 +1088,40 @@ public abstract class Model<M extends Model> implements Serializable {
 	public Page<M> paginate(int pageNumber, int pageSize, boolean isGroupBySql, SqlPara sqlPara) {
 		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
 		return doPaginate(pageNumber, pageSize, isGroupBySql, sqls[0], sqls[1], sqlPara.getPara());
+	}
+	
+	// ---------
+	
+	/**
+	 * 迭代处理每一个查询出来的 Model 对象
+	 * <pre>
+	 * 例子：
+	 * Db.each(model -> {
+	 *    // 处理 model 的代码在此
+	 *    
+	 *    // 返回 true 继续循环处理下一条数据，返回 false 立即终止循环
+	 *    return true;
+	 * }, sql, paras);
+	 * </pre>
+	 */
+	public void each(Function<M, Boolean> func, String sql, Object... paras) {
+		Config config = _getConfig();
+		Connection conn = null;
+		try {
+			conn = config.getConnection();
+			
+			try (PreparedStatement pst = conn.prepareStatement(sql)) {
+				config.dialect.fillStatement(pst, paras);
+				ResultSet rs = pst.executeQuery();
+				config.dialect.eachModel(rs, _getUsefulClass(), func);
+				DbKit.close(rs);
+			}
+			
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			config.close(conn);
+		}
 	}
 	
 	// ---------

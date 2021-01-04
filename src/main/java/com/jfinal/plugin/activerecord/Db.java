@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.function.Function;
 import com.jfinal.kit.SyncWriteMap;
 
 /**
@@ -726,6 +727,24 @@ public class Db {
 	
 	public static Page<Record> paginate(int pageNumber, int pageSize, boolean isGroupBySql, SqlPara sqlPara) {
 		return MAIN.paginate(pageNumber, pageSize, isGroupBySql, sqlPara);
+	}
+	
+	// ---------
+	
+	/**
+	 * 迭代处理每一个查询出来的 Record 对象
+	 * <pre>
+	 * 例子：
+	 * Db.each(record -> {
+	 *    // 处理 record 的代码在此
+	 *    
+	 *    // 返回 true 继续循环处理下一条数据，返回 false 立即终止循环
+	 *    return true;
+	 * }, sql, paras);
+	 * </pre>
+	 */
+	public static void each(Function<Record, Boolean> func, String sql, Object... paras) {
+		MAIN.each(func, sql, paras);
 	}
 	
 	// ---------

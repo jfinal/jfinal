@@ -25,7 +25,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 <dependency>
     <groupId>com.jfinal</groupId>
     <artifactId>jfinal</artifactId>
-    <version>4.9.02</version>
+    <version>4.9.06</version>
 </dependency>
 ```
 
@@ -128,10 +128,10 @@ public class BlogInterceptor implements Interceptor {
 ```
 
 ## 更多支持
-- JFinal 官方网站  [http://www.jfinal.com](http://www.jfinal.com/) 
+- JFinal 官方网站  [https://jfinal.com](https://jfinal.com/) 
 - 扫码关注官方微信公众号，第一时间尊享最新动向  
 
-![JFinal](http://www.jfinal.com/assets/img/jfinal_weixin_service_qr_code_150.jpg) 
+![JFinal](https://jfinal.com/assets/img/jfinal_weixin_service_qr_code_150.jpg) 
 
 
 

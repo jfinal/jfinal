@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
+import java.util.function.Function;
 import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.cache.ICache;
@@ -1363,6 +1364,39 @@ public class DbPro {
 	public Page<Record> paginate(int pageNumber, int pageSize, boolean isGroupBySql, SqlPara sqlPara) {
 		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
 		return doPaginate(pageNumber, pageSize, isGroupBySql, sqls[0], sqls[1], sqlPara.getPara());
+	}
+	
+	// ---------
+	
+	/**
+	 * 迭代处理每一个查询出来的 Record 对象
+	 * <pre>
+	 * 例子：
+	 * Db.each(record -> {
+	 *    // 处理 record 的代码在此
+	 *    
+	 *    // 返回 true 继续循环处理下一条数据，返回 false 立即终止循环
+	 *    return true;
+	 * }, sql, paras);
+	 * </pre>
+	 */
+	public void each(Function<Record, Boolean> func, String sql, Object... paras) {
+		Connection conn = null;
+		try {
+			conn = config.getConnection();
+			
+			try (PreparedStatement pst = conn.prepareStatement(sql)) {
+				config.dialect.fillStatement(pst, paras);
+				ResultSet rs = pst.executeQuery();
+				config.dialect.eachRecord(config, rs, func);
+				DbKit.close(rs);
+			}
+			
+		} catch (Exception e) {
+			throw new ActiveRecordException(e);
+		} finally {
+			config.close(conn);
+		}
 	}
 	
 	// ---------

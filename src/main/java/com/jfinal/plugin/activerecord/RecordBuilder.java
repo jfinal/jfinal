@@ -23,6 +23,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * RecordBuilder.
@@ -31,8 +32,12 @@ public class RecordBuilder {
 	
 	public static final RecordBuilder me = new RecordBuilder();
 	
-	@SuppressWarnings("unchecked")
 	public List<Record> build(Config config, ResultSet rs) throws SQLException {
+		return build(config, rs, null);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Record> build(Config config, ResultSet rs, Function<Record, Boolean> func) throws SQLException {
 		List<Record> result = new ArrayList<Record>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
@@ -61,7 +66,14 @@ public class RecordBuilder {
 				
 				columns.put(labelNames[i], value);
 			}
-			result.add(record);
+			
+			if (func == null) {
+				result.add(record);
+			} else {
+				if ( ! func.apply(record) ) {
+					break ;
+				}
+			}
 		}
 		return result;
 	}

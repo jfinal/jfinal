@@ -44,7 +44,7 @@ public class MetaBuilder {
 	protected Dialect dialect = new MysqlDialect();
 	protected Set<String> excludedTables = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 	
-	protected Predicate<String> filterPredicate = null;
+	protected Predicate<String> tableSkip = null;
 	
 	protected Connection conn = null;
 	protected DatabaseMetaData dbMeta = null;
@@ -139,14 +139,14 @@ public class MetaBuilder {
 	}
 	
 	/**
-	 * 过滤不需要生成器处理的 table
+	 * 跳过不需要生成器处理的 table
 	 * 
 	 * 由于 setMetaBuilder 将置换掉 MetaBuilder，所以 Generator.addExcludedTable(...)
 	 * 需要放在 setMetaBuilder 之后调用，否则 addExcludedTable 将无效
 	 * 
 	 * 示例：
 		Generator gen = new Generator(...);
-		gen.setMetaBuilder(new MetaBuilder(dataSource).filter(
+		gen.setMetaBuilder(new MetaBuilder(dataSource).skip(
 			tableName -> {
 				return tableName.startsWith("SYS_");
 			})
@@ -155,8 +155,8 @@ public class MetaBuilder {
 		gen.generate();
 		
 	 */
-	public MetaBuilder filter(Predicate<String> predicate) {
-		this.filterPredicate = predicate;
+	public MetaBuilder skip(Predicate<String> tableSkip) {
+		this.tableSkip = tableSkip;
 		return this;
 	}
 	
@@ -219,7 +219,7 @@ public class MetaBuilder {
 			}
 			
 			// jfinal 4.3 新增过滤 table 机制
-			if (filterPredicate != null && filterPredicate.test(tableName)) {
+			if (tableSkip != null && tableSkip.test(tableName)) {
 				System.out.println("Skip table :" + tableName);
 				continue ;
 			}
@@ -379,7 +379,7 @@ public class MetaBuilder {
 	 *  3：如果number的长度在1 <= n <= 9
 	 *     number(n) 对应 java.lang.Integer 类型
 	 * 
-	 * 社区分享：《Oracle NUMBER 类型映射改进》http://www.jfinal.com/share/1145
+	 * 社区分享：《Oracle NUMBER 类型映射改进》https://jfinal.com/share/1145
 	 */
 	protected String handleJavaType(String typeStr, ResultSetMetaData rsmd, int column) throws SQLException {
 		// 当前实现只处理 Oracle

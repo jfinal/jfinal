@@ -23,7 +23,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import java.util.function.Function;
 import com.jfinal.plugin.activerecord.CPI;
 import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.ModelBuilder;
@@ -44,8 +44,14 @@ public class KeepByteAndShortRecordBuilder extends RecordBuilder {
 	
 	public static final KeepByteAndShortRecordBuilder me = new KeepByteAndShortRecordBuilder();
 	
-	@SuppressWarnings("unchecked")
+	@Override
 	public List<Record> build(Config config, ResultSet rs) throws SQLException {
+		return build(config, rs, null);
+	}
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<Record> build(Config config, ResultSet rs, Function<Record, Boolean> func) throws SQLException {
 		List<Record> result = new ArrayList<Record>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
@@ -85,7 +91,14 @@ public class KeepByteAndShortRecordBuilder extends RecordBuilder {
 				
 				columns.put(labelNames[i], value);
 			}
-			result.add(record);
+			
+			if (func == null) {
+				result.add(record);
+			} else {
+				if ( ! func.apply(record) ) {
+					break ;
+				}
+			}
 		}
 		return result;
 	}

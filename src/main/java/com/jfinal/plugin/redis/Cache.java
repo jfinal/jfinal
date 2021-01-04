@@ -28,6 +28,7 @@ import com.jfinal.plugin.redis.serializer.ISerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
+import redis.clients.util.SafeEncoder;
 
 /**
  * Cache.
@@ -217,6 +218,18 @@ public class Cache {
 		Jedis jedis = getJedis();
 		try {
 			return jedis.incr(keyToBytes(key));
+		}
+		finally {close(jedis);}
+	}
+	
+	/**
+	 * 获取记数器的值
+	 */
+	public Long getCounter(Object key) {
+		Jedis jedis = getJedis();
+		try {
+			String ret = (String)jedis.get(keyNamingPolicy.getKeyName(key));
+			return ret != null ? Long.parseLong(ret) : null;
 		}
 		finally {close(jedis);}
 	}
@@ -597,8 +610,8 @@ public class Cache {
 	public Long hgetCounter(Object key, Object field) {
 		Jedis jedis = getJedis();
 		try {
-			String ret = jedis.hget(keyNamingPolicy.getKeyName(key), keyNamingPolicy.getKeyName(field));
-			return ret != null ? Long.parseLong(ret) : null;
+			byte[] ret = jedis.hget(keyToBytes(key), fieldToBytes(field));
+			return ret != null ? Long.parseLong(SafeEncoder.encode(ret)) : null;
 		}
 		finally {close(jedis);}
 	}
@@ -616,6 +629,15 @@ public class Cache {
 		Jedis jedis = getJedis();
 		try {
 			return jedis.hincrByFloat(keyToBytes(key), fieldToBytes(field), value);
+		}
+		finally {close(jedis);}
+	}
+	
+	public Double hgetFloatCounter(Object key, Object field) {
+		Jedis jedis = getJedis();
+		try {
+			byte[] ret = jedis.hget(keyToBytes(key), fieldToBytes(field));
+			return ret != null ? Double.parseDouble(SafeEncoder.encode(ret)) : null;
 		}
 		finally {close(jedis);}
 	}
@@ -639,18 +661,6 @@ public class Cache {
 		Jedis jedis = getJedis();
 		try {
 			return (T)valueFromBytes(jedis.lindex(keyToBytes(key), index));
-		}
-		finally {close(jedis);}
-	}
-	
-	/**
-	 * 获取记数器的值
-	 */
-	public Long getCounter(Object key) {
-		Jedis jedis = getJedis();
-		try {
-			String ret = (String)jedis.get(keyNamingPolicy.getKeyName(key));
-			return ret != null ? Long.parseLong(ret) : null;
 		}
 		finally {close(jedis);}
 	}

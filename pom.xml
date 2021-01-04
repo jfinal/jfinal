@@ -4,12 +4,12 @@
 	
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
-	<version>4.9.03</version>
+	<version>4.9.06</version>
 	<packaging>jar</packaging>
 	
 	<name>JFinal</name>
 	<description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
-	<url>http://www.jfinal.com</url>
+	<url>https://jfinal.com</url>
 	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -33,7 +33,7 @@
 			<id>jfinal</id>
 			<name>James</name>
 			<email>jfinal@126.com</email>
-			<url>http://jfinal.com/user/1</url>
+			<url>https://jfinal.com/user/1</url>
 		</developer>
 	</developers>
 	

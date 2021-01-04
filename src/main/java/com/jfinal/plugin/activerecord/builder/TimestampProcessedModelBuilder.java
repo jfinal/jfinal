@@ -23,6 +23,7 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import com.jfinal.plugin.activerecord.CPI;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.ModelBuilder;
@@ -36,8 +37,15 @@ public class TimestampProcessedModelBuilder extends ModelBuilder {
 	
 	public static final TimestampProcessedModelBuilder me = new TimestampProcessedModelBuilder();
 	
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@Override
+	@SuppressWarnings({"rawtypes"})
 	public <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass) throws SQLException, ReflectiveOperationException {
+		return build(rs, modelClass, null);
+	}
+	
+	@Override
+	@SuppressWarnings({"rawtypes", "unchecked"})
+	public <T> List<T> build(ResultSet rs, Class<? extends Model> modelClass, Function<T, Boolean> func) throws SQLException, ReflectiveOperationException {
 		List<T> result = new ArrayList<T>();
 		ResultSetMetaData rsmd = rs.getMetaData();
 		int columnCount = rsmd.getColumnCount();
@@ -69,7 +77,14 @@ public class TimestampProcessedModelBuilder extends ModelBuilder {
 				
 				attrs.put(labelNames[i], value);
 			}
-			result.add((T)ar);
+			
+			if (func == null) {
+				result.add((T)ar);
+			} else {
+				if ( ! func.apply((T)ar) ) {
+					break ;
+				}
+			}
 		}
 		return result;
 	}

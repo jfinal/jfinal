@@ -34,6 +34,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import com.jfinal.config.Routes;
 import com.jfinal.kit.StrKit;
+import com.jfinal.log.Log;
 
 /**
  * PathScanner 扫描 @Path 注解，实现路由扫描功能
@@ -43,21 +44,21 @@ public class PathScanner {
 	// 存放已被扫描过的 controller，避免被多次扫描
 	private static final Set<Class<?>> scannedController = new HashSet<>();
 	
-	// 过滤不需要被扫描的资源
+	// 过滤被扫描的资源
 	private static Predicate<URL> resourceFilter = null;
 	
 	// 扫描的基础 package，只扫描该包及其子包之下的类
 	private String basePackage;
 	
-	// 过滤不需要被扫描的类
-	private Predicate<String> classFilter;
+	// 跳过不需要被扫描的类
+	private Predicate<String> classSkip;
 	
 	// 调用 Routes.add(...) 添加扫描结果
 	private Routes routes;
 	
 	private ClassLoader classLoader;
 	
-	public PathScanner(String basePackage, Routes routes, Predicate<String> classFilter) {
+	public PathScanner(String basePackage, Routes routes, Predicate<String> classSkip) {
 		if (StrKit.isBlank(basePackage)) {
 			throw new IllegalArgumentException("basePackage can not be blank");
 		}
@@ -71,7 +72,7 @@ public class PathScanner {
 		
 		this.basePackage = bp;
 		this.routes = routes;
-		this.classFilter = classFilter;
+		this.classSkip = classSkip;
 	}
 	
 	public PathScanner(String basePackage, Routes routes) {
@@ -79,22 +80,24 @@ public class PathScanner {
 	}
 	
 	/**
-	 * resourceFilter 过滤不需要被扫描的资源，提升安全性
+	 * 过滤被扫描的资源，提升安全性
 	 * 
 	 * <pre>
 	 * 例子:
-	 *  PathScanner.setResourceFilter(url -> {
+	 *  PathScanner.filter(url -> {
 	 *      String res = url.toString();
+	 *      
 	 *      // 如果资源在 jar 包之中，并且 jar 包文件名不包含 "my-project" 则过滤掉
 	 *      // 避免第三方 jar 包中的 Controller 被扫描到，提高安全性
 	 *      if (res.contains(".jar") && !res.contains("my-project")) {
-	 *          return true;
+	 *          return false;	// return false 表示过滤掉当前资源
 	 *      }
-	 *      return false;
+	 *      
+	 *      return true;		// return true 表示保留当前资源
 	 *  });
 	 * </pre>
 	 */
-	public static void setResourceFilter(Predicate<URL> resourceFilter) {
+	public static void filter(Predicate<URL> resourceFilter) {
 		PathScanner.resourceFilter = resourceFilter;
 	}
 	
@@ -124,7 +127,7 @@ public class PathScanner {
 			URL url = urls.nextElement();
 			
 			// 过滤不需要扫描的资源
-			if (resourceFilter != null && resourceFilter.test(url)) {
+			if (resourceFilter != null && !resourceFilter.test(url)) {
 				continue ;
 			}
 			
@@ -213,8 +216,8 @@ public class PathScanner {
 	
 	@SuppressWarnings("unchecked")
 	private void scanController(String className) {
-		// 过滤不需要扫描的 className
-		if (classFilter != null && classFilter.test(className)) {
+		// 跳过不需要被扫描的 className
+		if (classSkip != null && classSkip.test(className)) {
 			return ;
 		}
 		
@@ -241,8 +244,20 @@ public class PathScanner {
 	private Class<?> loadClass(String className) {
 		try {
 			return classLoader.loadClass(className);
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
+		}
+		// 此处不能 catch Exception，否则抓不到 NoClassDefFoundError，因为它是 Error 的子类
+		catch (Throwable t) {
+			Log.getLog(PathScanner.class).debug("PathScanner can not load the class \"" + className + "\"");
+			
+			/**
+			 * 由于扫描是一种主动行为，所以 pom.xml 中的 provided 依赖会在此被 loadClass，
+			 * 从而抛出 NoClassDefFoundError、UnsupportedClassVersionError、
+			 * ClassNotFoundException 异常。return null 跳过这些 class 不处理
+			 * 
+			 * 如果这些异常并不是 provided 依赖的原因而引发，也会在后续实际用到它们时再次抛出异常，
+			 * 所以 return null 并不会错过这些异常
+			 */
+			return null;
 		}
 	}
 	
