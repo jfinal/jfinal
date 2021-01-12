@@ -36,7 +36,7 @@ public class FastJson extends Json {
 		// 完全禁用 autoType，提升安全性
 		try {
 			ParserConfig.getGlobalInstance().setSafeMode(true);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			// 老版本 fastjson 无 setSafeMode(boolean) 方法
 			com.jfinal.kit.LogKit.logNothing(e);
 		}
