@@ -16,6 +16,8 @@
 
 package com.jfinal.plugin.activerecord;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -162,12 +164,20 @@ public class Db {
 		return MAIN.queryFloat(sql);
 	}
 	
-	public static java.math.BigDecimal queryBigDecimal(String sql, Object... paras) {
+	public static BigDecimal queryBigDecimal(String sql, Object... paras) {
 		return MAIN.queryBigDecimal(sql, paras);
 	}
 	
-	public static java.math.BigDecimal queryBigDecimal(String sql) {
+	public static BigDecimal queryBigDecimal(String sql) {
 		return MAIN.queryBigDecimal(sql);
+	}
+	
+	public static BigInteger queryBigInteger(String sql, Object... paras) {
+		return MAIN.queryBigInteger(sql, paras);
+	}
+	
+	public static BigInteger queryBigInteger(String sql) {
+		return MAIN.queryBigInteger(sql);
 	}
 	
 	public static byte[] queryBytes(String sql, Object... paras) {
