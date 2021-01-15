@@ -22,8 +22,8 @@ package com.jfinal.plugin.redis;
  * Cache 对象使用 select(int) 方法临时切换数据库
  */
 @FunctionalInterface
-public interface ICallback {
-	<T> T call(Cache cache);
+public interface ICallback<T> {
+	T call(Cache cache);
 }
 
 
