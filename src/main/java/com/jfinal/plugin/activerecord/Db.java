@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -194,6 +195,14 @@ public class Db {
 	
 	public static java.util.Date queryDate(String sql) {
 		return MAIN.queryDate(sql);
+	}
+	
+	public static LocalDateTime queryLocalDateTime(String sql, Object... paras) {
+		return MAIN.queryLocalDateTime(sql, paras);
+	}
+	
+	public static LocalDateTime queryLocalDateTime(String sql) {
+		return MAIN.queryLocalDateTime(sql);
 	}
 	
 	public static java.sql.Time queryTime(String sql, Object... paras) {
