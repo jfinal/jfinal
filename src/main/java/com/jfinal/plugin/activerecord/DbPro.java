@@ -243,7 +243,7 @@ public class DbPro {
 	}
 	
 	public java.util.Date queryDate(String sql) {
-		return (java.util.Date)queryColumn(sql, NULL_PARA_ARRAY);
+		return queryDate(sql, NULL_PARA_ARRAY);
 	}
 	
 	public java.sql.Time queryTime(String sql, Object... paras) {
