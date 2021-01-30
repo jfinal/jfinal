@@ -23,6 +23,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +37,7 @@ import java.util.concurrent.FutureTask;
 import java.util.function.Function;
 import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
+import com.jfinal.kit.TimeKit;
 import com.jfinal.plugin.activerecord.cache.ICache;
 import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 
@@ -239,11 +244,48 @@ public class DbPro {
 	}
 	
 	public java.util.Date queryDate(String sql, Object... paras) {
-		return (java.util.Date)queryColumn(sql, paras);
+		Object d = queryColumn(sql, paras);
+		
+		if (d instanceof Temporal) {
+			if (d instanceof LocalDateTime) {
+				return TimeKit.toDate((LocalDateTime)d);
+			}
+			if (d instanceof LocalDate) {
+				return TimeKit.toDate((LocalDate)d);
+			}
+			if (d instanceof LocalTime) {
+				return TimeKit.toDate((LocalTime)d);
+			}
+		}
+		
+		return (java.util.Date)d;
 	}
 	
 	public java.util.Date queryDate(String sql) {
-		return (java.util.Date)queryColumn(sql, NULL_PARA_ARRAY);
+		return queryDate(sql, NULL_PARA_ARRAY);
+	}
+	
+	public LocalDateTime queryLocalDateTime(String sql, Object... paras) {
+		Object d = queryColumn(sql, paras);
+		
+		if (d instanceof LocalDateTime) {
+			return (LocalDateTime)d;
+		}
+		if (d instanceof LocalDate) {
+			return ((LocalDate)d).atStartOfDay();
+		}
+		if (d instanceof LocalTime) {
+			return LocalDateTime.of(LocalDate.now(), (LocalTime)d);
+		}
+		if (d instanceof java.util.Date) {
+			return TimeKit.toLocalDateTime((java.util.Date)d);
+		}
+		
+		return (LocalDateTime)d;
+	}
+	
+	public LocalDateTime queryLocalDateTime(String sql) {
+		return queryLocalDateTime(sql, NULL_PARA_ARRAY);
 	}
 	
 	public java.sql.Time queryTime(String sql, Object... paras) {
