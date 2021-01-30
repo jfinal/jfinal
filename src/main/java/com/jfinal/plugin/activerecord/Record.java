@@ -18,9 +18,14 @@ package com.jfinal.plugin.activerecord;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.Temporal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import com.jfinal.kit.TimeKit;
 import java.util.Map.Entry;
 
 /**
@@ -250,7 +255,40 @@ public class Record implements Serializable {
 	 * Get column of mysql type: date, year
 	 */
 	public java.util.Date getDate(String column) {
-		return (java.util.Date)getColumns().get(column);
+		Object ret = getColumns().get(column);
+		
+		if (ret instanceof Temporal) {
+			if (ret instanceof LocalDateTime) {
+				return TimeKit.toDate((LocalDateTime)ret);
+			}
+			if (ret instanceof LocalDate) {
+				return TimeKit.toDate((LocalDate)ret);
+			}
+			if (ret instanceof LocalTime) {
+				return TimeKit.toDate((LocalTime)ret);
+			}
+		}
+		
+		return (java.util.Date)ret;
+	}
+	
+	public LocalDateTime getLocalDateTime(String column) {
+		Object ret = getColumns().get(column);
+		
+		if (ret instanceof LocalDateTime) {
+			return (LocalDateTime)ret;
+		}
+		if (ret instanceof LocalDate) {
+			return ((LocalDate)ret).atStartOfDay();
+		}
+		if (ret instanceof LocalTime) {
+			return LocalDateTime.of(LocalDate.now(), (LocalTime)ret);
+		}
+		if (ret instanceof java.util.Date) {
+			return TimeKit.toLocalDateTime((java.util.Date)ret);
+		}
+		
+		return (LocalDateTime)ret;
 	}
 	
 	/**
