@@ -22,6 +22,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import com.jfinal.kit.TimeKit;
 import com.jfinal.plugin.activerecord.cache.ICache;
 import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 
@@ -351,7 +356,40 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * Get attribute of mysql type: date, year
 	 */
 	public java.util.Date getDate(String attr) {
-		return (java.util.Date)attrs.get(attr);
+		Object ret = attrs.get(attr);
+		
+		if (ret instanceof Temporal) {
+			if (ret instanceof LocalDateTime) {
+				return TimeKit.toDate((LocalDateTime)ret);
+			}
+			if (ret instanceof LocalDate) {
+				return TimeKit.toDate((LocalDate)ret);
+			}
+			if (ret instanceof LocalTime) {
+				return TimeKit.toDate((LocalTime)ret);
+			}
+		}
+		
+		return (java.util.Date)ret;
+	}
+	
+	public LocalDateTime getLocalDateTime(String attr) {
+		Object ret = attrs.get(attr);
+		
+		if (ret instanceof LocalDateTime) {
+			return (LocalDateTime)ret;
+		}
+		if (ret instanceof LocalDate) {
+			return ((LocalDate)ret).atStartOfDay();
+		}
+		if (ret instanceof LocalTime) {
+			return LocalDateTime.of(LocalDate.now(), (LocalTime)ret);
+		}
+		if (ret instanceof java.util.Date) {
+			return TimeKit.toLocalDateTime((java.util.Date)ret);
+		}
+		
+		return (LocalDateTime)ret;
 	}
 	
 	/**
