@@ -328,8 +328,9 @@ public abstract class Dialect {
 	 * 为分页方法生成查询 totalRow 值的 sql
 	 * @param select sql 语句的 select 部分
 	 * @param sqlExceptSelect sql 语句除了 select 以外的部分
+	 * @param ext 扩展参数，在 Model 调用时传入 Model 对象，在 DbPro 调用时传入 null
 	 */
-	public String forPaginateTotalRow(String select, String sqlExceptSelect) {
+	public String forPaginateTotalRow(String select, String sqlExceptSelect, Object ext) {
 		return "select count(*) " + replaceOrderBy(sqlExceptSelect);
 	}
 }

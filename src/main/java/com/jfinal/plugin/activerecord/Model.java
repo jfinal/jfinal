@@ -503,7 +503,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
-			String totalRowSql = config.dialect.forPaginateTotalRow(select, sqlExceptSelect);
+			String totalRowSql = config.dialect.forPaginateTotalRow(select, sqlExceptSelect, this);
 			StringBuilder findSql = new StringBuilder();
 			findSql.append(select).append(' ').append(sqlExceptSelect);
 			return doPaginateByFullSql(config, conn, pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
