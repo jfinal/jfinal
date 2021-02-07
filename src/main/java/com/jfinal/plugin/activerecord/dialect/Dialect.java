@@ -323,6 +323,15 @@ public abstract class Dialect {
 			}
 		}
 	}
+	
+	/**
+	 * 为分页方法生成查询 totalRow 值的 sql
+	 * @param select sql 语句的 select 部分
+	 * @param sqlExceptSelect sql 语句除了 select 以外的部分
+	 */
+	public String forPaginateTotalRow(String select, String sqlExceptSelect) {
+		return "select count(*) " + replaceOrderBy(sqlExceptSelect);
+	}
 }
 
 
