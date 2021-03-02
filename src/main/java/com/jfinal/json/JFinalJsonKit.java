@@ -21,6 +21,10 @@ import java.lang.reflect.Method;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +38,7 @@ import java.util.Objects;
 import java.util.function.Function;
 import com.jfinal.kit.StrKit;
 import com.jfinal.kit.SyncWriteMap;
+import com.jfinal.kit.TimeKit;
 import com.jfinal.plugin.activerecord.CPI;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Record;
@@ -146,6 +151,18 @@ public class JFinalJsonKit {
 				return new TimeToJson();
 			}
 			return new DateToJson();
+		}
+		
+		if (value instanceof Temporal) {
+			if (value instanceof LocalDateTime) {
+				return new LocalDateTimeToJson();
+			}
+			if (value instanceof LocalDate) {
+				return new LocalDateToJson();
+			}
+			if (value instanceof LocalTime) {
+				return new LocalTimeToJson();
+			}
 		}
 		
 		// 集合、Bean 类型，需要检测 depth ---------------------------------
@@ -278,6 +295,24 @@ public class JFinalJsonKit {
 	static class DateToJson implements ToJson<Date> {
 		public void toJson(Date value, int depth, JsonResult ret) {
 			ret.addDate(value);
+		}
+	}
+	
+	static class LocalDateTimeToJson implements ToJson<LocalDateTime> {
+		public void toJson(LocalDateTime value, int depth, JsonResult ret) {
+			ret.addLocalDateTime(value);
+		}
+	}
+	
+	static class LocalDateToJson implements ToJson<LocalDate> {
+		public void toJson(LocalDate value, int depth, JsonResult ret) {
+			ret.addLocalDate(value);
+		}
+	}
+	
+	static class LocalTimeToJson implements ToJson<LocalTime> {
+		public void toJson(LocalTime value, int depth, JsonResult ret) {
+			ret.addLocalTime(value);
 		}
 	}
 	
@@ -700,6 +735,28 @@ public class JFinalJsonKit {
 			} else {
 				sb.append(d.getTime());
 			}
+		}
+		
+		public void addLocalDateTime(LocalDateTime ldt) {
+			if (timestampPattern != null) {
+				sb.append('\"').append(TimeKit.format(ldt, timestampPattern)).append('\"');
+			} else {
+				sb.append(TimeKit.toDate(ldt).getTime());
+			}
+		}
+		
+		public void addLocalDate(LocalDate ld) {
+			// LocalDate 的 pattern 不支持时分秒，暂时写死 pattern
+			// 可通过 JFinalJson.addToJson(LocalDate.class, ...) 定制自己的转换 pattern
+			String dp = "yyyy-MM-dd";
+			sb.append('\"').append(TimeKit.format(ld, dp)).append('\"');
+		}
+		
+		public void addLocalTime(LocalTime lt) {
+			// LocalTime.toString() 的结果与 Time.toString() 格式不同，暂时写死 pattern
+			// 可通过 JFinalJson.addToJson(LocalTime.class, ...) 定制自己的转换 pattern
+			String tp = "HH:mm:ss";
+			sb.append('\"').append(TimeKit.format(lt, tp)).append('\"');
 		}
 		
 		public void addMapKey(Object value) {
