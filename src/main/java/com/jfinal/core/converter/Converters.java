@@ -215,7 +215,7 @@ public class Converters {
 	
 	public static class LocalDateTimeConverter implements IConverter<LocalDateTime> {
 		
-		static final DateConverter dateConverter = new DateConverter();
+		private static final DateConverter dateConverter = new DateConverter();
 		
 		@Override
 		public LocalDateTime convert(String s) throws ParseException {
@@ -226,7 +226,7 @@ public class Converters {
 	
 	public static class LocalDateConverter implements IConverter<LocalDate> {
 		
-		static final DateConverter dateConverter = new DateConverter();
+		private static final DateConverter dateConverter = new DateConverter();
 		
 		@Override
 		public LocalDate convert(String s) throws ParseException {
