@@ -87,11 +87,11 @@ public class TypeMapping {
 		put("java.time.LocalTime", "java.time.LocalTime");
 	}};
 	
-	public void setMapping(Class<?> from, Class<?> to) {
+	public void addMapping(Class<?> from, Class<?> to) {
 		map.put(from.getName(), to.getName());
 	}
 	
-	public void setMapping(String from, String to) {
+	public void addMapping(String from, String to) {
 		map.put(from, to);
 	}
 	
