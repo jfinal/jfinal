@@ -746,14 +746,14 @@ public class JFinalJsonKit {
 		}
 		
 		public void addLocalDate(LocalDate ld) {
-			// LocalDate 的 pattern 不支持时分秒，暂时写死 pattern
+			// LocalDate 的 pattern 不支持时分秒
 			// 可通过 JFinalJson.addToJson(LocalDate.class, ...) 定制自己的转换 pattern
 			String dp = "yyyy-MM-dd";
 			sb.append('\"').append(TimeKit.format(ld, dp)).append('\"');
 		}
 		
 		public void addLocalTime(LocalTime lt) {
-			// LocalTime.toString() 的结果与 Time.toString() 格式不同，暂时写死 pattern
+			// LocalTime 的 pattern 不支持年月日，并且 LocalTime.toString() 的结果与 Time.toString() 格式不同
 			// 可通过 JFinalJson.addToJson(LocalTime.class, ...) 定制自己的转换 pattern
 			String tp = "HH:mm:ss";
 			sb.append('\"').append(TimeKit.format(lt, tp)).append('\"');
