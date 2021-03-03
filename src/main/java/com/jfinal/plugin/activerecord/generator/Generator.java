@@ -118,8 +118,34 @@ public class Generator {
 		}
 	}
 	
+	/**
+	 * 切换 TypeMapping
+	 * jfinal 4.9.08 版本新增了 addTypeMapping(...) 可以替代该方法的使用
+	 */
 	public void setTypeMapping(TypeMapping typeMapping) {
 		this.metaBuilder.setTypeMapping(typeMapping);
+	}
+	
+	/**
+	 * 为生成器添加类型映射，将数据库反射得到的类型映射到指定类型，
+	 * 从而在生成过程中用指定类型替换数据反射得到的类型
+	 * 
+	 * 例如：
+	 *    generator.addTypeMaping(Date.class, LocalDateTime.class)
+	 * 以上配置在生成 base model 时碰到 Date 类型时会生成为 LocalDateTime 类型
+	 */
+	public void addTypeMaping(Class<?> from, Class<?> to) {
+		this.metaBuilder.typeMapping.addMapping(from, to);
+	}
+	
+	/**
+	 * 与 addTypeMaping(Class<?> from, Class<?> to) 功能一致，保是参数类型不同
+	 * 
+	 * 示例：
+	 *    generator.addTypeMaping("java.sql.Date", "java.time.LocalDateTime")
+	 */
+	public void addTypeMaping(String from, String to) {
+		this.metaBuilder.typeMapping.addMapping(from, to);
 	}
 	
 	/**
