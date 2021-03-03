@@ -57,6 +57,10 @@ public class BaseModelGenerator {
 		put("java.lang.Float", "getFloat");
 		put("java.lang.Short", "getShort");
 		put("java.lang.Byte", "getByte");
+		
+		// 新增两种可自动转换类型的 getter 方法
+		put("java.util.Date", "getDate");
+		put("java.time.LocalDateTime", "getLocalDateTime");
 	}};
 	
 	public BaseModelGenerator(String baseModelPackageName, String baseModelOutputDir) {
