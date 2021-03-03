@@ -87,6 +87,14 @@ public class TypeMapping {
 		put("java.time.LocalTime", "java.time.LocalTime");
 	}};
 	
+	public void setMapping(Class<?> from, Class<?> to) {
+		map.put(from.getName(), to.getName());
+	}
+	
+	public void setMapping(String from, String to) {
+		map.put(from, to);
+	}
+	
 	public String getType(String typeString) {
 		return map.get(typeString);
 	}
