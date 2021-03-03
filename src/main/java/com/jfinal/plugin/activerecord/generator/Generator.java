@@ -130,6 +130,8 @@ public class Generator {
 	 * 为生成器添加类型映射，将数据库反射得到的类型映射到指定类型，
 	 * 从而在生成过程中用指定类型替换数据反射得到的类型
 	 * 
+	 * 添加的映射可以覆盖默认的映射，从而可以自由定制映射关系
+	 * 
 	 * 例如：
 	 *    generator.addTypeMaping(Date.class, LocalDateTime.class)
 	 * 以上配置在生成 base model 时碰到 Date 类型时会生成为 LocalDateTime 类型
