@@ -18,6 +18,8 @@ package com.jfinal.core.converter;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import com.jfinal.kit.TimeKit;
 
 /**
@@ -208,6 +210,28 @@ public class Converters {
 			return s.replace("T", " ");
 		} else {
 			return s;
+		}
+	}
+	
+	public static class LocalDateTimeConverter implements IConverter<LocalDateTime> {
+		
+		static final DateConverter dateConverter = new DateConverter();
+		
+		@Override
+		public LocalDateTime convert(String s) throws ParseException {
+			java.util.Date ret = dateConverter.convert(s);
+			return TimeKit.toLocalDateTime(ret);
+		}
+	}
+	
+	public static class LocalDateConverter implements IConverter<LocalDate> {
+		
+		static final DateConverter dateConverter = new DateConverter();
+		
+		@Override
+		public LocalDate convert(String s) throws ParseException {
+			java.util.Date ret = dateConverter.convert(s);
+			return TimeKit.toLocalDate(ret);
 		}
 	}
 }
