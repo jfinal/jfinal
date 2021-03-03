@@ -738,8 +738,8 @@ public class JFinalJsonKit {
 		}
 		
 		public void addLocalDateTime(LocalDateTime ldt) {
-			if (timestampPattern != null) {
-				sb.append('\"').append(TimeKit.format(ldt, timestampPattern)).append('\"');
+			if (datePattern != null) {
+				sb.append('\"').append(TimeKit.format(ldt, datePattern)).append('\"');
 			} else {
 				sb.append(TimeKit.toDate(ldt).getTime());
 			}
