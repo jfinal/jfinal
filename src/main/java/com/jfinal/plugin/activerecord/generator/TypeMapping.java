@@ -80,7 +80,20 @@ public class TypeMapping {
 		
 		// byte
 		put("java.lang.Byte", "java.lang.Byte");
+		
+		// 新增 java 8 的三种时间类型
+		put("java.time.LocalDateTime", "java.time.LocalDateTime");
+		put("java.time.LocalDate", "java.time.LocalDate");
+		put("java.time.LocalTime", "java.time.LocalTime");
 	}};
+	
+	public void addMapping(Class<?> from, Class<?> to) {
+		map.put(from.getName(), to.getName());
+	}
+	
+	public void addMapping(String from, String to) {
+		map.put(from, to);
+	}
 	
 	public String getType(String typeString) {
 		return map.get(typeString);

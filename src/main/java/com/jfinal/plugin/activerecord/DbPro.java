@@ -600,7 +600,7 @@ public class DbPro {
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
-			String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
+			String totalRowSql = config.dialect.forPaginateTotalRow(select, sqlExceptSelect, null);
 			StringBuilder findSql = new StringBuilder();
 			findSql.append(select).append(' ').append(sqlExceptSelect);
 			return doPaginateByFullSql(config, conn, pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
@@ -651,7 +651,7 @@ public class DbPro {
 	}
 	
 	protected Page<Record> paginate(Config config, Connection conn, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) throws SQLException {
-		String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
+		String totalRowSql = config.dialect.forPaginateTotalRow(select, sqlExceptSelect, null);
 		StringBuilder findSql = new StringBuilder();
 		findSql.append(select).append(' ').append(sqlExceptSelect);
 		return doPaginateByFullSql(config, conn, pageNumber, pageSize, null, totalRowSql, findSql, paras);

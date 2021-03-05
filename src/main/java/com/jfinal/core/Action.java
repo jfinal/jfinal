@@ -87,6 +87,10 @@ public class Action {
 	public ParaProcessor getParameterGetter() {
 		return parameterGetter;
 	}
+	
+	public String toString() {
+		return actionKey;
+	}
 }
 
 

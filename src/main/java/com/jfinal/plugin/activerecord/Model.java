@@ -498,12 +498,12 @@ public abstract class Model<M extends Model> implements Serializable {
 		return doPaginate(pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
 	}
 	
-	private Page<M> doPaginate(int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+	protected Page<M> doPaginate(int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
 		Config config = _getConfig();
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
-			String totalRowSql = "select count(*) " + config.dialect.replaceOrderBy(sqlExceptSelect);
+			String totalRowSql = config.dialect.forPaginateTotalRow(select, sqlExceptSelect, this);
 			StringBuilder findSql = new StringBuilder();
 			findSql.append(select).append(' ').append(sqlExceptSelect);
 			return doPaginateByFullSql(config, conn, pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
@@ -514,7 +514,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		}
 	}
 	
-	private Page<M> doPaginateByFullSql(Config config, Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, StringBuilder findSql, Object... paras) throws Exception {
+	protected Page<M> doPaginateByFullSql(Config config, Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, StringBuilder findSql, Object... paras) throws Exception {
 		if (pageNumber < 1 || pageSize < 1) {
 			throw new ActiveRecordException("pageNumber and pageSize must more than 0");
 		}
@@ -553,7 +553,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		return new Page<M>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
 	
-	private Page<M> doPaginateByFullSql(int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, String findSql, Object... paras) {
+	protected Page<M> doPaginateByFullSql(int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, String findSql, Object... paras) {
 		Config config = _getConfig();
 		Connection conn = null;
 		try {
@@ -658,7 +658,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		return deleteById(table, idValues);
 	}
 	
-	private boolean deleteById(Table table, Object... idValues) {
+	protected boolean deleteById(Table table, Object... idValues) {
 		Config config = _getConfig();
 		Connection conn = null;
 		try {
@@ -1054,7 +1054,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		return doPaginateByCache(cacheName, key, pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
 	}
 	
-	private Page<M> doPaginateByCache(String cacheName, Object key, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
+	protected Page<M> doPaginateByCache(String cacheName, Object key, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
 		ICache cache = _getConfig().getCache();
 		Page<M> result = cache.get(cacheName, key);
 		if (result == null) {
