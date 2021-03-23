@@ -108,9 +108,9 @@ public class ExprParser {
 	ExprList exprList() {
 		List<Expr> exprList = new ArrayList<Expr>();
 		while (true) {
-			Expr stat = expr();
-			if (stat != null) {
-				exprList.add(stat);
+			Expr expr = expr();
+			if (expr != null) {
+				exprList.add(expr);
 				if (peek().sym == Sym.COMMA) {
 					move();
 					if (peek() == EOF) {
