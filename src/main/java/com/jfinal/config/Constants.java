@@ -454,6 +454,19 @@ final public class Constants {
 	public void setToJavaAwtHeadless() {
 		System.setProperty("java.awt.headless", "true");
 	}
+	
+	// ---------
+	
+	// 支持扩展 ActionMapping
+	private java.util.function.Function<Routes, com.jfinal.core.ActionMapping> actionMappingFunc = null;
+	
+	public void setActionMapping(java.util.function.Function<Routes, com.jfinal.core.ActionMapping> func) {
+		this.actionMappingFunc = func;
+	}
+	
+	public java.util.function.Function<Routes, com.jfinal.core.ActionMapping> getActionMappingFunc() {
+		return actionMappingFunc;
+	}
 }
 
 
