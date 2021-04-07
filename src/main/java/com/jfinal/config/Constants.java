@@ -18,9 +18,11 @@ package com.jfinal.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import com.jfinal.aop.AopManager;
 import com.jfinal.captcha.CaptchaManager;
 import com.jfinal.captcha.ICaptchaCache;
+import com.jfinal.core.ActionMapping;
 import com.jfinal.core.ActionReporter;
 import com.jfinal.core.Const;
 import com.jfinal.core.ControllerFactory;
@@ -458,13 +460,13 @@ final public class Constants {
 	// ---------
 	
 	// 支持扩展 ActionMapping
-	private java.util.function.Function<Routes, com.jfinal.core.ActionMapping> actionMappingFunc = null;
+	private Function<Routes, ActionMapping> actionMappingFunc = null;
 	
-	public void setActionMapping(java.util.function.Function<Routes, com.jfinal.core.ActionMapping> func) {
+	public void setActionMapping(Function<Routes, ActionMapping> func) {
 		this.actionMappingFunc = func;
 	}
 	
-	public java.util.function.Function<Routes, com.jfinal.core.ActionMapping> getActionMappingFunc() {
+	public Function<Routes, ActionMapping> getActionMappingFunc() {
 		return actionMappingFunc;
 	}
 }
