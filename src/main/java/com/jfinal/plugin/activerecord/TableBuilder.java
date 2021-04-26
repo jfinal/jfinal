@@ -31,6 +31,14 @@ public class TableBuilder {
 	
 	protected JavaType javaType = new JavaType();
 	
+	public JavaType getJavaType() {
+		return javaType;
+	}
+	
+	public void setJavaType(JavaType javaType) {
+		this.javaType = javaType;
+	}
+	
 	public void build(List<Table> tableList, Config config) {
 		// 支持 useAsDataTransfer(...) 中的 arp.start() 正常运作
 		if (config.dataSource instanceof NullDataSource) {

@@ -80,6 +80,22 @@ public class JavaType {
 	public Class<?> getType(String typeString) {
 		return strToType.get(typeString);
 	}
+	
+	public void addType(Class<?> type) {
+		strToType.put(type.getName(), type);
+	}
+	
+	public void removeType(Class<?> type) {
+		strToType.remove(type);
+	}
+	
+	public void addTypeMapping(Class<?> from, Class<?> to) {
+		strToType.put(from.getName(), to);
+	}
+	
+	public void addTypeMapping(String from, Class<?> to) {
+		strToType.put(from, to);
+	}
 }
 
 
