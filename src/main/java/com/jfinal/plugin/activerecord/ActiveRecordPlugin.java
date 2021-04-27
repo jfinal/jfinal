@@ -34,6 +34,8 @@ import com.jfinal.plugin.activerecord.sql.SqlKit;
  */
 public class ActiveRecordPlugin implements IPlugin {
 	
+	protected TableBuilder tableBuilder = new TableBuilder();
+	
 	protected IDataSourceProvider dataSourceProvider = null;
 	protected Boolean devMode = null;
 	
@@ -223,7 +225,7 @@ public class ActiveRecordPlugin implements IPlugin {
 		
 		config.sqlKit.parseSqlTemplate();
 		
-		new TableBuilder().build(tableList, config);
+		tableBuilder.build(tableList, config);
 		DbKit.addConfig(config);
 		isStarted = true;
 		return true;
@@ -299,6 +301,34 @@ public class ActiveRecordPlugin implements IPlugin {
 	
 	public Config getConfig() {
 		return config;
+	}
+	
+	/**
+	 * 一般用于配置 TableBuilder 内的 JavaType
+	 * <pre>
+	 * 例如：
+	 *    ActiveRecordPlugin arp = ...;
+	 *    JavaType jt = arp.getTableBuilder().getJavaType();
+	 *    
+	 *    jt.addType(org.postgresql.geometric.PGpoint.class);
+	 *    jt.addType(org.postgresql.geometric.PGbox.class);
+	 *    jt.addType(org.postgresql.geometric.PGcircle.class);
+	 *    jt.addType(org.postgresql.geometric.PGline.class);
+	 *    jt.addType(org.postgresql.geometric.PGlseg.class);
+	 *    jt.addType(org.postgresql.geometric.PGpath.class);
+	 *    jt.addType(org.postgresql.geometric.PGpolygon.class);
+	 * </pre>
+	 */
+	public TableBuilder getTableBuilder() {
+		return tableBuilder;
+	}
+	
+	/**
+	 * 可用于切换 TableBuilder 实现类
+	 */
+	public ActiveRecordPlugin setTableBuilder(TableBuilder tableBuilder) {
+		this.tableBuilder = tableBuilder;
+		return this;
 	}
 }
 
