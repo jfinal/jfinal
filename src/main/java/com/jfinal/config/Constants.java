@@ -18,9 +18,11 @@ package com.jfinal.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import com.jfinal.aop.AopManager;
 import com.jfinal.captcha.CaptchaManager;
 import com.jfinal.captcha.ICaptchaCache;
+import com.jfinal.core.ActionMapping;
 import com.jfinal.core.ActionReporter;
 import com.jfinal.core.Const;
 import com.jfinal.core.ControllerFactory;
@@ -453,6 +455,19 @@ final public class Constants {
 	 */
 	public void setToJavaAwtHeadless() {
 		System.setProperty("java.awt.headless", "true");
+	}
+	
+	// ---------
+	
+	// 支持扩展 ActionMapping
+	private Function<Routes, ActionMapping> actionMappingFunc = null;
+	
+	public void setActionMapping(Function<Routes, ActionMapping> func) {
+		this.actionMappingFunc = func;
+	}
+	
+	public Function<Routes, ActionMapping> getActionMappingFunc() {
+		return actionMappingFunc;
 	}
 }
 
