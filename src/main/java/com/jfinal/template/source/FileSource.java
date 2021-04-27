@@ -66,7 +66,7 @@ public class FileSource implements ISource {
 	public StringBuilder getContent() {
 		File file = new File(finalFileName);
 		if (!file.exists()) {
-			throw new RuntimeException("File not found : " + finalFileName);
+			throw new RuntimeException("File not found : \"" + finalFileName + "\"");
 		}
 		
 		// 极为重要，否则在开发模式下 isModified() 一直返回 true，缓存一直失效（原因是 lastModified 默认值为 0）
