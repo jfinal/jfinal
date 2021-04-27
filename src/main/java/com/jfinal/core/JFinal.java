@@ -99,7 +99,12 @@ public final class JFinal {
 	}
 	
 	private void initActionMapping() {
-		actionMapping = new ActionMapping(Config.getRoutes());
+		if (constants.getActionMappingFunc() != null) {
+			actionMapping = constants.getActionMappingFunc().apply(Config.getRoutes());
+		} else {
+			actionMapping = new ActionMapping(Config.getRoutes());
+		}
+		
 		actionMapping.buildActionMapping();
 		Config.getRoutes().clear();
 	}
