@@ -75,7 +75,7 @@ public class Captcha implements Serializable {
 		return key;
 	}
 
-    public void setKey(String key) {
+	public void setKey(String key) {
 		this.key = key;
 	}
 	
@@ -83,7 +83,7 @@ public class Captcha implements Serializable {
 		return value;
 	}
 
-    public void setValue(String value) {
+	public void setValue(String value) {
 		this.value = value;
 	}
 	
@@ -91,7 +91,7 @@ public class Captcha implements Serializable {
 		return expireAt;
 	}
 
-    public void setExpireAt(long expireAt) {
+	public void setExpireAt(long expireAt) {
 		this.expireAt = expireAt;
 	}
 	
