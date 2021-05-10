@@ -197,14 +197,15 @@ public class Engine {
 			return buildTemplateBySource(new StringSource(content, cache));
 		}
 		
-		String cacheKey = HashKit.md5(content);
+		StringSource source = new StringSource(content, cache);
+		String cacheKey = source.getCacheKey();
 		Template template = templateCache.get(cacheKey);
 		if (template == null) {
-			template = buildTemplateBySource(new StringSource(content, cache));
+			template = buildTemplateBySource(source);
 			templateCache.put(cacheKey, template);
 		} else if (devMode) {
 			if (template.isModified()) {
-				template = buildTemplateBySource(new StringSource(content, cache));
+				template = buildTemplateBySource(source);
 				templateCache.put(cacheKey, template);
 			}
 		}
