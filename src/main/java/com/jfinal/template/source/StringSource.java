@@ -40,13 +40,29 @@ public class StringSource implements ISource {
 		this.content = new StringBuilder(content);
 		this.cacheKey = cache ? HashKit.md5(content) : null;	// 不缓存只要将 cacheKey 值赋为 null 即可
 	}
-	
+
+	public StringSource(String content, String cacheKey) {
+		if (StrKit.isBlank(content)) {
+			throw new IllegalArgumentException("content can not be blank");
+		}
+		this.content = new StringBuilder(content);
+		this.cacheKey = cacheKey;	// 不缓存只要将 cacheKey 值赋为 null 即可
+	}
+
 	public StringSource(StringBuilder content, boolean cache) {
 		if (content == null || content.length() == 0) {
 			throw new IllegalArgumentException("content can not be blank");
 		}
 		this.content = content;
 		this.cacheKey = cache ? HashKit.md5(content.toString()) : null;	// 不缓存只要将 cacheKey 值赋为 null 即可
+	}
+
+    public StringSource(StringBuilder content, String cacheKey) {
+		if (content == null || content.length() == 0) {
+			throw new IllegalArgumentException("content can not be blank");
+		}
+		this.content = content;
+		this.cacheKey = cacheKey;	// 不缓存只要将 cacheKey 值赋为 null 即可
 	}
 	
 	public boolean isModified() {
