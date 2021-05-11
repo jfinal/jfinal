@@ -51,7 +51,7 @@ public class StringSource implements ISource {
 	}
 	
 	public StringSource(StringBuilder content, boolean cache) {
-		this(content, cache ? HashKit.md5(content.toString()) : null);
+		this(content, cache && content != null ? HashKit.md5(content.toString()) : null);
 	}
 	
 	public StringSource(StringBuilder content, String cacheKey) {
