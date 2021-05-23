@@ -32,7 +32,7 @@ public class SqlReporter implements InvocationHandler {
 	private static boolean logOn = false;
 	private static final Log log = Log.getLog(SqlReporter.class);
 	
-	SqlReporter(Connection conn) {
+	public SqlReporter(Connection conn) {
 		this.conn = conn;
 	}
 	
@@ -41,7 +41,7 @@ public class SqlReporter implements InvocationHandler {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	Connection getConnection() {
+	public Connection getConnection() {
 		Class clazz = conn.getClass();
 		return (Connection)Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{Connection.class}, this);
 	}
