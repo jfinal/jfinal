@@ -671,7 +671,7 @@ public abstract class Controller {
 		Cookie cookie = new Cookie(name, value);
 		cookie.setMaxAge(maxAgeInSeconds);
 		// set the default path value to "/"
-		if (path == null) {
+		if (StrKit.isBlank(path)) {
 			path = "/";
 		}
 		cookie.setPath(path);
