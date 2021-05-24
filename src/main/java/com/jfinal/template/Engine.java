@@ -211,11 +211,11 @@ public class Engine {
 		return template;
 	}
 
-    public Template getTemplateByString(String content, String cacheKey) {
+	public Template getTemplateByString(String content, String cacheKey) {
 		if (cacheKey == null) {
 			return buildTemplateBySource(new StringSource(content, cacheKey));
 		}
-        
+		
 		Template template = templateCache.get(cacheKey);
 		if (template == null) {
 			template = buildTemplateBySource(new StringSource(content, cacheKey));
