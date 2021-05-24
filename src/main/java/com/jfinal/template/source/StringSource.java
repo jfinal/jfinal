@@ -34,19 +34,32 @@ public class StringSource implements ISource {
 	 * @param cache true 则缓存 Template，否则不缓存
 	 */
 	public StringSource(String content, boolean cache) {
+		this(content, cache ? HashKit.md5(content) : null);
+	}
+	
+	/**
+	 * 构造 StringSource
+	 * @param content 模板内容
+	 * @param cacheKey 缓存 Template 使用的 key，值为 null 时不缓存
+	 */
+	public StringSource(String content, String cacheKey) {
 		if (StrKit.isBlank(content)) {
 			throw new IllegalArgumentException("content can not be blank");
 		}
 		this.content = new StringBuilder(content);
-		this.cacheKey = cache ? HashKit.md5(content) : null;	// 不缓存只要将 cacheKey 值赋为 null 即可
+		this.cacheKey = cacheKey;
 	}
 	
 	public StringSource(StringBuilder content, boolean cache) {
+		this(content, cache && content != null ? HashKit.md5(content.toString()) : null);
+	}
+	
+	public StringSource(StringBuilder content, String cacheKey) {
 		if (content == null || content.length() == 0) {
 			throw new IllegalArgumentException("content can not be blank");
 		}
 		this.content = content;
-		this.cacheKey = cache ? HashKit.md5(content.toString()) : null;	// 不缓存只要将 cacheKey 值赋为 null 即可
+		this.cacheKey = cacheKey;			// cacheKey 值为 null 时不缓存
 	}
 	
 	public boolean isModified() {

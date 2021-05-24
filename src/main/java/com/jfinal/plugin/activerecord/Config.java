@@ -46,7 +46,7 @@ public class Config {
 	SqlKit sqlKit;
 	
 	// For ActiveRecordPlugin only, dataSource can be null
-	Config(String name, DataSource dataSource, int transactionLevel) {
+	public Config(String name, DataSource dataSource, int transactionLevel) {
 		init(name, dataSource, new MysqlDialect(), false, false, transactionLevel, IContainerFactory.defaultContainerFactory, new EhCache());
 	}
 	
