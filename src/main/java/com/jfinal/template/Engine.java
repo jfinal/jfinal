@@ -210,6 +210,24 @@ public class Engine {
 		}
 		return template;
 	}
+
+    public Template getTemplateByString(String content, String cacheKey) {
+		if (cacheKey == null) {
+			return buildTemplateBySource(new StringSource(content, cacheKey));
+		}
+        
+		Template template = templateCache.get(cacheKey);
+		if (template == null) {
+			template = buildTemplateBySource(new StringSource(content, cacheKey));
+			templateCache.put(cacheKey, template);
+		} else if (devMode) {
+			if (template.isModified()) {
+				template = buildTemplateBySource(new StringSource(content, cacheKey));
+				templateCache.put(cacheKey, template);
+			}
+		}
+		return template;
+	}
 	
 	/**
 	 * Get template by implementation of ISource
