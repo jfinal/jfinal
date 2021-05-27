@@ -63,7 +63,7 @@ public class Table {
 		this.primaryKey = arr;
 	}
 	
-	void setColumnTypeMap(Map<String, Class<?>> columnTypeMap) {
+	public void setColumnTypeMap(Map<String, Class<?>> columnTypeMap) {
 		if (columnTypeMap == null)
 			throw new IllegalArgumentException("columnTypeMap can not be null");
 		
@@ -74,7 +74,7 @@ public class Table {
 		return name;
 	}
 	
-	void setColumnType(String columnLabel, Class<?> columnType) {
+	public void setColumnType(String columnLabel, Class<?> columnType) {
 		columnTypeMap.put(columnLabel, columnType);
 	}
 	
