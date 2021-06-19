@@ -202,15 +202,15 @@ public class HttpKit {
 	}
 	
 	private static String readResponseString(HttpURLConnection conn) {
-		StringBuilder ret = new StringBuilder();
-		char[] buf = new char[1024];
 		try (InputStreamReader isr = new InputStreamReader(conn.getInputStream(), CHARSET)) {
+			StringBuilder ret = new StringBuilder();
+			char[] buf = new char[1024];
 			for (int num; (num = isr.read(buf, 0, buf.length)) != -1;) {
 				ret.append(buf, 0, num);
 			}
 			return ret.toString();
-		}
-		catch (Exception e) {
+			
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
