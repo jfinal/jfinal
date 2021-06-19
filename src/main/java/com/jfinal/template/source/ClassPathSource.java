@@ -138,15 +138,14 @@ public class ClassPathSource implements ISource {
 	}
 	
 	public static StringBuilder loadFile(InputStream inputStream, String encoding) {
-		StringBuilder ret = new StringBuilder();
-		
-		char[] buf = new char[1024];
 		try (InputStreamReader isr = new InputStreamReader(inputStream, encoding)) {
+			StringBuilder ret = new StringBuilder();
+			char[] buf = new char[1024];
 			for (int num; (num = isr.read(buf, 0, buf.length)) != -1;) {
 				ret.append(buf, 0, num);
 			}
-			
 			return ret;
+			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
