@@ -202,34 +202,16 @@ public class HttpKit {
 	}
 	
 	private static String readResponseString(HttpURLConnection conn) {
-		BufferedReader reader = null;
-		try {
-			StringBuilder ret;
-			reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), CHARSET));
-			String line = reader.readLine();
-			if (line != null) {
-				ret = new StringBuilder();
-				ret.append(line);
-			} else {
-				return "";
-			}
-			
-			while ((line = reader.readLine()) != null) {
-				ret.append('\n').append(line);
+		StringBuilder ret = new StringBuilder();
+		char[] buf = new char[1024];
+		try (InputStreamReader isr = new InputStreamReader(conn.getInputStream(), CHARSET)) {
+			for (int num; (num = isr.read(buf, 0, buf.length)) != -1;) {
+				ret.append(buf, 0, num);
 			}
 			return ret.toString();
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
-		}
-		finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					LogKit.error(e.getMessage(), e);
-				}
-			}
 		}
 	}
 	
