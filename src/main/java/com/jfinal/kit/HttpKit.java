@@ -16,7 +16,6 @@
 
 package com.jfinal.kit;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -252,11 +251,11 @@ public class HttpKit {
 	
 	public static String readData(HttpServletRequest request) {
 		try {
-			BufferedReader br = request.getReader();
+			String ce = request.getCharacterEncoding();
+			InputStreamReader isr = new InputStreamReader(request.getInputStream(), ce != null ? ce : CHARSET);
 			StringBuilder ret = new StringBuilder();
-			
 			char[] buf = new char[1024];
-			for (int num; (num = br.read(buf, 0, buf.length)) != -1;) {
+			for (int num; (num = isr.read(buf, 0, buf.length)) != -1;) {
 				ret.append(buf, 0, num);
 			}
 			return ret.toString();
