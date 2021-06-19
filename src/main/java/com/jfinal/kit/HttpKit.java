@@ -251,24 +251,16 @@ public class HttpKit {
 	}
 	
 	public static String readData(HttpServletRequest request) {
-		BufferedReader br = null;
 		try {
-			StringBuilder ret;
-			br = request.getReader();
+			BufferedReader br = request.getReader();
+			StringBuilder ret = new StringBuilder();
 			
-			String line = br.readLine();
-			if (line != null) {
-				ret = new StringBuilder();
-				ret.append(line);
-			} else {
-				return "";
+			char[] buf = new char[1024];
+			for (int num; (num = br.read(buf, 0, buf.length)) != -1;) {
+				ret.append(buf, 0, num);
 			}
-			
-			while ((line = br.readLine()) != null) {
-				ret.append('\n').append(line);
-			}
-			
 			return ret.toString();
+			
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
