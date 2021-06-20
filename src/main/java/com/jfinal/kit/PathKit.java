@@ -123,7 +123,15 @@ public class PathKit {
 	private static String detectWebRootPath() {
 		try {
 			String path = PathKit.class.getResource("/").toURI().getPath();
-			return new File(path).getParentFile().getParentFile().getCanonicalPath();
+			String ret = new File(path).getParentFile().getParentFile().getCanonicalPath();
+			// 支持 maven 项目在开发环境下探测 webRootPath
+			if (path.endsWith("/target/classes/")) {
+				return ret + "/src/main/webapp";
+			} else if (path.endsWith("\\target\\classes\\")) {
+				return ret + "\\src\\main\\webapp";
+			} else {
+				return ret;
+			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
