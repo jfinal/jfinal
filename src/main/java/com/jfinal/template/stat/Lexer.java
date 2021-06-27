@@ -387,15 +387,40 @@ class Lexer {
 			case 301:
 				for (char c=next(); true; c=next()) {
 					if (c == ']' && buf[forward + 1] == ']' && buf[forward + 2] == '#') {
-						addTextToken(subBuf(lexemeBegin + 3, forward - 1));	// NoParse 块使用 TextToken
-						return prepareNextScan(3);
+						addTextToken(subBuf(getNoParseStart(), forward - 1));	// NoParse 块使用 TextToken
+						
+						// return prepareNextScan(3);
+						forward = forward + 3;
+						if (lookForwardLineFeedAndEof() && deletePreviousTextTokenBlankTails()) {
+							return prepareNextScan(peek() != EOF ? 1 : 0);
+						} else {
+							return prepareNextScan(0);
+						}
 					}
+					
 					if (c == EOF) {
 						throw new ParseException("The \"no parse\" start block \"#[[\" can not match the end block: \"]]#\"", new Location(fileName, beginRow));
 					}
 				}
 			default :
 				return fail();
+			}
+		}
+	}
+	
+	// 非解析块头部 #[[ 处在独立一行时，要删除行尾的换行字符
+	int getNoParseStart() {
+		int fp = lexemeBegin + 3;
+		for (char c=buf[fp]; true; c=buf[++fp]) {
+			if (CharTable.isBlank(c)) {
+				continue ;
+			}
+			
+			// #[[ 处在独立一行
+			if (c == '\n' && deletePreviousTextTokenBlankTails()) {
+				return fp + 1;
+			} else {
+				return lexemeBegin + 3;
 			}
 		}
 	}
