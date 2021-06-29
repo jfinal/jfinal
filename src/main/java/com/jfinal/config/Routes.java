@@ -39,7 +39,7 @@ public abstract class Routes {
 	private List<Route> routeItemList = new ArrayList<Route>();
 	private List<Interceptor> interList = new ArrayList<Interceptor>();
 	
-	private boolean clearAfterMapping = false;
+	private boolean clearAfterMapping = false;                      // 是否在路由映射完成之后清除内部数据
 	
 	/**
 	 * Implement this method to add route, add interceptor and set baseViewPath
@@ -88,6 +88,7 @@ public abstract class Routes {
 		// 扫描前台路由
 		me.add(new Routes() {
 			public void config() {
+			        // 设置基础路由
 				this.setBaseViewPath("/_view");
 				
 				// 如果被扫描的包在 jar 文件之中，需要添加如下配置：
@@ -125,7 +126,7 @@ public abstract class Routes {
 	}
 	
 	/**
-	 * Add Routes
+	 * 添加路由
 	 */
 	public Routes add(Routes routes) {
 		routes.config();
