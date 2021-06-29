@@ -121,7 +121,7 @@ public class Engine {
 	 * 		e.setToClassPathSourceFactory();
 	 * 	});
 	 * 
-	 * 	engine.getTemplate("template.html").renderToString();
+	 * 	engine.getTemplate("template.html").render(System.out);
 	 * </>
 	 */
 	public static Engine createIfAbsent(String engineName, Consumer<Engine> e) {
