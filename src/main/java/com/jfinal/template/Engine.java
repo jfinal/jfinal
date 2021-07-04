@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.kit.SyncWriteMap;
@@ -109,6 +110,32 @@ public class Engine {
 		Engine newEngine = new Engine(engineName);
 		engineMap.put(engineName, newEngine);
 		return newEngine;
+	}
+	
+	/**
+	 * Create engine if absent with engine name managed by JFinal
+	 * <pre>
+	 * Example:
+	 * 	Engine engine = Engine.createIfAbsent("myEngine", e -> {
+	 * 		e.setDevMode(true);
+	 * 		e.setToClassPathSourceFactory();
+	 * 	});
+	 * 
+	 * 	engine.getTemplate("template.html").render(System.out);
+	 * </>
+	 */
+	public static Engine createIfAbsent(String engineName, Consumer<Engine> e) {
+		Engine ret = engineMap.get(engineName);
+		if (ret == null) {
+			synchronized (Engine.class) {
+				ret = engineMap.get(engineName);
+				if (ret == null) {
+					ret = create(engineName);
+					e.accept(ret);
+				}
+			}
+		}
+		return ret;
 	}
 	
 	/**

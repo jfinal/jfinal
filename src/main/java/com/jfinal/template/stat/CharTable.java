@@ -124,7 +124,7 @@ public class CharTable {
 	}
 	
 	public static boolean isBlank(char c) {
-		return c == ' ' || c == '\t';								// \t\r\u000C
+		return c == ' ' || c == '\t' || c == '\r';								// \t\r\u000C
 	}
 	
 	public static boolean isBlankOrLineFeed(char c) {
