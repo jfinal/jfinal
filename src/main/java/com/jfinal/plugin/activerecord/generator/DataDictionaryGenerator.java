@@ -230,18 +230,11 @@ public class DataDictionaryGenerator {
 		}
 		
 		String target = dataDictionaryOutputDir + File.separator + dataDictionaryFileName;
-		OutputStreamWriter osw = null;
-		try {
-			osw = new OutputStreamWriter(new FileOutputStream(target), "UTF-8");
+		try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(target), "UTF-8")) {
 			osw.write(ret);
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
-		}
-		finally {
-			if (osw != null) {
-				try {osw.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
-			}
 		}
 	}
 }
