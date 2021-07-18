@@ -35,7 +35,7 @@ import com.jfinal.template.stat.Scope;
  */
 public class Output extends Stat {
 	
-	private Expr expr;
+	protected Expr expr;
 	
 	public Output(ExprList exprList, Location location) {
 		if (exprList.length() == 0) {
