@@ -50,7 +50,10 @@ public class Cache {
 	/**
 	 * 使用 lambda 开放 Jedis API
 	 * <pre>
-	 * 例子：
+	 * 例子 1：
+	 *   Long ret = Redis.use().call(j -> j.incrBy("key", 1));
+	 *   
+	 * 例子 2：
 	 *   Long ret = Redis.use().call(jedis -> {
 	 *       return jedis.incrBy("key", 1);
 	 *   });
