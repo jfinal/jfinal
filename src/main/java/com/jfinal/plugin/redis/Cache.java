@@ -72,6 +72,7 @@ public class Cache {
 	
 	/**
 	 * setnx 的工作原理与 set 完全相同，唯一的区别是，如果 key 已经存在，则不执行任何操作
+	 * @return 1 表示 key 不存在，0 表示 key 存在
 	 */
 	public Long setnx(Object key, Object value) {
 		Jedis jedis = getJedis();
