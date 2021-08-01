@@ -73,14 +73,14 @@ public class Redis {
 	}
 	
 	public static <T> T call(ICallback<T> callback) {
-		return call(callback, use());
+		return call(use(), callback);
 	}
 	
 	public static <T> T call(String cacheName, ICallback<T> callback) {
-		return call(callback, use(cacheName));
+		return call(use(cacheName), callback);
 	}
 	
-	private static <T> T call(ICallback<T> callback, Cache cache) {
+	private static <T> T call(Cache cache, ICallback<T> callback) {
 		Jedis jedis = cache.getThreadLocalJedis();
 		boolean notThreadLocalJedis = (jedis == null);
 		if (notThreadLocalJedis) {
