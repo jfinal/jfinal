@@ -48,7 +48,7 @@ public class Cache {
 	protected final ThreadLocal<Jedis> threadLocalJedis = new ThreadLocal<Jedis>();
 	
 	/**
-	 * 使用 lambda 开放 Jedis API
+	 * 使用 lambda 开放 Jedis API，建议优先使用本方法
 	 * <pre>
 	 * 例子 1：
 	 *   Long ret = Redis.use().call(j -> j.incrBy("key", 1));
