@@ -76,7 +76,7 @@ public class Redis {
 		return call(callback, use());
 	}
 	
-	public static <T> T call(ICallback<T> callback, String cacheName) {
+	public static <T> T call(String cacheName, ICallback<T> callback) {
 		return call(callback, use(cacheName));
 	}
 	
