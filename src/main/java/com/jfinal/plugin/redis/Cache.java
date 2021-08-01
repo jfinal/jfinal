@@ -71,6 +71,17 @@ public class Cache {
 	}
 	
 	/**
+	 * setnx 的工作原理与 set 完全相同，唯一的区别是，如果 key 已经存在，则不执行任何操作
+	 */
+	public Long setnx(Object key, Object value) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.setnx(keyToBytes(key), valueToBytes(value));
+		}
+		finally {close(jedis);}
+	}
+	
+	/**
 	 * 存放 key value 对到 redis，并将 key 的生存时间设为 seconds (以秒为单位)。
 	 * 如果 key 已经存在， SETEX 命令将覆写旧值。
 	 */
