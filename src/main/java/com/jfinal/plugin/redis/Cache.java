@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 import com.jfinal.plugin.redis.serializer.ISerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -45,6 +46,23 @@ public class Cache {
 	protected IKeyNamingPolicy keyNamingPolicy;
 	
 	protected final ThreadLocal<Jedis> threadLocalJedis = new ThreadLocal<Jedis>();
+	
+	/**
+	 * 使用 lambda 开放 Jedis API
+	 * <pre>
+	 * 例子：
+	 *   Long ret = Redis.use().call(jedis -> {
+	 *       return jedis.incrBy("key", 1);
+	 *   });
+	 * </pre>
+	 */
+	public <R> R call(Function<Jedis, R> func) {
+		Jedis jedis = getJedis();
+		try {
+			return func.apply(jedis);
+		}
+		finally {close(jedis);}
+	}
 	
 	protected Cache() {
 		
