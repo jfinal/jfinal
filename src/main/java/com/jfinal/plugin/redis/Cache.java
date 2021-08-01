@@ -59,12 +59,12 @@ public class Cache {
 	 *   });
 	 * </pre>
 	 */
-	public <R> R call(Function<Jedis, R> func) {
-		Jedis jedis = getJedis();
+	public <R> R call(Function<Jedis, R> jedis) {
+		Jedis jd = getJedis();
 		try {
-			return func.apply(jedis);
+			return jedis.apply(jd);
 		}
-		finally {close(jedis);}
+		finally {close(jd);}
 	}
 	
 	protected Cache() {
