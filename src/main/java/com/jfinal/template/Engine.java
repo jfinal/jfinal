@@ -139,6 +139,24 @@ public class Engine {
 	}
 	
 	/**
+	 * Create engine with engine name managed by JFinal
+	 * <pre>
+	 * Example:
+	 * 	Engine engine = Engine.create("myEngine", e -> {
+	 * 		e.setDevMode(true);
+	 * 		e.setToClassPathSourceFactory();
+	 * 	});
+	 * 
+	 * 	engine.getTemplate("template.html").render(System.out);
+	 * </>
+	 */
+	public static Engine create(String engineName, Consumer<Engine> e) {
+		Engine ret = create(engineName);
+		e.accept(ret);
+		return ret;
+	}
+	
+	/**
 	 * Remove engine with engine name managed by JFinal
 	 */
 	public synchronized static Engine remove(String engineName) {
