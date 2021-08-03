@@ -29,7 +29,7 @@ import com.jfinal.plugin.redis.serializer.ISerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
-import redis.clients.util.SafeEncoder;
+import redis.clients.jedis.util.SafeEncoder;
 
 /**
  * Cache.
@@ -107,7 +107,7 @@ public class Cache {
 	 * 存放 key value 对到 redis，并将 key 的生存时间设为 seconds (以秒为单位)。
 	 * 如果 key 已经存在， SETEX 命令将覆写旧值。
 	 */
-	public String setex(Object key, int seconds, Object value) {
+	public String setex(Object key, long seconds, Object value) {
 		Jedis jedis = getJedis();
 		try {
 			return jedis.setex(keyToBytes(key), seconds, valueToBytes(value));
@@ -336,7 +336,7 @@ public class Cache {
 	public String migrate(String host, int port, Object key, int destinationDb, int timeout) {
 		Jedis jedis = getJedis();
 		try {
-			return jedis.migrate(valueToBytes(host), port, keyToBytes(key), destinationDb, timeout);
+			return jedis.migrate(host, port, keyToBytes(key), destinationDb, timeout);
 		}
 		finally {close(jedis);}
 	}
@@ -362,7 +362,7 @@ public class Cache {
 	 * 为给定 key 设置生存时间，当 key 过期时(生存时间为 0 )，它会被自动删除。
 	 * 在 Redis 中，带有生存时间的 key 被称为『易失的』(volatile)。
 	 */
-	public Long expire(Object key, int seconds) {
+	public Long expire(Object key, long seconds) {
 		Jedis jedis = getJedis();
 		try {
 			return jedis.expire(keyToBytes(key), seconds);
