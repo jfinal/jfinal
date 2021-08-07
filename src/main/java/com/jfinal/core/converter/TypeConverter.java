@@ -66,7 +66,7 @@ import com.jfinal.kit.Func;
 public class TypeConverter {
 	
 	private final Map<Class<?>, IConverter<?>> converterMap = new HashMap<Class<?>, IConverter<?>>(64);
-	private Func.F21<Class<?>, String, Object> convertFunc;
+	private Func.F21<Class<?>, String, Object> convertFunc = null;
 	private static TypeConverter me = new TypeConverter();
 	
 	private TypeConverter() {
@@ -106,16 +106,16 @@ public class TypeConverter {
 	}
 
 	public Map<Class<?>, IConverter<?>> getConverterMap() {
-        return converterMap;
-    }
+		return converterMap;
+	}
 
-    public Func.F21<Class<?>, String, Object> getConvertFunc() {
-        return convertFunc;
-    }
+	public Func.F21<Class<?>, String, Object> getConvertFunc() {
+		return convertFunc;
+	}
 
-    public void setConvertFunc(Func.F21<Class<?>, String, Object> convertFunc) {
-        this.convertFunc = convertFunc;
-    }
+	public void setConvertFunc(Func.F21<Class<?>, String, Object> convertFunc) {
+		this.convertFunc = convertFunc;
+	}
 	
 	/**
 	 * 将 String 数据转换为指定的类型
@@ -125,8 +125,8 @@ public class TypeConverter {
 	 */
 	public final Object convert(Class<?> type, String s) throws ParseException {
 		if (convertFunc != null){
-            return convertFunc.call(type,s);
-        }
+			return convertFunc.call(type,s);
+		}
 		
 		if (s == null) {
 			return null;
