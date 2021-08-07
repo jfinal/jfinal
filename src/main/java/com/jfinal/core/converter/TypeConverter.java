@@ -36,6 +36,7 @@ import com.jfinal.core.converter.Converters.TimeConverter;
 import com.jfinal.core.converter.Converters.TimestampConverter;
 import com.jfinal.core.converter.Converters.LocalDateTimeConverter;
 import com.jfinal.core.converter.Converters.LocalDateConverter;
+import com.jfinal.kit.Func;
 
 /**
  * TypeConverter 用于将客户端请求的 String 类型数据转换成指定的数据类型
@@ -65,6 +66,7 @@ import com.jfinal.core.converter.Converters.LocalDateConverter;
 public class TypeConverter {
 	
 	private final Map<Class<?>, IConverter<?>> converterMap = new HashMap<Class<?>, IConverter<?>>(64);
+	private Func.F21<Class<?>, String, Object> convertFunc;
 	private static TypeConverter me = new TypeConverter();
 	
 	private TypeConverter() {
@@ -102,6 +104,18 @@ public class TypeConverter {
 	public <T> void regist(Class<T> type, IConverter<T> converter) {
 		converterMap.put(type, converter);
 	}
+
+	public Map<Class<?>, IConverter<?>> getConverterMap() {
+        return converterMap;
+    }
+
+    public Func.F21<Class<?>, String, Object> getConvertFunc() {
+        return convertFunc;
+    }
+
+    public void setConvertFunc(Func.F21<Class<?>, String, Object> convertFunc) {
+        this.convertFunc = convertFunc;
+    }
 	
 	/**
 	 * 将 String 数据转换为指定的类型
@@ -110,6 +124,10 @@ public class TypeConverter {
 	 * @return 转换成功的数据
 	 */
 	public final Object convert(Class<?> type, String s) throws ParseException {
+		if (convertFunc != null){
+            return convertFunc.call(type,s);
+        }
+		
 		if (s == null) {
 			return null;
 		}
