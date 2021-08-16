@@ -260,7 +260,7 @@ public class Parser {
 	
 	private Stat createDirective(Class<? extends Directive> dire, Token name) {
 		try {
-			return dire.newInstance();
+			return dire.getDeclaredConstructor().newInstance();
 		} catch (Exception e) {
 			throw new ParseException(e.getMessage(), getLocation(name.row), e);
 		}

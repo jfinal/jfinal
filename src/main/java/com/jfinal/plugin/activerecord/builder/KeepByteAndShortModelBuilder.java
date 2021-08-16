@@ -58,7 +58,7 @@ public class KeepByteAndShortModelBuilder extends ModelBuilder {
 		int[] types = new int[columnCount + 1];
 		buildLabelNamesAndTypes(rsmd, labelNames, types);
 		while (rs.next()) {
-			Model<?> ar = modelClass.newInstance();
+			Model<?> ar = modelClass.getDeclaredConstructor().newInstance();
 			Map<String, Object> attrs = CPI.getAttrs(ar);
 			for (int i=1; i<=columnCount; i++) {
 				Object value;

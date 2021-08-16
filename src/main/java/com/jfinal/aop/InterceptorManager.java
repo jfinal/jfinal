@@ -160,7 +160,7 @@ public class InterceptorManager {
 			for (int i=0; i<result.length; i++) {
 				result[i] = singletonMap.get(interceptorClasses[i]);
 				if (result[i] == null) {
-					result[i] = (Interceptor)interceptorClasses[i].newInstance();
+					result[i] = (Interceptor)interceptorClasses[i].getDeclaredConstructor().newInstance();
 					if (AopManager.me().isInjectDependency()) {
 						Aop.inject(result[i]);
 					}

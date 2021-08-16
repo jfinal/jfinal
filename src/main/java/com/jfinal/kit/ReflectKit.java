@@ -26,7 +26,7 @@ public class ReflectKit {
 	
 	public static Object newInstance(Class<?> clazz) {
 		try {
-			return clazz.newInstance();
+			return clazz.getDeclaredConstructor().newInstance();
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);
 		}

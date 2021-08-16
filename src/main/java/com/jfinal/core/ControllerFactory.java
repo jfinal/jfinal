@@ -32,7 +32,7 @@ public class ControllerFactory {
 	}
 	
 	public Controller getController(Class<? extends Controller> controllerClass) throws ReflectiveOperationException {
-		Controller ret = controllerClass.newInstance();
+		Controller ret = controllerClass.getDeclaredConstructor().newInstance();
 		if (injectDependency) {
 			com.jfinal.aop.Aop.inject(ret);
 		}
