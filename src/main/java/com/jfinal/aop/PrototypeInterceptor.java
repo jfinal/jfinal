@@ -23,7 +23,7 @@ public abstract class PrototypeInterceptor implements Interceptor {
 	
 	final public void intercept(Invocation inv) {
 		try {
-			getClass().newInstance().doIntercept(inv);
+			getClass().getDeclaredConstructor().newInstance().doIntercept(inv);
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {

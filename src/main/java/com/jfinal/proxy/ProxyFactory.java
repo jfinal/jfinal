@@ -36,9 +36,9 @@ public class ProxyFactory {
 		try {
 			Class<T> ret = (Class<T>)cache.get(target);
 			if (ret != null) {
-				return (T)ret.newInstance();
+				return (T)ret.getDeclaredConstructor().newInstance();
 			} else {
-				return getProxyClass(target).newInstance();
+				return getProxyClass(target).getDeclaredConstructor().newInstance();
 			}
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);

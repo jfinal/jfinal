@@ -123,7 +123,7 @@ public class JFinalFilter implements Filter {
 		}
 		
 		try {
-			Object temp = Class.forName(configClass).newInstance();
+			Object temp = Class.forName(configClass).getDeclaredConstructor().newInstance();
 			jfinalConfig = (JFinalConfig)temp;
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException("Can not create instance of class: " + configClass, e);

@@ -357,7 +357,7 @@ public class AnsiSqlDialect extends Dialect {
 		int[] types = new int[columnCount + 1];
 		buildLabelNamesAndTypes(rsmd, labelNames, types);
 		for (int k=0; k<pageSize && rs.next(); k++) {
-			Model<?> ar = modelClass.newInstance();
+			Model<?> ar = modelClass.getDeclaredConstructor().newInstance();
 			Map<String, Object> attrs = CPI.getAttrs(ar);
 			for (int i=1; i<=columnCount; i++) {
 				Object value;

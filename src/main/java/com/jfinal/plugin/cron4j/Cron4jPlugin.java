@@ -165,7 +165,7 @@ public class Cron4jPlugin implements IPlugin {
 			}
 			taskClass = taskClass.trim();
 
-			Object taskObj = Class.forName(taskClass).newInstance();
+			Object taskObj = Class.forName(taskClass).getDeclaredConstructor().newInstance();
 			if ( !(taskObj instanceof Runnable) && !(taskObj instanceof Task) ) {
 				throw new IllegalArgumentException("Task 必须是 Runnable、ITask、ProcessTask 或者 Task 类型");
 			}
