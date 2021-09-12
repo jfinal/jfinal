@@ -32,7 +32,7 @@ public class TypeMapping {
 	protected Map<String, String> map = new HashMap<String, String>(32) {{
 		// java.util.Data can not be returned
 		// java.sql.Date, java.sql.Time, java.sql.Timestamp all extends java.util.Data so getDate can return the three types data
-		// put("java.util.Date", "java.util.Date");
+		put("java.util.Date", "java.util.Date");
 		
 		// date, year
 		put("java.sql.Date", "java.util.Date");
@@ -82,9 +82,15 @@ public class TypeMapping {
 		put("java.lang.Byte", "java.lang.Byte");
 		
 		// 新增 java 8 的三种时间类型
-		put("java.time.LocalDateTime", "java.time.LocalDateTime");
-		put("java.time.LocalDate", "java.time.LocalDate");
-		put("java.time.LocalTime", "java.time.LocalTime");
+		// put("java.time.LocalDateTime", "java.time.LocalDateTime");
+		// put("java.time.LocalDate", "java.time.LocalDate");
+		// put("java.time.LocalTime", "java.time.LocalTime");
+
+		// 部分同学反馈使用原始的 Date 更常用，故默认使用原始 Date
+		// 需要调整的通过可通过 Generator.addTypeMapping(...) 来覆盖默认映射
+		put("java.time.LocalDateTime", "java.util.Date");
+		put("java.time.LocalDate", "java.util.Date");
+		put("java.time.LocalTime", "java.sql.Time");
 	}};
 	
 	public void addMapping(Class<?> from, Class<?> to) {
