@@ -6,8 +6,6 @@ import java.util.Map;
 
 /**
  * IRow 支持统一的方式来处理 Model 和 Record
- * 
- * 例如可以用 List<IRow> 同时接收 List<Model> 与 List<Record> 变量并处理
  */
 public interface IRow<M> {
 
