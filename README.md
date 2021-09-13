@@ -25,7 +25,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 <dependency>
     <groupId>com.jfinal</groupId>
     <artifactId>jfinal</artifactId>
-    <version>4.9.16</version>
+    <version>4.9.17</version>
 </dependency>
 ```
 
