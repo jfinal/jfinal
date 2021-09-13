@@ -13,8 +13,16 @@ public interface IRow<M> {
 
     public M put(Map<String, Object> map);
 
-    public M set(String attr, Object value);
+    /**
+     * Set column to record.
+     * @param column the column name
+     * @param value the value of the column
+     */
+    public M set(String column, Object value);
 
+    /**
+     * Get column of any mysql type
+     */
     public <T> T get(String column);
 
     /**
