@@ -11,7 +11,7 @@ public interface IRow<M> {
 
     public Map<String, Object> toMap();
 
-    public M put(Map<String, Object> maps);
+    public M put(Map<String, Object> map);
 
     public M set(String attr, Object value);
 

@@ -31,7 +31,7 @@ import java.util.Map.Entry;
 /**
  * Record
  */
-public class Record implements Serializable {
+public class Record implements IRow<Record>, Serializable {
 	
 	private static final long serialVersionUID = 905784513600884082L;
 	
@@ -423,6 +423,17 @@ public class Record implements Serializable {
 	 */
 	public String toJson() {
 		return com.jfinal.kit.JsonKit.toJson(getColumns());
+	}
+	
+	@Override
+	public Map<String, Object> toMap() {
+		return getColumns();
+	}
+	
+	@Override
+	public Record put(Map<String, Object> map) {
+		getColumns().putAll(map);
+		return this;
 	}
 }
 

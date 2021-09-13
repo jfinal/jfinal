@@ -45,7 +45,7 @@ import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
  * A stupid person makes it.
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class Model<M extends Model> implements Serializable {
+public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	
 	private static final long serialVersionUID = -990334519496260591L;
 	
@@ -1224,6 +1224,10 @@ public abstract class Model<M extends Model> implements Serializable {
 	
 	public DaoTemplate<M> templateByString(String content, Model model) {
 		return templateByString(content, model.attrs);
+	}
+	
+	public Map<String, Object> toMap() {
+		return attrs;
 	}
 }
 
