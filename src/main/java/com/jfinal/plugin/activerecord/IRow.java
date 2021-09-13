@@ -33,7 +33,7 @@ public interface IRow<M> {
     public Integer getInt(String column);
 
     /**
-     * Get column of mysql type: bigint
+     * Get column of mysql type: bigint, unsigned int
      */
     public Long getLong(String column);
 
@@ -45,7 +45,7 @@ public interface IRow<M> {
     /**
      * Get column of mysql type: date, year
      */
-    public java.util.Date getDate(String column) ;
+    public java.util.Date getDate(String column);
 
     public LocalDateTime getLocalDateTime(String column);
 

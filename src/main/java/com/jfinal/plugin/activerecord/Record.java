@@ -237,7 +237,7 @@ public class Record implements IRow<Record>, Serializable {
 	}
 	
 	/**
-	 * Get column of mysql type: bigint
+	 * Get column of mysql type: bigint, unsigned int
 	 */
 	public Long getLong(String column) {
 		Number n = getNumber(column);
