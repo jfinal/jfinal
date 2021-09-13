@@ -132,8 +132,14 @@ public class Generator {
 	 * 
 	 * 添加的映射可以覆盖默认的映射，从而可以自由定制映射关系
 	 * 
+	 * <pre>
 	 * 例如：
-	 *    generator.addTypeMaping(Date.class, LocalDateTime.class)
+	 *    generator.addTypeMaping(LocalDateTime.class, LocalDateTime.class)
+	 *    generator.addTypeMaping(LocalDate.class, LocalDate.class)
+	 *    
+	 * 例如：
+	 *    generator.addTypeMaping(java.sql.Date.class, LocalDateTime.class)
+	 * </pre>
 	 * 以上配置在生成 base model 时碰到 Date 类型时会生成为 LocalDateTime 类型
 	 */
 	public void addTypeMapping(Class<?> from, Class<?> to) {

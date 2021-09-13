@@ -86,8 +86,14 @@ public class TypeMapping {
 		// put("java.time.LocalDate", "java.time.LocalDate");
 		// put("java.time.LocalTime", "java.time.LocalTime");
 
-		// 部分同学反馈使用原始的 Date 更常用，故默认使用原始 Date
-		// 需要调整的通过可通过 Generator.addTypeMapping(...) 来覆盖默认映射
+		/**
+		 * 部分同学反馈使用原始的 Date 更常用，故默认使用原始 Date
+		 * 需要调整的通过可通过 Generator.addTypeMapping(...) 来覆盖默认映射
+		 * 
+		 * 也可以通过 removeMapping(...) 来清除默认映射，让 JDBC 自动处理映射关系
+		 * 
+		 * 注意：mysql 8 版本会将 datetime 字段类型映射为 LocalDateTime
+		 */
 		put("java.time.LocalDateTime", "java.util.Date");
 		put("java.time.LocalDate", "java.util.Date");
 		put("java.time.LocalTime", "java.sql.Time");
