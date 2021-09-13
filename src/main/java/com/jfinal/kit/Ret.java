@@ -89,12 +89,20 @@ public class Ret extends HashMap {
 		return ok().set(key, value);
 	}
 	
+	public static Ret ok(String msg) {
+		return ok().set("msg", msg);
+	}
+	
 	public static Ret fail() {
 		return new Ret().setFail();
 	}
 	
 	public static Ret fail(Object key, Object value) {
 		return fail().set(key, value);
+	}
+	
+	public static Ret fail(String msg) {
+		return fail().set("msg", msg);
 	}
 	
 	public Ret setOk() {
