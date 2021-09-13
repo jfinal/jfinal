@@ -101,6 +101,14 @@ public class TypeMapping {
 		map.put(from, to);
 	}
 	
+	public void removeMapping(Class<?> from) {
+		map.remove(from.getName());
+	}
+	
+	public void removeMapping(String from) {
+		map.remove(from);
+	}
+	
 	public String getType(String typeString) {
 		return map.get(typeString);
 	}

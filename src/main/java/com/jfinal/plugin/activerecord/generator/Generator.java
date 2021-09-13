@@ -140,6 +140,10 @@ public class Generator {
 		this.metaBuilder.typeMapping.addMapping(from, to);
 	}
 	
+	public void removeTypeMapping(Class<?> from) {
+		this.metaBuilder.typeMapping.removeMapping(from);
+	}
+	
 	/**
 	 * 与 addTypeMaping(Class<?> from, Class<?> to) 功能一致，保是参数类型不同
 	 * 
@@ -148,6 +152,10 @@ public class Generator {
 	 */
 	public void addTypeMapping(String from, String to) {
 		this.metaBuilder.typeMapping.addMapping(from, to);
+	}
+	
+	public void removeTypeMapping(String from) {
+		this.metaBuilder.typeMapping.removeMapping(from);
 	}
 	
 	/**
