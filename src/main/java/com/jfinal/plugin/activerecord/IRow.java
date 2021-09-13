@@ -14,14 +14,14 @@ public interface IRow<M> {
     public M put(Map<String, Object> map);
 
     /**
-     * Set column to record.
+     * Set column value.
      * @param column the column name
      * @param value the value of the column
      */
     public M set(String column, Object value);
 
     /**
-     * Get column of any mysql type
+     * Get column value of any mysql type
      */
     public <T> T get(String column);
 
@@ -103,7 +103,7 @@ public interface IRow<M> {
     public Number getNumber(String column);
 
     /**
-     * Return json string of this record.
+     * Convert to json string.
      */
     public String toJson();
 }
