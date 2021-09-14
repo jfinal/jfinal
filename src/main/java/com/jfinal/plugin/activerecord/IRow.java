@@ -9,9 +9,23 @@ import java.util.Map;
  */
 public interface IRow<M> {
 
+    /**
+     * Convert Model or Record to a Map.
+     * <p>
+     * Danger! The update method will ignore the attribute if you change it directly.
+     * You must use set method to change attribute that update method can handle it.
+     */
     public Map<String, Object> toMap();
 
+    /**
+     * Put map to the model without check attribute name.
+     */
     public M put(Map<String, Object> map);
+
+    /**
+     * Put key value pair to the model without check attribute name.
+     */
+    public M put(String key, Object value);
 
     /**
      * Set column value.
