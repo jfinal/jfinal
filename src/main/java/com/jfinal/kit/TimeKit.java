@@ -34,7 +34,7 @@ import com.jfinal.kit.SyncWriteMap;
  * TimeKit 用于简化 JDK 8 新增的时间 API
  * 
  * 新旧日期转换通过桥梁 Instant 进行：
- *   新转旧：LocalDateTime.atZone(ZoneId).toInstant() -> Instant -> Date.from(Instant);
+ *   新转旧：LocalDateTime.atZone(ZoneId).toInstant() -> Instant -> Date.from(Instant)
  *   旧转新：Date.toInstant() -> Instant -> LocalDateTime.ofInstant(Instant, ZoneId)
  * 
  * 经测试，SimpleDateFormat 比 DateTimeFormatter 对 pattern 的支持更好
