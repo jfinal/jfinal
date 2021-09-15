@@ -33,7 +33,7 @@ import com.jfinal.kit.SyncWriteMap;
 /**
  * TimeKit 用于简化 JDK 8 新增的时间 API
  * 
- * 新旧日期转换通过桥梁 Instant 进行：
+ * 新旧日期转换通过桥梁 Instant 进行，转成 LocalDate、LocalTime 需要先转成 LocalDateTime：
  *   新转旧：LocalDateTime.atZone(ZoneId).toInstant() -> Instant -> Date.from(Instant)
  *   旧转新：Date.toInstant() -> Instant -> LocalDateTime.ofInstant(Instant, ZoneId)
  * 
