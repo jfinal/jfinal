@@ -62,9 +62,11 @@ public class Ret extends HashMap {
 	
 	private static final long serialVersionUID = -3021472182023759198L;
 	
-	private static final String STATE = "state";
-	private static final String STATE_OK = "ok";
-	private static final String STATE_FAIL = "fail";
+	static String STATE = "state";
+	static Object STATE_OK = "ok";
+	static Object STATE_FAIL = "fail";
+	
+	static String MSG = "msg";
 	
 	public Ret() {
 	}
@@ -90,7 +92,7 @@ public class Ret extends HashMap {
 	}
 	
 	public static Ret ok(String msg) {
-		return ok().set("msg", msg);
+		return ok().set(MSG, msg);
 	}
 	
 	public static Ret fail() {
@@ -102,7 +104,7 @@ public class Ret extends HashMap {
 	}
 	
 	public static Ret fail(String msg) {
-		return fail().set("msg", msg);
+		return fail().set(MSG, msg);
 	}
 	
 	public Ret setOk() {
