@@ -21,13 +21,13 @@ package com.jfinal.kit;
  * 
  * <pre>
  * 例子：
- *   CPI.configRetState("success", true, false);
+ *   CPI.setRetState("success", true, false);
  *   将 Ret 的状态字段名由 "state" 改为 "success"，将状态值 "ok" 改为 true、"fail" 改为 false
  *   
- *   CPI.configRetState("code", 200, 500);
+ *   CPI.setRetState("code", 200, 500);
  *   将 Ret 的状态字段名由 "state" 改为 "code"，将状态值 "ok" 改为 200、"fail" 改为 500
  *   
- *   CPI.configRetMsg("message")
+ *   CPI.setRetMsg("message")
  *   将 Ret 的消息字段名由 "msg" 改为 "message"
  * </pre>
  */
@@ -37,14 +37,14 @@ public class CPI {
 	 * 配置 Ret 的状态名、成功状态值、失败状态值，默认值分别为："state"、"ok"、"fail"
 	 * <pre>
 	 * 例子：
-	 *   CPI.configRetState("success", true, false);
+	 *   CPI.setRetState("success", true, false);
 	 *   将 Ret 的状态字段名由 "state" 改为 "success"，将状态值 "ok" 改为 true、"fail" 改为 false
 	 *   
-	 *   CPI.configRetState("code", 200, 500);
+	 *   CPI.setRetState("code", 200, 500);
 	 *   将 Ret 的状态字段名由 "state" 改为 "code"，将状态值 "ok" 改为 200、"fail" 改为 500
 	 * </pre>
 	 */
-	public static void configRetState(String stateName, Object stateOkValue, Object stateFailValue) {
+	public static void setRetState(String stateName, Object stateOkValue, Object stateFailValue) {
 		if (StrKit.isBlank(stateName)) {
 			throw new IllegalArgumentException("stateName 不能为空");
 		}
@@ -64,11 +64,11 @@ public class CPI {
 	 * 配置 Ret 的消息名，默认值为："msg"
 	 * <pre>
 	 * 例子：
-	 *   CPI.configRetMsg("message")
+	 *   CPI.setRetMsg("message")
 	 *   将 Ret 的消息字段名由 "msg" 改为 "message"
 	 * </pre>
 	 */
-	public static void configRetMsg(String msgName) {
+	public static void setRetMsg(String msgName) {
 		Ret.MSG = msgName;
 	}
 	
