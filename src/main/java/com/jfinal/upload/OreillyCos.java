@@ -27,7 +27,7 @@ import com.oreilly.servlet.multipart.FileRenamePolicy;
  */
 public class OreillyCos {
 	
-	public static void init(String uploadPath, int maxPostSize, String encoding) {
+	public static void init(String uploadPath, long maxPostSize, String encoding) {
 		if (StrKit.isBlank(uploadPath)) {
 			throw new IllegalArgumentException("uploadPath can not be blank.");
 		}
@@ -46,7 +46,7 @@ public class OreillyCos {
 		MultipartRequest.fileRenamePolicy = fileRenamePolicy;
 	}
 	
-	private static void doInit(String uploadPath, int maxPostSize, String encoding) {
+	private static void doInit(String uploadPath, long maxPostSize, String encoding) {
 		uploadPath = uploadPath.trim();
 		uploadPath = uploadPath.replaceAll("\\\\", "/");
 		
