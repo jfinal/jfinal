@@ -57,13 +57,13 @@ import com.jfinal.json.Json;
  * 
  * 三、定制 Ret
  * 1：将状态字段名由 "state" 改为 "success"，将状态值 "ok" 改为 true、"fail" 改为 false
- *     CPI.configRetState("success", true, false);
+ *     CPI.setRetState("success", true, false);
  * 
  * 2：将状态字段名由 "state" 改为 "code"，将状态值 "ok" 改为 200、"fail" 改为 500
- *     CPI.configRetState("code", 200, 500);
+ *     CPI.setRetState("code", 200, 500);
  * 
  * 3：将消息字段名由 "msg" 改为 "message"
- *     CPI.configRetMsg("message")
+ *     CPI.setRetMsg("message")
  * </pre>
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
