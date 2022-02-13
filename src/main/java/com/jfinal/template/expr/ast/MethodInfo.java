@@ -38,6 +38,9 @@ public class MethodInfo {
 		this.method = method;
 		this.isVarArgs = method.isVarArgs();
 		this.paraTypes = method.getParameterTypes();
+		
+		// 支持高版本 JDK 的安全策略
+		method.setAccessible(true);
 	}
 	
 	public Object invoke(Object target, Object... args) throws ReflectiveOperationException {
