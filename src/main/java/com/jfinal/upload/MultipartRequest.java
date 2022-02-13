@@ -48,12 +48,12 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 		MultipartRequest.encoding = encoding;
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String uploadPath, int maxPostSize, String encoding) {
+	public MultipartRequest(HttpServletRequest request, String uploadPath, long maxPostSize, String encoding) {
 		super(request);
 		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, encoding);
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String uploadPath, int maxPostSize) {
+	public MultipartRequest(HttpServletRequest request, String uploadPath, long maxPostSize) {
 		super(request);
 		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, encoding);
 	}
