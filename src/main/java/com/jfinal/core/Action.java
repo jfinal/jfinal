@@ -46,6 +46,9 @@ public class Action {
 		this.viewPath = viewPath;
 		
 		this.parameterGetter = ParaProcessorBuilder.me.build(controllerClass, method);
+		
+		// 支持高版本 JDK 的安全策略
+		method.setAccessible(true);
 	}
 	
 	public Class<? extends Controller> getControllerClass() {
