@@ -54,6 +54,7 @@ public class MetaBuilder {
 	protected TypeMapping typeMapping = new TypeMapping();
 	
 	protected boolean generateRemarks = false;	// 是否生成备注
+	protected boolean generateView = false;		// 是否生成 view
 	
 	public MetaBuilder(DataSource dataSource) {
 		if (dataSource == null) {
@@ -64,6 +65,10 @@ public class MetaBuilder {
 	
 	public void setGenerateRemarks(boolean generateRemarks) {
 		this.generateRemarks = generateRemarks;
+	}
+	
+	public void setGenerateView(boolean generateView) {
+		this.generateView = generateView;
 	}
 	
 	public void setDialect(Dialect dialect) {
@@ -124,8 +129,13 @@ public class MetaBuilder {
 		for (java.util.Iterator<TableMeta> it = ret.iterator(); it.hasNext();) {
 			TableMeta tm = it.next();
 			if (StrKit.isBlank(tm.primaryKey)) {
-				it.remove();
-				System.err.println("Skip table " + tm.name + " because there is no primary key");
+				if (generateView) {
+					tm.primaryKey = dialect.getDefaultPrimaryKey();
+					System.out.println("Set primaryKey \"" + tm.primaryKey + "\" for " + tm.name);
+				} else {
+					it.remove();
+					System.err.println("Skip table " + tm.name + " because there is no primary key");
+				}
 			}
 		}
 	}
@@ -200,8 +210,11 @@ public class MetaBuilder {
 	 */
 	protected ResultSet getTablesResultSet() throws SQLException {
 		String schemaPattern = dialect.isOracle() ? dbMeta.getUserName() : null;
-		// return dbMeta.getTables(conn.getCatalog(), schemaPattern, null, new String[]{"TABLE", "VIEW"});
-		return dbMeta.getTables(conn.getCatalog(), schemaPattern, null, new String[]{"TABLE"});	// 不支持 view 生成
+		if (generateView) {
+			return dbMeta.getTables(conn.getCatalog(), schemaPattern, null, new String[]{"TABLE", "VIEW"});
+		} else {
+			return dbMeta.getTables(conn.getCatalog(), schemaPattern, null, new String[]{"TABLE"});	// 不支持 view 生成
+		}
 	}
 	
 	protected void buildTableNames(List<TableMeta> ret) throws SQLException {

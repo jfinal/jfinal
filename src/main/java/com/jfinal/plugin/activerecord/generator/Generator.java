@@ -119,6 +119,15 @@ public class Generator {
 	}
 	
 	/**
+	 * 配置是否生成 view。默认值为 false
+	 */
+	public void setGenerateView(boolean generateView) {
+		if (metaBuilder != null) {
+			metaBuilder.setGenerateView(generateView);
+		}
+	}
+	
+	/**
 	 * 切换 TypeMapping
 	 * jfinal 4.9.08 版本新增了 addTypeMapping(...) 可以替代该方法的使用
 	 */
