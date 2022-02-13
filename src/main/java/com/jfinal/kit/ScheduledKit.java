@@ -32,12 +32,12 @@ import com.jfinal.log.Log;
 public class ScheduledKit {
 
 	private static ScheduledExecutorService executor = null;
-	
+
 	private ScheduledKit() {}
-	
+
 	/**
 	 * 初始化
-	 * 
+	 *
 	 * @param corePoolSize the number of threads to keep in the pool, even if they are idle
 	 */
 	public synchronized static void init(int corePoolSize) {
@@ -47,7 +47,7 @@ public class ScheduledKit {
 			Log.getLog(ScheduledKit.class).warn(ScheduledKit.class.getName() + " 已经初始化");
 		}
 	}
-	
+
 	/**
 	 * 传递 ScheduledExecutorService 对象进行初始化，从而完全掌控线程池参数
 	 */
@@ -58,14 +58,14 @@ public class ScheduledKit {
 			Log.getLog(ScheduledKit.class).warn(ScheduledKit.class.getName() + " 已经初始化");
 		}
 	}
-	
+
 	public static ScheduledExecutorService getExecutor() {
 		if (executor == null) {
 			init(5);
 		}
 		return executor;
 	}
-	
+
 	/**
 	 * 以固定延迟执行任务
 	 * @param task 被执行的任务
@@ -76,7 +76,7 @@ public class ScheduledKit {
 	public static ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, long initialDelay, long delay, TimeUnit unit) {
 		return getExecutor().scheduleWithFixedDelay(task, initialDelay, delay, unit);
 	}
-	
+
 	/**
 	 * 以固定频率执行任务
 	 * @param task 被执行的任务
@@ -87,7 +87,7 @@ public class ScheduledKit {
 	public static ScheduledFuture<?> scheduleAtFixedRate(Runnable task, long initialDelay, long period, TimeUnit unit) {
 		return getExecutor().scheduleAtFixedRate(task, initialDelay, period, unit);
 	}
-	
+
 	/**
      * 创建一次性调度，在给定的 delay 时间后调度
      * @param task 被执行任务
@@ -97,7 +97,7 @@ public class ScheduledKit {
 	public static ScheduledFuture<?> schedule(Runnable task, long delay, TimeUnit unit) {
 		return getExecutor().schedule(task, delay, unit);
 	}
-	
+
 	/**
      * 创建一次性调度，在给定的 delay 时间后调度
      * @param task 被执行任务
@@ -107,7 +107,7 @@ public class ScheduledKit {
 	public static <V> ScheduledFuture<V> schedule(Callable<V> task, long delay, TimeUnit unit) {
 		return getExecutor().schedule(task, delay, unit);
 	}
-	
+
 	/**
 	 * 等待正在执行的线程执行完毕以后，关闭线程池
 	 */
@@ -116,7 +116,7 @@ public class ScheduledKit {
 			executor.shutdown();
 		}
 	}
-	
+
 	/**
 	 * 停掉正在执行的线程，关闭线程池
 	 */
