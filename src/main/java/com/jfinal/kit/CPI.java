@@ -69,6 +69,9 @@ public class CPI {
 	 * </pre>
 	 */
 	public static void setRetMsg(String msgName) {
+		if (StrKit.isBlank(msgName)) {
+			throw new IllegalArgumentException("msgName 不能为空");
+		}
 		Ret.MSG = msgName;
 	}
 	
@@ -88,6 +91,7 @@ public class CPI {
 		return Ret.MSG;
 	}
 }
+
 
 
 
