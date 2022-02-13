@@ -4,7 +4,7 @@
 	
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
-	<version>4.9.17</version>
+	<version>4.9.18</version>
 	<packaging>jar</packaging>
 	
 	<name>JFinal</name>
@@ -126,7 +126,7 @@
 		<dependency>
 			<groupId>com.mchange</groupId>
 			<artifactId>c3p0</artifactId>
-			<version>0.9.5.3</version>
+			<version>0.9.5.5</version>
 			<scope>provided</scope>
 		</dependency>
 		
