@@ -603,7 +603,9 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			config.dialect.fillStatement(pst, paras);
 			result = pst.executeUpdate();
 			config.dialect.getModelGeneratedKey(this, pst, table);
-			_getModifyFlag().clear();
+			if (modifyFlag != null) {
+				modifyFlag.clear();
+			}
 			return result >= 1;
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
@@ -678,7 +680,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public boolean update() {
 		filter(FILTER_BY_UPDATE);
 		
-		if (_getModifyFlag().isEmpty()) {
+		if (modifyFlag == null || modifyFlag.isEmpty()) {
 			return false;
 		}
 		
@@ -940,7 +942,9 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 */
 	public M clear() {
 		attrs.clear();
-		_getModifyFlag().clear();
+		if (modifyFlag != null) {
+			modifyFlag.clear();
+		}
 		return (M)this;
 	}
 	
