@@ -590,6 +590,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		Config config = _getConfig();
 		Table table = _getTable();
 		
+		// 不必判断 attrs 中的字段个数是否为 0，因为以下 sql 合法：insert into table_name() values()
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();
 		config.dialect.forModelSave(table, attrs, sql, paras);
