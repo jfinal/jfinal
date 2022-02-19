@@ -180,6 +180,12 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		return modifyFlag;
 	}
 	
+	void clearModifyFlag() {
+		if (modifyFlag != null) {
+			modifyFlag.clear();
+		}
+	}
+	
 	protected Config _getConfig() {
 		if (configName != null)
 			return DbKit.getConfig(configName);
@@ -603,7 +609,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			config.dialect.fillStatement(pst, paras);
 			result = pst.executeUpdate();
 			config.dialect.getModelGeneratedKey(this, pst, table);
-			_getModifyFlag().clear();
+			clearModifyFlag();
 			return result >= 1;
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
@@ -678,7 +684,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public boolean update() {
 		filter(FILTER_BY_UPDATE);
 		
-		if (_getModifyFlag().isEmpty()) {
+		if (modifyFlag == null || modifyFlag.isEmpty()) {
 			return false;
 		}
 		
@@ -705,7 +711,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			conn = config.getConnection();
 			int result = Db.update(config, conn, sql.toString(), paras.toArray());
 			if (result >= 1) {
-				_getModifyFlag().clear();
+				clearModifyFlag();
 				return true;
 			}
 			return false;
@@ -907,7 +913,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		else {
 			this.attrs.clear();
-			this._getModifyFlag().clear();
+			this.clearModifyFlag();
 		}
 		return (M)this;
 	}
@@ -922,14 +928,14 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			Object keepIt = attrs.get(attr);
 			boolean keepFlag = _getModifyFlag().contains(attr);
 			attrs.clear();
-			_getModifyFlag().clear();
+			clearModifyFlag();
 			attrs.put(attr, keepIt);
 			if (keepFlag)
 				_getModifyFlag().add(attr);
 		}
 		else {
 			attrs.clear();
-			_getModifyFlag().clear();
+			clearModifyFlag();
 		}
 		return (M)this;
 	}
@@ -940,7 +946,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 */
 	public M clear() {
 		attrs.clear();
-		_getModifyFlag().clear();
+		clearModifyFlag();
 		return (M)this;
 	}
 	
