@@ -203,6 +203,7 @@ public class Record implements IRow<Record>, Serializable {
 	 */
 	public Record clear() {
 		getColumns().clear();
+		clearModifyFlag();
 		return this;
 	}
 	
