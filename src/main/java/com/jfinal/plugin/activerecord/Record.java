@@ -196,9 +196,17 @@ public class Record implements IRow<Record>, Serializable {
 			Object keepIt = getColumns().get(column);
 			getColumns().clear();
 			getColumns().put(column, keepIt);
+			
+			boolean keepFlag = _getModifyFlag().contains(column);
+			clearModifyFlag();
+			if (keepFlag) {
+				_getModifyFlag().add(column);
+			}
 		}
-		else
+		else {
 			getColumns().clear();
+			clearModifyFlag();
+		}
 		return this;
 	}
 	
