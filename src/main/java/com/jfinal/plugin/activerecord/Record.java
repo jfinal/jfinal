@@ -178,8 +178,8 @@ public class Record implements IRow<Record>, Serializable {
 			if (config == null) {	// 支持无数据库连接场景
 				config = DbKit.brokenConfig;
 			}
-			Map<String, Object> newColumns = config.containerFactory.getColumnsMap();	// new HashMap<String, Object>(attrs.length);
-			Set<String> newModifyFlag = config.containerFactory.getModifyFlagSet();	// new HashSet<String>();
+			Map<String, Object> newColumns = config.containerFactory.getColumnsMap();
+			Set<String> newModifyFlag = config.containerFactory.getModifyFlagSet();
 			for (String c : columns) {
 				if (this.getColumns().containsKey(c))	// prevent put null value to the newColumns
 					newColumns.put(c, this.columns.get(c));
