@@ -137,6 +137,7 @@ public class Record implements IRow<Record>, Serializable {
 	 */
 	public Record remove(String column) {
 		getColumns().remove(column);
+		_getModifyFlag().remove(column);
 		return this;
 	}
 	
@@ -146,8 +147,10 @@ public class Record implements IRow<Record>, Serializable {
 	 */
 	public Record remove(String... columns) {
 		if (columns != null)
-			for (String c : columns)
+			for (String c : columns) {
 				this.getColumns().remove(c);
+				this._getModifyFlag().remove(c);
+			}
 		return this;
 	}
 	
@@ -159,6 +162,7 @@ public class Record implements IRow<Record>, Serializable {
 			Entry<String, Object> e = it.next();
 			if (e.getValue() == null) {
 				it.remove();
+				_getModifyFlag().remove(e.getKey());
 			}
 		}
 		return this;
