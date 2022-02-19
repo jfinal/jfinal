@@ -22,7 +22,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.Temporal;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import com.jfinal.kit.TimeKit;
@@ -172,18 +171,28 @@ public class Record implements IRow<Record>, Serializable {
 	 * Keep columns of this record and remove other columns.
 	 * @param columns the column names of the record
 	 */
+	@SuppressWarnings("unchecked")
 	public Record keep(String... columns) {
 		if (columns != null && columns.length > 0) {
-			Map<String, Object> newColumns = new HashMap<String, Object>(columns.length);	// getConfig().containerFactory.getColumnsMap();
-			for (String c : columns)
+			Config config = DbKit.getConfig();
+			if (config == null) {	// 支持无数据库连接场景
+				config = DbKit.brokenConfig;
+			}
+			Map<String, Object> newColumns = config.containerFactory.getColumnsMap();	// new HashMap<String, Object>(attrs.length);
+			Set<String> newModifyFlag = config.containerFactory.getModifyFlagSet();	// new HashSet<String>();
+			for (String c : columns) {
 				if (this.getColumns().containsKey(c))	// prevent put null value to the newColumns
-					newColumns.put(c, this.getColumns().get(c));
-			
-			this.getColumns().clear();
-			this.getColumns().putAll(newColumns);
+					newColumns.put(c, this.columns.get(c));
+				if (this._getModifyFlag().contains(c))
+					newModifyFlag.add(c);
+			}
+			this.columns = newColumns;
+			this.modifyFlag = newModifyFlag;
 		}
-		else
+		else {
 			this.getColumns().clear();
+			this.clearModifyFlag();
+		}
 		return this;
 	}
 	
