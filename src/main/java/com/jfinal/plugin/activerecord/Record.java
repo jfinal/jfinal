@@ -213,6 +213,7 @@ public class Record implements IRow<Record>, Serializable {
 	 */
 	public Record set(String column, Object value) {
 		getColumns().put(column, value);
+		_getModifyFlag().add(column);	// Add modify flag, update() need this flag.
 		return this;
 	}
 	
@@ -461,7 +462,8 @@ public class Record implements IRow<Record>, Serializable {
 	
 	@Override
 	public Record put(String key, Object value) {
-		return this.set(key,value);
+		getColumns().put(key, value);
+		return this;
 	}
 }
 
