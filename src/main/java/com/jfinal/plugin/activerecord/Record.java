@@ -38,6 +38,29 @@ public class Record implements IRow<Record>, Serializable {
 	private Map<String, Object> columns;	// = getColumnsMap();	// getConfig().containerFactory.getColumnsMap();	// new HashMap<String, Object>();
 	
 	/**
+	 * Flag of column has been modified. update need this flag
+	 */
+	Set<String> modifyFlag;
+	
+	@SuppressWarnings("unchecked")
+	protected Set<String> _getModifyFlag() {
+		if (modifyFlag == null) {
+			Config config = DbKit.getConfig();
+			if (config == null)
+				modifyFlag = DbKit.brokenConfig.containerFactory.getModifyFlagSet();
+			else
+				modifyFlag = config.containerFactory.getModifyFlagSet();
+		}
+		return modifyFlag;
+	}
+	
+	void clearModifyFlag() {
+		if (modifyFlag != null) {
+			modifyFlag.clear();
+		}
+	}
+	
+	/**
 	 * Set the containerFactory by configName.
 	 * Only the containerFactory of the config used by Record for getColumnsMap()
 	 * @param configName the config name
