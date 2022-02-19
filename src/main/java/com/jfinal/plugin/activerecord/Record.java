@@ -109,7 +109,9 @@ public class Record implements IRow<Record>, Serializable {
 	 * @param columns the columns map
 	 */
 	public Record setColumns(Map<String, Object> columns) {
-		this.getColumns().putAll(columns);
+		for (Entry<String, Object> e : columns.entrySet()) {
+			set(e.getKey(), e.getValue());
+		}
 		return this;
 	}
 	
@@ -118,8 +120,7 @@ public class Record implements IRow<Record>, Serializable {
 	 * @param record the Record object
 	 */
 	public Record setColumns(Record record) {
-		getColumns().putAll(record.getColumns());
-		return this;
+		return setColumns(record.getColumns());
 	}
 	
 	/**
@@ -127,8 +128,7 @@ public class Record implements IRow<Record>, Serializable {
 	 * @param model the Model object
 	 */
 	public Record setColumns(Model<?> model) {
-		getColumns().putAll(model._getAttrs());
-		return this;
+		return setColumns(model._getAttrs());
 	}
 	
 	/**
