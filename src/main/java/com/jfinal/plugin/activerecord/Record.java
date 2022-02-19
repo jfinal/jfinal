@@ -42,7 +42,7 @@ public class Record implements IRow<Record>, Serializable {
 	Set<String> modifyFlag;
 	
 	@SuppressWarnings("unchecked")
-	protected Set<String> _getModifyFlag() {
+	Set<String> _getModifyFlag() {
 		if (modifyFlag == null) {
 			Config config = DbKit.getConfig();
 			if (config == null)
