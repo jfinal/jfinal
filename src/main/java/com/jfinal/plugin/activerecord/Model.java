@@ -702,7 +702,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		List<Object> paras = new ArrayList<Object>();
 		config.dialect.forModelUpdate(table, attrs, _getModifyFlag(), sql, paras);
 		
-		if (paras.size() <= 1) {	// Needn't update
+		if (paras.size() <= 1) {	// 参数个数为 1 的情况表明只有主键，也无需更新
 			return false;
 		}
 		
