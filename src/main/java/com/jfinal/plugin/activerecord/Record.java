@@ -45,10 +45,11 @@ public class Record implements IRow<Record>, Serializable {
 	Set<String> _getModifyFlag() {
 		if (modifyFlag == null) {
 			Config config = DbKit.getConfig();
-			if (config == null)
+			if (config == null) {
 				modifyFlag = DbKit.brokenConfig.containerFactory.getModifyFlagSet();
-			else
+			} else {
 				modifyFlag = config.containerFactory.getModifyFlagSet();
+			}
 		}
 		return modifyFlag;
 	}
@@ -66,8 +67,9 @@ public class Record implements IRow<Record>, Serializable {
 	 */
 	public Record setContainerFactoryByConfigName(String configName) {
 		Config config = DbKit.getConfig(configName);
-		if (config == null)
+		if (config == null) {
 			throw new IllegalArgumentException("Config not found: " + configName);
+		}
 		
 		processColumnsMap(config);
 		return this;
@@ -95,10 +97,11 @@ public class Record implements IRow<Record>, Serializable {
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> getColumns() {
 		if (columns == null) {
-			if (DbKit.config == null)
+			if (DbKit.config == null) {
 				columns = DbKit.brokenConfig.containerFactory.getColumnsMap();
-			else
+			} else {
 				columns = DbKit.config.containerFactory.getColumnsMap();
+			}
 		}
 		return columns;
 	}
@@ -145,11 +148,12 @@ public class Record implements IRow<Record>, Serializable {
 	 * @param columns the column names of the record
 	 */
 	public Record remove(String... columns) {
-		if (columns != null)
+		if (columns != null) {
 			for (String c : columns) {
 				this.getColumns().remove(c);
 				this._getModifyFlag().remove(c);
 			}
+		}
 		return this;
 	}
 	

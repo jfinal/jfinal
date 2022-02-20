@@ -66,8 +66,9 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	
 	private Map<String, Object> createAttrsMap() {
 		Config config = _getConfig();
-		if (config == null)
+		if (config == null) {
 			return DbKit.brokenConfig.containerFactory.getAttrsMap();
+		}
 		return config.containerFactory.getAttrsMap();
 	}
 	
@@ -157,8 +158,9 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 * @return this Model
 	 */
 	public M _setAttrs(Map<String, Object> attrs) {
-		for (Entry<String, Object> e : attrs.entrySet())
+		for (Entry<String, Object> e : attrs.entrySet()) {
 			set(e.getKey(), e.getValue());
+		}
 		return (M)this;
 	}
 	
@@ -172,10 +174,11 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	protected Set<String> _getModifyFlag() {
 		if (modifyFlag == null) {
 			Config config = _getConfig();
-			if (config == null)
+			if (config == null) {
 				modifyFlag = DbKit.brokenConfig.containerFactory.getModifyFlagSet();
-			else
+			} else {
 				modifyFlag = config.containerFactory.getModifyFlagSet();
+			}
 		}
 		return modifyFlag;
 	}
@@ -187,8 +190,9 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	}
 	
 	protected Config _getConfig() {
-		if (configName != null)
+		if (configName != null) {
 			return DbKit.getConfig(configName);
+		}
 		return DbKit.getConfig(_getUsefulClass());
 	}
 	
@@ -867,11 +871,12 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 * @return this model
 	 */
 	public M remove(String... attrs) {
-		if (attrs != null)
+		if (attrs != null) {
 			for (String a : attrs) {
 				this.attrs.remove(a);
 				this._getModifyFlag().remove(a);
 			}
+		}
 		return (M)this;
 	}
 	
