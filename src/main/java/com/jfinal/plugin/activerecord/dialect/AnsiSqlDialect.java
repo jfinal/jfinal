@@ -176,10 +176,13 @@ public class AnsiSqlDialect extends Dialect {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
 		
+		// Record 新增支持 modifyFlag
+		Set<String> modifyFlag = CPI.getModifyFlag(record);
+		
 		sql.append("update ").append(tableName).append(" set ");
 		for (Entry<String, Object> e: record.getColumns().entrySet()) {
 			String colName = e.getKey();
-			if (!isPrimaryKey(colName, pKeys)) {
+			if (modifyFlag.contains(colName) && !isPrimaryKey(colName, pKeys)) {
 				if (paras.size() > 0) {
 					sql.append(", ");
 				}
@@ -357,7 +360,7 @@ public class AnsiSqlDialect extends Dialect {
 		int[] types = new int[columnCount + 1];
 		buildLabelNamesAndTypes(rsmd, labelNames, types);
 		for (int k=0; k<pageSize && rs.next(); k++) {
-			Model<?> ar = modelClass.getDeclaredConstructor().newInstance();
+			Model<?> ar = modelClass.newInstance();
 			Map<String, Object> attrs = CPI.getAttrs(ar);
 			for (int i=1; i<=columnCount; i++) {
 				Object value;

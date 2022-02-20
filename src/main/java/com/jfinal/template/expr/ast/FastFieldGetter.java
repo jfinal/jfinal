@@ -80,7 +80,7 @@ public class FastFieldGetter extends FieldGetter {
 		Class<?> retClass = classLoader.loadProxyClass(proxyClass);
 		proxyClass.setClazz(retClass);
 		try {
-			return (Proxy)retClass.getDeclaredConstructor().newInstance();
+			return (Proxy)retClass.newInstance();
 		} catch (ReflectiveOperationException e) {
 			throw new RuntimeException(e);
 		}

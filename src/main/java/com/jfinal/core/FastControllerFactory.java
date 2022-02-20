@@ -50,7 +50,7 @@ public class FastControllerFactory extends ControllerFactory {
 	public Controller getController(Class<? extends Controller> controllerClass) throws ReflectiveOperationException {
 		Controller ret = buffers.get().get(controllerClass);
 		if (ret == null) {
-			ret = controllerClass.getDeclaredConstructor().newInstance();
+			ret = controllerClass.newInstance();
 			if (injectDependency) {
 				com.jfinal.aop.Aop.inject(ret);
 			}

@@ -34,7 +34,7 @@ public class Injector {
 	
 	private static <T> T createInstance(Class<T> objClass) {
 		try {
-			return objClass.getDeclaredConstructor().newInstance();
+			return objClass.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

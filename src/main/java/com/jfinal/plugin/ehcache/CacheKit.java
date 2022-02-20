@@ -92,7 +92,7 @@ public class CacheKit {
 		Object data = get(cacheName, key);
 		if (data == null) {
 			try {
-				IDataLoader dataLoader = dataLoaderClass.getDeclaredConstructor().newInstance();
+				IDataLoader dataLoader = dataLoaderClass.newInstance();
 				data = dataLoader.load();
 				put(cacheName, key, data);
 			} catch (Exception e) {

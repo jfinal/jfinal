@@ -51,7 +51,7 @@ public class ModelBuilder {
 		int[] types = new int[columnCount + 1];
 		buildLabelNamesAndTypes(rsmd, labelNames, types);
 		while (rs.next()) {
-			Model<?> ar = modelClass.getDeclaredConstructor().newInstance();
+			Model<?> ar = modelClass.newInstance();
 			Map<String, Object> attrs = ar._getAttrs();
 			for (int i=1; i<=columnCount; i++) {
 				Object value;
