@@ -651,8 +651,9 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 * @return true if delete succeed otherwise false
 	 */
 	public boolean deleteById(Object idValue) {
-		if (idValue == null)
+		if (idValue == null) {
 			throw new IllegalArgumentException("idValue can not be null");
+		}
 		return deleteById(_getTable(), idValue);
 	}
 	
@@ -663,9 +664,9 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 */
 	public boolean deleteByIds(Object... idValues) {
 		Table table = _getTable();
-		if (idValues == null || idValues.length != table.getPrimaryKey().length)
+		if (idValues == null || idValues.length != table.getPrimaryKey().length) {
 			throw new IllegalArgumentException("Primary key nubmer must equals id value number and can not be null");
-		
+		}
 		return deleteById(table, idValues);
 	}
 	
@@ -697,8 +698,9 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		String[] pKeys = table.getPrimaryKey();
 		for (String pKey : pKeys) {
 			Object id = attrs.get(pKey);
-			if (id == null)
+			if (id == null) {
 				throw new ActiveRecordException("You can't update model without Primary Key, " + pKey + " can not be null.");
+			}
 		}
 		
 		Config config = _getConfig();
@@ -845,9 +847,9 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 */
 	public M findByIdLoadColumns(Object[] idValues, String columns) {
 		Table table = _getTable();
-		if (table.getPrimaryKey().length != idValues.length)
+		if (table.getPrimaryKey().length != idValues.length) {
 			throw new IllegalArgumentException("id values error, need " + table.getPrimaryKey().length + " id value");
-		
+		}
 		Config config = _getConfig();
 		String sql = config.dialect.forModelFindById(table, columns);
 		List<M> result = find(config, sql, idValues);
