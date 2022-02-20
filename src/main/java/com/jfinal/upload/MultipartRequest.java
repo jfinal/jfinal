@@ -35,25 +35,25 @@ import com.oreilly.servlet.multipart.FileRenamePolicy;
 public class MultipartRequest extends HttpServletRequestWrapper {
 	
 	private static String baseUploadPath;
-	private static int maxPostSize;
+	private static long maxPostSize;
 	private static String encoding;
 	static FileRenamePolicy fileRenamePolicy = new DefaultFileRenamePolicy();
 	
 	private List<UploadFile> uploadFiles;
 	private com.oreilly.servlet.MultipartRequest multipartRequest;
 	
-	static void init(String baseUploadPath, int maxPostSize, String encoding) {
+	static void init(String baseUploadPath, long maxPostSize, String encoding) {
 		MultipartRequest.baseUploadPath = baseUploadPath;
 		MultipartRequest.maxPostSize = maxPostSize;
 		MultipartRequest.encoding = encoding;
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String uploadPath, int maxPostSize, String encoding) {
+	public MultipartRequest(HttpServletRequest request, String uploadPath, long maxPostSize, String encoding) {
 		super(request);
 		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, encoding);
 	}
 	
-	public MultipartRequest(HttpServletRequest request, String uploadPath, int maxPostSize) {
+	public MultipartRequest(HttpServletRequest request, String uploadPath, long maxPostSize) {
 		super(request);
 		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, encoding);
 	}
@@ -88,7 +88,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 		}
 	}
 	
-	private void wrapMultipartRequest(HttpServletRequest request, String uploadPath, int maxPostSize, String encoding) {
+	private void wrapMultipartRequest(HttpServletRequest request, String uploadPath, long maxPostSize, String encoding) {
 		File dir = new File(uploadPath);
 		if ( !dir.exists()) {
 			if (!dir.mkdirs()) {

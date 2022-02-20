@@ -48,6 +48,10 @@ public abstract class CPI {
 		return model._getModifyFlag();
 	}
 	
+	public static final Set<String> getModifyFlag(Record record) {
+		return record._getModifyFlag();
+	}
+	
 	public static final Table getTable(Model model) {
 		return model._getTable();
 	}

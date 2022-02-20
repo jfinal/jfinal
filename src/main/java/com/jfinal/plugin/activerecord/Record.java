@@ -22,7 +22,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.Temporal;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import com.jfinal.kit.TimeKit;
@@ -31,11 +30,35 @@ import java.util.Map.Entry;
 /**
  * Record
  */
-public class Record implements Serializable {
+public class Record implements IRow<Record>, Serializable {
 	
 	private static final long serialVersionUID = 905784513600884082L;
 	
 	private Map<String, Object> columns;	// = getColumnsMap();	// getConfig().containerFactory.getColumnsMap();	// new HashMap<String, Object>();
+	
+	/**
+	 * Flag of column has been modified. update need this flag
+	 */
+	Set<String> modifyFlag;
+	
+	@SuppressWarnings("unchecked")
+	Set<String> _getModifyFlag() {
+		if (modifyFlag == null) {
+			Config config = DbKit.getConfig();
+			if (config == null) {
+				modifyFlag = DbKit.brokenConfig.containerFactory.getModifyFlagSet();
+			} else {
+				modifyFlag = config.containerFactory.getModifyFlagSet();
+			}
+		}
+		return modifyFlag;
+	}
+	
+	void clearModifyFlag() {
+		if (modifyFlag != null) {
+			modifyFlag.clear();
+		}
+	}
 	
 	/**
 	 * Set the containerFactory by configName.
@@ -44,8 +67,9 @@ public class Record implements Serializable {
 	 */
 	public Record setContainerFactoryByConfigName(String configName) {
 		Config config = DbKit.getConfig(configName);
-		if (config == null)
+		if (config == null) {
 			throw new IllegalArgumentException("Config not found: " + configName);
+		}
 		
 		processColumnsMap(config);
 		return this;
@@ -73,10 +97,11 @@ public class Record implements Serializable {
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> getColumns() {
 		if (columns == null) {
-			if (DbKit.config == null)
+			if (DbKit.config == null) {
 				columns = DbKit.brokenConfig.containerFactory.getColumnsMap();
-			else
+			} else {
 				columns = DbKit.config.containerFactory.getColumnsMap();
+			}
 		}
 		return columns;
 	}
@@ -86,7 +111,9 @@ public class Record implements Serializable {
 	 * @param columns the columns map
 	 */
 	public Record setColumns(Map<String, Object> columns) {
-		this.getColumns().putAll(columns);
+		for (Entry<String, Object> e : columns.entrySet()) {
+			set(e.getKey(), e.getValue());
+		}
 		return this;
 	}
 	
@@ -95,8 +122,7 @@ public class Record implements Serializable {
 	 * @param record the Record object
 	 */
 	public Record setColumns(Record record) {
-		getColumns().putAll(record.getColumns());
-		return this;
+		return setColumns(record.getColumns());
 	}
 	
 	/**
@@ -104,8 +130,7 @@ public class Record implements Serializable {
 	 * @param model the Model object
 	 */
 	public Record setColumns(Model<?> model) {
-		getColumns().putAll(model._getAttrs());
-		return this;
+		return setColumns(model._getAttrs());
 	}
 	
 	/**
@@ -114,6 +139,7 @@ public class Record implements Serializable {
 	 */
 	public Record remove(String column) {
 		getColumns().remove(column);
+		_getModifyFlag().remove(column);
 		return this;
 	}
 	
@@ -122,9 +148,12 @@ public class Record implements Serializable {
 	 * @param columns the column names of the record
 	 */
 	public Record remove(String... columns) {
-		if (columns != null)
-			for (String c : columns)
+		if (columns != null) {
+			for (String c : columns) {
 				this.getColumns().remove(c);
+				this._getModifyFlag().remove(c);
+			}
+		}
 		return this;
 	}
 	
@@ -136,6 +165,7 @@ public class Record implements Serializable {
 			Entry<String, Object> e = it.next();
 			if (e.getValue() == null) {
 				it.remove();
+				_getModifyFlag().remove(e.getKey());
 			}
 		}
 		return this;
@@ -145,18 +175,28 @@ public class Record implements Serializable {
 	 * Keep columns of this record and remove other columns.
 	 * @param columns the column names of the record
 	 */
+	@SuppressWarnings("unchecked")
 	public Record keep(String... columns) {
 		if (columns != null && columns.length > 0) {
-			Map<String, Object> newColumns = new HashMap<String, Object>(columns.length);	// getConfig().containerFactory.getColumnsMap();
-			for (String c : columns)
+			Config config = DbKit.getConfig();
+			if (config == null) {	// 支持无数据库连接场景
+				config = DbKit.brokenConfig;
+			}
+			Map<String, Object> newColumns = config.containerFactory.getColumnsMap();
+			Set<String> newModifyFlag = config.containerFactory.getModifyFlagSet();
+			for (String c : columns) {
 				if (this.getColumns().containsKey(c))	// prevent put null value to the newColumns
-					newColumns.put(c, this.getColumns().get(c));
-			
-			this.getColumns().clear();
-			this.getColumns().putAll(newColumns);
+					newColumns.put(c, this.columns.get(c));
+				if (this._getModifyFlag().contains(c))
+					newModifyFlag.add(c);
+			}
+			this.columns = newColumns;
+			this.modifyFlag = newModifyFlag;
 		}
-		else
+		else {
 			this.getColumns().clear();
+			this.clearModifyFlag();
+		}
 		return this;
 	}
 	
@@ -169,9 +209,17 @@ public class Record implements Serializable {
 			Object keepIt = getColumns().get(column);
 			getColumns().clear();
 			getColumns().put(column, keepIt);
+			
+			boolean keepFlag = _getModifyFlag().contains(column);
+			clearModifyFlag();
+			if (keepFlag) {
+				_getModifyFlag().add(column);
+			}
 		}
-		else
+		else {
 			getColumns().clear();
+			clearModifyFlag();
+		}
 		return this;
 	}
 	
@@ -180,6 +228,7 @@ public class Record implements Serializable {
 	 */
 	public Record clear() {
 		getColumns().clear();
+		clearModifyFlag();
 		return this;
 	}
 	
@@ -190,6 +239,7 @@ public class Record implements Serializable {
 	 */
 	public Record set(String column, Object value) {
 		getColumns().put(column, value);
+		_getModifyFlag().add(column);	// Add modify flag, update() need this flag.
 		return this;
 	}
 	
@@ -237,7 +287,7 @@ public class Record implements Serializable {
 	}
 	
 	/**
-	 * Get column of mysql type: bigint
+	 * Get column of mysql type: bigint, unsigned int
 	 */
 	public Long getLong(String column) {
 		Number n = getNumber(column);
@@ -423,6 +473,23 @@ public class Record implements Serializable {
 	 */
 	public String toJson() {
 		return com.jfinal.kit.JsonKit.toJson(getColumns());
+	}
+	
+	@Override
+	public Map<String, Object> toMap() {
+		return getColumns();
+	}
+	
+	@Override
+	public Record put(Map<String, Object> map) {
+		getColumns().putAll(map);
+		return this;
+	}
+	
+	@Override
+	public Record put(String key, Object value) {
+		getColumns().put(key, value);
+		return this;
 	}
 }
 

@@ -119,6 +119,15 @@ public class Generator {
 	}
 	
 	/**
+	 * 配置是否生成 view。默认值为 false
+	 */
+	public void setGenerateView(boolean generateView) {
+		if (metaBuilder != null) {
+			metaBuilder.setGenerateView(generateView);
+		}
+	}
+	
+	/**
 	 * 切换 TypeMapping
 	 * jfinal 4.9.08 版本新增了 addTypeMapping(...) 可以替代该方法的使用
 	 */
@@ -132,12 +141,22 @@ public class Generator {
 	 * 
 	 * 添加的映射可以覆盖默认的映射，从而可以自由定制映射关系
 	 * 
+	 * <pre>
 	 * 例如：
-	 *    generator.addTypeMaping(Date.class, LocalDateTime.class)
+	 *    generator.addTypeMaping(LocalDateTime.class, LocalDateTime.class)
+	 *    generator.addTypeMaping(LocalDate.class, LocalDate.class)
+	 *    
+	 * 例如：
+	 *    generator.addTypeMaping(java.sql.Date.class, LocalDateTime.class)
+	 * </pre>
 	 * 以上配置在生成 base model 时碰到 Date 类型时会生成为 LocalDateTime 类型
 	 */
 	public void addTypeMapping(Class<?> from, Class<?> to) {
 		this.metaBuilder.typeMapping.addMapping(from, to);
+	}
+	
+	public void removeTypeMapping(Class<?> from) {
+		this.metaBuilder.typeMapping.removeMapping(from);
 	}
 	
 	/**
@@ -148,6 +167,10 @@ public class Generator {
 	 */
 	public void addTypeMapping(String from, String to) {
 		this.metaBuilder.typeMapping.addMapping(from, to);
+	}
+	
+	public void removeTypeMapping(String from) {
+		this.metaBuilder.typeMapping.removeMapping(from);
 	}
 	
 	/**

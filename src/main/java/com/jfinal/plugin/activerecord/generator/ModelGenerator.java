@@ -125,15 +125,8 @@ public class ModelGenerator {
 			return ;	// 若 Model 存在，不覆盖
 		}
 		
-		OutputStreamWriter osw = null;
-		try {
-			osw = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+		try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(file), "UTF-8")) {
 			osw.write(tableMeta.modelContent);
-		}
-		finally {
-			if (osw != null) {
-				osw.close();
-			}
 		}
 	}
 	

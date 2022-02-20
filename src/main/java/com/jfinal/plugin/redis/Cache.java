@@ -24,11 +24,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
 import com.jfinal.plugin.redis.serializer.ISerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
-import redis.clients.util.SafeEncoder;
+import redis.clients.jedis.util.SafeEncoder;
 
 /**
  * Cache.
@@ -45,6 +46,26 @@ public class Cache {
 	protected IKeyNamingPolicy keyNamingPolicy;
 	
 	protected final ThreadLocal<Jedis> threadLocalJedis = new ThreadLocal<Jedis>();
+	
+	/**
+	 * 使用 lambda 开放 Jedis API，建议优先使用本方法
+	 * <pre>
+	 * 例子 1：
+	 *   Long ret = Redis.use().call(j -> j.incrBy("key", 1));
+	 *   
+	 * 例子 2：
+	 *   Long ret = Redis.use().call(jedis -> {
+	 *       return jedis.incrBy("key", 1);
+	 *   });
+	 * </pre>
+	 */
+	public <R> R call(Function<Jedis, R> jedis) {
+		Jedis jd = getJedis();
+		try {
+			return jedis.apply(jd);
+		}
+		finally {close(jd);}
+	}
 	
 	protected Cache() {
 		
@@ -71,10 +92,22 @@ public class Cache {
 	}
 	
 	/**
+	 * setnx 的工作原理与 set 完全相同，唯一的区别是，如果 key 已经存在，则不执行任何操作
+	 * @return 1 表示 key 不存在，0 表示 key 存在
+	 */
+	public Long setnx(Object key, Object value) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.setnx(keyToBytes(key), valueToBytes(value));
+		}
+		finally {close(jedis);}
+	}
+	
+	/**
 	 * 存放 key value 对到 redis，并将 key 的生存时间设为 seconds (以秒为单位)。
 	 * 如果 key 已经存在， SETEX 命令将覆写旧值。
 	 */
-	public String setex(Object key, int seconds, Object value) {
+	public String setex(Object key, long seconds, Object value) {
 		Jedis jedis = getJedis();
 		try {
 			return jedis.setex(keyToBytes(key), seconds, valueToBytes(value));
@@ -303,7 +336,7 @@ public class Cache {
 	public String migrate(String host, int port, Object key, int destinationDb, int timeout) {
 		Jedis jedis = getJedis();
 		try {
-			return jedis.migrate(valueToBytes(host), port, keyToBytes(key), destinationDb, timeout);
+			return jedis.migrate(host, port, keyToBytes(key), destinationDb, timeout);
 		}
 		finally {close(jedis);}
 	}
@@ -329,7 +362,7 @@ public class Cache {
 	 * 为给定 key 设置生存时间，当 key 过期时(生存时间为 0 )，它会被自动删除。
 	 * 在 Redis 中，带有生存时间的 key 被称为『易失的』(volatile)。
 	 */
-	public Long expire(Object key, int seconds) {
+	public Long expire(Object key, long seconds) {
 		Jedis jedis = getJedis();
 		try {
 			return jedis.expire(keyToBytes(key), seconds);

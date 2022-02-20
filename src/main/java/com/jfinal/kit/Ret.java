@@ -54,7 +54,16 @@ import com.jfinal.json.Json;
  *   if (ret.isFail()) {
  *   	...
  *   }
- *   
+ * 
+ * 三、定制 Ret
+ * 1：将状态字段名由 "state" 改为 "success"，将状态值 "ok" 改为 true、"fail" 改为 false
+ *     CPI.setRetState("success", true, false);
+ * 
+ * 2：将状态字段名由 "state" 改为 "code"，将状态值 "ok" 改为 200、"fail" 改为 500
+ *     CPI.setRetState("code", 200, 500);
+ * 
+ * 3：将消息字段名由 "msg" 改为 "message"
+ *     CPI.setRetMsg("message")
  * </pre>
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -62,9 +71,11 @@ public class Ret extends HashMap {
 	
 	private static final long serialVersionUID = -3021472182023759198L;
 	
-	private static final String STATE = "state";
-	private static final String STATE_OK = "ok";
-	private static final String STATE_FAIL = "fail";
+	static String STATE = "state";
+	static Object STATE_OK = "ok";
+	static Object STATE_FAIL = "fail";
+	
+	static String MSG = "msg";
 	
 	public Ret() {
 	}
@@ -89,12 +100,20 @@ public class Ret extends HashMap {
 		return ok().set(key, value);
 	}
 	
+	public static Ret ok(String msg) {
+		return ok().set(MSG, msg);
+	}
+	
 	public static Ret fail() {
 		return new Ret().setFail();
 	}
 	
 	public static Ret fail(Object key, Object value) {
 		return fail().set(key, value);
+	}
+	
+	public static Ret fail(String msg) {
+		return fail().set(MSG, msg);
 	}
 	
 	public Ret setOk() {

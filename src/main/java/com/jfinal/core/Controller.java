@@ -830,24 +830,24 @@ public abstract class Controller {
 	/**
 	 * Get upload file from multipart request.
 	 */
-	public List<UploadFile> getFiles(String uploadPath, Integer maxPostSize, String encoding) {
+	public List<UploadFile> getFiles(String uploadPath, long maxPostSize, String encoding) {
 		if (request instanceof MultipartRequest == false)
 			request = new MultipartRequest(request, uploadPath, maxPostSize, encoding);
 		return ((MultipartRequest)request).getFiles();
 	}
 	
-	public UploadFile getFile(String parameterName, String uploadPath, Integer maxPostSize, String encoding) {
+	public UploadFile getFile(String parameterName, String uploadPath, long maxPostSize, String encoding) {
 		getFiles(uploadPath, maxPostSize, encoding);
 		return getFile(parameterName);
 	}
 	
-	public List<UploadFile> getFiles(String uploadPath, int maxPostSize) {
+	public List<UploadFile> getFiles(String uploadPath, long maxPostSize) {
 		if (request instanceof MultipartRequest == false)
 			request = new MultipartRequest(request, uploadPath, maxPostSize);
 		return ((MultipartRequest)request).getFiles();
 	}
 	
-	public UploadFile getFile(String parameterName, String uploadPath, int maxPostSize) {
+	public UploadFile getFile(String parameterName, String uploadPath, long maxPostSize) {
 		getFiles(uploadPath, maxPostSize);
 		return getFile(parameterName);
 	}

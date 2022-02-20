@@ -19,6 +19,7 @@ package com.jfinal.plugin.redis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
+import java.util.function.Consumer;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.plugin.redis.serializer.FstSerializer;
@@ -135,6 +136,20 @@ public class RedisPlugin implements IPlugin {
 	 */
 	public JedisPoolConfig getJedisPoolConfig() {
 		return jedisPoolConfig;
+	}
+	
+	/**
+	 * lambda 方式配置 JedisPoolConfig
+	 * <pre>
+	 * 例子：
+	 *   RedisPlugin redisPlugin = new RedisPlugin(...);
+	 *   redisPlugin.config(c -> {
+	 *       c.setMaxIdle(123456);
+	 *   });
+	 * </pre>
+	 */
+	public void config(Consumer<JedisPoolConfig> config) {
+		config.accept(jedisPoolConfig);
 	}
 	
 	// ---------

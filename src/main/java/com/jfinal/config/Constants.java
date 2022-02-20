@@ -53,7 +53,7 @@ final public class Constants {
 	private String urlParaSeparator = Const.DEFAULT_URL_PARA_SEPARATOR;
 	private ViewType viewType = Const.DEFAULT_VIEW_TYPE;
 	private String viewExtension = Const.DEFAULT_VIEW_EXTENSION;
-	private int maxPostSize = Const.DEFAULT_MAX_POST_SIZE;
+	private long maxPostSize = Const.DEFAULT_MAX_POST_SIZE;
 	private int freeMarkerTemplateUpdateDelay = Const.DEFAULT_FREEMARKER_TEMPLATE_UPDATE_DELAY;	// just for not devMode
 	
 	private ControllerFactory controllerFactory = Const.DEFAULT_CONTROLLER_FACTORY;
@@ -84,7 +84,7 @@ final public class Constants {
 	 * 之后被调用
 	 * 
 	 * 默认值为 3，那么 configPlugin(..) 将在 configRoute(...) 调用之后被调用
-	 * @param 取值只能是 1、2、3、4、5
+	 * @param configPluginOrder 取值只能是 1、2、3、4、5
 	 */
 	public void setConfigPluginOrder(int configPluginOrder) {
 		if (configPluginOrder < 1 || configPluginOrder > 5) {
@@ -374,14 +374,14 @@ final public class Constants {
 		return baseUploadPath;
 	}
 	
-	public int getMaxPostSize() {
+	public long getMaxPostSize() {
 		return maxPostSize;
 	}
 	
 	/**
 	 * Set max size of http post. The upload file size depend on this value.
 	 */
-	public void setMaxPostSize(int maxPostSize) {
+	public void setMaxPostSize(long maxPostSize) {
 		this.maxPostSize = maxPostSize;
 	}
 	

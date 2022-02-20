@@ -137,15 +137,8 @@ public class BaseModelGenerator {
 		}
 		
 		String target = baseModelOutputDir + File.separator + tableMeta.baseModelName + ".java";
-		OutputStreamWriter osw = null;
-		try {
-			osw = new OutputStreamWriter(new FileOutputStream(target), "UTF-8");
+		try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(target), "UTF-8")) {
 			osw.write(tableMeta.baseModelContent);
-		}
-		finally {
-			if (osw != null) {
-				osw.close();
-			}
 		}
 	}
 	

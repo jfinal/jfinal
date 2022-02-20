@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.List;
 import com.jfinal.kit.Kv;
-import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.Engine;
 
@@ -110,18 +109,11 @@ public class MappingKitGenerator {
 		}
 		
 		String target = mappingKitOutputDir + File.separator + mappingKitClassName + ".java";
-		OutputStreamWriter osw = null;
-		try {
-			osw = new OutputStreamWriter(new FileOutputStream(target), "UTF-8");
+		try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(target), "UTF-8")) {
 			osw.write(ret);
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
-		}
-		finally {
-			if (osw != null) {
-				try {osw.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
-			}
 		}
 	}
 }

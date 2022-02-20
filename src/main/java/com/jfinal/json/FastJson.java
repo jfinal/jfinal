@@ -56,6 +56,21 @@ public class FastJson extends Json {
 		}
 	}
 	
+	/**
+	 * 支持传入更多 SerializerFeature
+	 * 
+	 * 例如：
+	 *    SerializerFeature.WriteMapNullValue 支持对 null 值字段的转换
+	 */
+	public String toJson(Object object, SerializerFeature... features) {
+		String dp = datePattern != null ? datePattern : getDefaultDatePattern();
+		if (dp == null) {
+			return JSON.toJSONString(object);
+		} else {
+			return JSON.toJSONStringWithDateFormat(object, dp, features);
+		}
+	}
+	
 	public <T> T parse(String jsonString, Class<T> type) {
 		return JSON.parseObject(jsonString, type);
 	}

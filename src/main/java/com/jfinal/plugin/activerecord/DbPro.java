@@ -691,6 +691,7 @@ public class DbPro {
 			config.dialect.fillStatement(pst, paras);
 			int result = pst.executeUpdate();
 			config.dialect.getRecordGeneratedKey(pst, record, pKeys);
+			record.clearModifyFlag();
 			return result >= 1;
 		}
 	}
@@ -727,6 +728,10 @@ public class DbPro {
 	}
 	
 	protected boolean update(Config config, Connection conn, String tableName, String primaryKey, Record record) throws SQLException {
+		if (record.modifyFlag == null || record.modifyFlag.isEmpty()) {
+			return false;
+		}
+		
 		String[] pKeys = primaryKey.split(",");
 		Object[] ids = new Object[pKeys.length];
 		
@@ -740,11 +745,16 @@ public class DbPro {
 		List<Object> paras = new ArrayList<Object>();
 		config.dialect.forDbUpdate(tableName, pKeys, ids, record, sql, paras);
 		
-		if (paras.size() <= 1) {	// Needn't update
+		if (paras.size() <= 1) {	// 参数个数为 1 的情况表明只有主键，也无需更新
 			return false;
 		}
 		
-		return update(config, conn, sql.toString(), paras.toArray()) >= 1;
+		int result = update(config, conn, sql.toString(), paras.toArray());
+		if (result >= 1) {
+			record.clearModifyFlag();
+			return true;
+		}
+		return false;
 	}
 	
 	/**

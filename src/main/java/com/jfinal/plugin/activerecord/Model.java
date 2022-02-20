@@ -45,7 +45,7 @@ import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
  * A stupid person makes it.
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
-public abstract class Model<M extends Model> implements Serializable {
+public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	
 	private static final long serialVersionUID = -990334519496260591L;
 	
@@ -66,8 +66,9 @@ public abstract class Model<M extends Model> implements Serializable {
 	
 	private Map<String, Object> createAttrsMap() {
 		Config config = _getConfig();
-		if (config == null)
+		if (config == null) {
 			return DbKit.brokenConfig.containerFactory.getAttrsMap();
+		}
 		return config.containerFactory.getAttrsMap();
 	}
 	
@@ -157,8 +158,9 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return this Model
 	 */
 	public M _setAttrs(Map<String, Object> attrs) {
-		for (Entry<String, Object> e : attrs.entrySet())
+		for (Entry<String, Object> e : attrs.entrySet()) {
 			set(e.getKey(), e.getValue());
+		}
 		return (M)this;
 	}
 	
@@ -172,17 +174,25 @@ public abstract class Model<M extends Model> implements Serializable {
 	protected Set<String> _getModifyFlag() {
 		if (modifyFlag == null) {
 			Config config = _getConfig();
-			if (config == null)
+			if (config == null) {
 				modifyFlag = DbKit.brokenConfig.containerFactory.getModifyFlagSet();
-			else
+			} else {
 				modifyFlag = config.containerFactory.getModifyFlagSet();
+			}
 		}
 		return modifyFlag;
 	}
 	
+	void clearModifyFlag() {
+		if (modifyFlag != null) {
+			modifyFlag.clear();
+		}
+	}
+	
 	protected Config _getConfig() {
-		if (configName != null)
+		if (configName != null) {
 			return DbKit.getConfig(configName);
+		}
 		return DbKit.getConfig(_getUsefulClass());
 	}
 	
@@ -584,6 +594,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		Config config = _getConfig();
 		Table table = _getTable();
 		
+		// 不必判断 attrs 中的字段个数是否为 0，因为以下 sql 合法：insert into table_name() values()
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();
 		config.dialect.forModelSave(table, attrs, sql, paras);
@@ -603,7 +614,7 @@ public abstract class Model<M extends Model> implements Serializable {
 			config.dialect.fillStatement(pst, paras);
 			result = pst.executeUpdate();
 			config.dialect.getModelGeneratedKey(this, pst, table);
-			_getModifyFlag().clear();
+			clearModifyFlag();
 			return result >= 1;
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
@@ -640,8 +651,9 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return true if delete succeed otherwise false
 	 */
 	public boolean deleteById(Object idValue) {
-		if (idValue == null)
+		if (idValue == null) {
 			throw new IllegalArgumentException("idValue can not be null");
+		}
 		return deleteById(_getTable(), idValue);
 	}
 	
@@ -652,9 +664,9 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	public boolean deleteByIds(Object... idValues) {
 		Table table = _getTable();
-		if (idValues == null || idValues.length != table.getPrimaryKey().length)
+		if (idValues == null || idValues.length != table.getPrimaryKey().length) {
 			throw new IllegalArgumentException("Primary key nubmer must equals id value number and can not be null");
-		
+		}
 		return deleteById(table, idValues);
 	}
 	
@@ -678,7 +690,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	public boolean update() {
 		filter(FILTER_BY_UPDATE);
 		
-		if (_getModifyFlag().isEmpty()) {
+		if (modifyFlag == null || modifyFlag.isEmpty()) {
 			return false;
 		}
 		
@@ -686,8 +698,9 @@ public abstract class Model<M extends Model> implements Serializable {
 		String[] pKeys = table.getPrimaryKey();
 		for (String pKey : pKeys) {
 			Object id = attrs.get(pKey);
-			if (id == null)
+			if (id == null) {
 				throw new ActiveRecordException("You can't update model without Primary Key, " + pKey + " can not be null.");
+			}
 		}
 		
 		Config config = _getConfig();
@@ -695,7 +708,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		List<Object> paras = new ArrayList<Object>();
 		config.dialect.forModelUpdate(table, attrs, _getModifyFlag(), sql, paras);
 		
-		if (paras.size() <= 1) {	// Needn't update
+		if (paras.size() <= 1) {	// 参数个数为 1 的情况表明只有主键，也无需更新
 			return false;
 		}
 		
@@ -705,7 +718,7 @@ public abstract class Model<M extends Model> implements Serializable {
 			conn = config.getConnection();
 			int result = Db.update(config, conn, sql.toString(), paras.toArray());
 			if (result >= 1) {
-				_getModifyFlag().clear();
+				clearModifyFlag();
 				return true;
 			}
 			return false;
@@ -834,9 +847,9 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	public M findByIdLoadColumns(Object[] idValues, String columns) {
 		Table table = _getTable();
-		if (table.getPrimaryKey().length != idValues.length)
+		if (table.getPrimaryKey().length != idValues.length) {
 			throw new IllegalArgumentException("id values error, need " + table.getPrimaryKey().length + " id value");
-		
+		}
 		Config config = _getConfig();
 		String sql = config.dialect.forModelFindById(table, columns);
 		List<M> result = find(config, sql, idValues);
@@ -860,11 +873,12 @@ public abstract class Model<M extends Model> implements Serializable {
 	 * @return this model
 	 */
 	public M remove(String... attrs) {
-		if (attrs != null)
+		if (attrs != null) {
 			for (String a : attrs) {
 				this.attrs.remove(a);
 				this._getModifyFlag().remove(a);
 			}
+		}
 		return (M)this;
 	}
 	
@@ -907,7 +921,7 @@ public abstract class Model<M extends Model> implements Serializable {
 		}
 		else {
 			this.attrs.clear();
-			this._getModifyFlag().clear();
+			this.clearModifyFlag();
 		}
 		return (M)this;
 	}
@@ -922,14 +936,14 @@ public abstract class Model<M extends Model> implements Serializable {
 			Object keepIt = attrs.get(attr);
 			boolean keepFlag = _getModifyFlag().contains(attr);
 			attrs.clear();
-			_getModifyFlag().clear();
+			clearModifyFlag();
 			attrs.put(attr, keepIt);
 			if (keepFlag)
 				_getModifyFlag().add(attr);
 		}
 		else {
 			attrs.clear();
-			_getModifyFlag().clear();
+			clearModifyFlag();
 		}
 		return (M)this;
 	}
@@ -940,7 +954,7 @@ public abstract class Model<M extends Model> implements Serializable {
 	 */
 	public M clear() {
 		attrs.clear();
-		_getModifyFlag().clear();
+		clearModifyFlag();
 		return (M)this;
 	}
 	
@@ -1224,6 +1238,10 @@ public abstract class Model<M extends Model> implements Serializable {
 	
 	public DaoTemplate<M> templateByString(String content, Model model) {
 		return templateByString(content, model.attrs);
+	}
+	
+	public Map<String, Object> toMap() {
+		return attrs;
 	}
 }
 
