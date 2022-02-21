@@ -1340,12 +1340,16 @@ public class DbPro {
     	config.dialect.trimPrimaryKeys(pKeys);
     	
     	Record record = recordList.get(0);
+    	
+    	// Record 新增支持 modifyFlag
+    	Set<String> modifyFlag = record._getModifyFlag();
+    	
     	Map<String, Object> cols = record.getColumns();
     	List<String> colNames = new ArrayList<String>();
     	// the same as the iterator in Dialect.forDbUpdate() to ensure the order of the columns
     	for (Entry<String, Object> e : cols.entrySet()) {
     		String col = e.getKey();
-    		if (config.dialect.isPrimaryKey(col, pKeys) == false)
+    		if (modifyFlag.contains(col) && !config.dialect.isPrimaryKey(col, pKeys))
     			colNames.add(col);
     	}
     	for (String pKey : pKeys)
