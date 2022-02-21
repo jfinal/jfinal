@@ -1342,6 +1342,9 @@ public class DbPro {
     	Record record = recordList.get(0);
     	
     	// Record 新增支持 modifyFlag
+    	if (record.modifyFlag == null || record.modifyFlag.isEmpty()) {
+    		return new int[0];
+    	}
     	Set<String> modifyFlag = record._getModifyFlag();
     	
     	Map<String, Object> cols = record.getColumns();
