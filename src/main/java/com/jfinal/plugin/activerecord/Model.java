@@ -57,7 +57,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	/**
 	 * Flag of column has been modified. update need this flag
 	 */
-	private Set<String> modifyFlag;
+	Set<String> modifyFlag;
 	
 	/**
 	 * Attributes of this model
