@@ -19,7 +19,7 @@ public abstract class #(tableMeta.baseModelName)<M extends #(tableMeta.baseModel
 	/**
 	 * #(cm.remarks)
 	 */
-	 #end
+	#end
 	#set(argName = javaKeyword.contains(cm.attrName) ? '_' + cm.attrName : cm.attrName)
 	public #(b ? 'M' : 'void') set#(firstCharToUpperCase(cm.attrName))(#(cm.javaType) #(argName)) {
 		set("#(cm.name)", #(argName));
@@ -32,7 +32,7 @@ public abstract class #(tableMeta.baseModelName)<M extends #(tableMeta.baseModel
 	/**
 	 * #(cm.remarks)
 	 */
-	 #end
+	#end
 	#set(getterOfModel = getterTypeMap.get(cm.javaType))
 	#if (isBlank(getterOfModel))
 		#set(getterOfModel = 'get')
