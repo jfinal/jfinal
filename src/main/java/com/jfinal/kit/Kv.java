@@ -35,6 +35,10 @@ public class Kv extends HashMap {
 	public Kv() {
 	}
 	
+	public static Kv of(Object key, Object value) {
+		return new Kv().set(key, value);
+	}
+	
 	public static Kv by(Object key, Object value) {
 		return new Kv().set(key, value);
 	}
