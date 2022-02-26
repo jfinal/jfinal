@@ -38,6 +38,10 @@ public class Okv extends LinkedHashMap {
 	public Okv() {
 	}
 	
+	public static Okv of(Object key, Object value) {
+		return new Okv().set(key, value);
+	}
+	
 	public static Okv by(Object key, Object value) {
 		return new Okv().set(key, value);
 	}
