@@ -30,7 +30,7 @@ import com.jfinal.json.Json;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Kv extends HashMap {
 	
-	private static final long serialVersionUID = -6086130186405306902L;
+	private static final long serialVersionUID = -808251639784763326L;
 	
 	public Kv() {
 	}

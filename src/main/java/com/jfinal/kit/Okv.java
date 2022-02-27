@@ -33,7 +33,7 @@ import com.jfinal.json.Json;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Okv extends LinkedHashMap {
 	
-	private static final long serialVersionUID = 485147547719011382L;
+	private static final long serialVersionUID = -6517132544791494383L;
 	
 	public Okv() {
 	}
