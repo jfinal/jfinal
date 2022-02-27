@@ -138,6 +138,10 @@ public class Ret extends HashMap {
 		return new Ret()._setData(data);
 	}
 	
+	public static Ret msg(String msg) {
+		return new Ret()._setMsg(msg);
+	}
+	
 	/**
 	 * 避免产生 setter/getter 方法，以免影响第三方 json 工具的行为
 	 * 
