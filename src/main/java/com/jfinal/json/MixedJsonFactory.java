@@ -16,9 +16,6 @@
 
 package com.jfinal.json;
 
-import com.jfinal.json.IJsonFactory;
-import com.jfinal.json.Json;
-
 /**
  * IJsonFactory 的 jfinal + fastjson 组合实现
  * 
