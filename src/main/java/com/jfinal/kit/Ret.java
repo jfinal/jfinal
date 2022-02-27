@@ -78,7 +78,7 @@ import com.jfinal.json.Json;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Ret extends HashMap {
 	
-	private static final long serialVersionUID = -2241467317630428582L;
+	private static final long serialVersionUID = -2150729333382285526L;
 	
 	/**
 	 * 状态
