@@ -24,7 +24,6 @@ import com.jfinal.template.Env;
 import com.jfinal.template.expr.ExprParser;
 import com.jfinal.template.expr.ast.ExprList;
 import com.jfinal.template.expr.ast.ForCtrl;
-import com.jfinal.template.stat.Symbol;
 import com.jfinal.template.stat.ast.*;
 
 /**

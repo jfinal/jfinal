@@ -7,8 +7,6 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.jfinal.kit.StrKit;
-import com.jfinal.render.Render;
-import com.jfinal.render.RenderException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

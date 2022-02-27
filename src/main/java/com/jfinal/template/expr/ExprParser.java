@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import com.jfinal.template.EngineConfig;
-import com.jfinal.template.expr.Sym;
 import com.jfinal.template.expr.ast.*;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ParaToken;
