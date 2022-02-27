@@ -27,7 +27,7 @@ package com.jfinal.kit;
  *   CPI.setRetState("code", 200, 500);
  *   将 Ret 的状态字段名由 "state" 改为 "code"，将状态值 "ok" 改为 200、"fail" 改为 500
  *   
- *   CPI.setRetMsg("message")
+ *   CPI.setRetMsgName("message")
  *   将 Ret 的消息字段名由 "msg" 改为 "message"
  * </pre>
  */
@@ -64,11 +64,11 @@ public class CPI {
 	 * 配置 Ret 的消息名，默认值为："msg"
 	 * <pre>
 	 * 例子：
-	 *   CPI.setRetMsg("message")
+	 *   CPI.setRetMsgName("message")
 	 *   将 Ret 的消息字段名由 "msg" 改为 "message"
 	 * </pre>
 	 */
-	public static void setRetMsg(String msgName) {
+	public static void setRetMsgName(String msgName) {
 		if (StrKit.isBlank(msgName)) {
 			throw new IllegalArgumentException("msgName 不能为空");
 		}
@@ -79,11 +79,11 @@ public class CPI {
 	 * 配置 Ret 的 data 名，默认值为："data"
 	 * <pre>
 	 * 例子：
-	 *   CPI.setRetData("body")
+	 *   CPI.setRetDataName("body")
 	 *   将 Ret 的数据字段名由 "data" 改为 "body"
 	 * </pre>
 	 */
-	public static void setRetData(String dataName) {
+	public static void setRetDataName(String dataName) {
 		if (StrKit.isBlank(dataName)) {
 			throw new IllegalArgumentException("dataName 不能为空");
 		}
@@ -124,15 +124,15 @@ public class CPI {
 		return Ret.STATE;
 	}
 	
-	public static Object getStateOkValue() {
+	public static Object getRetStateOkValue() {
 		return Ret.STATE_OK;
 	}
 	
-	public static Object getStateFailValue() {
+	public static Object getRetStateFailValue() {
 		return Ret.STATE_FAIL;
 	}
 	
-	public static String getMsgName() {
+	public static String getRetMsgName() {
 		return Ret.MSG;
 	}
 	
@@ -140,7 +140,7 @@ public class CPI {
 		return Ret.DATA;
 	}
 	
-	public static boolean getDataWithOkState() {
+	public static boolean getRetDataWithOkState() {
 		return Ret.dataWithOkState;
 	}
 	

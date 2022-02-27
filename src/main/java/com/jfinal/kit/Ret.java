@@ -63,7 +63,7 @@ import com.jfinal.json.Json;
  *     CPI.setRetState("code", 200, 500);
  * 
  * 3：将消息字段名由 "msg" 改为 "message"
- *     CPI.setRetMsg("message")
+ *     CPI.setRetMsgName("message")
  * 
  * 4：配置 Ret 的 data(Object) 方法伴随 ok 状态，默认值为：false
  *     CPI.setRetDataWithOkState(true)
