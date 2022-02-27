@@ -135,11 +135,15 @@ public class Ret extends HashMap {
 	}
 	
 	public static Ret data(Object data) {
-		Ret ret = new Ret()._setData(data);
-		return dataWithOkState ? ret.setOk() : ret;
+		return new Ret()._setData(data);
 	}
 	
-	// 避免产生 setter/getter 方法，以免影响第三方 json 工具的行为
+	/**
+	 * 避免产生 setter/getter 方法，以免影响第三方 json 工具的行为
+	 * 
+	 * 如果未来开放为 public，当 stateWatcher 不为 null 且 dataWithOkState 为 true
+	 * 与 _setData 可以形成死循环调用
+	 */
 	protected Ret _setState(Object value) {
 		super.put(STATE, value);
 		if (stateWatcher != null) {
@@ -148,9 +152,17 @@ public class Ret extends HashMap {
 		return this;
 	}
 	
-	// 避免产生 setter/getter 方法，以免影响第三方 json 工具的行为
+	/**
+	 * 避免产生 setter/getter 方法，以免影响第三方 json 工具的行为
+	 * 
+	 * 如果未来开放为 public，当 stateWatcher 不为 null 且 dataWithOkState 为 true
+	 * 与 _setState 可以形成死循环调用
+	 */
 	protected Ret _setData(Object data) {
 		super.put(DATA, data);
+		if (dataWithOkState) {
+			_setState(STATE_OK);
+		}
 		return this;
 	}
 	
