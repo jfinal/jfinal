@@ -45,7 +45,7 @@ import com.jfinal.json.Json;
  *    }
  *  
  * 3：普通应用程序通常这么用：
- *   String json = HttpKit.readData(getRequest());
+ *   String json = getRawData();
  *   Ret ret = FastJson.getJson().parse(json, Ret.class);
  *   if (ret.isOk()) {
  *   	...
@@ -64,27 +64,49 @@ import com.jfinal.json.Json;
  * 
  * 3：将消息字段名由 "msg" 改为 "message"
  *     CPI.setRetMsg("message")
+ * 
+ * 4：配置 Ret 的 data(Object) 方法伴随 ok 状态，默认值为：false
+ *     CPI.setRetDataWithOkState(true)
+ * 
+ * 5：配置监听 state 值，当值为 "ok" 时，额外放入 "success" 值为 true，否则为 false
+ *     CPI.setRetStateWatcher((ret, state, value) -> {
+ *         ret.set("success", "ok".equals(value));
+ *     });
+ *   在前后端分离项目中，有些前端框架需要该返回值："success" : true/false
  * </pre>
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class Ret extends HashMap {
 	
-	private static final long serialVersionUID = -3021472182023759198L;
+	private static final long serialVersionUID = -2241467317630428582L;
 	
+	/**
+	 * 状态
+	 */
 	static String STATE = "state";
 	static Object STATE_OK = "ok";
 	static Object STATE_FAIL = "fail";
+	static Func.F30<Ret, String, Object> stateWatcher = null;
 	
+	/**
+	 * 数据
+	 */
+	static String DATA = "data";
+	static boolean dataWithOkState = false;			// data(Object) 方法伴随 ok 状态
+	
+	/**
+	 * 消息
+	 */
 	static String MSG = "msg";
 	
 	public Ret() {
 	}
 	
-	public static Ret by(Object key, Object value) {
+	public static Ret of(Object key, Object value) {
 		return new Ret().set(key, value);
 	}
 	
-	public static Ret create(Object key, Object value) {
+	public static Ret by(Object key, Object value) {
 		return new Ret().set(key, value);
 	}
 	
@@ -96,34 +118,54 @@ public class Ret extends HashMap {
 		return new Ret().setOk();
 	}
 	
-	public static Ret ok(Object key, Object value) {
-		return ok().set(key, value);
-	}
-	
 	public static Ret ok(String msg) {
-		return ok().set(MSG, msg);
+		return new Ret().setOk()._setMsg(msg);
 	}
 	
 	public static Ret fail() {
 		return new Ret().setFail();
 	}
 	
-	public static Ret fail(Object key, Object value) {
-		return fail().set(key, value);
+	public static Ret fail(String msg) {
+		return new Ret().setFail()._setMsg(msg);
 	}
 	
-	public static Ret fail(String msg) {
-		return fail().set(MSG, msg);
+	public static Ret state(Object value) {
+		return new Ret()._setState(value);
+	}
+	
+	public static Ret data(Object data) {
+		Ret ret = new Ret()._setData(data);
+		return dataWithOkState ? ret.setOk() : ret;
+	}
+	
+	// 避免产生 setter/getter 方法，以免影响第三方 json 工具的行为
+	protected Ret _setState(Object value) {
+		super.put(STATE, value);
+		if (stateWatcher != null) {
+			stateWatcher.call(this, STATE, value);
+		}
+		return this;
+	}
+	
+	// 避免产生 setter/getter 方法，以免影响第三方 json 工具的行为
+	protected Ret _setData(Object data) {
+		super.put(DATA, data);
+		return this;
+	}
+	
+	// 避免产生 setter/getter 方法，以免影响第三方 json 工具的行为
+	protected Ret _setMsg(String msg) {
+		super.put(MSG, msg);
+		return this;
 	}
 	
 	public Ret setOk() {
-		super.put(STATE, STATE_OK);
-		return this;
+		return _setState(STATE_OK);
 	}
 	
 	public Ret setFail() {
-		super.put(STATE, STATE_FAIL);
-		return this;
+		return _setState(STATE_FAIL);
 	}
 	
 	public boolean isOk() {

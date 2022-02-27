@@ -75,6 +75,51 @@ public class CPI {
 		Ret.MSG = msgName;
 	}
 	
+	/**
+	 * 配置 Ret 的 data 名，默认值为："data"
+	 * <pre>
+	 * 例子：
+	 *   CPI.setRetData("body")
+	 *   将 Ret 的数据字段名由 "data" 改为 "body"
+	 * </pre>
+	 */
+	public static void setRetData(String dataName) {
+		if (StrKit.isBlank(dataName)) {
+			throw new IllegalArgumentException("dataName 不能为空");
+		}
+		Ret.DATA = dataName;
+	}
+	
+	/**
+	 * 配置 Ret 的 data 方法伴随 ok 状态，默认值为：true
+	 * <pre>
+	 * 例子：
+	 *   CPI.setRetDataWithOkState(false)
+	 *   将 Ret 的 data 方法伴随 ok 状态，改为不伴随 ok 状态
+	 * </pre>
+	 */
+	public static void setRetDataWithOkState(boolean dataWithOkState) {
+		Ret.dataWithOkState = dataWithOkState;
+	}
+	
+	/**
+	 * 配置 state 监听
+	 * <pre>
+	 * 例子：
+	 *   CPI.setRetStateWatcher((ret, state, value) -> {
+	 *     ret.set("success", "ok".equals(value));
+	 *   });
+	 *   监听 state，当值为 "ok" 时，额外放入 "success" 值为 true，否则为 false，
+	 *   在前后端分离项目中，有些前端框架需要该返回值："success" : true/false
+	 * </pre>
+	 */
+	public static void setRetStateWatcher(Func.F30<Ret, String, Object> stateWatcher) {
+		if (stateWatcher == null) {
+			throw new IllegalArgumentException("stateWatcher 不能 null");
+		}
+		Ret.stateWatcher = stateWatcher;
+	}
+	
 	public static String getRetStateName() {
 		return Ret.STATE;
 	}
@@ -89,6 +134,18 @@ public class CPI {
 	
 	public static String getMsgName() {
 		return Ret.MSG;
+	}
+	
+	public static String getRetDataName() {
+		return Ret.DATA;
+	}
+	
+	public static boolean getDataWithOkState() {
+		return Ret.dataWithOkState;
+	}
+	
+	public static Func.F30<Ret, String, Object> getRetStateWatcher() {
+		return Ret.stateWatcher;
 	}
 }
 
