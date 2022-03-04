@@ -122,12 +122,21 @@ public class Ret extends HashMap {
 		return new Ret().setOk()._setMsg(msg);
 	}
 	
+	public static Ret ok(Object key, Object value) {
+		return new Ret().setOk().set(key, value);
+	}
+	
 	public static Ret fail() {
 		return new Ret().setFail();
 	}
 	
 	public static Ret fail(String msg) {
 		return new Ret().setFail()._setMsg(msg);
+	}
+	
+	@Deprecated
+	public static Ret fail(Object key, Object value) {
+		return new Ret().setFail().set(key, value);
 	}
 	
 	public static Ret state(Object value) {
