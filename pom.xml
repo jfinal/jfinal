@@ -4,7 +4,7 @@
 	
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
-	<version>4.9.20</version>
+	<version>4.9.21</version>
 	<packaging>jar</packaging>
 	
 	<name>JFinal</name>
@@ -65,7 +65,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
+			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
 		
