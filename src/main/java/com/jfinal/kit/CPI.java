@@ -120,6 +120,27 @@ public class CPI {
 		Ret.stateWatcher = stateWatcher;
 	}
 	
+	/**
+	 * 配置 Ret.isOk()、Ret.isFail() 在前两个 if 判断都没有 return 之后的处理回调
+	 * 用于支持多于两个状态的情况，也即在 ok、fail 两个状态之外还引入了其它状态
+	 * <pre>
+	 * 例子：
+	 *   CPI.setRetOkFailHandler((isOkMethod, value) -> {
+	 *     if (isOkMethod == Boolean.TRUE) {
+	 *        return false;
+	 *     } else {
+	 *        return true;
+	 *     }
+	 *   });
+	 * </pre>
+	 */
+	public static void setRetOkFailHandler(Func.F21<Boolean, Object, Boolean> okFailHandler) {
+		if (okFailHandler == null) {
+			throw new IllegalArgumentException("okFailHandler 不能 null");
+		}
+		Ret.okFailHandler = okFailHandler;
+	}
+	
 	public static String getRetStateName() {
 		return Ret.STATE;
 	}
@@ -146,6 +167,10 @@ public class CPI {
 	
 	public static Func.F30<Ret, String, Object> getRetStateWatcher() {
 		return Ret.stateWatcher;
+	}
+	
+	public static Func.F21<Boolean, Object, Boolean> getRetOkFailHandler() {
+		return Ret.okFailHandler;
 	}
 }
 

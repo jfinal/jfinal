@@ -73,6 +73,16 @@ import com.jfinal.json.Json;
  *         ret.set("success", "ok".equals(value));
  *     });
  *   在前后端分离项目中，有些前端框架需要该返回值："success" : true/false
+ * 
+ * 6：配置 Ret.isOk()、Ret.isFail() 在前两个 if 判断都没有 return 之后的处理回调
+ *    用于支持多于两个状态的情况，也即在 ok、fail 两个状态之外还引入了其它状态
+ *     CPI.setRetOkFailHandler((isOkMethod, value) -> {
+ *         if (isOkMethod == Boolean.TRUE) {
+ *             return false;
+ *         } else {
+ *             return true;
+ *         }
+ *     });
  * </pre>
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
@@ -87,6 +97,7 @@ public class Ret extends HashMap {
 	static Object STATE_OK = "ok";
 	static Object STATE_FAIL = "fail";
 	static Func.F30<Ret, String, Object> stateWatcher = null;
+	static Func.F21<Boolean, Object, Boolean> okFailHandler = null;
 	
 	/**
 	 * 数据
@@ -201,6 +212,9 @@ public class Ret extends HashMap {
 		if (STATE_FAIL.equals(state)) {
 			return false;
 		}
+		if (okFailHandler != null) {
+			return okFailHandler.call(Boolean.TRUE, state);
+		}
 		
 		throw new IllegalStateException("调用 isOk() 之前，必须先调用 ok()、fail() 或者 setOk()、setFail() 方法");
 	}
@@ -212,6 +226,9 @@ public class Ret extends HashMap {
 		}
 		if (STATE_OK.equals(state)) {
 			return false;
+		}
+		if (okFailHandler != null) {
+			return okFailHandler.call(Boolean.FALSE, state);
 		}
 		
 		throw new IllegalStateException("调用 isFail() 之前，必须先调用 ok()、fail() 或者 setOk()、setFail() 方法");
