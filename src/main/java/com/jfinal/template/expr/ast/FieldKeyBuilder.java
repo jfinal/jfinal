@@ -26,7 +26,8 @@ public abstract class FieldKeyBuilder {
 	public abstract Object getFieldKey(Class<?> targetClass, long fieldFnv1a64Hash);
 	
 	// 假定是超大规模项目，并且假定其 Map/Model/Record + field 组合数量超级庞大，默认使用 StrictFieldKeyBuilder
-	static FieldKeyBuilder instance = new StrictFieldKeyBuilder();
+	// static FieldKeyBuilder instance = new StrictFieldKeyBuilder();
+	static FieldKeyBuilder instance = new FastFieldKeyBuilder();
 	
 	public static FieldKeyBuilder getInstance() {
 		return instance;
