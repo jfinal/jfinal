@@ -891,7 +891,7 @@ public abstract class Controller {
 		Map<String, String[]> map = request.getParameterMap();
 		for (Entry<String, String[]> e: map.entrySet()) {
 			String[] values = e.getValue();
-			if (values.length == 1)
+			if (values != null && values.length == 1)
 				request.setAttribute(e.getKey(), values[0]);
 			else
 				request.setAttribute(e.getKey(), values);
