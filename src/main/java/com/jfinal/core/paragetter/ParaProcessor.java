@@ -23,6 +23,17 @@ import com.jfinal.core.Controller;
  */
 public class ParaProcessor implements IParaGetter<Object[]> {
 	
+	static boolean resolveJson = false;
+	private static JsonResolver jsonResolver = new JsonResolver();
+	
+	public static void setResolveJson(boolean resolveJson) {
+		ParaProcessor.resolveJson = resolveJson;
+	}
+	
+	public static void setJsonResolver(JsonResolver jsonResolver) {
+		ParaProcessor.jsonResolver = jsonResolver;
+	}
+	
 	private int fileParaIndex = -1;
 	private IParaGetter<?>[] paraGetters;
 	
@@ -42,6 +53,10 @@ public class ParaProcessor implements IParaGetter<Object[]> {
 	
 	@Override
 	public Object[] get(Action action, Controller c) {
+		if (resolveJson && c.isJsonRequest()) {
+			jsonResolver.resolve(action, c);
+		}
+		
 		int len = paraGetters.length;
 		Object[] ret = new Object[len];
 		
