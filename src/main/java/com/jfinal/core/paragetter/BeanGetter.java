@@ -16,7 +16,6 @@
 package com.jfinal.core.paragetter;
 
 import javax.servlet.http.HttpServletRequest;
-import com.alibaba.fastjson.JSON;
 import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 
@@ -38,10 +37,10 @@ public class BeanGetter<T> extends ParaGetter<T> {
 			HttpServletRequest req = c.getRequest();
 			if (req.getParameterMap().containsKey(paraName)) {
 				// 存在与 action 形参名相同的 request 参数则使用其 value 值进行转换
-				return JSON.parseObject(req.getParameter(paraName), beanClass);
+				return com.alibaba.fastjson.JSON.parseObject(req.getParameter(paraName), beanClass);
 			} else {
 				// 否则使用整个请求中的 json 进行转换
-				return JSON.parseObject(c.getRawData(), beanClass);
+				return com.alibaba.fastjson.JSON.parseObject(c.getRawData(), beanClass);
 			}
 		} else {
 			return c.getBean(beanClass, paraName, true);

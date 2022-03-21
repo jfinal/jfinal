@@ -16,8 +16,6 @@
 package com.jfinal.core.paragetter;
 
 import javax.servlet.http.HttpServletRequest;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.ReflectKit;
@@ -42,16 +40,16 @@ public class ModelGetter<T> extends ParaGetter<T> {
 		
 		// 支持 json 数据请求注入 action 形参
 		if (ParaProcessor.resolveJson && c.isJsonRequest()) {
-			JSONObject attrs;
+			com.alibaba.fastjson.JSONObject attrs;
 			HttpServletRequest req = c.getRequest();
 			if (req.getParameterMap().containsKey(paraName)) {
 				// 存在与 action 形参名相同的 request 参数则使用其 value 值进行转换
 				// attrs = JSON.parseObject(req.getParameter(paraName), HashMap.class);
-				attrs = JSON.parseObject(req.getParameter(paraName));
+				attrs = com.alibaba.fastjson.JSON.parseObject(req.getParameter(paraName));
 			} else {
 				// 否则使用整个请求中的 json 进行转换
 				// attrs = JSON.parseObject(c.getRawData(), HashMap.class);
-				attrs = JSON.parseObject(c.getRawData());
+				attrs = com.alibaba.fastjson.JSON.parseObject(c.getRawData());
 			}
 			
 			Model ret = (Model) ReflectKit.newInstance(modelClass);
