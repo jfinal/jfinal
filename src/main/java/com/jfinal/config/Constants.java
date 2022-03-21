@@ -26,6 +26,8 @@ import com.jfinal.core.ActionMapping;
 import com.jfinal.core.ActionReporter;
 import com.jfinal.core.Const;
 import com.jfinal.core.ControllerFactory;
+import com.jfinal.core.paragetter.JsonResolver;
+import com.jfinal.core.paragetter.ParaProcessor;
 import com.jfinal.i18n.I18n;
 import com.jfinal.json.IJsonFactory;
 import com.jfinal.json.JsonManager;
@@ -455,6 +457,20 @@ final public class Constants {
 	 */
 	public void setToJavaAwtHeadless() {
 		System.setProperty("java.awt.headless", "true");
+	}
+	
+	/**
+	 * 配置是否解析 json 请求，支持 action 参数注入并支持 Controller 中与参数有关的 get 系方法，便于前后端分离项目
+	 */
+	public void setResolveJsonRequest(boolean resolveJsonRequest) {
+		ParaProcessor.setResolveJson(resolveJsonRequest);
+	}
+	
+	/**
+	 * 设置 json 请求解析器
+	 */
+	public void setJsonRequestResolver(JsonResolver jsonResolver) {
+		ParaProcessor.setJsonResolver(jsonResolver);
 	}
 	
 	// ---------
