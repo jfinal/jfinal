@@ -30,6 +30,7 @@ import com.jfinal.aop.Interceptor;
 public class ActionReporter {
 	
 	protected static final String title = "\nJFinal-" + Const.JFINAL_VERSION + " action report -------- ";
+	protected static final String[] BLANK_STRING_ARRAY = {""};
 	protected static boolean reportAfterInvocation = true;
 	protected static int maxOutputLengthOfParaValue = 512;
 	protected static Writer writer = new SystemOutWriter();
@@ -107,6 +108,10 @@ public class ActionReporter {
 			while (e.hasMoreElements()) {
 				String name = e.nextElement();
 				String[] values = request.getParameterValues(name);
+				if (values == null) {
+					values = BLANK_STRING_ARRAY;
+				}
+				
 				if (values.length == 1) {
 					sb.append(name).append("=");
 					if (values[0] != null && values[0].length() > maxOutputLengthOfParaValue) {
