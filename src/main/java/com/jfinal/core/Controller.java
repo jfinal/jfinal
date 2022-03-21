@@ -91,6 +91,14 @@ public abstract class Controller {
 	}
 	
 	/**
+	 * 判断当前请求是否为 json 格式，contentType 包含 "application/json" 被认定为 json 请求
+	 */
+	public boolean isJsonRequest() {
+		String ct = request.getContentType();
+		return ct != null && ct.indexOf("application/json") != -1;
+	}
+	
+	/**
 	 * 获取 http 请求 body 中的原始数据，通常用于接收 json String 这类数据<br>
 	 * 可多次调用此方法，避免掉了 HttpKit.readData(...) 方式获取该数据时多次调用
 	 * 引发的异常
