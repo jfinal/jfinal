@@ -32,6 +32,8 @@ public class BeanGetter<T> extends ParaGetter<T> {
 	@Override
 	public T get(Action action, Controller c) {
 		String paraName = this.getParameterName();
+		
+		// 支持 json 数据请求注入 action 形参
 		if (ParaProcessor.resolveJson && c.isJsonRequest()) {
 			HttpServletRequest req = c.getRequest();
 			if (req.getParameterMap().containsKey(paraName)) {

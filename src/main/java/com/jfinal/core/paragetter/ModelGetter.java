@@ -24,7 +24,7 @@ import com.jfinal.kit.ReflectKit;
 import com.jfinal.plugin.activerecord.Model;
 
 /**
- * 注意： json 请求需要注意 json 中的字段名与数据库字段名一致，
+ * 注意：json 请求中的字段名必须与数据库字段名一致，常见错误是 json 字段用了驼峰而数据库字段用了下划线
  */
 public class ModelGetter<T> extends ParaGetter<T> {
 
@@ -39,6 +39,8 @@ public class ModelGetter<T> extends ParaGetter<T> {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public T get(Action action, Controller c) {
 		String paraName = this.getParameterName();
+		
+		// 支持 json 数据请求注入 action 形参
 		if (ParaProcessor.resolveJson && c.isJsonRequest()) {
 			JSONObject attrs;
 			HttpServletRequest req = c.getRequest();
