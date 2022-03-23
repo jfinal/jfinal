@@ -54,9 +54,6 @@ public class RenderFactory implements IRenderFactory {
 		case JSP:
 			mainRenderFactory = new JspRenderFactory();
 			break ;
-		case VELOCITY:
-			mainRenderFactory = new VelocityRenderFactory();
-			break ;
 		}
 	}
 	
@@ -77,10 +74,6 @@ public class RenderFactory implements IRenderFactory {
 	
 	public Render getJspRender(String view) {
 		return new JspRender(view);
-	}
-	
-	public Render getVelocityRender(String view) {
-		return new VelocityRender(view);
 	}
 	
 	public Render getJsonRender() {
@@ -203,12 +196,6 @@ public class RenderFactory implements IRenderFactory {
 	private static class JspRenderFactory extends MainRenderFactory {
 		public Render getRender(String view) {
 			return new JspRender(view);
-		}
-	}
-	
-	private static class VelocityRenderFactory extends MainRenderFactory {
-		public Render getRender(String view) {
-			return new VelocityRender(view);
 		}
 	}
 }

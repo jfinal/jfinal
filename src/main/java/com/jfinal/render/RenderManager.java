@@ -61,7 +61,6 @@ public class RenderManager {
 		Render.init(constants.getEncoding(), constants.getDevMode());
 		initTemplateRender();
 		initFreeMarkerRender(servletContext);
-		initVelocityRender(servletContext);
 		initJspRender(servletContext);
 		initFileRender(servletContext);
 		
@@ -82,17 +81,6 @@ public class RenderManager {
 			FreeMarkerRender.init(servletContext, Locale.getDefault(), constants.getFreeMarkerTemplateUpdateDelay());
 		} catch (ClassNotFoundException e) {
 			// System.out.println("freemarker can not be supported!");
-			LogKit.logNothing(e);
-		}
-	}
-	
-	private void initVelocityRender(ServletContext servletContext) {
-		try {
-			Class.forName("org.apache.velocity.VelocityContext");
-			VelocityRender.init(servletContext);
-		}
-		catch (ClassNotFoundException e) {
-			// System.out.println("Velocity can not be supported!");
 			LogKit.logNothing(e);
 		}
 	}

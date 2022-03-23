@@ -1103,13 +1103,6 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * Render with velocity view
-	 */
-	public void renderVelocity(String view) {
-		render = renderManager.getRenderFactory().getVelocityRender(view);
-	}
-	
-	/**
 	 * Render with json
 	 * <p>
 	 * Example:<br>

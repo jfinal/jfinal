@@ -22,6 +22,5 @@ package com.jfinal.render;
 public enum ViewType {
 	JFINAL_TEMPLATE,
 	JSP,
-	FREE_MARKER,
-	VELOCITY;
+	FREE_MARKER;
 }

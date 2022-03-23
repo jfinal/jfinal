@@ -39,8 +39,6 @@ public interface IRenderFactory {
 	
 	public Render getJspRender(String view);
 	
-	public Render getVelocityRender(String view);
-	
 	public Render getJsonRender();
 	
 	public Render getJsonRender(String key, Object value);
