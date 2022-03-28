@@ -33,6 +33,8 @@ import com.jfinal.plugin.redis.serializer.ISerializer;
  */
 public class RedisPlugin implements IPlugin {
 	
+	protected volatile boolean isStarted = false;
+	
 	protected String cacheName;
 	
 	protected String host;
@@ -94,6 +96,10 @@ public class RedisPlugin implements IPlugin {
 	}
 	
 	public boolean start() {
+		if (isStarted) {
+			return true;
+		}
+		
 		JedisPool jedisPool;
 		if      (port != null && timeout != null && database != null && clientName != null)
 			jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password, database, clientName);
@@ -115,6 +121,8 @@ public class RedisPlugin implements IPlugin {
 		
 		Cache cache = new Cache(cacheName, jedisPool, serializer, keyNamingPolicy);
 		Redis.addCache(cache);
+		
+		isStarted = true;
 		return true;
 	}
 	
@@ -123,6 +131,8 @@ public class RedisPlugin implements IPlugin {
 		if (cache == Redis.mainCache)
 			Redis.mainCache = null;
 		cache.jedisPool.destroy();
+		
+		isStarted = false;
 		return true;
 	}
 	
