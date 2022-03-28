@@ -42,7 +42,10 @@ public class MetaBuilder {
 	
 	protected DataSource dataSource;
 	protected Dialect dialect = new MysqlDialect();
-	protected Set<String> excludedTables = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+	
+	// 白名单 + 黑名单选择过滤的 tableName 集合，白名单优先于黑名单
+	protected Set<String> whitelist = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+	protected Set<String> blacklist = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 	
 	protected Predicate<String> tableSkip = null;
 	
@@ -77,12 +80,42 @@ public class MetaBuilder {
 		}
 	}
 	
-	public void addExcludedTable(String... excludedTables) {
-		if (excludedTables != null) {
-			for (String table : excludedTables) {
-				this.excludedTables.add(table.trim());
+	/**
+	 * 添加要生成的 tableName 到白名单
+	 */
+	public void addWhitelist(String... tableNames) {
+		if (tableNames != null) {
+			for (String table : tableNames) {
+				this.whitelist.add(table.trim());
 			}
 		}
+	}
+	
+	public void removeWhitelist(String tableName) {
+		if (tableName != null) {
+			this.whitelist.remove(tableName.trim());
+		}
+	}
+	
+	/**
+	 * 添加要排除的 tableName 到黑名单
+	 */
+	public void addBlacklist(String... tableNames) {
+		if (tableNames != null) {
+			for (String table : tableNames) {
+				this.blacklist.add(table.trim());
+			}
+		}
+	}
+	
+	public void removeBlacklist(String tableName) {
+		if (tableName != null) {
+			this.blacklist.remove(tableName.trim());
+		}
+	}
+	
+	public void addExcludedTable(String... excludedTables) {
+		addBlacklist(excludedTables);
 	}
 	
 	/**
@@ -222,10 +255,14 @@ public class MetaBuilder {
 		while (rs.next()) {
 			String tableName = rs.getString("TABLE_NAME");
 			
-			if (excludedTables.contains(tableName)) {
+			// 白名单优先
+			if (whitelist.contains(tableName)) {
+				;
+			} else if (blacklist.contains(tableName)) {
 				System.out.println("Skip table :" + tableName);
 				continue ;
 			}
+			
 			if (isSkipTable(tableName)) {
 				System.out.println("Skip table :" + tableName);
 				continue ;
