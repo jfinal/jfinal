@@ -223,6 +223,28 @@ public class Generator {
 	}
 	
 	/**
+	 * 添加要生成的 tableName 到白名单
+	 */
+	public void addWhitelist(String... tableNames) {
+		metaBuilder.addWhitelist(tableNames);
+	}
+	
+	public void removeWhitelist(String tableName) {
+		metaBuilder.removeWhitelist(tableName);
+	}
+	
+	/**
+	 * 添加要排除的 tableName 到黑名单
+	 */
+	public void addBlacklist(String... tableNames) {
+		metaBuilder.addBlacklist(tableNames);
+	}
+	
+	public void removeBlacklist(String tableName) {
+		metaBuilder.removeBlacklist(tableName);
+	}
+	
+	/**
 	 * 添加不需要处理的数据表
 	 */
 	public void addExcludedTable(String... excludedTables) {
