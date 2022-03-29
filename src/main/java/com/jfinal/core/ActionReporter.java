@@ -20,7 +20,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import com.jfinal.aop.Interceptor;
 
@@ -102,12 +103,12 @@ public class ActionReporter {
 		
 		// print all parameters
 		HttpServletRequest request = controller.getRequest();
-		Enumeration<String> e = request.getParameterNames();
-		if (e.hasMoreElements()) {
+		Map<String, String[]> paraMap = request.getParameterMap();
+		if (paraMap != null && paraMap.size() > 0) {
 			sb.append("Parameter   : ");
-			while (e.hasMoreElements()) {
-				String name = e.nextElement();
-				String[] values = request.getParameterValues(name);
+			for (Entry<String, String[]> e : paraMap.entrySet()) {
+				String name = e.getKey();
+				String[] values = e.getValue();
 				if (values == null) {
 					values = BLANK_STRING_ARRAY;
 				}
