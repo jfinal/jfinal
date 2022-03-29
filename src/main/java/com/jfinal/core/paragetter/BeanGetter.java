@@ -22,9 +22,9 @@ public class BeanGetter<T> extends ParaGetter<T> {
 	
 	private final Class<T> beanClass;
 	
-	public BeanGetter(Class<T> modelClass, String parameterName) {
+	public BeanGetter(Class<T> beanClass, String parameterName) {
 		super(parameterName, null);
-		this.beanClass = modelClass;
+		this.beanClass = beanClass;
 	}
 	
 	@Override
