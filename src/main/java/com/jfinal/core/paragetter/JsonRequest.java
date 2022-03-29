@@ -26,37 +26,114 @@ import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 
 /**
- * JsonRequest 包装 json 请求解析结果，从底层接管所有 parameter 操作
+ * JsonRequest 包装 json 请求，从底层接管所有 parameter 操作
  */
 public class JsonRequest implements HttpServletRequest {
 	
-	private final HttpServletRequest req;
-	private final HashMap<String, String[]> paraMap;
+	// 缓存 JSONObject、JSONArray 对象
+	private com.alibaba.fastjson.JSONObject jsonObject;
+	private com.alibaba.fastjson.JSONArray jsonArray;
 	
-	public JsonRequest(HttpServletRequest req, HashMap<String, String[]> paraMap) {
+	// 包装请求对象
+	private HttpServletRequest req;
+	
+	// 通过 JSONObject 延迟生成 paraMap
+	private HashMap<String, String[]> paraMap;
+	
+	public JsonRequest(String jsonString, HttpServletRequest req) {
+		com.alibaba.fastjson.JSON json = com.alibaba.fastjson.JSON.parseObject(jsonString);
+		if (json instanceof com.alibaba.fastjson.JSONObject) {
+			jsonObject = (com.alibaba.fastjson.JSONObject)json;
+		} else if (json instanceof com.alibaba.fastjson.JSONArray) {
+			jsonArray = (com.alibaba.fastjson.JSONArray)jsonArray;
+		}
+		
 		this.req = req;
-		this.paraMap = paraMap;
+	}
+	
+	/**
+	 * 第一个版本只做简单转换，用户获取 JSONObject 与 JSONArray 后可以进一步进行复杂转换
+	 */
+	public com.alibaba.fastjson.JSONObject getJSONObject() {
+		return jsonObject;
+	}
+	
+	public com.alibaba.fastjson.JSONArray getJSONArray() {
+		return jsonArray;
+	}
+	
+	/**
+	 * 请求参数是否为 JSONObject 对象
+	 */
+	public boolean isJSONObject() {
+		return jsonObject != null;
+	}
+	
+	/**
+	 * 请求参数是否为 JSONArray 对象
+	 */
+	public boolean isJSONArray() {
+		return jsonArray != null;
+	}
+	
+	// 延迟创建，不是每次都会调用 parameter 相关方法
+	private HashMap<String, String[]> getParaMap() {
+		if (paraMap == null) {
+			paraMap = (jsonObject != null ? createParaMap(jsonObject) : new HashMap<>());
+		}
+		return paraMap;
+	}
+	
+	private HashMap<String, String[]> createParaMap(com.alibaba.fastjson.JSONObject jsonPara) {
+		HashMap<String, String[]> newPara = new HashMap<>();
+		
+		// 先读取 parameter，否则后续从流中读取 rawData 后将无法读取 parameter（部分 servlet 容器）
+		Map<String, String[]> oldPara = req.getParameterMap();
+		if (oldPara != null && oldPara.size() > 0) {
+			newPara.putAll(oldPara);
+		}
+		
+		for (Map.Entry<String, Object> e : jsonPara.entrySet()) {
+			String key = e.getKey();
+			Object value = e.getValue();
+			// 只转换最外面一层 json 数据，如果存在多层 json 结构，仅将其视为 String 留给后续流程转换
+			if (value instanceof com.alibaba.fastjson.JSON) {
+				newPara.put(key, new String[]{((com.alibaba.fastjson.JSON)value).toJSONString()});
+			} else if (value != null) {
+				newPara.put(key, new String[]{value.toString()});
+			} else {
+				// 需要考虑 value 是否转成 String[] array = {""}，ActionRepoter.getParameterValues() 有依赖
+				newPara.put(key, null);
+			}
+		}
+		
+		return newPara;
 	}
 	
 	@Override
 	public String getParameter(String name) {
-		String[] ret = paraMap.get(name);
+		String[] ret = getParaMap().get(name);
 		return ret != null && ret.length != 0 ? ret[0] : null;
 	}
-
-	@Override
-	public Enumeration<String> getParameterNames() {
-		return Collections.enumeration(paraMap.keySet());
-	}
-
-	@Override
-	public String[] getParameterValues(String name) {
-		return paraMap.get(name);
-	}
-
+	
 	@Override
 	public Map<String, String[]> getParameterMap() {
-		return paraMap;
+		return getParaMap();
+	}
+	
+	@Override
+	public Enumeration<String> getParameterNames() {
+		// return Collections.enumeration(getParaMap().keySet());
+		if (jsonObject != null) {
+			return Collections.enumeration(jsonObject.keySet());
+		} else {
+			return Collections.emptyEnumeration();
+		}
+	}
+	
+	@Override
+	public String[] getParameterValues(String name) {
+		return getParaMap().get(name);
 	}
 	
 	// ---------------------------------------------------------------
