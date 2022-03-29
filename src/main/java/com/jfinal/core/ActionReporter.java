@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import com.jfinal.aop.Interceptor;
+import com.jfinal.core.paragetter.JsonRequest;
 
 /**
  * ActionReporter
@@ -103,7 +104,29 @@ public class ActionReporter {
 		
 		// print all parameters
 		HttpServletRequest request = controller.getRequest();
-		Map<String, String[]> paraMap = request.getParameterMap();
+		if (request instanceof JsonRequest) {
+			buildJsonPara(controller, sb);
+		} else {
+			buildPara(controller, sb);
+		}
+		
+		sb.append("--------------------------------------------------------------------------------\n");
+		
+		try {
+			writer.write(sb.toString());
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	private void buildJsonPara(Controller controller, StringBuilder sb) {
+		sb.append("Parameter   : ");
+		sb.append(controller.getRawData());
+		sb.append('\n');
+	}
+	
+	private void buildPara(Controller controller, StringBuilder sb) {
+		Map<String, String[]> paraMap = controller.getRequest().getParameterMap();
 		if (paraMap != null && paraMap.size() > 0) {
 			sb.append("Parameter   : ");
 			for (Entry<String, String[]> e : paraMap.entrySet()) {
@@ -133,13 +156,6 @@ public class ActionReporter {
 				sb.append("  ");
 			}
 			sb.append("\n");
-		}
-		sb.append("--------------------------------------------------------------------------------\n");
-		
-		try {
-			writer.write(sb.toString());
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
 		}
 	}
 	
