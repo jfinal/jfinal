@@ -79,14 +79,14 @@ public class ActionReporter {
 	 */
 	public void report(String target, Controller controller, Action action) {
 		StringBuilder sb = new StringBuilder(title).append(sdf.get().format(new Date())).append(" --------------------------\n");
-		sb.append("Url         : ").append(controller.getRequest().getMethod()).append(" ").append(target).append("\n");
+		sb.append("Url         : ").append(controller.getRequest().getMethod()).append(' ').append(target).append('\n');
 		Class<? extends Controller> cc = action.getControllerClass();
 		sb.append("Controller  : ").append(cc.getName()).append(".(").append(cc.getSimpleName()).append(".java:1)");
-		sb.append("\nMethod      : ").append(action.getMethodName()).append("\n");
+		sb.append("\nMethod      : ").append(action.getMethodName()).append('\n');
 		
 		String urlParas = controller.getPara();
 		if (urlParas != null) {
-			sb.append("UrlPara     : ").append(urlParas).append("\n");
+			sb.append("UrlPara     : ").append(urlParas).append('\n');
 		}
 		
 		Interceptor[] inters = action.getInterceptors();
@@ -99,7 +99,7 @@ public class ActionReporter {
 				Class<? extends Interceptor> ic = inter.getClass();
 				sb.append(ic.getName()).append(".(").append(ic.getSimpleName()).append(".java:1)");
 			}
-			sb.append("\n");
+			sb.append('\n');
 		}
 		
 		// print all parameters
@@ -137,7 +137,7 @@ public class ActionReporter {
 				}
 				
 				if (values.length == 1) {
-					sb.append(name).append("=");
+					sb.append(name).append('=');
 					if (values[0] != null && values[0].length() > maxOutputLengthOfParaValue) {
 						sb.append(values[0].substring(0, maxOutputLengthOfParaValue)).append("...");
 					} else {
@@ -148,14 +148,14 @@ public class ActionReporter {
 					sb.append(name).append("[]={");
 					for (int i=0; i<values.length; i++) {
 						if (i > 0)
-							sb.append(",");
+							sb.append(',');
 						sb.append(values[i]);
 					}
-					sb.append("}");
+					sb.append('}');
 				}
 				sb.append("  ");
 			}
-			sb.append("\n");
+			sb.append('\n');
 		}
 	}
 	
