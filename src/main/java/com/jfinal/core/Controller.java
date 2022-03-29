@@ -91,7 +91,7 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * 判断当前请求是否为 json 格式，contentType 包含 "application/json" 被认定为 json 请求
+	 * 判断当前请求是否为 json 格式，contentType 包含 "json" 被认定为 json 请求
 	 */
 	public boolean isJsonRequest() {
 		if (request instanceof com.jfinal.core.paragetter.JsonRequest) {
