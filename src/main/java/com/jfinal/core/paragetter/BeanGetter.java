@@ -40,19 +40,19 @@ public class BeanGetter<T> extends ParaGetter<T> {
 	}
 	
 	private T resolveJson(JsonRequest req, String paraName) {
-		if (req.isJSONObject()) {
-			com.alibaba.fastjson.JSONObject jsonObj = req.getJSONObject();
-			if (jsonObj.containsKey(paraName)) {
-				// 存在与 action 形参名相同的 request 参数则使用其 value 值进行转换
-				// return jsonObj.getObject(paraName, beanClass);
-				return jsonObj.getObject(paraName, beanClass);
-			} else {
-				// 否则使用整个请求中的 json 进行转换
-				return jsonObj.toJavaObject(beanClass);
-			}
+		com.alibaba.fastjson.JSONObject jsonObj = req.getJSONObject();
+		if (jsonObj == null) {
+			return null;
 		}
 		
-		return null;
+		if (jsonObj.containsKey(paraName)) {
+			// 存在与 action 形参名相同的 request 参数则使用其 value 值进行转换
+			// return jsonObj.getObject(paraName, beanClass);
+			return jsonObj.getObject(paraName, beanClass);
+		} else {
+			// 否则使用整个请求中的 json 进行转换
+			return jsonObj.toJavaObject(beanClass);
+		}
 	}
 	
 	@Override
