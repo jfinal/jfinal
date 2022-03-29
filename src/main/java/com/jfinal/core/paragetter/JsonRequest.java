@@ -45,7 +45,7 @@ public class JsonRequest implements HttpServletRequest {
 		if (json instanceof com.alibaba.fastjson.JSONObject) {
 			jsonObject = (com.alibaba.fastjson.JSONObject)json;
 		} else if (json instanceof com.alibaba.fastjson.JSONArray) {
-			jsonArray = (com.alibaba.fastjson.JSONArray)jsonArray;
+			jsonArray = (com.alibaba.fastjson.JSONArray)json;
 		}
 		
 		this.req = req;
