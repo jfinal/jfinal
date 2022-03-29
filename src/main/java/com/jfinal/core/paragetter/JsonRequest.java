@@ -41,7 +41,7 @@ public class JsonRequest implements HttpServletRequest {
 	private HashMap<String, String[]> paraMap;
 	
 	public JsonRequest(String jsonString, HttpServletRequest req) {
-		com.alibaba.fastjson.JSON json = com.alibaba.fastjson.JSON.parseObject(jsonString);
+		Object json = com.alibaba.fastjson.JSON.parse(jsonString);
 		if (json instanceof com.alibaba.fastjson.JSONObject) {
 			jsonObject = (com.alibaba.fastjson.JSONObject)json;
 		} else if (json instanceof com.alibaba.fastjson.JSONArray) {
