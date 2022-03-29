@@ -18,7 +18,9 @@ package com.jfinal.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import javax.servlet.http.HttpServletRequest;
 import com.jfinal.aop.AopManager;
 import com.jfinal.captcha.CaptchaManager;
 import com.jfinal.captcha.ICaptchaCache;
@@ -26,7 +28,7 @@ import com.jfinal.core.ActionMapping;
 import com.jfinal.core.ActionReporter;
 import com.jfinal.core.Const;
 import com.jfinal.core.ControllerFactory;
-import com.jfinal.core.paragetter.JsonResolver;
+import com.jfinal.core.paragetter.JsonRequest;
 import com.jfinal.core.paragetter.ParaProcessor;
 import com.jfinal.i18n.I18n;
 import com.jfinal.json.IJsonFactory;
@@ -467,10 +469,10 @@ final public class Constants {
 	}
 	
 	/**
-	 * 设置 json 请求解析器
+	 * 配置 JsonRequest 工厂，用于切换 JsonRequest 扩展实现
 	 */
-	public void setJsonRequestResolver(JsonResolver jsonResolver) {
-		ParaProcessor.setJsonResolver(jsonResolver);
+	public void setJsonRequestFactory(BiFunction<String, HttpServletRequest, JsonRequest> jsonRequestFactory) {
+		ParaProcessor.setJsonRequestFactory(jsonRequestFactory);
 	}
 	
 	// ---------
