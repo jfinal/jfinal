@@ -15,6 +15,8 @@
  */
 package com.jfinal.core.paragetter;
 
+import java.util.function.BiFunction;
+import javax.servlet.http.HttpServletRequest;
 import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 
@@ -24,14 +26,18 @@ import com.jfinal.core.Controller;
 public class ParaProcessor implements IParaGetter<Object[]> {
 	
 	static boolean resolveJson = false;
-	private static JsonResolver jsonResolver = new JsonResolver();
+	
+	// 默认 JsonRequestFactory
+	private static BiFunction<String, HttpServletRequest, JsonRequest> jsonRequestFactory = (jsonString, req) -> {
+		return new JsonRequest(jsonString, req);
+	};
 	
 	public static void setResolveJson(boolean resolveJson) {
 		ParaProcessor.resolveJson = resolveJson;
 	}
 	
-	public static void setJsonResolver(JsonResolver jsonResolver) {
-		ParaProcessor.jsonResolver = jsonResolver;
+	public static void setJsonRequestFactory(BiFunction<String, HttpServletRequest, JsonRequest> jsonRequestFactory) {
+		ParaProcessor.jsonRequestFactory = jsonRequestFactory;
 	}
 	
 	private int fileParaIndex = -1;
@@ -54,7 +60,8 @@ public class ParaProcessor implements IParaGetter<Object[]> {
 	@Override
 	public Object[] get(Action action, Controller c) {
 		if (resolveJson && c.isJsonRequest()) {
-			jsonResolver.resolve(action, c);
+			// 注入 JsonRequest 包装对象接管 request
+			c.setHttpServletRequest(jsonRequestFactory.apply(c.getRawData(), c.getRequest()));
 		}
 		
 		int len = paraGetters.length;
