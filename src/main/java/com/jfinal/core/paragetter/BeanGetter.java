@@ -33,13 +33,13 @@ public class BeanGetter<T> extends ParaGetter<T> {
 		
 		// 支持 json 数据请求注入 action 形参
 		if (ParaProcessor.resolveJson && c.isJsonRequest()) {
-			return resolveJson(action, c, (JsonRequest)c.getRequest(), paraName);
+			return resolveJson((JsonRequest)c.getRequest(), paraName);
 		} else {
 			return c.getBean(beanClass, paraName, true);
 		}
 	}
 	
-	private T resolveJson(Action action, Controller c, JsonRequest req, String paraName) {
+	private T resolveJson(JsonRequest req, String paraName) {
 		if (req.isJSONObject()) {
 			com.alibaba.fastjson.JSONObject jsonObj = req.getJSONObject();
 			if (jsonObj.containsKey(paraName)) {
