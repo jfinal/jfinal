@@ -46,7 +46,6 @@ public class BeanGetter<T> extends ParaGetter<T> {
 		String paraName = this.getParameterName();
 		if (jsonObj.containsKey(paraName)) {
 			// 存在与 action 形参名相同的 request 参数则使用其 value 值进行转换
-			// return jsonObj.getObject(paraName, beanClass);
 			return jsonObj.getObject(paraName, beanClass);
 		} else {
 			// 否则使用整个请求中的 json 进行转换
