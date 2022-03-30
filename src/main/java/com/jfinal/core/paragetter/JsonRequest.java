@@ -112,8 +112,24 @@ public class JsonRequest implements HttpServletRequest {
 	
 	@Override
 	public String getParameter(String name) {
-		String[] ret = getParaMap().get(name);
-		return ret != null && ret.length != 0 ? ret[0] : null;
+		// String[] ret = getParaMap().get(name);
+		// return ret != null && ret.length != 0 ? ret[0] : null;
+		
+		// 优化性能，避免调用 getParaMap()
+		if (jsonObject != null && jsonObject.containsKey(name)) {
+			Object value = jsonObject.get(name);
+			// 只转换最外面一层 json 数据，如果存在多层 json 结构，仅将其视为 String 留给后续流程转换
+			if (value instanceof com.alibaba.fastjson.JSON) {
+				return ((com.alibaba.fastjson.JSON)value).toJSONString();
+			} else if (value != null) {
+				return value.toString();
+			} else {
+				// 需要考虑 value 是否转成 String[] array = {""}，ActionRepoter.getParameterValues() 有依赖
+				return null;
+			}
+		} else {
+			return req.getParameter(name);
+		}
 	}
 	
 	@Override
