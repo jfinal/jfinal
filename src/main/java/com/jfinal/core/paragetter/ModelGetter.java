@@ -35,23 +35,22 @@ public class ModelGetter<T> extends ParaGetter<T> {
 	
 	@Override
 	public T get(Action action, Controller c) {
-		String paraName = this.getParameterName();
-		
 		// 支持 json 数据请求注入 action 形参
 		if (ParaProcessor.resolveJson && c.isJsonRequest()) {
-			return resolveJson((JsonRequest)c.getRequest(), paraName);
+			return resolveJson((JsonRequest)c.getRequest());
 		} else {
-			return c.getModel(modelClass, paraName, true);
+			return c.getModel(modelClass, this.getParameterName(), true);
 		}
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private T resolveJson(JsonRequest req, String paraName) {
+	private T resolveJson(JsonRequest req) {
 		com.alibaba.fastjson.JSONObject jsonObj = req.getJSONObject();
 		if (jsonObj == null) {
 			return null;
 		}
 		
+		String paraName = this.getParameterName();
 		HashMap<String, Object> attrs;
 		if (jsonObj.containsKey(paraName)) {
 			// 存在与 action 形参名相同的 request 参数则使用其 value 值进行转换
