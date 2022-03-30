@@ -158,8 +158,10 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 * @return this Model
 	 */
 	public M _setAttrs(Map<String, Object> attrs) {
-		for (Entry<String, Object> e : attrs.entrySet()) {
-			set(e.getKey(), e.getValue());
+		if (attrs != null) {
+			for (Entry<String, Object> e : attrs.entrySet()) {
+				set(e.getKey(), e.getValue());
+			}
 		}
 		return (M)this;
 	}
@@ -274,8 +276,10 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	}
 	
 	public M _setOrPut(Map<String, Object> map) {
-		for (Entry<String, Object> e : map.entrySet()) {
-			setOrPut(e.getKey(), e.getValue());
+		if (map != null) {
+			for (Entry<String, Object> e : map.entrySet()) {
+				setOrPut(e.getKey(), e.getValue());
+			}
 		}
 		return (M)this;
 	}
