@@ -15,7 +15,7 @@
  */
 package com.jfinal.core.paragetter;
 
-import java.util.HashMap;
+import java.util.Map;
 import com.jfinal.core.Action;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.ReflectKit;
@@ -51,15 +51,15 @@ public class ModelGetter<T> extends ParaGetter<T> {
 		}
 		
 		String paraName = this.getParameterName();
-		HashMap<String, Object> attrs;
+		Map<String, Object> attrs;
 		if (jsonObj.containsKey(paraName)) {
 			// 存在与 action 形参名相同的 request 参数则使用其 value 值进行转换
 			// attrs = JSON.parseObject(req.getParameter(paraName), HashMap.class);
-			attrs = jsonObj.getObject(paraName, HashMap.class);
+			attrs = jsonObj.getObject(paraName, Map.class);
 		} else {
 			// 否则使用整个请求中的 json 进行转换
 			// attrs = JSON.parseObject(c.getRawData(), HashMap.class);
-			attrs = jsonObj.toJavaObject(HashMap.class);
+			attrs = jsonObj.toJavaObject(Map.class);
 		}
 		
 		Model ret = (Model) ReflectKit.newInstance(modelClass);
