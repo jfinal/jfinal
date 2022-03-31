@@ -825,17 +825,19 @@ public abstract class Controller {
 	 */
 	public Kv getKv() {
 		Kv kv = new Kv();
+		HttpServletRequest req = this.request;
 		
 		// 优化 json 请求，避免 JsonRequest.createParaMap() 中的数据转换
 		if (request instanceof com.jfinal.core.paragetter.JsonRequest) {
-			com.jfinal.core.paragetter.JsonRequest req = (com.jfinal.core.paragetter.JsonRequest)request;
-			if (req.getJSONObject() != null) {
-				kv.putAll(req.getJSONObject());
-				return kv;
+			com.jfinal.core.paragetter.JsonRequest jsonReq = (com.jfinal.core.paragetter.JsonRequest)request;
+			if (jsonReq.getJSONObject() != null) {
+				kv.putAll(jsonReq.getJSONObject());
 			}
+			// json 数据添加完成后再添加内部 HttpServletRequest 对象中的数据
+			req = jsonReq.getInnerRequest();
 		}
 		
-		Map<String, String[]> paraMap = request.getParameterMap();
+		Map<String, String[]> paraMap = req.getParameterMap();
 		for (Entry<String, String[]> entry : paraMap.entrySet()) {
 			String[] values = entry.getValue();
 			String value = (values != null && values.length > 0) ? values[0] : null;
