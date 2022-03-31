@@ -86,7 +86,11 @@ public class MetaBuilder {
 	public void addWhitelist(String... tableNames) {
 		if (tableNames != null) {
 			for (String table : tableNames) {
-				this.whitelist.add(table.trim());
+				table = table.trim();
+				if (this.blacklist.contains(table)) {
+					throw new IllegalArgumentException("黑名单中已经存在的 table 不能加入白名单 -> " + table);
+				}
+				this.whitelist.add(table);
 			}
 		}
 	}
@@ -103,7 +107,11 @@ public class MetaBuilder {
 	public void addBlacklist(String... tableNames) {
 		if (tableNames != null) {
 			for (String table : tableNames) {
-				this.blacklist.add(table.trim());
+				table = table.trim();
+				if (this.whitelist.contains(table)) {
+					throw new IllegalArgumentException("白名单中已经存在的 table 不能加入黑名单 -> " + table);
+				}
+				this.blacklist.add(table);
 			}
 		}
 	}
@@ -255,14 +263,18 @@ public class MetaBuilder {
 		while (rs.next()) {
 			String tableName = rs.getString("TABLE_NAME");
 			
-			// 白名单优先
-			if (whitelist.contains(tableName)) {
-				;
-			} else if (blacklist.contains(tableName)) {
+			// 如果使用白名单（size>0），则不在白名单之中的都将被过滤
+			if (whitelist.size() > 0 && !whitelist.contains(tableName)) {
+				System.out.println("Skip table :" + tableName);
+				continue ;
+			}
+			// 如果使用黑名单（size>0），则处在黑名单之中的都将被过滤
+			if (blacklist.size() > 0 && blacklist.contains(tableName)) {
 				System.out.println("Skip table :" + tableName);
 				continue ;
 			}
 			
+			// isSkipTable 为最早期的过滤机制，建议使用白名单、黑名单过滤
 			if (isSkipTable(tableName)) {
 				System.out.println("Skip table :" + tableName);
 				continue ;
