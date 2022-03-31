@@ -223,7 +223,7 @@ public class Generator {
 	}
 	
 	/**
-	 * 添加要生成的 tableName 到白名单
+	 * 添加要生成的 tableName 到白名单。使用白名单功能时，只有处在白名单中的 table 才会参与生成
 	 */
 	public void addWhitelist(String... tableNames) {
 		metaBuilder.addWhitelist(tableNames);
@@ -234,7 +234,7 @@ public class Generator {
 	}
 	
 	/**
-	 * 添加要排除的 tableName 到黑名单
+	 * 添加要排除的 tableName 到黑名单。使用黑名单功能时，只有处在黑名单中的 table 才会被过滤
 	 */
 	public void addBlacklist(String... tableNames) {
 		metaBuilder.addBlacklist(tableNames);
