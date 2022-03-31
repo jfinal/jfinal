@@ -1244,8 +1244,14 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		return templateByString(content, model.attrs);
 	}
 	
+	@Override
 	public Map<String, Object> toMap() {
 		return attrs;
+	}
+	
+	@Override
+	public boolean isEmpty() {
+		return attrs.isEmpty();
 	}
 }
 

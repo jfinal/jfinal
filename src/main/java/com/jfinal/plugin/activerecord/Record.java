@@ -491,6 +491,11 @@ public class Record implements IRow<Record>, Serializable {
 		getColumns().put(key, value);
 		return this;
 	}
+	
+	@Override
+	public boolean isEmpty() {
+		return columns != null ? columns.isEmpty() : true;
+	}
 }
 
 

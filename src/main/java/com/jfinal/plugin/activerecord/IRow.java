@@ -120,5 +120,7 @@ public interface IRow<M> {
      * Convert to json string.
      */
     public String toJson();
+    
+    public boolean isEmpty();
 }
 
