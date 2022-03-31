@@ -112,12 +112,15 @@ public class RenderFactory implements IRenderFactory {
 		return getRender(view + constants.getViewExtension());
 	}
 	
-	public Render getErrorRender(int errorCode, String view) {
-		return new ErrorRender(errorCode, view);
+	public Render getErrorRender(int errorCode, String viewOrJson) {
+		return new ErrorRender(errorCode, viewOrJson);
 	}
 	
 	public Render getErrorRender(int errorCode) {
-		return new ErrorRender(errorCode, constants.getErrorView(errorCode));
+		// 支持返回 json 数据之后，需要在 ErrorRender.render() 方法内判断 contentType 后才能确定返回 json 还是 html 页面
+		// 而在此处 ErrorRender.getErrorView(errorCode) 是无法知道 contentType 信息的，故去掉 errorView 参数
+		// return new ErrorRender(errorCode, ErrorRender.getErrorView(errorCode));
+		return new ErrorRender(errorCode);
 	}
 	
 	public Render getFileRender(String fileName) {

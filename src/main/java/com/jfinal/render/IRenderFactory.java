@@ -57,7 +57,7 @@ public interface IRenderFactory {
 	
 	public Render getDefaultRender(String view);
 	
-	public Render getErrorRender(int errorCode, String view);
+	public Render getErrorRender(int errorCode, String viewOrJson);
 	
 	public Render getErrorRender(int errorCode);
 	
