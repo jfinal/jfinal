@@ -828,7 +828,7 @@ public abstract class Controller {
 		
 		// 优化 json 请求，避免 JsonRequest.createParaMap() 中的数据转换
 		if (request instanceof com.jfinal.core.paragetter.JsonRequest) {
-			com.jfinal.core.paragetter.JsonRequest req = ((com.jfinal.core.paragetter.JsonRequest)request);
+			com.jfinal.core.paragetter.JsonRequest req = (com.jfinal.core.paragetter.JsonRequest)request;
 			if (req.getJSONObject() != null) {
 				kv.putAll(req.getJSONObject());
 				return kv;
