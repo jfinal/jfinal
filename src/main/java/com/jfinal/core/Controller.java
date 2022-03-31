@@ -91,7 +91,7 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * 判断当前请求是否为 json 格式，contentType 包含 "json" 被认定为 json 请求
+	 * 判断是否为 json 请求，contentType 包含 "json" 被认定为 json 请求
 	 */
 	public boolean isJsonRequest() {
 		if (request instanceof com.jfinal.core.paragetter.JsonRequest) {
@@ -825,6 +825,16 @@ public abstract class Controller {
 	 */
 	public Kv getKv() {
 		Kv kv = new Kv();
+		
+		// 优化 json 请求，避免 JsonRequest.createParaMap() 中的数据转换
+		if (request instanceof com.jfinal.core.paragetter.JsonRequest) {
+			com.jfinal.core.paragetter.JsonRequest req = ((com.jfinal.core.paragetter.JsonRequest)request);
+			if (req.getJSONObject() != null) {
+				kv.putAll(req.getJSONObject());
+				return kv;
+			}
+		}
+		
 		Map<String, String[]> paraMap = request.getParameterMap();
 		for (Entry<String, String[]> entry : paraMap.entrySet()) {
 			String[] values = entry.getValue();
@@ -1255,8 +1265,8 @@ public abstract class Controller {
 	/**
 	 * Render with view and errorCode status
 	 */
-	public void renderError(int errorCode, String view) {
-		throw new ActionException(errorCode, renderManager.getRenderFactory().getErrorRender(errorCode, view));
+	public void renderError(int errorCode, String viewOrJson) {
+		throw new ActionException(errorCode, renderManager.getRenderFactory().getErrorRender(errorCode, viewOrJson));
 	}
 	
 	/**
