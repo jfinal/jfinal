@@ -62,6 +62,20 @@ public class JsonRequest implements HttpServletRequest {
 		return jsonArray;
 	}
 	
+	/*public Map<String, Object> getJsonMap() {
+		return jsonObject;
+	}
+	public java.util.List<Object> getJsonList() {
+		return jsonArray;
+	}*/
+	
+	/**
+	 * 获取内部 HttpServletRequest 对象
+	 */
+	public HttpServletRequest getInnerRequest() {
+		return req;
+	}
+	
 	/**
 	 * 请求参数是否为 JSONObject 对象
 	 */
@@ -131,9 +145,20 @@ public class JsonRequest implements HttpServletRequest {
 		}
 	}
 	
+	/**
+	 * 该方法将触发 createParaMap()，框架内部应尽可能避免该事情发生，以优化性能
+	 */
 	@Override
 	public Map<String, String[]> getParameterMap() {
 		return getParaMap();
+	}
+	
+	/**
+	 * 该方法将触发 createParaMap()，框架内部应尽可能避免该事情发生，以优化性能
+	 */
+	@Override
+	public String[] getParameterValues(String name) {
+		return getParaMap().get(name);
 	}
 	
 	@Override
@@ -144,11 +169,6 @@ public class JsonRequest implements HttpServletRequest {
 		} else {
 			return Collections.emptyEnumeration();
 		}
-	}
-	
-	@Override
-	public String[] getParameterValues(String name) {
-		return getParaMap().get(name);
 	}
 	
 	// ---------------------------------------------------------------
