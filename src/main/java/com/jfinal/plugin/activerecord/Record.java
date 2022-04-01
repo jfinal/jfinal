@@ -18,13 +18,9 @@ package com.jfinal.plugin.activerecord;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.Temporal;
 import java.util.Map;
 import java.util.Set;
-import com.jfinal.kit.TimeKit;
 import java.util.Map.Entry;
 
 /**
@@ -282,16 +278,18 @@ public class Record implements IRow<Record>, Serializable {
 	 * Get column of mysql type: int, integer, tinyint(n) n > 1, smallint, mediumint
 	 */
 	public Integer getInt(String column) {
-		Number n = getNumber(column);
-		return n != null ? n.intValue() : null;
+		// Number n = getNumber(column);
+		// return n != null ? n.intValue() : null;
+		return FieldValueKit.toInt(getColumns().get(column));
 	}
 	
 	/**
 	 * Get column of mysql type: bigint, unsigned int
 	 */
 	public Long getLong(String column) {
-		Number n = getNumber(column);
-		return n != null ? n.longValue() : null;
+		// Number n = getNumber(column);
+		// return n != null ? n.longValue() : null;
+		return FieldValueKit.toLong(getColumns().get(column));
 	}
 	
 	/**
@@ -305,40 +303,11 @@ public class Record implements IRow<Record>, Serializable {
 	 * Get column of mysql type: date, year
 	 */
 	public java.util.Date getDate(String column) {
-		Object ret = getColumns().get(column);
-		
-		if (ret instanceof Temporal) {
-			if (ret instanceof LocalDateTime) {
-				return TimeKit.toDate((LocalDateTime)ret);
-			}
-			if (ret instanceof LocalDate) {
-				return TimeKit.toDate((LocalDate)ret);
-			}
-			if (ret instanceof LocalTime) {
-				return TimeKit.toDate((LocalTime)ret);
-			}
-		}
-		
-		return (java.util.Date)ret;
+		return FieldValueKit.toDate(getColumns().get(column));
 	}
 	
 	public LocalDateTime getLocalDateTime(String column) {
-		Object ret = getColumns().get(column);
-		
-		if (ret instanceof LocalDateTime) {
-			return (LocalDateTime)ret;
-		}
-		if (ret instanceof LocalDate) {
-			return ((LocalDate)ret).atStartOfDay();
-		}
-		if (ret instanceof LocalTime) {
-			return LocalDateTime.of(LocalDate.now(), (LocalTime)ret);
-		}
-		if (ret instanceof java.util.Date) {
-			return TimeKit.toLocalDateTime((java.util.Date)ret);
-		}
-		
-		return (LocalDateTime)ret;
+		return FieldValueKit.toLocalDateTime(getColumns().get(column));
 	}
 	
 	/**
@@ -359,47 +328,45 @@ public class Record implements IRow<Record>, Serializable {
 	 * Get column of mysql type: real, double
 	 */
 	public Double getDouble(String column) {
-		Number n = getNumber(column);
-		return n != null ? n.doubleValue() : null;
+		// Number n = getNumber(column);
+		// return n != null ? n.doubleValue() : null;
+		return FieldValueKit.toDouble(getColumns().get(column));
 	}
 	
 	/**
 	 * Get column of mysql type: float
 	 */
 	public Float getFloat(String column) {
-		Number n = getNumber(column);
-		return n != null ? n.floatValue() : null;
+		// Number n = getNumber(column);
+		// return n != null ? n.floatValue() : null;
+		return FieldValueKit.toFloat(getColumns().get(column));
 	}
 	
 	public Short getShort(String column) {
-		Number n = getNumber(column);
-		return n != null ? n.shortValue() : null;
+		// Number n = getNumber(column);
+		// return n != null ? n.shortValue() : null;
+		return FieldValueKit.toShort(getColumns().get(column));
 	}
 	
 	public Byte getByte(String column) {
-		Number n = getNumber(column);
-		return n != null ? n.byteValue() : null;
+		// Number n = getNumber(column);
+		// return n != null ? n.byteValue() : null;
+		return FieldValueKit.toByte(getColumns().get(column));
 	}
 	
 	/**
 	 * Get column of mysql type: bit, tinyint(1)
 	 */
 	public Boolean getBoolean(String column) {
-		return (Boolean)getColumns().get(column);
+		// return (Boolean)getColumns().get(column);
+		return FieldValueKit.toBoolean(getColumns().get(column));
 	}
 	
 	/**
 	 * Get column of mysql type: decimal, numeric
 	 */
 	public BigDecimal getBigDecimal(String column) {
-		Object n = getColumns().get(column);
-		if (n instanceof BigDecimal) {
-			return (BigDecimal)n;
-		} else if (n != null) {
-			return new BigDecimal(n.toString());
-		} else {
-			return null;
-		}
+		return FieldValueKit.toBigDecimal(getColumns().get(column));
 	}
 	
 	/**
@@ -414,7 +381,8 @@ public class Record implements IRow<Record>, Serializable {
 	 * Get column of any type that extends from Number
 	 */
 	public Number getNumber(String column) {
-		return (Number)getColumns().get(column);
+		// return (Number)getColumns().get(column);
+		return FieldValueKit.toNumber(getColumns().get(column));
 	}
 	
 	public String toString() {
