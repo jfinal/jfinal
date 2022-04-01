@@ -22,10 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import com.jfinal.kit.TimeKit;
 import com.jfinal.plugin.activerecord.cache.ICache;
 import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 
@@ -347,16 +343,18 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 * Get attribute of mysql type: int, integer, tinyint(n) n > 1, smallint, mediumint
 	 */
 	public Integer getInt(String attr) {
-		Number n = (Number)attrs.get(attr);
-		return n != null ? n.intValue() : null;
+		// Number n = (Number)attrs.get(attr);
+		// return n != null ? n.intValue() : null;
+		return FieldValueKit.toInt(attrs.get(attr));
 	}
 	
 	/**
 	 * Get attribute of mysql type: bigint, unsign int
 	 */
 	public Long getLong(String attr) {
-		Number n = (Number)attrs.get(attr);
-		return n != null ? n.longValue() : null;
+		// Number n = (Number)attrs.get(attr);
+		// return n != null ? n.longValue() : null;
+		return FieldValueKit.toLong(attrs.get(attr));
 	}
 	
 	/**
@@ -370,40 +368,11 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 * Get attribute of mysql type: date, year
 	 */
 	public java.util.Date getDate(String attr) {
-		Object ret = attrs.get(attr);
-		
-		if (ret instanceof Temporal) {
-			if (ret instanceof LocalDateTime) {
-				return TimeKit.toDate((LocalDateTime)ret);
-			}
-			if (ret instanceof LocalDate) {
-				return TimeKit.toDate((LocalDate)ret);
-			}
-			if (ret instanceof LocalTime) {
-				return TimeKit.toDate((LocalTime)ret);
-			}
-		}
-		
-		return (java.util.Date)ret;
+		return FieldValueKit.toDate(attrs.get(attr));
 	}
 	
 	public LocalDateTime getLocalDateTime(String attr) {
-		Object ret = attrs.get(attr);
-		
-		if (ret instanceof LocalDateTime) {
-			return (LocalDateTime)ret;
-		}
-		if (ret instanceof LocalDate) {
-			return ((LocalDate)ret).atStartOfDay();
-		}
-		if (ret instanceof LocalTime) {
-			return LocalDateTime.of(LocalDate.now(), (LocalTime)ret);
-		}
-		if (ret instanceof java.util.Date) {
-			return TimeKit.toLocalDateTime((java.util.Date)ret);
-		}
-		
-		return (LocalDateTime)ret;
+		return FieldValueKit.toLocalDateTime(attrs.get(attr));
 	}
 	
 	/**
@@ -424,47 +393,45 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 * Get attribute of mysql type: real, double
 	 */
 	public Double getDouble(String attr) {
-		Number n = (Number)attrs.get(attr);
-		return n != null ? n.doubleValue() : null;
+		// Number n = (Number)attrs.get(attr);
+		// return n != null ? n.doubleValue() : null;
+		return FieldValueKit.toDouble(attrs.get(attr));
 	}
 	
 	/**
 	 * Get attribute of mysql type: float
 	 */
 	public Float getFloat(String attr) {
-		Number n = (Number)attrs.get(attr);
-		return n != null ? n.floatValue() : null;
+		// Number n = (Number)attrs.get(attr);
+		// return n != null ? n.floatValue() : null;
+		return FieldValueKit.toFloat(attrs.get(attr));
 	}
 	
 	public Short getShort(String attr) {
-		Number n = (Number)attrs.get(attr);
-		return n != null ? n.shortValue() : null;
+		// Number n = (Number)attrs.get(attr);
+		// return n != null ? n.shortValue() : null;
+		return FieldValueKit.toShort(attrs.get(attr));
 	}
 	
 	public Byte getByte(String attr) {
-		Number n = (Number)attrs.get(attr);
-		return n != null ? n.byteValue() : null;
+		// Number n = (Number)attrs.get(attr);
+		// return n != null ? n.byteValue() : null;
+		return FieldValueKit.toByte(attrs.get(attr));
 	}
 	
 	/**
 	 * Get attribute of mysql type: bit, tinyint(1)
 	 */
 	public Boolean getBoolean(String attr) {
-		return (Boolean)attrs.get(attr);
+		// return (Boolean)attrs.get(attr);
+		return FieldValueKit.toBoolean(attrs.get(attr));
 	}
 	
 	/**
 	 * Get attribute of mysql type: decimal, numeric
 	 */
 	public BigDecimal getBigDecimal(String attr) {
-		Object n = attrs.get(attr);
-		if (n instanceof BigDecimal) {
-			return (BigDecimal)n;
-		} else if (n != null) {
-			return new BigDecimal(n.toString());
-		} else {
-			return null;
-		}
+		return FieldValueKit.toBigDecimal(attrs.get(attr));
 	}
 	
 	/**
@@ -478,7 +445,8 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 * Get attribute of any type that extends from Number
 	 */
 	public Number getNumber(String attr) {
-		return (Number)attrs.get(attr);
+		// return (Number)attrs.get(attr);
+		return FieldValueKit.toNumber(attrs.get(attr));
 	}
 	
 	/**
