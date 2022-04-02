@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import com.jfinal.core.converter.TypeConverter;
+import com.jfinal.core.paragetter.JsonRequest;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.ContentType;
@@ -94,7 +95,7 @@ public abstract class Controller {
 	 * 判断是否为 json 请求，contentType 包含 "json" 被认定为 json 请求
 	 */
 	public boolean isJsonRequest() {
-		if (request instanceof com.jfinal.core.paragetter.JsonRequest) {
+		if (request instanceof JsonRequest) {
 			return true;
 		}
 		String ct = request.getContentType();
@@ -828,8 +829,8 @@ public abstract class Controller {
 		HttpServletRequest req = this.request;
 		
 		// 优化 json 请求，避免 JsonRequest.createParaMap() 中的数据转换
-		if (request instanceof com.jfinal.core.paragetter.JsonRequest) {
-			com.jfinal.core.paragetter.JsonRequest jsonReq = (com.jfinal.core.paragetter.JsonRequest)request;
+		if (request instanceof JsonRequest) {
+			JsonRequest jsonReq = (JsonRequest)request;
 			if (jsonReq.getJSONObject() != null) {
 				kv.putAll(jsonReq.getJSONObject());
 			}
