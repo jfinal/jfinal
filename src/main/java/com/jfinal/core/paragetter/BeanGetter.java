@@ -31,7 +31,7 @@ public class BeanGetter<T> extends ParaGetter<T> {
 	public BeanGetter(Class<T> beanClass, String parameterName, Parameter parameter) {
 		super(parameterName, null);
 		this.beanClass = beanClass;
-		this.parameterizedType = getParameterizedType(parameter); 
+		this.parameterizedType = getParameterizedType(parameter);
 	}
 	
 	private Class<?> getParameterizedType(Parameter parameter) {
@@ -39,14 +39,9 @@ public class BeanGetter<T> extends ParaGetter<T> {
 		if (type instanceof ParameterizedType) {
 			Type[] ts = ((ParameterizedType)type).getActualTypeArguments();
 			if (ts != null && ts.length > 0) {
-				try {
-					return Class.forName(ts[0].getTypeName());
-				} catch (ClassNotFoundException e) {
-					return null;
-				}
+				return ts[0] instanceof Class ? (Class<?>)ts[0] : null;
 			}
 		}
-		
 		return null;
 	}
 	
