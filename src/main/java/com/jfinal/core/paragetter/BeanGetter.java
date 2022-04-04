@@ -35,11 +35,13 @@ public class BeanGetter<T> extends ParaGetter<T> {
 	}
 	
 	private Class<?> getParameterizedType(Parameter parameter) {
-		Type type = parameter.getParameterizedType();
-		if (type instanceof ParameterizedType) {
-			Type[] ts = ((ParameterizedType)type).getActualTypeArguments();
-			if (ts != null && ts.length > 0) {
-				return ts[0] instanceof Class ? (Class<?>)ts[0] : null;
+		if (parameter != null) {
+			Type type = parameter.getParameterizedType();
+			if (type instanceof ParameterizedType) {
+				Type[] ts = ((ParameterizedType)type).getActualTypeArguments();
+				if (ts != null && ts.length > 0) {
+					return ts[0] instanceof Class ? (Class<?>)ts[0] : null;
+				}
 			}
 		}
 		return null;
