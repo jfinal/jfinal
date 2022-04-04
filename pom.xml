@@ -134,7 +134,7 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>1.2.76</version>
+			<version>1.2.80</version>
 			<scope>provided</scope>
 		</dependency>
 		
@@ -212,7 +212,7 @@
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>
-			<version>3.2.1</version>
+			<version>3.4.1</version>
 			<scope>provided</scope>
 		</dependency>
 		
@@ -228,7 +228,7 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
-			<version>4.3.8.RELEASE</version>
+			<version>5.3.18</version>
 			<scope>provided</scope>
 		</dependency>
 		
