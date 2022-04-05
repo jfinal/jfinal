@@ -834,7 +834,9 @@ public abstract class Controller {
 			if (jsonReq.getJSONObject() != null) {
 				kv.putAll(jsonReq.getJSONObject());
 			}
+			
 			// json 数据添加完成后再添加内部 HttpServletRequest 对象中的数据
+			// 使用 getInnerRequest() 避免调用 JsonRequest.createParaMap() 产生性能损耗
 			req = jsonReq.getInnerRequest();
 		}
 		
