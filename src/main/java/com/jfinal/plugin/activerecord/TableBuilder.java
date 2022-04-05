@@ -81,6 +81,7 @@ public class TableBuilder {
 		
 		// setColumnType(...) 置入的 java 类型主要用于 core 包下面的 parameter 转成正确的 java 类型
 		for (int i=1; i<=rsmd.getColumnCount(); i++) {
+			// 备忘：getColumnName 获取字段真实名称而非 sql as 子句指定的名称
 			String colName = rsmd.getColumnName(i);
 			String colClassName = rsmd.getColumnClassName(i);
 			

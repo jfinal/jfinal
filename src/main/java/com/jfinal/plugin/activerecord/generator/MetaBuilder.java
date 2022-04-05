@@ -369,6 +369,7 @@ public class MetaBuilder {
 		
 		for (int i=1; i<=columnCount; i++) {
 			ColumnMeta cm = new ColumnMeta();
+			// 备忘：getColumnName 获取字段真实名称而非 sql as 子句指定的名称
 			cm.name = rsmd.getColumnName(i);
 			
 			String typeStr = null;

@@ -85,6 +85,7 @@ public class ModelBuilder {
 	
 	public void buildLabelNamesAndTypes(ResultSetMetaData rsmd, String[] labelNames, int[] types) throws SQLException {
 		for (int i=1; i<labelNames.length; i++) {
+			// 备忘：getColumnLabel 获取 sql as 子句指定的名称而非字段真实名称
 			labelNames[i] = rsmd.getColumnLabel(i);
 			types[i] = rsmd.getColumnType(i);
 		}
