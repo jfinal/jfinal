@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import com.jfinal.kit.TypeKit;
 
 /**
  * Record
@@ -280,7 +281,7 @@ public class Record implements IRow<Record>, Serializable {
 	public Integer getInt(String column) {
 		// Number n = getNumber(column);
 		// return n != null ? n.intValue() : null;
-		return FieldValueKit.toInt(getColumns().get(column));
+		return TypeKit.toInt(getColumns().get(column));
 	}
 	
 	/**
@@ -289,7 +290,7 @@ public class Record implements IRow<Record>, Serializable {
 	public Long getLong(String column) {
 		// Number n = getNumber(column);
 		// return n != null ? n.longValue() : null;
-		return FieldValueKit.toLong(getColumns().get(column));
+		return TypeKit.toLong(getColumns().get(column));
 	}
 	
 	/**
@@ -303,11 +304,11 @@ public class Record implements IRow<Record>, Serializable {
 	 * Get column of mysql type: date, year
 	 */
 	public java.util.Date getDate(String column) {
-		return FieldValueKit.toDate(getColumns().get(column));
+		return TypeKit.toDate(getColumns().get(column));
 	}
 	
 	public LocalDateTime getLocalDateTime(String column) {
-		return FieldValueKit.toLocalDateTime(getColumns().get(column));
+		return TypeKit.toLocalDateTime(getColumns().get(column));
 	}
 	
 	/**
@@ -330,7 +331,7 @@ public class Record implements IRow<Record>, Serializable {
 	public Double getDouble(String column) {
 		// Number n = getNumber(column);
 		// return n != null ? n.doubleValue() : null;
-		return FieldValueKit.toDouble(getColumns().get(column));
+		return TypeKit.toDouble(getColumns().get(column));
 	}
 	
 	/**
@@ -339,19 +340,19 @@ public class Record implements IRow<Record>, Serializable {
 	public Float getFloat(String column) {
 		// Number n = getNumber(column);
 		// return n != null ? n.floatValue() : null;
-		return FieldValueKit.toFloat(getColumns().get(column));
+		return TypeKit.toFloat(getColumns().get(column));
 	}
 	
 	public Short getShort(String column) {
 		// Number n = getNumber(column);
 		// return n != null ? n.shortValue() : null;
-		return FieldValueKit.toShort(getColumns().get(column));
+		return TypeKit.toShort(getColumns().get(column));
 	}
 	
 	public Byte getByte(String column) {
 		// Number n = getNumber(column);
 		// return n != null ? n.byteValue() : null;
-		return FieldValueKit.toByte(getColumns().get(column));
+		return TypeKit.toByte(getColumns().get(column));
 	}
 	
 	/**
@@ -359,14 +360,14 @@ public class Record implements IRow<Record>, Serializable {
 	 */
 	public Boolean getBoolean(String column) {
 		// return (Boolean)getColumns().get(column);
-		return FieldValueKit.toBoolean(getColumns().get(column));
+		return TypeKit.toBoolean(getColumns().get(column));
 	}
 	
 	/**
 	 * Get column of mysql type: decimal, numeric
 	 */
 	public BigDecimal getBigDecimal(String column) {
-		return FieldValueKit.toBigDecimal(getColumns().get(column));
+		return TypeKit.toBigDecimal(getColumns().get(column));
 	}
 	
 	/**
@@ -382,7 +383,7 @@ public class Record implements IRow<Record>, Serializable {
 	 */
 	public Number getNumber(String column) {
 		// return (Number)getColumns().get(column);
-		return FieldValueKit.toNumber(getColumns().get(column));
+		return TypeKit.toNumber(getColumns().get(column));
 	}
 	
 	public String toString() {

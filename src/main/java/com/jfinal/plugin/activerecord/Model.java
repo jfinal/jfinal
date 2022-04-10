@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Function;
+import com.jfinal.kit.TypeKit;
 import com.jfinal.plugin.activerecord.cache.ICache;
 import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
 
@@ -345,7 +346,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public Integer getInt(String attr) {
 		// Number n = (Number)attrs.get(attr);
 		// return n != null ? n.intValue() : null;
-		return FieldValueKit.toInt(attrs.get(attr));
+		return TypeKit.toInt(attrs.get(attr));
 	}
 	
 	/**
@@ -354,7 +355,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public Long getLong(String attr) {
 		// Number n = (Number)attrs.get(attr);
 		// return n != null ? n.longValue() : null;
-		return FieldValueKit.toLong(attrs.get(attr));
+		return TypeKit.toLong(attrs.get(attr));
 	}
 	
 	/**
@@ -368,11 +369,11 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 * Get attribute of mysql type: date, year
 	 */
 	public java.util.Date getDate(String attr) {
-		return FieldValueKit.toDate(attrs.get(attr));
+		return TypeKit.toDate(attrs.get(attr));
 	}
 	
 	public LocalDateTime getLocalDateTime(String attr) {
-		return FieldValueKit.toLocalDateTime(attrs.get(attr));
+		return TypeKit.toLocalDateTime(attrs.get(attr));
 	}
 	
 	/**
@@ -395,7 +396,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public Double getDouble(String attr) {
 		// Number n = (Number)attrs.get(attr);
 		// return n != null ? n.doubleValue() : null;
-		return FieldValueKit.toDouble(attrs.get(attr));
+		return TypeKit.toDouble(attrs.get(attr));
 	}
 	
 	/**
@@ -404,19 +405,19 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public Float getFloat(String attr) {
 		// Number n = (Number)attrs.get(attr);
 		// return n != null ? n.floatValue() : null;
-		return FieldValueKit.toFloat(attrs.get(attr));
+		return TypeKit.toFloat(attrs.get(attr));
 	}
 	
 	public Short getShort(String attr) {
 		// Number n = (Number)attrs.get(attr);
 		// return n != null ? n.shortValue() : null;
-		return FieldValueKit.toShort(attrs.get(attr));
+		return TypeKit.toShort(attrs.get(attr));
 	}
 	
 	public Byte getByte(String attr) {
 		// Number n = (Number)attrs.get(attr);
 		// return n != null ? n.byteValue() : null;
-		return FieldValueKit.toByte(attrs.get(attr));
+		return TypeKit.toByte(attrs.get(attr));
 	}
 	
 	/**
@@ -424,14 +425,14 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 */
 	public Boolean getBoolean(String attr) {
 		// return (Boolean)attrs.get(attr);
-		return FieldValueKit.toBoolean(attrs.get(attr));
+		return TypeKit.toBoolean(attrs.get(attr));
 	}
 	
 	/**
 	 * Get attribute of mysql type: decimal, numeric
 	 */
 	public BigDecimal getBigDecimal(String attr) {
-		return FieldValueKit.toBigDecimal(attrs.get(attr));
+		return TypeKit.toBigDecimal(attrs.get(attr));
 	}
 	
 	/**
@@ -446,7 +447,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 */
 	public Number getNumber(String attr) {
 		// return (Number)attrs.get(attr);
-		return FieldValueKit.toNumber(attrs.get(attr));
+		return TypeKit.toNumber(attrs.get(attr));
 	}
 	
 	/**
