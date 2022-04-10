@@ -145,10 +145,18 @@ public class TypeKit {
 			String s = (String)d;
 			if (s.length() <= dateLen) {
 				return TimeKit.parse(s, datePattern);
-			} else if (s.length() <= dateTimeWithoutSecondLen) {
-				return TimeKit.parse(s, dateTimeWithoutSecondPattern);
-			} else {
+			} else if (s.length() > dateTimeWithoutSecondLen) {
 				return TimeKit.parse(s, dateTimePattern);
+			} else {
+				// 判断冒号字符是否出现两次，月、日、小时、分、秒都允许是一位数，例如：2022-1-2 3:4:5
+				int index = s.indexOf(':');
+				if (index != -1) {
+					if (index != s.lastIndexOf(':')) {
+						return TimeKit.parse(s, dateTimePattern);	
+					} else {
+						return TimeKit.parse(s, dateTimeWithoutSecondPattern);
+					}
+				}
 			}
 		}
 		
@@ -174,10 +182,18 @@ public class TypeKit {
 			String s = (String)ldt;
 			if (s.length() <= dateLen) {
 				return TimeKit.parseLocalDateTime(s, datePattern);
-			} else if (s.length() <= dateTimeWithoutSecondLen) {
-				return TimeKit.parseLocalDateTime(s, dateTimeWithoutSecondPattern);
-			} else {
+			} else if (s.length() > dateTimeWithoutSecondLen) {
 				return TimeKit.parseLocalDateTime(s, dateTimePattern);
+			} else {
+				// 判断冒号字符是否出现两次，月、日、小时、分、秒都允许是一位数，例如：2022-1-2 3:4:5
+				int index = s.indexOf(':');
+				if (index != -1) {
+					if (index != s.lastIndexOf(':')) {
+						return TimeKit.parseLocalDateTime(s, dateTimePattern);
+					} else {
+						return TimeKit.parseLocalDateTime(s, dateTimeWithoutSecondPattern);
+					}
+				}
 			}
 		}
 		
