@@ -39,13 +39,9 @@ import com.jfinal.template.stat.Scope;
  *   #end
  *   
  * 2： java 代码
- *   SqlPara sp = getSqlPara("find", Kv.by("nickName", "prettyGirl").set("age", 18));
- *   user.find(sp)
- *   或者：
- *   user.find(sp.getSql(), sp.getPara());
+ *   user.template("find", Kv.of("nickName", "prettyGirl").set("age", 18)).find();
  * 
  * 3：以上用法会在 #para(expr) 处生成问号占位字符，并且实际的参数放入 SqlPara 对象的参数列表中
- *   后续可以通过 sqlPara.getPara() 获取到参数并直接用于查询
  * 
  * 
  * 二、参数为 int 型数字的用法
@@ -55,11 +51,10 @@ import com.jfinal.template.stat.Scope;
  *   #end
  *   
  * 2： java 代码
- *   SqlPara sp = getSqlPara("find", 10, 100);
- *   user.find(sp)
+ *   user.template("find", 10, 100).find();
  * 
  * 3：以上用法会在 #para(0) 与 #para(1) 处生成问号占位字符，并且将 10、100 这两个参数放入
- *    SqlPara 对象的参数列表中，后续可以通过 sqlPara.getPara() 获取到参数并直接用于查询
+ *    SqlPara 对象的参数列表中
  * </pre>
  */
 public class ParaDirective extends Directive {

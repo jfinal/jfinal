@@ -27,14 +27,9 @@ import com.jfinal.template.stat.Scope;
  *   #end
  *
  * 2： java 代码
- *   SqlPara sp = getSqlPara("find", Kv.of("nickName", "prettyGirl"));
- *   user.find(sp)
- *   或者：
- *   user.find(sp.getSql(), sp.getPara());
+ *   user.template("find", Kv.of("nickName")).find();
  *
  * 3：以上用法会在 #like(expr) 处生成问号占位字符，并且实际的参数放入 SqlPara 对象的参数列表中
- *   后续可以通过 sqlPara.getPara() 获取到参数并直接用于查询
- *
  *
  * 二、参数为 int 型数字的用法（#like 指令前方需要指定字段名）
  * 1：模板内容
@@ -43,11 +38,9 @@ import com.jfinal.template.stat.Scope;
  *   #end
  *
  * 2： java 代码
- *   SqlPara sp = getSqlPara("find", "james");
- *   user.find(sp)
+ *   user.template("find", "james").find();
  *
- * 3：以上用法会在 #like(0) 与 #like(1) 处生成问号占位字符，并且将参数 "james" 放入
- *    SqlPara 对象的参数列表中，后续可以通过 sqlPara.getPara() 获取到参数并直接用于查询
+ * 3：以上用法会在 #like(0) 处生成问号占位字符，并且将参数 "james" 放入 SqlPara 对象的参数列表中
  * </pre>
  */
 public class LikeDirective extends Directive {
