@@ -96,16 +96,17 @@ public class TypeKit {
 	public static Boolean toBoolean(Object b) {
 		if (b instanceof Boolean) {
 			return (Boolean)b;
+		} else if (b == null) {
+			return null;
 		}
 		
-		if (b instanceof String) {
-			// 支持 String 类型转换，并且支持数字 1/0 与字符串 "1"/"0" 转换
-			String s = (String)b;
-			if ("true".equalsIgnoreCase(s) || "1".equals(s)) {
-				return Boolean.TRUE;
-			} else if ("false".equalsIgnoreCase(s) || "0".equals(s)) {
-				return Boolean.FALSE;
-			}
+		// 支持 String 类型转换，并且支持数字 1/0 与字符串 "1"/"0" 转换
+		// 此处不能在判断 instanceof String 后强转 String，要支持 int、long 型的 1/0 值
+		String s = b.toString();
+		if ("true".equalsIgnoreCase(s) || "1".equals(s)) {
+			return Boolean.TRUE;
+		} else if ("false".equalsIgnoreCase(s) || "0".equals(s)) {
+			return Boolean.FALSE;
 		}
 		
 		return (Boolean)b;
