@@ -55,6 +55,8 @@ public class SqlKit {
 		
 		engine.addDirective("para", ParaDirective.class, true);
 		engine.addDirective("p", ParaDirective.class, true);		// 配置 #para 指令的别名指令 #p，不建议使用，在此仅为兼容 3.0 版本
+		
+		engine.addDirective("like", LikeDirective.class, true);
 	}
 	
 	public SqlKit(String configName) {
