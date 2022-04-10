@@ -152,7 +152,7 @@ public class TypeKit {
 				int index = s.indexOf(':');
 				if (index != -1) {
 					if (index != s.lastIndexOf(':')) {
-						return TimeKit.parse(s, dateTimePattern);	
+						return TimeKit.parse(s, dateTimePattern);
 					} else {
 						return TimeKit.parse(s, dateTimeWithoutSecondPattern);
 					}
