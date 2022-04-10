@@ -1,4 +1,5 @@
 package com.jfinal.plugin.activerecord.dialect;
+
 import com.jfinal.plugin.activerecord.CPI;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.Table;
@@ -9,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class InformixDialect extends Dialect {
-	
+
     public String forTableBuilderDoBuild(String tableName) {
         return "select * from " + tableName + " where 1 = 2";
     }
@@ -136,7 +137,7 @@ public class InformixDialect extends Dialect {
     public void forDbUpdate(String tableName, String[] pKeys, Object[] ids, Record record, StringBuilder sql, List<Object> paras) {
         tableName = tableName.trim();
         trimPrimaryKeys(pKeys);
-        
+
         // Record 新增支持 modifyFlag
      	Set<String> modifyFlag = CPI.getModifyFlag(record);
 

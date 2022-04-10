@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,25 +28,25 @@ import com.jfinal.template.stat.Scope;
  *    #@funcName(p1, p2, ..., pn)
  * 2：安全调用，函数被定义才调用，否则跳过
  *    #@funcName?(p1, p2, ..., pn)
- * 
+ *
  * 注意：在函数名前面引入 '@' 字符是为了区分模板函数和指令
  */
 public class Call extends Stat {
-	
+
 	private String funcName;
 	private ExprList exprList;
 	private boolean callIfDefined;
-	
+
 	public Call(String funcName, ExprList exprList, boolean callIfDefined) {
 		this.funcName = funcName;
 		this.exprList = exprList;
 		this.callIfDefined = callIfDefined;
 	}
-	
+
 	public void exec(Env env, Scope scope, Writer writer) {
 		Define function = env.getFunction(funcName);
 		if (function != null) {
-			function.call(env, scope, exprList, writer);	
+			function.call(env, scope, exprList, writer);
 		} else if (callIfDefined) {
 			return ;
 		} else {

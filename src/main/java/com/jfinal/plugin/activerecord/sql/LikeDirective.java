@@ -1,3 +1,19 @@
+/**
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.jfinal.plugin.activerecord.sql;
 
 import com.jfinal.plugin.activerecord.SqlPara;
@@ -44,20 +60,20 @@ import com.jfinal.template.stat.Scope;
  * </pre>
  */
 public class LikeDirective extends Directive {
-	
+
 	private int index = -1;
 	private String paraName = null;
 	private static boolean checkParaAssigned = true;
-	
+
 	public static void setCheckParaAssigned(boolean checkParaAssigned) {
 		LikeDirective.checkParaAssigned = checkParaAssigned;
 	}
-	
+
 	public void setExprList(ExprList exprList) {
 		if (exprList.length() == 0) {
 			throw new ParseException("The parameter of #like directive can not be blank", location);
 		}
-		
+
 		if (exprList.length() == 1) {
 			Expr expr = exprList.getExpr(0);
 			if (expr instanceof Const && ((Const)expr).isInt()) {
@@ -67,28 +83,28 @@ public class LikeDirective extends Directive {
 				}
 			}
 		}
-		
+
 		if (checkParaAssigned && exprList.getLastExpr() instanceof Id) {
 			Id id = (Id)exprList.getLastExpr();
 			paraName = id.getId();
 		}
-		
+
 		this.exprList = exprList;
 	}
-	
+
 	public void exec(Env env, Scope scope, Writer writer) {
 		SqlPara sqlPara = (SqlPara)scope.get(SqlKit.SQL_PARA_KEY);
 		if (sqlPara == null) {
 			throw new TemplateException("#like directive invoked by getSqlPara(...) method only", location);
 		}
-		
+
 		if (index == -1) {
 			// #like(paraName) 中的 paraName 没有赋值时抛出异常
 			// issue: https://jfinal.com/feedback/1832
 			if (checkParaAssigned && paraName != null && !scope.exists(paraName)) {
 				throw new TemplateException("The parameter \""+ paraName +"\" must be assigned", location);
 			}
-			
+
 			// 自动添加 like 前方的字段名，例如: #like(title) 生成 title like ?
 			write(writer, paraName);
 			write(writer, " like ?");
@@ -101,7 +117,7 @@ public class LikeDirective extends Directive {
 			if (index >= paras.length) {
 				throw new TemplateException("The index of #like directive is out of bounds: " + index, location);
 			}
-			
+
 			// like 前方的字段名写在 sql 模板中，例如: title #like(0) 生成 title like ?
 			write(writer, "like ?");
 			sqlPara.addPara("%" + paras[index] + "%");

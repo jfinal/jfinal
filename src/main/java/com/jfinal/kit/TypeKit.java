@@ -1,3 +1,19 @@
+/**
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.jfinal.kit;
 
 import java.math.BigDecimal;
@@ -10,19 +26,19 @@ import java.time.temporal.Temporal;
  * TypeKit
  */
 public class TypeKit {
-	
+
 	private static final String datePattern = "yyyy-MM-dd";
 	private static final int dateLen = datePattern.length();
-	
+
 	private static final String dateTimeWithoutSecondPattern = "yyyy-MM-dd HH:mm";
 	private static final int dateTimeWithoutSecondLen = dateTimeWithoutSecondPattern.length();
-	
+
 	private static final String dateTimePattern = "yyyy-MM-dd HH:mm:ss";
-	
+
 	public static String toStr(Object s) {
 		return s != null ? s.toString() : null;
 	}
-	
+
 	public static Integer toInt(Object n) {
 		if (n instanceof Integer) {
 			return (Integer)n;
@@ -32,7 +48,7 @@ public class TypeKit {
 		// 支持 String 类型转换
 		return n != null ? Integer.parseInt(n.toString()) : null;
 	}
-	
+
 	public static Long toLong(Object n) {
 		if (n instanceof Long) {
 			return (Long)n;
@@ -42,7 +58,7 @@ public class TypeKit {
 		// 支持 String 类型转换
 		return n != null ? Long.parseLong(n.toString()) : null;
 	}
-	
+
 	public static Double toDouble(Object n) {
 		if (n instanceof Double) {
 			return (Double)n;
@@ -52,7 +68,7 @@ public class TypeKit {
 		// 支持 String 类型转换
 		return n != null ? Double.parseDouble(n.toString()) : null;
 	}
-	
+
 	public static BigDecimal toBigDecimal(Object n) {
 		if (n instanceof BigDecimal) {
 			return (BigDecimal)n;
@@ -62,7 +78,7 @@ public class TypeKit {
 			return null;
 		}
 	}
-	
+
 	public static Float toFloat(Object n) {
 		if (n instanceof Float) {
 			return (Float)n;
@@ -72,7 +88,7 @@ public class TypeKit {
 		// 支持 String 类型转换
 		return n != null ? Float.parseFloat(n.toString()) : null;
 	}
-	
+
 	public static Short toShort(Object n) {
 		if (n instanceof Short) {
 			return (Short)n;
@@ -82,7 +98,7 @@ public class TypeKit {
 		// 支持 String 类型转换
 		return n != null ? Short.parseShort(n.toString()) : null;
 	}
-	
+
 	public static Byte toByte(Object n) {
 		if (n instanceof Byte) {
 			return (Byte)n;
@@ -92,14 +108,14 @@ public class TypeKit {
 		// 支持 String 类型转换
 		return n != null ? Byte.parseByte(n.toString()) : null;
 	}
-	
+
 	public static Boolean toBoolean(Object b) {
 		if (b instanceof Boolean) {
 			return (Boolean)b;
 		} else if (b == null) {
 			return null;
 		}
-		
+
 		// 支持 String 类型转换，并且支持数字 1/0 与字符串 "1"/"0" 转换
 		// 此处不能在判断 instanceof String 后强转 String，要支持 int、long 型的 1/0 值
 		String s = b.toString();
@@ -108,27 +124,27 @@ public class TypeKit {
 		} else if ("false".equalsIgnoreCase(s) || "0".equals(s)) {
 			return Boolean.FALSE;
 		}
-		
+
 		return (Boolean)b;
 	}
-	
+
 	public static Number toNumber(Object n) {
 		if (n instanceof Number) {
 			return (Number)n;
 		} else if (n == null) {
 			return null;
 		}
-		
+
 		// 支持 String 类型转换
 		String s = n.toString();
 		return s.indexOf('.') != -1 ? Double.parseDouble(s) : Long.parseLong(s);
 	}
-	
+
 	public static java.util.Date toDate(Object d) {
 		if (d instanceof java.util.Date) {
 			return (java.util.Date)d;
 		}
-		
+
 		if (d instanceof Temporal) {
 			if (d instanceof LocalDateTime) {
 				return TimeKit.toDate((LocalDateTime)d);
@@ -140,7 +156,7 @@ public class TypeKit {
 				return TimeKit.toDate((LocalTime)d);
 			}
 		}
-		
+
 		if (d instanceof String) {
 			String s = (String)d;
 			if (s.length() <= dateLen) {
@@ -159,15 +175,15 @@ public class TypeKit {
 				}
 			}
 		}
-		
+
 		return (java.util.Date)d;
 	}
-	
+
 	public static LocalDateTime toLocalDateTime(Object ldt) {
 		if (ldt instanceof LocalDateTime) {
 			return (LocalDateTime)ldt;
 		}
-		
+
 		if (ldt instanceof LocalDate) {
 			return ((LocalDate)ldt).atStartOfDay();
 		}
@@ -177,7 +193,7 @@ public class TypeKit {
 		if (ldt instanceof java.util.Date) {
 			return TimeKit.toLocalDateTime((java.util.Date)ldt);
 		}
-		
+
 		if (ldt instanceof String) {
 			String s = (String)ldt;
 			if (s.length() <= dateLen) {
@@ -196,7 +212,7 @@ public class TypeKit {
 				}
 			}
 		}
-		
+
 		return (LocalDateTime)ldt;
 	}
 }

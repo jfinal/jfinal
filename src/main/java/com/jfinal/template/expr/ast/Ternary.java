@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import com.jfinal.template.stat.Scope;
  * Ternary
  */
 public class Ternary extends Expr {
-	
+
 	private Expr cond;
 	private Expr exprOne;
 	private Expr exprTwo;
-	
+
 	/**
 	 * cond ? exprOne : exprTwo
 	 */
@@ -41,7 +41,7 @@ public class Ternary extends Expr {
 		this.exprTwo = exprTwo;
 		this.location = location;
 	}
-	
+
 	public Object eval(Scope scope) {
 		return Logic.isTrue(cond.eval(scope)) ? exprOne.eval(scope) : exprTwo.eval(scope);
 	}
