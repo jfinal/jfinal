@@ -16,6 +16,7 @@
 
 package com.jfinal.kit;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import com.jfinal.json.Json;
@@ -91,31 +92,39 @@ public class Kv extends HashMap {
 	}
 	
 	public Integer getInt(Object key) {
-		Number n = (Number)get(key);
-		return n != null ? n.intValue() : null;
+		return TypeKit.toInt(get(key));
 	}
 	
 	public Long getLong(Object key) {
-		Number n = (Number)get(key);
-		return n != null ? n.longValue() : null;
+		return TypeKit.toLong(get(key));
+	}
+	
+	public BigDecimal getBigDecimal(Object key) {
+		return TypeKit.toBigDecimal(get(key));
 	}
 	
 	public Double getDouble(Object key) {
-		Number n = (Number)get(key);
-		return n != null ? n.doubleValue() : null;
+		return TypeKit.toDouble(get(key));
 	}
 	
 	public Float getFloat(Object key) {
-		Number n = (Number)get(key);
-		return n != null ? n.floatValue() : null;
+		return TypeKit.toFloat(get(key));
 	}
 	
 	public Number getNumber(Object key) {
-		return (Number)get(key);
+		return TypeKit.toNumber(get(key));
 	}
 	
 	public Boolean getBoolean(Object key) {
-		return (Boolean)get(key);
+		return TypeKit.toBoolean(get(key));
+	}
+	
+	public java.util.Date getDate(Object key) {
+		return TypeKit.toDate(get(key));
+	}
+	
+	public java.time.LocalDateTime getLocalDateTime(Object key) {
+		return TypeKit.toLocalDateTime(get(key));
 	}
 	
 	/**
@@ -137,7 +146,7 @@ public class Kv extends HashMap {
 	 */
 	public boolean isTrue(Object key) {
 		Object value = get(key);
-		return (value instanceof Boolean && ((Boolean)value == true));
+		return value != null && TypeKit.toBoolean(value);
 	}
 	
 	/**
@@ -145,7 +154,7 @@ public class Kv extends HashMap {
 	 */
 	public boolean isFalse(Object key) {
 		Object value = get(key);
-		return (value instanceof Boolean && ((Boolean)value == false));
+		return value != null && !TypeKit.toBoolean(value);
 	}
 	
 	public String toJson() {
