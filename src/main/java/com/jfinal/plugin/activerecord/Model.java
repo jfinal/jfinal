@@ -18,6 +18,7 @@ package com.jfinal.plugin.activerecord;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -361,8 +362,24 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	/**
 	 * Get attribute of mysql type: unsigned bigint
 	 */
-	public java.math.BigInteger getBigInteger(String attr) {
-		return (java.math.BigInteger)attrs.get(attr);
+	public BigInteger getBigInteger(String attr) {
+		// return (java.math.BigInteger)attrs.get(attr);
+		Object n = attrs.get(attr);
+		if (n instanceof BigInteger) {
+			return (BigInteger)n;
+		}
+
+		// 数据类型 id(19 number)在 Oracle Jdbc 下对应的是 BigDecimal,
+		// 但是在 MySql 下对应的是 BigInteger，这会导致在 MySql 下生成的代码无法在 Oracle 数据库中使用
+		if (n instanceof BigDecimal) {
+			return ((BigDecimal)n).toBigInteger();
+		} else if (n instanceof Number) {
+			return BigInteger.valueOf(((Number)n).longValue());
+		} else if (n instanceof String) {
+			return new BigInteger((String)n);
+		}
+
+		return (BigInteger)n;
 	}
 	
 	/**
