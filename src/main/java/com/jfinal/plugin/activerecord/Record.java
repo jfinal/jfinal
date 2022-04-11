@@ -463,7 +463,7 @@ public class Record implements IRow<Record>, Serializable {
 	
 	@Override
 	public boolean isEmpty() {
-		return columns != null ? columns.isEmpty() : true;
+		return columns == null || columns.isEmpty();
 	}
 }
 
