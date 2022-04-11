@@ -277,7 +277,15 @@ public abstract class Routes {
 		public String getControllerPath() {
 			return controllerPath;
 		}
-		
+
+		/**
+		 * 已更名为 getControllerPath()
+		 */
+		@Deprecated
+		public String getControllerKey() {
+			return controllerPath;
+		}
+
 		public Class<? extends Controller> getControllerClass() {
 			return controllerClass;
 		}
