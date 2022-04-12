@@ -105,9 +105,7 @@ public class LikeDirective extends Directive {
 				throw new TemplateException("The parameter \""+ paraName +"\" must be assigned", location);
 			}
 
-			// 自动添加 like 前方的字段名，例如: #like(title) 生成 title like ?
-			write(writer, paraName);
-			write(writer, " like ?");
+			write(writer, "like ?");
 			sqlPara.addPara("%" + exprList.eval(scope) + "%");
 		} else {
 			Object[] paras = (Object[])scope.get(SqlKit.PARA_ARRAY_KEY);
@@ -118,7 +116,6 @@ public class LikeDirective extends Directive {
 				throw new TemplateException("The index of #like directive is out of bounds: " + index, location);
 			}
 
-			// like 前方的字段名写在 sql 模板中，例如: title #like(0) 生成 title like ?
 			write(writer, "like ?");
 			sqlPara.addPara("%" + paras[index] + "%");
 		}
