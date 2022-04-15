@@ -116,7 +116,7 @@ public class ErrorRender extends Render {
 		boolean isJsonContentType = ct != null && ct.indexOf("json") != -1;
 		
 		// 支持 me.setErrorView(xxx.html) 配置
-		// 注意：针对 json 的 setErrorJsonContent(...) 直接覆盖掉了默认值，走后面的 response.getOutputStream().write(...) 即何
+		// 注意：针对 json 的 setErrorJsonContent(...) 直接覆盖掉了默认值，会走后面的 response.getOutputStream().write(...)
 		if (viewOrJson == null) {
 		    if (! isJsonContentType) {
 		        viewOrJson = getErrorView(getErrorCode());
