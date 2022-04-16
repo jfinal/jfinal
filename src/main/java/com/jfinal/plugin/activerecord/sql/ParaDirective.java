@@ -16,6 +16,8 @@
 
 package com.jfinal.plugin.activerecord.sql;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
 import com.jfinal.plugin.activerecord.SqlPara;
 import com.jfinal.template.Directive;
 import com.jfinal.template.Env;
@@ -55,6 +57,22 @@ import com.jfinal.template.stat.Scope;
  * 
  * 3：以上用法会在 #para(0) 与 #para(1) 处生成问号占位字符，并且将 10、100 这两个参数放入
  *    SqlPara 对象的参数列表中
+ * 
+ * 三、4.9.23 新增支持 like、in 子句
+ *    ### 一般用法，第二个参数传入 "like"、"in" 参数即可
+ *    select * from t title like #para(title, "like")
+ *    select * from t title like #para(title, "in")
+ *    
+ *    ### like 类型第一个参数支持 int 类型。注意：in 类型不支持第一个参数为 int 类型
+ *    select * from t title like #para(0, "like")
+ *    
+ *    ### like 支持左侧与右侧百分号用法
+ *    select * from t title like #para(title, "%like")
+ *    select * from t title like #para(title, "like%")
+ *    
+ *    ### 注意：in 子句第一个参数不支持 int 类型
+ *    select * from t id in #para(idList, "in")
+ * 
  * </pre>
  */
 public class ParaDirective extends Directive {
@@ -62,6 +80,13 @@ public class ParaDirective extends Directive {
 	private int index = -1;
 	private String paraName = null;
 	private static boolean checkParaAssigned = true;
+	
+	// 支持 like、in 子句
+	private int type = 0;
+	private static final int TYPE_LIKE = 1;
+	private static final int TYPE_LIKE_LEFT = 2;
+	private static final int TYPE_LIKE_RIGHT = 3;
+	private static final int TYPE_IN = 4;
 	
 	public static void setCheckParaAssigned(boolean checkParaAssigned) {
 		ParaDirective.checkParaAssigned = checkParaAssigned;
@@ -72,18 +97,34 @@ public class ParaDirective extends Directive {
 			throw new ParseException("The parameter of #para directive can not be blank", location);
 		}
 		
-		if (exprList.length() == 1) {
-			Expr expr = exprList.getExpr(0);
-			if (expr instanceof Const && ((Const)expr).isInt()) {
-				index = ((Const)expr).getInt();
-				if (index < 0) {
-					throw new ParseException("The index of para array must greater than -1", location);
-				}
+		Expr expr = exprList.getExpr(0);
+		if (expr instanceof Const && ((Const)expr).isInt()) {
+			index = ((Const)expr).getInt();
+			if (index < 0) {
+				throw new ParseException("The index of para array must greater than -1", location);
 			}
 		}
 		
-		if (checkParaAssigned && exprList.getLastExpr() instanceof Id) {
-			Id id = (Id)exprList.getLastExpr();
+		if (exprList.length() > 1) {
+		    expr = exprList.getExpr(1);
+		    if (expr instanceof Const && ((Const)expr).isStr()) {
+		        String typeStr = ((Const)expr).getStr();
+		        if ("like".equalsIgnoreCase(typeStr) || "%like%".equalsIgnoreCase(typeStr)) {
+		            type = TYPE_LIKE;
+		        } else if ("%like".equalsIgnoreCase(typeStr)) {
+		            type = TYPE_LIKE_LEFT;
+		        } else if ("like%".equalsIgnoreCase(typeStr)) {
+		            type = TYPE_LIKE_RIGHT;
+		        } else if ("in".equalsIgnoreCase(typeStr)) {
+		            type = TYPE_IN;
+		        } else {
+		            throw new ParseException("The type of para must be: like, %like, like%, in", location);
+		        }
+		    }
+		}
+		
+		if (checkParaAssigned && exprList.getExpr(0) instanceof Id) {
+			Id id = (Id)exprList.getExpr(0);
 			paraName = id.getId();
 		}
 		
@@ -96,7 +137,6 @@ public class ParaDirective extends Directive {
 			throw new TemplateException("#para directive invoked by getSqlPara(...) method only", location);
 		}
 		
-		write(writer, "?");
 		if (index == -1) {
 			// #para(paraName) 中的 paraName 没有赋值时抛出异常
 			// issue: https://jfinal.com/feedback/1832
@@ -104,18 +144,72 @@ public class ParaDirective extends Directive {
 				throw new TemplateException("The parameter \""+ paraName +"\" must be assigned", location);
 			}
 			
-			sqlPara.addPara(exprList.eval(scope));
+			handleSqlPara(writer, sqlPara, exprList.getExpr(0).eval(scope));
 		} else {
 			Object[] paras = (Object[])scope.get(SqlKit.PARA_ARRAY_KEY);
 			if (paras == null) {
-				throw new TemplateException("The #para(" + index + ") directive must invoked by getSqlPara(String, Object...) method", location);
+				throw new TemplateException("The #para(" + index + ") directive must invoked by template(String, Object...) or getSqlPara(String, Object...) method", location);
 			}
 			if (index >= paras.length) {
 				throw new TemplateException("The index of #para directive is out of bounds: " + index, location);
 			}
-			sqlPara.addPara(paras[index]);
+			
+			handleSqlPara(writer, sqlPara, paras[index]);
 		}
 	}
+	
+	private void handleSqlPara(Writer writer, SqlPara sqlPara, Object value) {
+	    if (type == 0) {
+	        write(writer, "?");
+	        sqlPara.addPara(value);
+	    } else if (type == TYPE_LIKE) {
+	        write(writer, "?");
+	        sqlPara.addPara("%" + value + "%");
+	    } else if (type == TYPE_LIKE_LEFT) {
+	        write(writer, "?");
+	        sqlPara.addPara("%" + value);
+        } else if (type == TYPE_LIKE_RIGHT) {
+            write(writer, "?");
+            sqlPara.addPara(value + "%");
+        } else if (type == TYPE_IN) {
+            if (value instanceof Collection) {
+                handleCollection(writer, sqlPara, (Collection<?>)value);
+            } else if (value.getClass().isArray()) {
+                handleArray(writer, sqlPara, value);
+            } else {
+                write(writer, "(?)");
+                sqlPara.addPara(value);
+            }
+        }
+	}
+	
+	private void handleCollection(Writer writer, SqlPara sqlPara, Collection<?> collection) { 
+	    write(writer, "(");
+        boolean first = true;
+        for (Object element : collection) {
+            if (first) {
+                first = false;
+            } else {
+                write(writer, ",");
+            }
+            write(writer, "?");
+            sqlPara.addPara(element);
+        }
+        write(writer, ")");
+	}
+	
+	private void handleArray(Writer writer, SqlPara sqlPara, Object array) {
+        write(writer, "(");
+        int size = Array.getLength(array);
+        for (int i=0; i<size; i++) {
+            if (i > 0) {
+                write(writer, ",");
+            }
+            write(writer, "?");
+            sqlPara.addPara(Array.get(array, i));
+        }
+        write(writer, ")");
+    }
 }
 
 
