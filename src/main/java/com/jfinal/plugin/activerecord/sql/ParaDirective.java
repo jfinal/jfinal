@@ -63,15 +63,18 @@ import com.jfinal.template.stat.Scope;
  *    select * from t title like #para(title, "like")
  *    select * from t title like #para(title, "in")
  *    
- *    ### like 类型第一个参数支持 int 类型。注意：in 类型不支持第一个参数为 int 类型
+ *    ### like 类型第一个参数支持 int 类型
  *    select * from t title like #para(0, "like")
  *    
  *    ### like 支持左侧与右侧百分号用法
  *    select * from t title like #para(title, "%like")
  *    select * from t title like #para(title, "like%")
  *    
- *    ### 注意：in 子句第一个参数不支持 int 类型
- *    select * from t id in #para(idList, "in")
+ *    ### 警告：对于 in 子句，如果 #para 第一个参数是 int 型，并且 java 代码针对 Object... 参数传入的是数组
+ *    select * from t id in #para(0, "in")
+ *    ### 那么 java 代码中要将 Object... 处的参数强制转成 Object，否则参数传递不正确
+ *    Integer[] idArray = {1, 2, 3};
+      Db.template("findByIdArray", (Object)idArray).find();
  * 
  * </pre>
  */
@@ -105,23 +108,23 @@ public class ParaDirective extends Directive {
 			}
 		}
 		
-		if (exprList.length() > 1) {
-		    expr = exprList.getExpr(1);
-		    if (expr instanceof Const && ((Const)expr).isStr()) {
-		        String typeStr = ((Const)expr).getStr();
-		        if ("like".equalsIgnoreCase(typeStr) || "%like%".equalsIgnoreCase(typeStr)) {
-		            type = TYPE_LIKE;
-		        } else if ("%like".equalsIgnoreCase(typeStr)) {
-		            type = TYPE_LIKE_LEFT;
-		        } else if ("like%".equalsIgnoreCase(typeStr)) {
-		            type = TYPE_LIKE_RIGHT;
-		        } else if ("in".equalsIgnoreCase(typeStr)) {
-		            type = TYPE_IN;
-		        } else {
-		            throw new ParseException("The type of para must be: like, %like, like%, in", location);
-		        }
-		    }
-		}
+        if (exprList.length() > 1) {
+            expr = exprList.getExpr(1);
+            if (expr instanceof Const && ((Const)expr).isStr()) {
+                String typeStr = ((Const)expr).getStr();
+                if ("like".equalsIgnoreCase(typeStr) || "%like%".equalsIgnoreCase(typeStr)) {
+                    type = TYPE_LIKE;
+                } else if ("%like".equalsIgnoreCase(typeStr)) {
+                    type = TYPE_LIKE_LEFT;
+                } else if ("like%".equalsIgnoreCase(typeStr)) {
+                    type = TYPE_LIKE_RIGHT;
+                } else if ("in".equalsIgnoreCase(typeStr)) {
+                    type = TYPE_IN;
+                } else {
+                    throw new ParseException("The type of para must be: like, %like, like%, in. Not support : " + typeStr, location);
+                }
+            }
+        }
 		
 		if (checkParaAssigned && exprList.getExpr(0) instanceof Id) {
 			Id id = (Id)exprList.getExpr(0);
@@ -158,33 +161,33 @@ public class ParaDirective extends Directive {
 		}
 	}
 	
-	private void handleSqlPara(Writer writer, SqlPara sqlPara, Object value) {
-	    if (type == 0) {
-	        write(writer, "?");
-	        sqlPara.addPara(value);
-	    } else if (type == TYPE_LIKE) {
-	        write(writer, "?");
-	        sqlPara.addPara("%" + value + "%");
-	    } else if (type == TYPE_LIKE_LEFT) {
-	        write(writer, "?");
-	        sqlPara.addPara("%" + value);
+    private void handleSqlPara(Writer writer, SqlPara sqlPara, Object value) {
+        if (type == 0) {
+            write(writer, "?");
+            sqlPara.addPara(value);
+        } else if (type == TYPE_LIKE) {
+            write(writer, "?");
+            sqlPara.addPara("%" + value + "%");
+        } else if (type == TYPE_LIKE_LEFT) {
+            write(writer, "?");
+            sqlPara.addPara("%" + value);
         } else if (type == TYPE_LIKE_RIGHT) {
             write(writer, "?");
             sqlPara.addPara(value + "%");
         } else if (type == TYPE_IN) {
             if (value instanceof Collection) {
                 handleCollection(writer, sqlPara, (Collection<?>)value);
-            } else if (value.getClass().isArray()) {
+            } else if (value != null && value.getClass().isArray()) {
                 handleArray(writer, sqlPara, value);
             } else {
                 write(writer, "(?)");
                 sqlPara.addPara(value);
             }
         }
-	}
-	
-	private void handleCollection(Writer writer, SqlPara sqlPara, Collection<?> collection) { 
-	    write(writer, "(");
+    }
+    
+    private void handleCollection(Writer writer, SqlPara sqlPara, Collection<?> collection) {
+        write(writer, "(");
         boolean first = true;
         for (Object element : collection) {
             if (first) {
@@ -196,9 +199,9 @@ public class ParaDirective extends Directive {
             sqlPara.addPara(element);
         }
         write(writer, ")");
-	}
-	
-	private void handleArray(Writer writer, SqlPara sqlPara, Object array) {
+    }
+    
+    private void handleArray(Writer writer, SqlPara sqlPara, Object array) {
         write(writer, "(");
         int size = Array.getLength(array);
         for (int i=0; i<size; i++) {
