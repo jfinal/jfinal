@@ -192,10 +192,10 @@ public class ParaDirective extends Directive {
         for (Object element : collection) {
             if (first) {
                 first = false;
+                write(writer, "?");
             } else {
-                write(writer, ",");
+                write(writer, ", ?");
             }
-            write(writer, "?");
             sqlPara.addPara(element);
         }
         write(writer, ")");
@@ -205,10 +205,11 @@ public class ParaDirective extends Directive {
         write(writer, "(");
         int size = Array.getLength(array);
         for (int i=0; i<size; i++) {
-            if (i > 0) {
-                write(writer, ",");
+            if (i == 0) {
+                write(writer, "?");
+            } else {
+                write(writer, ", ?");
             }
-            write(writer, "?");
             sqlPara.addPara(Array.get(array, i));
         }
         write(writer, ")");
