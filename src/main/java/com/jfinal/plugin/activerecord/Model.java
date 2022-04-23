@@ -44,24 +44,24 @@ import static com.jfinal.plugin.activerecord.DbKit.NULL_PARA_ARRAY;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class Model<M extends Model> implements IRow<M>, Serializable {
-	
+
 	private static final long serialVersionUID = -990334519496260591L;
-	
+
 	public static final int FILTER_BY_SAVE = 0;
 	public static final int FILTER_BY_UPDATE = 1;
-	
+
 	private String configName;
-	
+
 	/**
 	 * Flag of column has been modified. update need this flag
 	 */
 	Set<String> modifyFlag;
-	
+
 	/**
 	 * Attributes of this model
 	 */
 	private Map<String, Object> attrs = createAttrsMap();	// getConfig().containerFactory.getAttrsMap();	// new HashMap<String, Object>();
-	
+
 	private Map<String, Object> createAttrsMap() {
 		Config config = _getConfig();
 		if (config == null) {
@@ -69,23 +69,23 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return config.containerFactory.getAttrsMap();
 	}
-	
+
 	/**
 	 * 将本 model 对象转化为线程安全的 dao 对象.
-	 * 
+	 *
 	 * 为保障线程安全，转化为线程安全的 dao 对象，只能调用线程安全方法，
 	 * 也即只能调用其 find 系列、paginate 系列、deleteBy 系列方法，
 	 * 不能再调用其 set 系列以及 get 系列方法，更不能再调用其 save()、
 	 * update()、delete() 等方法，否则会抛出异常进行防护
-	 * 
+	 *
 	 * <pre>
 	 * 强烈建议通过 static 修饰过的 dao 对象都要调用一次 dao() 方法，
 	 * 以免新手误用造成线程安全问题，示例如下：
-	 * 
+	 *
 	 * public class UserService {
-	 * 
+	 *
 	 * 	private static User dao = new User().dao();
-	 * 		
+	 *
 	 * 	public User getUserById(long userId) {
 	 * 		return dao.findFirst("select * from `user` where id = ? limit 1", userId);
 	 * 	}
@@ -97,17 +97,17 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		modifyFlag = DaoContainerFactory.daoSet;
 		return (M)this;
 	}
-	
+
 	/**
 	 * filter () 方法将被 save()、update() 两个方法回调，
 	 * 子类可通过覆盖此方法，实现类似于过滤 XSS 攻击脚本的功能
-	 * 
+	 *
 	 * @param filterBy 0 表示当前正被 save() 调用, 1 表示当前正被 update() 调用
 	 */
 	protected void filter(int filterBy) {
-		
+
 	}
-	
+
 	/**
 	 * Return attribute Map.
 	 * <p>
@@ -117,14 +117,14 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	protected Map<String, Object> _getAttrs() {
 		return attrs;
 	}
-	
+
 	/**
 	 * Return attribute Set.
 	 */
 	public Set<Entry<String, Object>> _getAttrsEntrySet() {
 		return attrs.entrySet();
 	}
-	
+
 	/**
 	 * Return attribute names of this model.
 	 */
@@ -132,7 +132,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		Set<String> attrNameSet = attrs.keySet();
 		return attrNameSet.toArray(new String[attrNameSet.size()]);
 	}
-	
+
 	/**
 	 * Return attribute values of this model.
 	 */
@@ -140,7 +140,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		java.util.Collection<Object> attrValueCollection = attrs.values();
 		return attrValueCollection.toArray(new Object[attrValueCollection.size()]);
 	}
-	
+
 	/**
 	 * Set attributes with other model.
 	 * @param model the Model
@@ -149,7 +149,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public M _setAttrs(M model) {
 		return (M)_setAttrs(model._getAttrs());
 	}
-	
+
 	/**
 	 * Set attributes with Map.
 	 * @param attrs attributes of this model
@@ -163,14 +163,14 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return (M)this;
 	}
-	
+
 	/*
 	private Set<String> getModifyFlag() {
 		if (modifyFlag == null)
 			modifyFlag = getConfig().containerFactory.getModifyFlagSet();	// new HashSet<String>();
 		return modifyFlag;
 	}*/
-	
+
 	protected Set<String> _getModifyFlag() {
 		if (modifyFlag == null) {
 			Config config = _getConfig();
@@ -182,29 +182,29 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return modifyFlag;
 	}
-	
+
 	void clearModifyFlag() {
 		if (modifyFlag != null) {
 			modifyFlag.clear();
 		}
 	}
-	
+
 	protected Config _getConfig() {
 		if (configName != null) {
 			return DbKit.getConfig(configName);
 		}
 		return DbKit.getConfig(_getUsefulClass());
 	}
-	
+
 	/*
 	private Config getConfig() {
 		return DbKit.getConfig(getUsefulClass());
 	}*/
-	
+
 	protected Table _getTable() {
 		return TableMapping.me().getTable(_getUsefulClass());
 	}
-	
+
 	protected Class<? extends Model> _getUsefulClass() {
 		Class c = getClass();
 		// guice : Model$$EnhancerByGuice$$40471411
@@ -212,7 +212,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		// return c.getName().indexOf("EnhancerByCGLIB") == -1 ? c : c.getSuperclass();
 		return c.getName().indexOf("$$EnhancerBy") == -1 ? c : c.getSuperclass();
 	}
-	
+
 	/**
 	 * Switching data source, dialect and all config by configName
 	 */
@@ -220,11 +220,11 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		if (attrs == DaoContainerFactory.daoMap) {
 			throw new RuntimeException("dao 只允许调用查询方法");
 		}
-		
+
 		this.configName = configName;
 		return (M)this;
 	}
-	
+
 	/**
 	 * Set attribute to model.
 	 * @param attr the attribute name of the model
@@ -237,12 +237,12 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		if (table != null && !table.hasColumnLabel(attr)) {
 			throw new ActiveRecordException("The attribute name does not exist: \"" + attr + "\"");
 		}
-		
+
 		attrs.put(attr, value);
 		_getModifyFlag().add(attr);	// Add modify flag, update() need this flag.
 		return (M)this;
 	}
-	
+
 	// public static transient boolean checkPutKey = true;
 	/**
 	 * Put key value pair to the model without check attribute name.
@@ -258,7 +258,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		attrs.put(key, value);
 		return (M)this;
 	}
-	
+
 	/**
 	 * 如果 attrOrNot 是表中的字段则调用 set(...) 放入数据
 	 * 否则调用 put(...) 放入数据
@@ -268,11 +268,11 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		if (table != null && table.hasColumnLabel(attrOrNot)) {
 			_getModifyFlag().add(attrOrNot);	// Add modify flag, update() need this flag.
 		}
-		
+
 		attrs.put(attrOrNot, value);
 		return (M)this;
 	}
-	
+
 	public M _setOrPut(Map<String, Object> map) {
 		if (map != null) {
 			for (Entry<String, Object> e : map.entrySet()) {
@@ -281,11 +281,11 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return (M)this;
 	}
-	
+
 	public M _setOrPut(Model model) {
 		return (M)_setOrPut(model._getAttrs());
 	}
-	
+
 	/**
 	 * Put map to the model without check attribute name.
 	 */
@@ -293,7 +293,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		attrs.putAll(map);
 		return (M)this;
 	}
-	
+
 	/**
 	 * Put other model to the model without check attribute name.
 	 */
@@ -301,7 +301,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		attrs.putAll(model._getAttrs());
 		return (M)this;
 	}
-	
+
 	/**
 	 * Put record to the model without check attribute name.
 	 */
@@ -309,21 +309,21 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		attrs.putAll(record.getColumns());
 		return (M)this;
 	}
-	
+
 	/**
 	 * Convert model to record.
 	 */
 	public Record toRecord() {
 		return new Record().setColumns(_getAttrs());
 	}
-	
+
 	/**
 	 * Get attribute of any mysql type
 	 */
 	public <T> T get(String attr) {
 		return (T)(attrs.get(attr));
 	}
-	
+
 	/**
 	 * Get attribute of any mysql type. Returns defaultValue if null.
 	 */
@@ -331,7 +331,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		Object result = attrs.get(attr);
 		return (T)(result != null ? result : defaultValue);
 	}
-	
+
 	/**
 	 * Get attribute of mysql type: varchar, char, enum, set, text, tinytext, mediumtext, longtext
 	 */
@@ -340,7 +340,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		Object s = attrs.get(attr);
 		return s != null ? s.toString() : null;
 	}
-	
+
 	/**
 	 * Get attribute of mysql type: int, integer, tinyint(n) n > 1, smallint, mediumint
 	 */
@@ -349,7 +349,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		// return n != null ? n.intValue() : null;
 		return TypeKit.toInt(attrs.get(attr));
 	}
-	
+
 	/**
 	 * Get attribute of mysql type: bigint, unsign int
 	 */
@@ -358,7 +358,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		// return n != null ? n.longValue() : null;
 		return TypeKit.toLong(attrs.get(attr));
 	}
-	
+
 	/**
 	 * Get attribute of mysql type: unsigned bigint
 	 */
@@ -381,32 +381,32 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 
 		return (BigInteger)n;
 	}
-	
+
 	/**
 	 * Get attribute of mysql type: date, year
 	 */
 	public java.util.Date getDate(String attr) {
 		return TypeKit.toDate(attrs.get(attr));
 	}
-	
+
 	public LocalDateTime getLocalDateTime(String attr) {
 		return TypeKit.toLocalDateTime(attrs.get(attr));
 	}
-	
+
 	/**
 	 * Get attribute of mysql type: time
 	 */
 	public java.sql.Time getTime(String attr) {
 		return (java.sql.Time)attrs.get(attr);
 	}
-	
+
 	/**
 	 * Get attribute of mysql type: timestamp, datetime
 	 */
 	public java.sql.Timestamp getTimestamp(String attr) {
 		return (java.sql.Timestamp)attrs.get(attr);
 	}
-	
+
 	/**
 	 * Get attribute of mysql type: real, double
 	 */
@@ -415,7 +415,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		// return n != null ? n.doubleValue() : null;
 		return TypeKit.toDouble(attrs.get(attr));
 	}
-	
+
 	/**
 	 * Get attribute of mysql type: float
 	 */
@@ -424,19 +424,19 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		// return n != null ? n.floatValue() : null;
 		return TypeKit.toFloat(attrs.get(attr));
 	}
-	
+
 	public Short getShort(String attr) {
 		// Number n = (Number)attrs.get(attr);
 		// return n != null ? n.shortValue() : null;
 		return TypeKit.toShort(attrs.get(attr));
 	}
-	
+
 	public Byte getByte(String attr) {
 		// Number n = (Number)attrs.get(attr);
 		// return n != null ? n.byteValue() : null;
 		return TypeKit.toByte(attrs.get(attr));
 	}
-	
+
 	/**
 	 * Get attribute of mysql type: bit, tinyint(1)
 	 */
@@ -444,21 +444,21 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		// return (Boolean)attrs.get(attr);
 		return TypeKit.toBoolean(attrs.get(attr));
 	}
-	
+
 	/**
 	 * Get attribute of mysql type: decimal, numeric
 	 */
 	public BigDecimal getBigDecimal(String attr) {
 		return TypeKit.toBigDecimal(attrs.get(attr));
 	}
-	
+
 	/**
 	 * Get attribute of mysql type: binary, varbinary, tinyblob, blob, mediumblob, longblob
 	 */
 	public byte[] getBytes(String attr) {
 		return (byte[])attrs.get(attr);
 	}
-	
+
 	/**
 	 * Get attribute of any type that extends from Number
 	 */
@@ -466,7 +466,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		// return (Number)attrs.get(attr);
 		return TypeKit.toNumber(attrs.get(attr));
 	}
-	
+
 	/**
 	 * Paginate.
 	 * @param pageNumber the page number
@@ -479,14 +479,14 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public Page<M> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
 		return doPaginate(pageNumber, pageSize, null, select, sqlExceptSelect, paras);
 	}
-	
+
 	/**
 	 * @see #paginate(int, int, String, String, Object...)
 	 */
 	public Page<M> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
 		return doPaginate(pageNumber, pageSize, null, select, sqlExceptSelect, NULL_PARA_ARRAY);
 	}
-	
+
 	/**
 	 * 指定分页 sql 最外层以是否含有 group by 语句
 	 * <pre>
@@ -497,7 +497,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public Page<M> paginate(int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
 		return doPaginate(pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
 	}
-	
+
 	protected Page<M> doPaginate(int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
 		Config config = _getConfig();
 		Connection conn = null;
@@ -513,7 +513,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			config.close(conn);
 		}
 	}
-	
+
 	protected Page<M> doPaginateByFullSql(Config config, Connection conn, int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, StringBuilder findSql, Object... paras) throws Exception {
 		if (pageNumber < 1 || pageSize < 1) {
 			throw new ActiveRecordException("pageNumber and pageSize must more than 0");
@@ -521,13 +521,13 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		if (config.dialect.isTakeOverModelPaginate()) {
 			return config.dialect.takeOverModelPaginate(conn, _getUsefulClass(), pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
 		}
-		
+
 		List result = Db.query(config, conn, totalRowSql, paras);
 		int size = result.size();
 		if (isGroupBySql == null) {
 			isGroupBySql = size > 1;
 		}
-		
+
 		long totalRow;
 		if (isGroupBySql) {
 			totalRow = size;
@@ -537,22 +537,22 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		if (totalRow == 0) {
 			return new Page<M>(new ArrayList<M>(0), pageNumber, pageSize, 0, 0);	// totalRow = 0;
 		}
-		
+
 		int totalPage = (int) (totalRow / pageSize);
 		if (totalRow % pageSize != 0) {
 			totalPage++;
 		}
-		
+
 		if (pageNumber > totalPage) {
 			return new Page<M>(new ArrayList<M>(0), pageNumber, pageSize, totalPage, (int)totalRow);
 		}
-		
+
 		// --------
 		String sql = config.dialect.forPaginate(pageNumber, pageSize, findSql);
 		List<M> list = find(config, conn, sql, paras);
 		return new Page<M>(list, pageNumber, pageSize, totalPage, (int)totalRow);
 	}
-	
+
 	protected Page<M> doPaginateByFullSql(int pageNumber, int pageSize, Boolean isGroupBySql, String totalRowSql, String findSql, Object... paras) {
 		Config config = _getConfig();
 		Connection conn = null;
@@ -566,30 +566,30 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			config.close(conn);
 		}
 	}
-	
+
 	public Page<M> paginateByFullSql(int pageNumber, int pageSize, String totalRowSql, String findSql, Object... paras) {
 		return doPaginateByFullSql(pageNumber, pageSize, null, totalRowSql, findSql, paras);
 	}
-	
+
 	public Page<M> paginateByFullSql(int pageNumber, int pageSize, boolean isGroupBySql, String totalRowSql, String findSql, Object... paras) {
 		return doPaginateByFullSql(pageNumber, pageSize, isGroupBySql, totalRowSql, findSql, paras);
 	}
-	
+
 	/**
 	 * Save model.
 	 */
 	public boolean save() {
 		filter(FILTER_BY_SAVE);
-		
+
 		Config config = _getConfig();
 		Table table = _getTable();
-		
+
 		// 不必判断 attrs 中的字段个数是否为 0，因为以下 sql 合法：insert into table_name() values()
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();
 		config.dialect.forModelSave(table, attrs, sql, paras);
 		// if (paras.size() == 0)	return false;	// The sql "insert into tableName() values()" works fine, so delete this line
-		
+
 		// --------
 		Connection conn = null;
 		PreparedStatement pst = null;
@@ -612,7 +612,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			config.close(pst, conn);
 		}
 	}
-	
+
 	/**
 	 * Delete model.
 	 */
@@ -625,7 +625,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 				throw new ActiveRecordException("Primary key " + pKeys[0] + " can not be null");
 			return deleteById(table, id);
 		}
-		
+
 		Object[] ids = new Object[pKeys.length];
 		for (int i=0; i<pKeys.length; i++) {
 			ids[i] = attrs.get(pKeys[i]);
@@ -634,7 +634,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return deleteById(table, ids);
 	}
-	
+
 	/**
 	 * Delete model by id.
 	 * @param idValue the id value of the model
@@ -646,7 +646,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return deleteById(_getTable(), idValue);
 	}
-	
+
 	/**
 	 * Delete model by composite id values.
 	 * @param idValues the composite id values of the model
@@ -659,7 +659,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return deleteById(table, idValues);
 	}
-	
+
 	protected boolean deleteById(Table table, Object... idValues) {
 		Config config = _getConfig();
 		Connection conn = null;
@@ -673,17 +673,17 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			config.close(conn);
 		}
 	}
-	
+
 	/**
 	 * Update model.
 	 */
 	public boolean update() {
 		filter(FILTER_BY_UPDATE);
-		
+
 		if (modifyFlag == null || modifyFlag.isEmpty()) {
 			return false;
 		}
-		
+
 		Table table = _getTable();
 		String[] pKeys = table.getPrimaryKey();
 		for (String pKey : pKeys) {
@@ -692,16 +692,16 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 				throw new ActiveRecordException("You can't update model without Primary Key, " + pKey + " can not be null.");
 			}
 		}
-		
+
 		Config config = _getConfig();
 		StringBuilder sql = new StringBuilder();
 		List<Object> paras = new ArrayList<Object>();
 		config.dialect.forModelUpdate(table, attrs, _getModifyFlag(), sql, paras);
-		
+
 		if (paras.size() <= 1) {	// 参数个数为 1 的情况表明只有主键，也无需更新
 			return false;
 		}
-		
+
 		// --------
 		Connection conn = null;
 		try {
@@ -718,10 +718,10 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			config.close(conn);
 		}
 	}
-	
+
 	/**
 	 * Find model.
-	 * 
+	 *
 	 * 警告：传入的 Connection 参数需要由传入者在 try finally 块中自行
 	 *      关闭掉，否则将出现 Connection 资源不能及时回收的问题
 	 */
@@ -734,7 +734,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			return result;
 		}
 	}
-	
+
 	protected List<M> find(Config config, String sql, Object... paras) {
 		Connection conn = null;
 		try {
@@ -746,7 +746,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			config.close(conn);
 		}
 	}
-	
+
 	/**
 	 * Find model.
 	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
@@ -756,20 +756,20 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public List<M> find(String sql, Object... paras) {
 		return find(_getConfig(), sql, paras);
 	}
-	
+
 	/**
 	 * @see #find(String, Object...)
 	 */
 	public List<M> find(String sql) {
 		return find(sql, NULL_PARA_ARRAY);
 	}
-	
+
 	public List<M> findAll() {
 		Config config = _getConfig();
 		String sql = config.dialect.forFindAll(_getTable().getName());
 		return find(config, sql, NULL_PARA_ARRAY);
 	}
-	
+
 	/**
 	 * Find first model. I recommend add "limit 1" in your sql.
 	 * @param sql an SQL statement that may contain one or more '?' IN parameter placeholders
@@ -780,7 +780,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		List<M> result = find(sql, paras);
 		return result.size() > 0 ? result.get(0) : null;
 	}
-	
+
 	/**
 	 * @see #findFirst(String, Object...)
 	 * @param sql an SQL statement
@@ -788,7 +788,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public M findFirst(String sql) {
 		return findFirst(sql, NULL_PARA_ARRAY);
 	}
-	
+
 	/**
 	 * Find model by id.
 	 * <pre>
@@ -800,7 +800,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public M findById(Object idValue) {
 		return findByIdLoadColumns(new Object[]{idValue}, "*");
 	}
-	
+
 	/**
 	 * Find model by composite id values.
 	 * <pre>
@@ -812,7 +812,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public M findByIds(Object... idValues) {
 		return findByIdLoadColumns(idValues, "*");
 	}
-	
+
 	/**
 	 * Find model by id and load specific columns only.
 	 * <pre>
@@ -825,7 +825,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public M findByIdLoadColumns(Object idValue, String columns) {
 		return findByIdLoadColumns(new Object[]{idValue}, columns);
 	}
-	
+
 	/**
 	 * Find model by composite id values and load specific columns only.
 	 * <pre>
@@ -845,7 +845,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		List<M> result = find(config, sql, idValues);
 		return result.size() > 0 ? result.get(0) : null;
 	}
-	
+
 	/**
 	 * Remove attribute of this model.
 	 * @param attr the attribute name of the model
@@ -856,7 +856,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		_getModifyFlag().remove(attr);
 		return (M)this;
 	}
-	
+
 	/**
 	 * Remove attributes of this model.
 	 * @param attrs the attribute names of the model
@@ -871,7 +871,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return (M)this;
 	}
-	
+
 	/**
 	 * Remove attributes if it is null.
 	 * @return this model
@@ -886,7 +886,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return (M)this;
 	}
-	
+
 	/**
 	 * Keep attributes of this model and remove other attributes.
 	 * @param attrs the attribute names of the model
@@ -915,7 +915,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return (M)this;
 	}
-	
+
 	/**
 	 * Keep attribute of this model and remove other attributes.
 	 * @param attr the attribute name of the model
@@ -937,7 +937,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return (M)this;
 	}
-	
+
 	/**
 	 * Remove all attributes of this model.
 	 * @return this model
@@ -947,7 +947,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		clearModifyFlag();
 		return (M)this;
 	}
-	
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append('{');
@@ -967,7 +967,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		sb.append('}');
 		return sb.toString();
 	}
-	
+
 	// set 方法在影响 modifyFloag 的同时也会影响 attrs，所以比较 attrs 即可
 	public boolean equals(Object o) {
 		if (!(o instanceof Model))
@@ -979,13 +979,13 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			return false;
 		return attrs.equals(mo.attrs);
 	}
-	
+
 	// hashCode 用于在容器中定位落桶，确保有较好的散列值分布即可，没必要用上所有字段
 	public int hashCode() {
 		// return (attrs == null ? 0 : attrs.hashCode()) ^ (_getModifyFlag() == null ? 0 : _getModifyFlag().hashCode());
 		return attrs.hashCode();
 	}
-	
+
 	/**
 	 * Find model by cache.
 	 * @see #find(String, Object...)
@@ -1003,14 +1003,14 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @see #findByCache(String, Object, String, Object...)
 	 */
 	public List<M> findByCache(String cacheName, Object key, String sql) {
 		return findByCache(cacheName, key, sql, NULL_PARA_ARRAY);
 	}
-	
+
 	/**
 	 * Find first model by cache. I recommend add "limit 1" in your sql.
 	 * @see #findFirst(String, Object...)
@@ -1028,14 +1028,14 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * @see #findFirstByCache(String, Object, String, Object...)
 	 */
 	public M findFirstByCache(String cacheName, Object key, String sql) {
 		return findFirstByCache(cacheName, key, sql, NULL_PARA_ARRAY);
 	}
-	
+
 	/**
 	 * Paginate by cache.
 	 * @see #paginate(int, int, String, String, Object...)
@@ -1046,18 +1046,18 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect, Object... paras) {
 		return doPaginateByCache(cacheName, key, pageNumber, pageSize, null, select, sqlExceptSelect, paras);
 	}
-	
+
 	/**
 	 * @see #paginateByCache(String, Object, int, int, String, String, Object...)
 	 */
 	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, String select, String sqlExceptSelect) {
 		return doPaginateByCache(cacheName, key, pageNumber, pageSize, null, select, sqlExceptSelect, NULL_PARA_ARRAY);
 	}
-	
+
 	public Page<M> paginateByCache(String cacheName, Object key, int pageNumber, int pageSize, boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
 		return doPaginateByCache(cacheName, key, pageNumber, pageSize, isGroupBySql, select, sqlExceptSelect, paras);
 	}
-	
+
 	protected Page<M> doPaginateByCache(String cacheName, Object key, int pageNumber, int pageSize, Boolean isGroupBySql, String select, String sqlExceptSelect, Object... paras) {
 		ICache cache = _getConfig().getCache();
 		Page<M> result = cache.get(cacheName, key);
@@ -1067,80 +1067,80 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Return json string of this model.
 	 */
 	public String toJson() {
 		return com.jfinal.kit.JsonKit.toJson(attrs);
 	}
-	
+
 	public String getSql(String key) {
 		return _getConfig().getSqlKit().getSql(key);
 	}
-	
+
 	/**
 	 * 可以在模板中利用 Model 自身的属性参与动态生成 sql，例如：
 	 * select * from user where nickName = #(nickName)
 	 * new Account().setNickName("James").getSqlPara(...)
-	 * 
+	 *
 	 * 注意：由于 dao 对象上的 attrs 不允许读写，不要调用其 getSqlPara(String) 方法
-	
+
 	public SqlPara getSqlPara(String key) {
 		return getSqlPara(key, this.attrs);
 	} */
-	
+
 	public SqlPara getSqlPara(String key, Map data) {
 		return _getConfig().getSqlKit().getSqlPara(key, data);
 	}
-	
+
 	public SqlPara getSqlPara(String key, Object... paras) {
 		return _getConfig().getSqlKit().getSqlPara(key, paras);
 	}
-	
+
 	public SqlPara getSqlPara(String key, Model model) {
 		return getSqlPara(key, model.attrs);
 	}
-	
+
 	public SqlPara getSqlParaByString(String content, Map data) {
 		return _getConfig().getSqlKit().getSqlParaByString(content, data);
 	}
-	
+
 	public SqlPara getSqlParaByString(String content, Object... paras) {
 		return _getConfig().getSqlKit().getSqlParaByString(content, paras);
 	}
-	
+
 	public SqlPara getSqlParaByString(String content, Model model) {
 		return getSqlParaByString(content, model.attrs);
 	}
-	
+
 	public List<M> find(SqlPara sqlPara) {
 		return find(sqlPara.getSql(), sqlPara.getPara());
 	}
-	
+
 	public M findFirst(SqlPara sqlPara) {
 		return findFirst(sqlPara.getSql(), sqlPara.getPara());
 	}
-	
+
 	public Page<M> paginate(int pageNumber, int pageSize, SqlPara sqlPara) {
 		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
 		return doPaginate(pageNumber, pageSize, null, sqls[0], sqls[1], sqlPara.getPara());
 	}
-	
+
 	public Page<M> paginate(int pageNumber, int pageSize, boolean isGroupBySql, SqlPara sqlPara) {
 		String[] sqls = PageSqlKit.parsePageSql(sqlPara.getSql());
 		return doPaginate(pageNumber, pageSize, isGroupBySql, sqls[0], sqls[1], sqlPara.getPara());
 	}
-	
+
 	// ---------
-	
+
 	/**
 	 * 迭代处理每一个查询出来的 Model 对象
 	 * <pre>
 	 * 例子：
 	 * Db.each(model -> {
 	 *    // 处理 model 的代码在此
-	 *    
+	 *
 	 *    // 返回 true 继续循环处理下一条数据，返回 false 立即终止循环
 	 *    return true;
 	 * }, sql, paras);
@@ -1151,26 +1151,26 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		Connection conn = null;
 		try {
 			conn = config.getConnection();
-			
+
 			try (PreparedStatement pst = conn.prepareStatement(sql)) {
 				config.dialect.fillStatement(pst, paras);
 				ResultSet rs = pst.executeQuery();
 				config.dialect.eachModel(rs, _getUsefulClass(), func);
 				DbKit.close(rs);
 			}
-			
+
 		} catch (Exception e) {
 			throw new ActiveRecordException(e);
 		} finally {
 			config.close(conn);
 		}
 	}
-	
+
 	// ---------
-	
+
 	/**
 	 * 使用 sql 模板进行查询，可以省去 getSqlPara(...) 调用
-	 * 
+	 *
 	 * <pre>
 	 * 例子：
 	 * dao.template("blog.find", Kv.by("id", 123)).find();
@@ -1179,10 +1179,10 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public DaoTemplate<M> template(String key, Map data) {
 		return new DaoTemplate(this, key, data);
 	}
-	
+
 	/**
 	 * 使用 sql 模板进行查询，可以省去 getSqlPara(...) 调用
-	 * 
+	 *
 	 * <pre>
 	 * 例子：
 	 * dao.template("blog.find", 123).find();
@@ -1191,17 +1191,17 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public DaoTemplate<M> template(String key, Object... paras) {
 		return new DaoTemplate(this, key, paras);
 	}
-	
+
 	public DaoTemplate<M> template(String key, Model model) {
 		return template(key, model.attrs);
 	}
-	
+
 	// ---------
-	
+
 	/**
 	 * 使用字符串变量作为 sql 模板进行查询，可省去外部 sql 文件来使用
 	 * sql 模板功能
-	 * 
+	 *
 	 * <pre>
 	 * 例子：
 	 * String sql = "select * from blog where id = #para(id)";
@@ -1211,11 +1211,11 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public DaoTemplate<M> templateByString(String content, Map data) {
 		return new DaoTemplate(true, this, content, data);
 	}
-	
+
 	/**
 	 * 使用字符串变量作为 sql 模板进行查询，可省去外部 sql 文件来使用
 	 * sql 模板功能
-	 * 
+	 *
 	 * <pre>
 	 * 例子：
 	 * String sql = "select * from blog where id = #para(0)";
@@ -1225,19 +1225,14 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public DaoTemplate<M> templateByString(String content, Object... paras) {
 		return new DaoTemplate(true, this, content, paras);
 	}
-	
+
 	public DaoTemplate<M> templateByString(String content, Model model) {
 		return templateByString(content, model.attrs);
 	}
-	
+
 	@Override
 	public Map<String, Object> toMap() {
 		return attrs;
-	}
-	
-	@Override
-	public boolean isEmpty() {
-		return attrs.isEmpty();
 	}
 }
 

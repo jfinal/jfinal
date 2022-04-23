@@ -137,6 +137,7 @@ public interface IRow<M> {
      */
     public String toJson();
 
-    public boolean isEmpty();
+    // 该方法导致 Model、Record 生成 json 时多出一个 empty 字段，需要删掉
+    // public boolean isEmpty();
 }
 
