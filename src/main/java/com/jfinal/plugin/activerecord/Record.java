@@ -477,6 +477,11 @@ public class Record implements IRow<Record>, Serializable {
 		getColumns().put(key, value);
 		return this;
 	}
+
+	@Override
+	public int size() {
+		return columns != null ? columns.size() : 0;
+	}
 }
 
 

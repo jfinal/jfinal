@@ -1234,6 +1234,11 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	public Map<String, Object> toMap() {
 		return attrs;
 	}
+
+	@Override
+	public int size() {
+		return attrs.size();
+	}
 }
 
 
