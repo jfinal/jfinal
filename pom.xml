@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
-	<version>4.9.23</version>
+	<version>5.0.0</version>
 	<packaging>jar</packaging>
-	
+
 	<name>JFinal</name>
 	<description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
 	<url>https://jfinal.com</url>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
 	</properties>
-	
+
 	<issueManagement>
 		<system>Github Issue</system>
 		<url>https://gitee.com/jfinal/jfinal/issues</url>
 	</issueManagement>
-	
+
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
 			<url>http://apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
-	
+
 	<developers>
 		<developer>
 			<id>jfinal</id>
@@ -36,13 +36,13 @@
 			<url>https://jfinal.com/user/1</url>
 		</developer>
 	</developers>
-	
+
 	<scm>
 		<connection>scm:git:git@gitee.com:jfinal/jfinal.git</connection>
 		<developerConnection>scm:git:git@gitee.com:jfinal/jfinal.git</developerConnection>
 		<url>git@gitee.com:jfinal/jfinal.git</url>
 	</scm>
-	
+
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -56,7 +56,7 @@
 
 	<repositories>
 	</repositories>
-	
+
 	<!--
 		所有 dependency 都仅仅是可选项，仅当实际用到第三方时才需要引入
 		注意在 copy 引入下面的依赖时，要去掉 <scope>provided</scope> 才能生效
@@ -68,7 +68,7 @@
 			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- slf4j 日志，配置方法：me.setLogFactory(new Slf4jLogFactory()) -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -76,7 +76,7 @@
 			<version>1.7.32</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- jetty-server 仅用于开发，现已被 jfinal-undertow 项目所取代 -->
 		<dependency>
 			<groupId>com.jfinal</groupId>
@@ -97,7 +97,7 @@
 			<version>9.2.26.v20180806</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- cos 文件上传 -->
 		<dependency>
 			<groupId>com.jfinal</groupId>
@@ -105,7 +105,7 @@
 			<version>2022.2</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- druid 数据源连接池 -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
@@ -113,7 +113,7 @@
 			<version>1.2.4</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- HikariCP 数据源连接池 -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
@@ -121,7 +121,7 @@
 			<version>4.0.3</version><!-- 5.0.0 版本不支持 JDK 8 -->
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- c3p0 数据源连接池 -->
 		<dependency>
 			<groupId>com.mchange</groupId>
@@ -129,7 +129,7 @@
 			<version>0.9.5.5</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- fastjson json 转换 -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
@@ -137,7 +137,7 @@
 			<version>1.2.80</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- ehcache 缓存 -->
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
@@ -145,7 +145,7 @@
 			<version>2.6.11</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- freemarkder 模板引擎 -->
 		<dependency>
 			<groupId>org.freemarker</groupId>
@@ -153,7 +153,7 @@
 			<version>2.3.20</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- log4j 日志 -->
 		<dependency>
 			<groupId>log4j</groupId>
@@ -161,7 +161,7 @@
 			<version>1.2.17</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- redis 客户端 -->
 		<dependency>
 			<groupId>redis.clients</groupId>
@@ -174,7 +174,7 @@
 			<artifactId>fst</artifactId>
 			<version>2.57</version><!-- 注意：更高版本不支持 jdk 8 -->
 			<scope>provided</scope>
-			
+
 			<exclusions>
 				<exclusion>
 					<groupId>com.fasterxml.jackson.core</groupId>
@@ -182,7 +182,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<!--
 		<dependency>
 			<groupId>mysql</groupId>
@@ -191,7 +191,7 @@
 			<scope>provided</scope>
 		</dependency>
 		-->
-		
+
 		<!-- jackson json 转换 -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -199,7 +199,7 @@
 			<version>2.11.0</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- cron4j 任务调度 -->
 		<dependency>
 			<groupId>it.sauronsoftware.cron4j</groupId>
@@ -207,7 +207,7 @@
 			<version>2.2.5</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- zxing 二维码生成 -->
 		<dependency>
 			<groupId>com.google.zxing</groupId>
@@ -215,7 +215,7 @@
 			<version>3.4.1</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- cglib 扩展 CglibProxyFactory extends ProxyFactory -->
 		<dependency>
 			<groupId>cglib</groupId>
@@ -223,7 +223,7 @@
 			<version>3.3.0</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- 支持在 spring 之中整合使用 jfinal -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -231,11 +231,11 @@
 			<version>5.3.18</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 	</dependencies>
-	
+
 	<build>
-	
+
 		<resources>
 			<resource>
 				<directory>src/main/java</directory>
@@ -246,7 +246,7 @@
 				<filtering>false</filtering>
 			</resource>
 		</resources>
-		
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -259,7 +259,7 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -309,7 +309,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
