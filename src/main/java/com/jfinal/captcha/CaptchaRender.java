@@ -24,7 +24,7 @@ import java.awt.RenderingHints;
 import java.awt.geom.QuadCurve2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -38,10 +38,9 @@ import com.jfinal.render.RenderException;
  * CaptchaRender.
  */
 public class CaptchaRender extends Render {
-	
+
 	protected static String captchaName = "_jfinal_captcha";
-	protected static final Random random = new Random(System.nanoTime());
-	
+
 	// 默认的验证码大小
 	protected static final int WIDTH = 108, HEIGHT = 40;
 	// 验证码随机字符数组
@@ -62,7 +61,7 @@ public class CaptchaRender extends Render {
 		new Font("Impact", Font.BOLD, 32),
 		new Font(Font.MONOSPACED, Font.BOLD, 40)
 	};*/
-	
+
 	/**
 	 * 设置 captchaName
 	 */
@@ -72,14 +71,14 @@ public class CaptchaRender extends Render {
 		}
 		CaptchaRender.captchaName = captchaName;
 	}
-	
+
 	/**
 	 * 生成验证码
 	 */
 	public void render() {
 		Captcha captcha = createCaptcha();
 		CaptchaManager.me().getCaptchaCache().put(captcha);
-		
+
 		Cookie cookie = new Cookie(captchaName, captcha.getKey());
 		cookie.setMaxAge(-1);
 		cookie.setPath("/");
@@ -88,12 +87,12 @@ public class CaptchaRender extends Render {
 		response.setHeader("Cache-Control","no-cache");
 		response.setDateHeader("Expires", 0);
 		response.setContentType("image/jpeg");
-		
+
 		ServletOutputStream sos = null;
 		try {
 			BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 			drawGraphic(captcha.getValue(), image);
-			
+
 			sos = response.getOutputStream();
 			ImageIO.write(image, "jpeg", sos);
 		} catch (IOException e) {
@@ -108,7 +107,7 @@ public class CaptchaRender extends Render {
 			}
 		}
 	}
-	
+
 	protected Captcha createCaptcha() {
 		String captchaKey = getCaptchaKeyFromCookie();
 		if (StrKit.isBlank(captchaKey)) {
@@ -116,7 +115,7 @@ public class CaptchaRender extends Render {
 		}
 		return new Captcha(captchaKey, getRandomString(), Captcha.DEFAULT_EXPIRE_TIME);
 	}
-	
+
 	protected String getCaptchaKeyFromCookie() {
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
@@ -128,29 +127,31 @@ public class CaptchaRender extends Render {
 		}
 		return null;
 	}
-	
+
 	protected String getRandomString() {
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 		char[] randomChars = new char[4];
 		for (int i=0; i<randomChars.length; i++) {
 			randomChars[i] = charArray[random.nextInt(charArray.length)];
 		}
 		return String.valueOf(randomChars);
 	}
-	
+
 	protected void drawGraphic(String randomString, BufferedImage image){
 		// 获取图形上下文
 		Graphics2D g = image.createGraphics();
-		
+
 		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 		// 图形抗锯齿
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		// 字体抗锯齿
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-		
+
 		// 设定背景色
 		g.setColor(getRandColor(210, 250));
 		g.fillRect(0, 0, WIDTH, HEIGHT);
-		
+
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 		//绘制小字符背景
 		Color color = null;
 		for(int i = 0; i < 20; i++){
@@ -160,7 +161,7 @@ public class CaptchaRender extends Render {
 			g.drawString(rand, random.nextInt(WIDTH), random.nextInt(HEIGHT));
 			color = null;
 		}
-		
+
 		//设定字体
 		g.setFont(RANDOM_FONT[random.nextInt(RANDOM_FONT.length)]);
 		// 绘制验证码
@@ -193,12 +194,12 @@ public class CaptchaRender extends Render {
 		// 销毁图像
 		g.dispose();
 	}
-	
+
 	/*
 	 * 给定范围获得随机颜色
 	 */
 	protected Color getRandColor(int fc, int bc) {
-		Random random = new Random();
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 		if (fc > 255)
 			fc = 255;
 		if (bc > 255)
@@ -208,7 +209,7 @@ public class CaptchaRender extends Render {
 		int b = fc + random.nextInt(bc - fc);
 		return new Color(r, g, b);
 	}
-	
+
 	/**
 	 * 校验用户输入的验证码是否正确
 	 * @param controller 控制器
@@ -223,7 +224,7 @@ public class CaptchaRender extends Render {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 校验用户输入的验证码是否正确
 	 * @param captchaKey 验证码 key，在不支持 cookie 的情况下可通过传参给服务端

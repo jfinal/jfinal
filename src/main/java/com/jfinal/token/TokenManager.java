@@ -18,9 +18,9 @@ package com.jfinal.token;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ThreadLocalRandom;
 import com.jfinal.core.Const;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
@@ -29,27 +29,26 @@ import com.jfinal.kit.StrKit;
  * TokenManager.
  */
 public class TokenManager {
-	
+
 	private static ITokenCache tokenCache;
-	private static Random random = new Random();
-	
+
 	private TokenManager() {
-		
+
 	}
-	
+
 	public static void init(ITokenCache tokenCache) {
 		if (tokenCache == null) {
 			return;
 		}
-		
+
 		TokenManager.tokenCache = tokenCache;
-		
+
 		long halfTimeOut = Const.MIN_SECONDS_OF_TOKEN_TIME_OUT * 1000 / 2;	// Token最小过期时间的一半时间作为任务运行的间隔时间
 		new Timer("TokenManager", true).schedule(new TimerTask() {public void run() {removeTimeOutToken();}},
 							 halfTimeOut,
 							 halfTimeOut);
 	}
-	
+
 	/**
 	 * Create Token.
 	 * @param Controller
@@ -58,18 +57,18 @@ public class TokenManager {
 	 */
 	public static String createToken(Controller controller, String tokenName, int secondsOfTimeOut) {
 		if (tokenCache == null) {
-			String tokenId = String.valueOf(random.nextLong());
+			String tokenId = String.valueOf(ThreadLocalRandom.current().nextLong());
 			controller.setAttr(tokenName, tokenId);
 			controller.setSessionAttr(tokenName, tokenId);
 			createTokenHiddenField(controller, tokenName, tokenId);
-			
+
 			return tokenId;
 		}
 		else {
 			return createTokenByGenerator(controller, tokenName, secondsOfTimeOut);
 		}
 	}
-	
+
 	/**
 	 * 使用 #(token) 指令，将 token 隐藏域输出到页面表单之中，表单提交的时候该表单域会被提交
 	 */
@@ -78,12 +77,12 @@ public class TokenManager {
 		sb.append("<input type='hidden' name='").append(tokenName).append("' id='").append(tokenName).append("' value='").append(tokenId).append("' />");
 		controller.setAttr("token", sb.toString());
 	}
-	
+
 	private static String createTokenByGenerator(Controller controller, String tokenName, int secondsOfTimeOut) {
 		if (secondsOfTimeOut < Const.MIN_SECONDS_OF_TOKEN_TIME_OUT) {
 			secondsOfTimeOut = Const.MIN_SECONDS_OF_TOKEN_TIME_OUT;
 		}
-		
+
 		String tokenId = null;
 		Token token = null;
 		int safeCounter = 8;
@@ -91,17 +90,17 @@ public class TokenManager {
 			if (safeCounter-- == 0) {
 				throw new RuntimeException("Can not create tokenId.");
 			}
-			tokenId = String.valueOf(random.nextLong());
+			tokenId = String.valueOf(ThreadLocalRandom.current().nextLong());
 			token = new Token(tokenId, System.currentTimeMillis() + (secondsOfTimeOut * 1000));
 		} while(tokenId == null || tokenCache.contains(token));
-		
+
 		controller.setAttr(tokenName, tokenId);
 		tokenCache.put(token);
 		createTokenHiddenField(controller, tokenName, tokenId);
-		
+
 		return tokenId;
 	}
-	
+
 	/**
 	 * Check token to prevent resubmit.
 	 * @param tokenName the token name used in view's form
@@ -121,13 +120,13 @@ public class TokenManager {
 			return result;
 		}
 	}
-	
+
 	private static void removeTimeOutToken() {
 		List<Token> tokenInCache = tokenCache.getAll();
 		if (tokenInCache == null) {
 			return;
 		}
-		
+
 		List<Token> timeOutTokens = new ArrayList<Token>();
 		long currentTime = System.currentTimeMillis();
 		// find and save all time out tokens
@@ -136,7 +135,7 @@ public class TokenManager {
 				timeOutTokens.add(token);
 			}
 		}
-		
+
 		// remove all time out tokens
 		for (Token token : timeOutTokens) {
 			tokenCache.remove(token);
