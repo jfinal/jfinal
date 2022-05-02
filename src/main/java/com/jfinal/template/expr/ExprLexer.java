@@ -118,7 +118,7 @@ class ExprLexer {
 	 * + - * / % ++ --
 	 * = == != < <= > >=
 	 * ! && ||
-	 * ? ?: ?!
+	 * ? ?? ?.
 	 * . .. : :: , ;
 	 * ( ) [ ] { }
 	 */
@@ -205,9 +205,13 @@ class ExprLexer {
 				throw new ParseException("Unsupported operator: '|'", location);
 			}
 			return ok(tok);
-		case '?':		// ? ??
-			if (next() == '?') {
+		case '?':		// ? ?? ?.
+			char c = next();
+			if (c == '?') {
 				tok = new Tok(Sym.NULL_SAFE, beginRow);
+				next();
+			} else if (c == '.') {
+				tok = new Tok(Sym.OPTIONAL_CHAIN, beginRow);
 				next();
 			} else {
 				tok = new Tok(Sym.QUESTION, beginRow);

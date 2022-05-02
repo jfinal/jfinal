@@ -41,19 +41,22 @@ public class Method extends Expr {
 	private Expr expr;
 	private String methodName;
 	private ExprList exprList;
+	
+	// 可选链操作符 ?.
+	private boolean optionalChain;
 
-	public Method(Expr expr, String methodName, ExprList exprList, Location location) {
+	public Method(Expr expr, String methodName, ExprList exprList, boolean optionalChain, Location location) {
 		if (exprList == null || exprList.length() == 0) {
 			throw new ParseException("The parameter of method can not be blank", location);
 		}
-		init(expr, methodName, exprList, location);
+		init(expr, methodName, exprList, optionalChain, location);
 	}
 
-	public Method(Expr expr, String methodName, Location location) {
-		init(expr, methodName, ExprList.NULL_EXPR_LIST, location);
+	public Method(Expr expr, String methodName, boolean optionalChain, Location location) {
+		init(expr, methodName, ExprList.NULL_EXPR_LIST, optionalChain, location);
 	}
 
-	private void init(Expr expr, String methodName, ExprList exprList, Location location) {
+	private void init(Expr expr, String methodName, ExprList exprList, boolean optionalChain, Location location) {
 		if (expr == null) {
 			throw new ParseException("The target for method invoking can not be blank", location);
 		}
@@ -63,12 +66,16 @@ public class Method extends Expr {
 		this.expr = expr;
 		this.methodName = methodName;
 		this.exprList = exprList;
+		this.optionalChain = optionalChain;
 		this.location = location;
 	}
 
 	public Object eval(Scope scope) {
 		Object target = expr.eval(scope);
 		if (target == null) {
+			if (optionalChain) {
+				return null;
+			}
 			if (scope.getCtrl().isNullSafe()) {
 				return null;
 			}

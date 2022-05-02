@@ -36,6 +36,8 @@ public enum Sym {
 	QUESTION("?"),
 	NULL_SAFE("??"),
 	
+	OPTIONAL_CHAIN("?."),
+	
 	ID("ID"),
 	
 	STR("STR"), TRUE("TRUE"), FALSE("FALSE"), NULL("NULL"),

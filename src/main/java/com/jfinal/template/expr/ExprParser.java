@@ -390,17 +390,23 @@ public class ExprParser {
 				expr = new Index(expr, index, location);
 				continue;
 			}
-			if (tok.sym != Sym.DOT) {
+			if (tok.sym != Sym.DOT && tok.sym != Sym.OPTIONAL_CHAIN) {
 				return expr;
 			}
-			if ((tok = move()).sym != Sym.ID) {
+			
+			Tok id = move();
+			if (id.sym != Sym.ID) {
 				resetForward(forward - 1);
 				return expr;
 			}
 			
+			// 可选链操作符 ?.
+			boolean optionalChain = (tok.sym == Sym.OPTIONAL_CHAIN);
+			
 			move();
+			// expr '.' ID
 			if (peek().sym != Sym.LPAREN) {
-				expr = new Field(expr, tok.value(), location);
+				expr = new Field(expr, id.value(), optionalChain, location);
 				continue;
 			}
 			
@@ -408,14 +414,14 @@ public class ExprParser {
 			// expr '.' ID '(' ')'
 			if (peek().sym == Sym.RPAREN) {
 				move();
-				expr = new Method(expr, tok.value(), location);
+				expr = new Method(expr, id.value(), optionalChain, location);
 				continue;
 			}
 			
 			// expr '.' ID '(' exprList ')'
 			ExprList exprList = exprList();
 			match(Sym.RPAREN);
-			expr = new Method(expr, tok.value(), exprList, location);
+			expr = new Method(expr, id.value(), exprList, optionalChain, location);
 		}
 	}
 	
