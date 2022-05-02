@@ -86,13 +86,13 @@ public class CaptchaRender extends Render {
 		// 生成随机类
 		ThreadLocalRandom random = ThreadLocalRandom.current();
 		// 设定背景色
-		g.setColor(getRandColor(200, 250));
+		g.setColor(getRandomColor(200, 250, random));
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		// 设定字体
 		g.setFont(new Font("Times New Roman", Font.PLAIN, 18));
 
 		// 随机产生155条干扰线，使图象中的认证码不易被其它程序探测到
-		g.setColor(getRandColor(160, 200));
+		g.setColor(getRandomColor(160, 200, random));
 		for (int i = 0; i < 155; i++) {
 			int x = random.nextInt(WIDTH);
 			int y = random.nextInt(HEIGHT);
@@ -121,12 +121,13 @@ public class CaptchaRender extends Render {
 	/*
 	 * 给定范围获得随机颜色
 	 */
-	private Color getRandColor(int fc, int bc) {
-		ThreadLocalRandom random = ThreadLocalRandom.current();
-		if (fc > 255)
+	private Color getRandomColor(int fc, int bc, ThreadLocalRandom random) {
+		if (fc > 255) {
 			fc = 255;
-		if (bc > 255)
+		}
+		if (bc > 255) {
 			bc = 255;
+		}
 		int r = fc + random.nextInt(bc - fc);
 		int g = fc + random.nextInt(bc - fc);
 		int b = fc + random.nextInt(bc - fc);

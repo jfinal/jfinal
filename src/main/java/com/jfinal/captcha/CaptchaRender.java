@@ -147,15 +147,16 @@ public class CaptchaRender extends Render {
 		// 字体抗锯齿
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-		// 设定背景色
-		g.setColor(getRandColor(210, 250));
-		g.fillRect(0, 0, WIDTH, HEIGHT);
-
 		ThreadLocalRandom random = ThreadLocalRandom.current();
+		
+		// 设定背景色
+		g.setColor(getRandomColor(210, 250, random));
+		g.fillRect(0, 0, WIDTH, HEIGHT);
+		
 		//绘制小字符背景
 		Color color = null;
 		for(int i = 0; i < 20; i++){
-			color = getRandColor(120, 200);
+			color = getRandomColor(120, 200, random);
 			g.setColor(color);
 			String rand = String.valueOf(charArray[random.nextInt(charArray.length)]);
 			g.drawString(rand, random.nextInt(WIDTH), random.nextInt(HEIGHT));
@@ -176,7 +177,7 @@ public class CaptchaRender extends Render {
 			//旋转区域
 			g.rotate(Math.toRadians(degree), x, y);
 			//设定字体颜色
-			color = getRandColor(20, 130);
+			color = getRandomColor(20, 130, random);
 			g.setColor(color);
 			//将认证码显示到图象中
 			g.drawString(String.valueOf(randomString.charAt(i)), x + 8, y + 10);
@@ -198,12 +199,13 @@ public class CaptchaRender extends Render {
 	/*
 	 * 给定范围获得随机颜色
 	 */
-	protected Color getRandColor(int fc, int bc) {
-		ThreadLocalRandom random = ThreadLocalRandom.current();
-		if (fc > 255)
+	protected Color getRandomColor(int fc, int bc, ThreadLocalRandom random) {
+		if (fc > 255) {
 			fc = 255;
-		if (bc > 255)
+		}
+		if (bc > 255) {
 			bc = 255;
+		}
 		int r = fc + random.nextInt(bc - fc);
 		int g = fc + random.nextInt(bc - fc);
 		int b = fc + random.nextInt(bc - fc);
