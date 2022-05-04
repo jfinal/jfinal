@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package com.jfinal.template.source;
 
 /**
  * ClassPathSourceFactory 用于配置 Engine 使用 ClassPathSource 加载模板文件
- * 
+ *
  * 配置示例：
  *    engine.baseTemplatePath(null);	// 清掉 base path
  *    engine.setSourceFactory(new ClassPathSourceFactory());
  */
 public class ClassPathSourceFactory implements ISourceFactory {
-	
+
 	public ISource getSource(String baseTemplatePath, String fileName, String encoding) {
 		return new ClassPathSource(baseTemplatePath, fileName, encoding);
 	}

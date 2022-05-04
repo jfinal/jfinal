@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,19 +26,19 @@ import com.jfinal.template.stat.Scope;
 
 /**
  * Compare
- * 
+ *
  * 1：支持 byte short int long float double BigInteger BigDecimal 的 == != > >= < <= 操作
  * 2：== != 作用于 string，调用其 equals 方法进行比较
  * 3：> >= < <= 可以比较实现了 Comparable 接口的对象
- * 
+ *
  * 注意：float double 浮点型数据在比较操作时，具有精度上的局限性，不建议对浮点数进行比较
  */
 public class Compare extends Expr {
-	
+
 	private Sym op;
 	private Expr left;
 	private Expr right;
-	
+
 	public Compare(Sym op, Expr left, Expr right, Location location) {
 		if (left == null || right == null) {
 			throw new ParseException("The target of \"" + op.value() + "\" operator can not be blank", location);
@@ -48,11 +48,11 @@ public class Compare extends Expr {
 		this.right = right;
 		this.location = location;
 	}
-	
+
 	public Object eval(Scope scope) {
 		Object leftValue = left.eval(scope);
 		Object rightValue = right.eval(scope);
-		
+
 		switch(op) {
 		case EQUAL:
 			return equal(leftValue, rightValue);
@@ -72,7 +72,7 @@ public class Compare extends Expr {
 			throw new TemplateException("Unsupported operation: " + l + " \"" + op.value() + "\" " + r, location);
 		}
 	}
-	
+
 	Boolean equal(Object leftValue, Object rightValue) {
 		if (leftValue == rightValue) {
             return Boolean.TRUE;
@@ -111,10 +111,10 @@ public class Compare extends Expr {
 			}
 			throw new TemplateException("Equal comparison support types of int long float double BigInteger and BigDeciaml", location);
 		}
-		
+
 		return Boolean.FALSE;
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	Boolean gt(Object leftValue, Object rightValue) {
 		if (leftValue instanceof Number && rightValue instanceof Number) {
@@ -143,16 +143,16 @@ public class Compare extends Expr {
 			}
 			throw new TemplateException("Unsupported operation: " + l.getClass().getSimpleName() + " \">\" " + r.getClass().getSimpleName(), location);
 		}
-		
+
 		if (leftValue instanceof Comparable &&
 			rightValue != null &&
 			leftValue.getClass() == rightValue.getClass()) {
 			return ((Comparable)leftValue).compareTo((Comparable)rightValue) > 0;
 		}
-		
+
 		return checkComparisonValue(leftValue, rightValue);
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	Boolean ge(Object leftValue, Object rightValue) {
 		if (leftValue instanceof Number && rightValue instanceof Number) {
@@ -181,16 +181,16 @@ public class Compare extends Expr {
 			}
 			throw new TemplateException("Unsupported operation: " + l.getClass().getSimpleName() + " \">=\" " + r.getClass().getSimpleName(), location);
 		}
-		
+
 		if (leftValue instanceof Comparable &&
 			rightValue != null &&
 			leftValue.getClass() == rightValue.getClass()) {
 			return ((Comparable)leftValue).compareTo((Comparable)rightValue) >= 0;
 		}
-		
+
 		return checkComparisonValue(leftValue, rightValue);
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	Boolean lt(Object leftValue, Object rightValue) {
 		if (leftValue instanceof Number && rightValue instanceof Number) {
@@ -219,16 +219,16 @@ public class Compare extends Expr {
 			}
 			throw new TemplateException("Unsupported operation: " + l.getClass().getSimpleName() + " \"<\" " + r.getClass().getSimpleName(), location);
 		}
-		
+
 		if (leftValue instanceof Comparable &&
 			rightValue != null &&
 			leftValue.getClass() == rightValue.getClass()) {
 			return ((Comparable)leftValue).compareTo((Comparable)rightValue) < 0;
 		}
-		
+
 		return checkComparisonValue(leftValue, rightValue);
 	}
-	
+
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	Boolean le(Object leftValue, Object rightValue) {
 		if (leftValue instanceof Number && rightValue instanceof Number) {
@@ -257,16 +257,16 @@ public class Compare extends Expr {
 			}
 			throw new TemplateException("Unsupported operation: " + l.getClass().getSimpleName() + " \"<=\" " + r.getClass().getSimpleName(), location);
 		}
-		
+
 		if (leftValue instanceof Comparable &&
 			rightValue != null &&
 			leftValue.getClass() == rightValue.getClass()) {
 			return ((Comparable)leftValue).compareTo((Comparable)rightValue) <= 0;
 		}
-		
+
 		return checkComparisonValue(leftValue, rightValue);
 	}
-	
+
 	private Boolean checkComparisonValue(Object leftValue, Object rightValue) {
 		if (leftValue == null) {
 			throw new TemplateException("The operation target on the left side of \"" + op.value() + "\" can not be null", location);
@@ -274,7 +274,7 @@ public class Compare extends Expr {
 		if (rightValue == null) {
 			throw new TemplateException("The operation target on the right side of \"" + op.value() + "\" can not be null", location);
 		}
-		
+
 		throw new TemplateException(
 			"Unsupported operation: " +
 			leftValue.getClass().getSimpleName() +

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,37 +24,37 @@ import com.jfinal.template.EngineConfig;
 
 /**
  * ClassPathSource 用于从 class path 以及 jar 包之中加载模板内容
- * 
+ *
  * <pre>
  * 注意：
  * 1：如果被加载的文件是 class path 中的普通文件，则该文件支持热加载
- * 
+ *
  * 2：如果被加载的文件处于 jar 包之中，则该文件不支持热加载，jar 包之中的文件在运行时通常不会被修改
  *    在极少数情况下如果需要对 jar 包之中的模板文件进行热加载，可以通过继承 ClassPathSource
  *    的方式进行扩展
- * 
+ *
  * 3：JFinal Template Engine 开启热加载需要配置 engine.setDevMode(true)
  * </pre>
  */
 public class ClassPathSource implements ISource {
-	
+
 	protected String finalFileName;
 	protected String fileName;
 	protected String encoding;
-	
+
 	protected boolean isInJar;
 	protected long lastModified;
 	protected ClassLoader classLoader;
 	protected URL url;
-	
+
 	public ClassPathSource(String fileName) {
 		this(null, fileName, EngineConfig.DEFAULT_ENCODING);
 	}
-	
+
 	public ClassPathSource(String baseTemplatePath, String fileName) {
 		this(baseTemplatePath, fileName, EngineConfig.DEFAULT_ENCODING);
 	}
-	
+
 	public ClassPathSource(String baseTemplatePath, String fileName, String encoding) {
 		this.finalFileName = buildFinalFileName(baseTemplatePath, fileName);
 		this.fileName = fileName;
@@ -64,25 +64,25 @@ public class ClassPathSource implements ISource {
 		if (url == null) {
 			throw new IllegalArgumentException("File not found in CLASSPATH or JAR : \"" + finalFileName + "\"");
 		}
-		
+
 		processIsInJarAndlastModified();
 	}
-	
+
 	protected void processIsInJarAndlastModified() {
 		if ("file".equalsIgnoreCase(url.getProtocol())) {
 			isInJar = false;
 			lastModified = new File(url.getFile()).lastModified();
-		} else {	
+		} else {
 			isInJar = true;
 			lastModified = -1;
 		}
 	}
-	
+
 	protected ClassLoader getClassLoader() {
 		ClassLoader ret = Thread.currentThread().getContextClassLoader();
 		return ret != null ? ret : getClass().getClassLoader();
 	}
-	
+
 	protected String buildFinalFileName(String baseTemplatePath, String fileName) {
 		String finalFileName;
 		if (baseTemplatePath != null) {
@@ -95,48 +95,48 @@ public class ClassPathSource implements ISource {
 		} else {
 			finalFileName = fileName;
 		}
-		
+
 		if (finalFileName.charAt(0) == '/') {
 			finalFileName = finalFileName.substring(1);
 		}
-		
+
 		return finalFileName;
 	}
-	
+
 	public String getCacheKey() {
 		return fileName;
 	}
-	
+
 	public String getEncoding() {
 		return encoding;
 	}
-	
+
 	protected long getLastModified() {
 		return new File(url.getFile()).lastModified();
 	}
-	
+
 	/**
 	 * 模板文件在 jar 包文件之内则不支持热加载
 	 */
 	public boolean isModified() {
 		return isInJar ? false : lastModified != getLastModified();
 	}
-	
+
 	public StringBuilder getContent() {
 		// 与 FileSorce 不同，ClassPathSource 在构造方法中已经初始化了 lastModified
 		// 下面的代码可以去掉，在此仅为了避免继承类忘了在构造中初始化 lastModified 的防卫式代码
 		if (!isInJar) {		// 如果模板文件不在 jar 包文件之中，则需要更新 lastModified 值
 			lastModified = getLastModified();
 		}
-		
+
 		InputStream inputStream = classLoader.getResourceAsStream(finalFileName);
 		if (inputStream == null) {
 			throw new RuntimeException("File not found : \"" + finalFileName + "\"");
 		}
-		
+
 		return loadFile(inputStream, encoding);
 	}
-	
+
 	public static StringBuilder loadFile(InputStream inputStream, String encoding) {
 		try (InputStreamReader isr = new InputStreamReader(inputStream, encoding)) {
 			StringBuilder ret = new StringBuilder();
@@ -145,12 +145,12 @@ public class ClassPathSource implements ISource {
 				ret.append(buf, 0, num);
 			}
 			return ret;
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("In Jar File: ").append(isInJar).append("\n");

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import com.jfinal.aop.Interceptor;
+import com.jfinal.core.paragetter.JsonRequest;
 
 /**
  * ActionReporter
@@ -30,6 +32,7 @@ import com.jfinal.aop.Interceptor;
 public class ActionReporter {
 	
 	protected static final String title = "\nJFinal-" + Const.JFINAL_VERSION + " action report -------- ";
+	protected static final String[] BLANK_STRING_ARRAY = {""};
 	protected static boolean reportAfterInvocation = true;
 	protected static int maxOutputLengthOfParaValue = 512;
 	protected static Writer writer = new SystemOutWriter();
@@ -76,14 +79,14 @@ public class ActionReporter {
 	 */
 	public void report(String target, Controller controller, Action action) {
 		StringBuilder sb = new StringBuilder(title).append(sdf.get().format(new Date())).append(" --------------------------\n");
-		sb.append("Url         : ").append(controller.getRequest().getMethod()).append(" ").append(target).append("\n");
+		sb.append("Url         : ").append(controller.getRequest().getMethod()).append(' ').append(target).append('\n');
 		Class<? extends Controller> cc = action.getControllerClass();
 		sb.append("Controller  : ").append(cc.getName()).append(".(").append(cc.getSimpleName()).append(".java:1)");
-		sb.append("\nMethod      : ").append(action.getMethodName()).append("\n");
+		sb.append("\nMethod      : ").append(action.getMethodName()).append('\n');
 		
 		String urlParas = controller.getPara();
 		if (urlParas != null) {
-			sb.append("UrlPara     : ").append(urlParas).append("\n");
+			sb.append("UrlPara     : ").append(urlParas).append('\n');
 		}
 		
 		Interceptor[] inters = action.getInterceptors();
@@ -96,19 +99,45 @@ public class ActionReporter {
 				Class<? extends Interceptor> ic = inter.getClass();
 				sb.append(ic.getName()).append(".(").append(ic.getSimpleName()).append(".java:1)");
 			}
-			sb.append("\n");
+			sb.append('\n');
 		}
 		
 		// print all parameters
 		HttpServletRequest request = controller.getRequest();
-		Enumeration<String> e = request.getParameterNames();
-		if (e.hasMoreElements()) {
+		if (request instanceof JsonRequest) {
+			buildJsonPara(controller, sb);
+		} else {
+			buildPara(controller, sb);
+		}
+		
+		sb.append("--------------------------------------------------------------------------------\n");
+		
+		try {
+			writer.write(sb.toString());
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	private void buildJsonPara(Controller controller, StringBuilder sb) {
+		sb.append("Parameter   : ");
+		sb.append(controller.getRawData());
+		sb.append('\n');
+	}
+	
+	private void buildPara(Controller controller, StringBuilder sb) {
+		Map<String, String[]> paraMap = controller.getRequest().getParameterMap();
+		if (paraMap != null && paraMap.size() > 0) {
 			sb.append("Parameter   : ");
-			while (e.hasMoreElements()) {
-				String name = e.nextElement();
-				String[] values = request.getParameterValues(name);
+			for (Entry<String, String[]> e : paraMap.entrySet()) {
+				String name = e.getKey();
+				String[] values = e.getValue();
+				if (values == null) {
+					values = BLANK_STRING_ARRAY;
+				}
+				
 				if (values.length == 1) {
-					sb.append(name).append("=");
+					sb.append(name).append('=');
 					if (values[0] != null && values[0].length() > maxOutputLengthOfParaValue) {
 						sb.append(values[0].substring(0, maxOutputLengthOfParaValue)).append("...");
 					} else {
@@ -119,21 +148,14 @@ public class ActionReporter {
 					sb.append(name).append("[]={");
 					for (int i=0; i<values.length; i++) {
 						if (i > 0)
-							sb.append(",");
+							sb.append(',');
 						sb.append(values[i]);
 					}
-					sb.append("}");
+					sb.append('}');
 				}
 				sb.append("  ");
 			}
-			sb.append("\n");
-		}
-		sb.append("--------------------------------------------------------------------------------\n");
-		
-		try {
-			writer.write(sb.toString());
-		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			sb.append('\n');
 		}
 	}
 	

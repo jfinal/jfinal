@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import com.jfinal.core.converter.TypeConverter;
+import com.jfinal.core.paragetter.JsonRequest;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.StrKit;
 import com.jfinal.render.ContentType;
@@ -88,6 +89,17 @@ public abstract class Controller {
 		urlParaArray = null;
 		render = null;
 		rawData = null;
+	}
+	
+	/**
+	 * 判断是否为 json 请求，contentType 包含 "json" 被认定为 json 请求
+	 */
+	public boolean isJsonRequest() {
+		if (request instanceof JsonRequest) {
+			return true;
+		}
+		String ct = request.getContentType();
+		return ct != null && ct.indexOf("json") != -1;
 	}
 	
 	/**
@@ -814,7 +826,21 @@ public abstract class Controller {
 	 */
 	public Kv getKv() {
 		Kv kv = new Kv();
-		Map<String, String[]> paraMap = request.getParameterMap();
+		HttpServletRequest req = this.request;
+		
+		// 优化 json 请求，避免 JsonRequest.createParaMap() 中的数据转换
+		if (request instanceof JsonRequest) {
+			JsonRequest jsonReq = (JsonRequest)request;
+			if (jsonReq.getJSONObject() != null) {
+				kv.putAll(jsonReq.getJSONObject());
+			}
+			
+			// json 数据添加完成后再添加内部 HttpServletRequest 对象中的数据
+			// 使用 getInnerRequest() 避免调用 JsonRequest.createParaMap() 产生性能损耗
+			req = jsonReq.getInnerRequest();
+		}
+		
+		Map<String, String[]> paraMap = req.getParameterMap();
 		for (Entry<String, String[]> entry : paraMap.entrySet()) {
 			String[] values = entry.getValue();
 			String value = (values != null && values.length > 0) ? values[0] : null;
@@ -891,7 +917,7 @@ public abstract class Controller {
 		Map<String, String[]> map = request.getParameterMap();
 		for (Entry<String, String[]> e: map.entrySet()) {
 			String[] values = e.getValue();
-			if (values.length == 1)
+			if (values != null && values.length == 1)
 				request.setAttribute(e.getKey(), values[0]);
 			else
 				request.setAttribute(e.getKey(), values);
@@ -1095,13 +1121,6 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * Render with velocity view
-	 */
-	public void renderVelocity(String view) {
-		render = renderManager.getRenderFactory().getVelocityRender(view);
-	}
-	
-	/**
 	 * Render with json
 	 * <p>
 	 * Example:<br>
@@ -1251,8 +1270,8 @@ public abstract class Controller {
 	/**
 	 * Render with view and errorCode status
 	 */
-	public void renderError(int errorCode, String view) {
-		throw new ActionException(errorCode, renderManager.getRenderFactory().getErrorRender(errorCode, view));
+	public void renderError(int errorCode, String viewOrJson) {
+		throw new ActionException(errorCode, renderManager.getRenderFactory().getErrorRender(errorCode, viewOrJson));
 	}
 	
 	/**

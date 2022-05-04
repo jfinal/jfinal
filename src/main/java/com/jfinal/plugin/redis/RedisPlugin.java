@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import com.jfinal.plugin.redis.serializer.ISerializer;
  * Redis 服务的不同 database，具体例子见 jfinal 手册
  */
 public class RedisPlugin implements IPlugin {
+	
+	protected volatile boolean isStarted = false;
 	
 	protected String cacheName;
 	
@@ -94,6 +96,10 @@ public class RedisPlugin implements IPlugin {
 	}
 	
 	public boolean start() {
+		if (isStarted) {
+			return true;
+		}
+		
 		JedisPool jedisPool;
 		if      (port != null && timeout != null && database != null && clientName != null)
 			jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password, database, clientName);
@@ -115,6 +121,8 @@ public class RedisPlugin implements IPlugin {
 		
 		Cache cache = new Cache(cacheName, jedisPool, serializer, keyNamingPolicy);
 		Redis.addCache(cache);
+		
+		isStarted = true;
 		return true;
 	}
 	
@@ -123,6 +131,8 @@ public class RedisPlugin implements IPlugin {
 		if (cache == Redis.mainCache)
 			Redis.mainCache = null;
 		cache.jedisPool.destroy();
+		
+		isStarted = false;
 		return true;
 	}
 	

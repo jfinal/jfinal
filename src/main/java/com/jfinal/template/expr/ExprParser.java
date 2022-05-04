@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import com.jfinal.template.EngineConfig;
-import com.jfinal.template.expr.Sym;
 import com.jfinal.template.expr.ast.*;
 import com.jfinal.template.stat.Location;
 import com.jfinal.template.stat.ParaToken;
@@ -391,17 +390,23 @@ public class ExprParser {
 				expr = new Index(expr, index, location);
 				continue;
 			}
-			if (tok.sym != Sym.DOT) {
+			if (tok.sym != Sym.DOT && tok.sym != Sym.OPTIONAL_CHAIN) {
 				return expr;
 			}
-			if ((tok = move()).sym != Sym.ID) {
+			
+			Tok id = move();
+			if (id.sym != Sym.ID) {
 				resetForward(forward - 1);
 				return expr;
 			}
 			
+			// 可选链操作符 ?.
+			boolean optionalChain = (tok.sym == Sym.OPTIONAL_CHAIN);
+			
 			move();
+			// expr '.' ID
 			if (peek().sym != Sym.LPAREN) {
-				expr = new Field(expr, tok.value(), location);
+				expr = new Field(expr, id.value(), optionalChain, location);
 				continue;
 			}
 			
@@ -409,14 +414,14 @@ public class ExprParser {
 			// expr '.' ID '(' ')'
 			if (peek().sym == Sym.RPAREN) {
 				move();
-				expr = new Method(expr, tok.value(), location);
+				expr = new Method(expr, id.value(), optionalChain, location);
 				continue;
 			}
 			
 			// expr '.' ID '(' exprList ')'
 			ExprList exprList = exprList();
 			match(Sym.RPAREN);
-			expr = new Method(expr, tok.value(), exprList, location);
+			expr = new Method(expr, id.value(), exprList, optionalChain, location);
 		}
 	}
 	

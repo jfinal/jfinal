@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package com.jfinal.json;
 
-import com.jfinal.json.IJsonFactory;
-import com.jfinal.json.Json;
-
 /**
  * IJsonFactory 的 jfinal + fastjson 组合实现
  * 
@@ -29,6 +26,11 @@ import com.jfinal.json.Json;
 public class MixedJsonFactory implements IJsonFactory {
 	
 	private static final MixedJsonFactory me = new MixedJsonFactory();
+	
+	public MixedJsonFactory() {
+	    // 尽早触发 fastjson 的配置代码
+        new FastJson();
+	}
 	
 	public static MixedJsonFactory me() {
 		return me;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -220,6 +220,28 @@ public class Generator {
 	 */
 	public void setRemovedTableNamePrefixes(String... removedTableNamePrefixes) {
 		metaBuilder.setRemovedTableNamePrefixes(removedTableNamePrefixes);
+	}
+	
+	/**
+	 * 添加要生成的 tableName 到白名单。使用白名单功能时，只有处在白名单中的 table 才会参与生成
+	 */
+	public void addWhitelist(String... tableNames) {
+		metaBuilder.addWhitelist(tableNames);
+	}
+	
+	public void removeWhitelist(String tableName) {
+		metaBuilder.removeWhitelist(tableName);
+	}
+	
+	/**
+	 * 添加要排除的 tableName 到黑名单。使用黑名单功能时，只有处在黑名单中的 table 才会被过滤
+	 */
+	public void addBlacklist(String... tableNames) {
+		metaBuilder.addBlacklist(tableNames);
+	}
+	
+	public void removeBlacklist(String tableName) {
+		metaBuilder.removeBlacklist(tableName);
 	}
 	
 	/**

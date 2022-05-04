@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ public abstract class FieldKeyBuilder {
 	public abstract Object getFieldKey(Class<?> targetClass, long fieldFnv1a64Hash);
 	
 	// 假定是超大规模项目，并且假定其 Map/Model/Record + field 组合数量超级庞大，默认使用 StrictFieldKeyBuilder
-	static FieldKeyBuilder instance = new StrictFieldKeyBuilder();
+	// static FieldKeyBuilder instance = new StrictFieldKeyBuilder();
+	static FieldKeyBuilder instance = new FastFieldKeyBuilder();
 	
 	public static FieldKeyBuilder getInstance() {
 		return instance;

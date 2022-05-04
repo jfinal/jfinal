@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package com.jfinal.config;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import javax.servlet.http.HttpServletRequest;
 import com.jfinal.aop.AopManager;
 import com.jfinal.captcha.CaptchaManager;
 import com.jfinal.captcha.ICaptchaCache;
@@ -26,6 +26,8 @@ import com.jfinal.core.ActionMapping;
 import com.jfinal.core.ActionReporter;
 import com.jfinal.core.Const;
 import com.jfinal.core.ControllerFactory;
+import com.jfinal.core.paragetter.JsonRequest;
+import com.jfinal.core.paragetter.ParaProcessor;
 import com.jfinal.i18n.I18n;
 import com.jfinal.json.IJsonFactory;
 import com.jfinal.json.JsonManager;
@@ -34,6 +36,7 @@ import com.jfinal.log.ILogFactory;
 import com.jfinal.log.LogManager;
 import com.jfinal.proxy.ProxyFactory;
 import com.jfinal.proxy.ProxyManager;
+import com.jfinal.render.ErrorRender;
 import com.jfinal.render.IRenderFactory;
 import com.jfinal.render.RenderManager;
 import com.jfinal.render.ViewType;
@@ -295,7 +298,7 @@ final public class Constants {
 	 * @param error404View the error 404 view
 	 */
 	public void setError404View(String error404View) {
-		errorViewMapping.put(404, error404View);
+		setErrorView(404, error404View);
 	}
 	
 	/**
@@ -303,7 +306,7 @@ final public class Constants {
 	 * @param error500View the error 500 view
 	 */
 	public void setError500View(String error500View) {
-		errorViewMapping.put(500, error500View);
+		setErrorView(500, error500View);
 	}
 	
 	/**
@@ -311,7 +314,7 @@ final public class Constants {
 	 * @param error401View the error 401 view
 	 */
 	public void setError401View(String error401View) {
-		errorViewMapping.put(401, error401View);
+		setErrorView(401, error401View);
 	}
 	
 	/**
@@ -319,17 +322,36 @@ final public class Constants {
 	 * @param error403View the error 403 view
 	 */
 	public void setError403View(String error403View) {
-		errorViewMapping.put(403, error403View);
+		setErrorView(403, error403View);
 	}
-	
-	private Map<Integer, String> errorViewMapping = new HashMap<Integer, String>();
 	
 	public void setErrorView(int errorCode, String errorView) {
-		errorViewMapping.put(errorCode, errorView);
+		ErrorRender.setErrorView(errorCode, errorView);
 	}
 	
+	/* 已挪至 ErrorRender
 	public String getErrorView(int errorCode) {
 		return errorViewMapping.get(errorCode);
+	}*/
+	
+	/**
+	 * 设置返回给客户端的 json 内容。建议使用 Ret 对象生成 json 内容来配置
+	 * <pre>
+	 * 例如：
+	 *   1：me.setErrorJsonContent(404, Ret.fail("404 Not Found").toJson());
+	 *   2：me.setErrorJsonContent(500, Ret.fail("500 Internal Server Error").toJson());
+	 * </pre>
+	 */
+	public void setErrorJsonContent(int errorCode, String errorJsonContent) {
+		ErrorRender.setErrorJsonContent(errorCode, errorJsonContent);
+	}
+	
+	/**
+	 * 设置返回给客户端的 html 内容
+	 * 注意：一般使用 setErrorView 指定 html 页面的方式会更方便些
+	 */
+	public void setErrorHtmlContent(int errorCode, String errorHtmlContent) {
+		ErrorRender.setErrorHtmlContent(errorCode, errorHtmlContent);
 	}
 	
 	public String getBaseDownloadPath() {
@@ -455,6 +477,20 @@ final public class Constants {
 	 */
 	public void setToJavaAwtHeadless() {
 		System.setProperty("java.awt.headless", "true");
+	}
+	
+	/**
+	 * 配置是否解析 json 请求，支持 action 参数注入并支持 Controller 中与参数有关的 get 系方法，便于前后端分离项目
+	 */
+	public void setResolveJsonRequest(boolean resolveJsonRequest) {
+		ParaProcessor.setResolveJson(resolveJsonRequest);
+	}
+	
+	/**
+	 * 配置 JsonRequest 工厂，用于切换 JsonRequest 扩展实现
+	 */
+	public void setJsonRequestFactory(BiFunction<String, HttpServletRequest, JsonRequest> jsonRequestFactory) {
+		ParaProcessor.setJsonRequestFactory(jsonRequestFactory);
 	}
 	
 	// ---------

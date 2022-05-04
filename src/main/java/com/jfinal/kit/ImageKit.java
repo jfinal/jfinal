@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2017, 玛雅牛 (myaniu AT gmail dot com).
+ * Copyright (c) 2011-2023, 玛雅牛 (myaniu AT gmail dot com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ import javax.imageio.ImageIO;
 
 public class ImageKit {
     private ImageKit() {
-        
+
     }
-    
+
     /**
      * 生成形如data:image/jpeg;base64,iVBORw0KGgoA……的字符串，将图片文件Data URI化
      *
@@ -38,7 +38,7 @@ public class ImageKit {
     public static String encodeDataUri(String imageFilePath) throws IOException{
         return encodeDataUri(new File(imageFilePath));
     }
-    
+
     /**
      * 生成形如data:image/jpeg;base64,iVBORw0KGgoA……的字符串，将图片文件Data URI化
      *
@@ -53,7 +53,7 @@ public class ImageKit {
         }
         return "data:image/"+type+";base64," + encodeBase64(imageFile);
     }
-    
+
     /**
      * 将文件编码成base64格式
      *
@@ -64,7 +64,7 @@ public class ImageKit {
     public static String encodeBase64(String imageFilePath) throws IOException{
         return encodeBase64(new File(imageFilePath));
     }
-    
+
     /**
      * 将文件编码成base64格式
      *

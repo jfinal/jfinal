@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,10 @@ public class MetaBuilder {
 	
 	protected DataSource dataSource;
 	protected Dialect dialect = new MysqlDialect();
-	protected Set<String> excludedTables = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+	
+	// 白名单 + 黑名单选择过滤的 tableName 集合，白名单优先于黑名单
+	protected Set<String> whitelist = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
+	protected Set<String> blacklist = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 	
 	protected Predicate<String> tableSkip = null;
 	
@@ -77,12 +80,50 @@ public class MetaBuilder {
 		}
 	}
 	
-	public void addExcludedTable(String... excludedTables) {
-		if (excludedTables != null) {
-			for (String table : excludedTables) {
-				this.excludedTables.add(table.trim());
+	/**
+	 * 添加要生成的 tableName 到白名单
+	 */
+	public void addWhitelist(String... tableNames) {
+		if (tableNames != null) {
+			for (String table : tableNames) {
+				table = table.trim();
+				if (this.blacklist.contains(table)) {
+					throw new IllegalArgumentException("黑名单中已经存在的 table 不能加入白名单 -> " + table);
+				}
+				this.whitelist.add(table);
 			}
 		}
+	}
+	
+	public void removeWhitelist(String tableName) {
+		if (tableName != null) {
+			this.whitelist.remove(tableName.trim());
+		}
+	}
+	
+	/**
+	 * 添加要排除的 tableName 到黑名单
+	 */
+	public void addBlacklist(String... tableNames) {
+		if (tableNames != null) {
+			for (String table : tableNames) {
+				table = table.trim();
+				if (this.whitelist.contains(table)) {
+					throw new IllegalArgumentException("白名单中已经存在的 table 不能加入黑名单 -> " + table);
+				}
+				this.blacklist.add(table);
+			}
+		}
+	}
+	
+	public void removeBlacklist(String tableName) {
+		if (tableName != null) {
+			this.blacklist.remove(tableName.trim());
+		}
+	}
+	
+	public void addExcludedTable(String... excludedTables) {
+		addBlacklist(excludedTables);
 	}
 	
 	/**
@@ -222,10 +263,18 @@ public class MetaBuilder {
 		while (rs.next()) {
 			String tableName = rs.getString("TABLE_NAME");
 			
-			if (excludedTables.contains(tableName)) {
+			// 如果使用白名单（size>0），则不在白名单之中的都将被过滤
+			if (whitelist.size() > 0 && !whitelist.contains(tableName)) {
 				System.out.println("Skip table :" + tableName);
 				continue ;
 			}
+			// 如果使用黑名单（size>0），则处在黑名单之中的都将被过滤
+			if (blacklist.size() > 0 && blacklist.contains(tableName)) {
+				System.out.println("Skip table :" + tableName);
+				continue ;
+			}
+			
+			// isSkipTable 为最早期的过滤机制，建议使用白名单、黑名单过滤
 			if (isSkipTable(tableName)) {
 				System.out.println("Skip table :" + tableName);
 				continue ;
@@ -320,6 +369,7 @@ public class MetaBuilder {
 		
 		for (int i=1; i<=columnCount; i++) {
 			ColumnMeta cm = new ColumnMeta();
+			// 备忘：getColumnName 获取字段真实名称而非 sql as 子句指定的名称
 			cm.name = rsmd.getColumnName(i);
 			
 			String typeStr = null;

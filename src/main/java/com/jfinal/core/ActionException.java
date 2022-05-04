@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,13 +62,13 @@ public class ActionException extends RuntimeException {
 		}
 	}
 	
-	public ActionException(int errorCode, String errorView) {
-		if (StrKit.isBlank(errorView)) {
-			throw new IllegalArgumentException("The parameter errorView can not be blank.");
+	public ActionException(int errorCode, String viewOrJson) {
+		if (StrKit.isBlank(viewOrJson)) {
+			throw new IllegalArgumentException("The parameter viewOrJson can not be blank.");
 		}
 		
 		this.errorCode = errorCode;
-		this.errorRender = RenderManager.me().getRenderFactory().getErrorRender(errorCode, errorView);
+		this.errorRender = RenderManager.me().getRenderFactory().getErrorRender(errorCode, viewOrJson);
 	}
 	
 	public ActionException(int errorCode, Render errorRender, String errorMessage) {

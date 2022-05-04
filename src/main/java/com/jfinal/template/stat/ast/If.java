@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,11 +29,11 @@ import com.jfinal.template.stat.Scope;
  * If
  */
 public class If extends Stat {
-	
+
 	private Expr cond;
 	private Stat stat;
 	private Stat elseIfOrElse;
-	
+
 	public If(ExprList cond, StatList statList, Location location) {
 		if (cond.length() == 0) {
 			throw new ParseException("The condition expression of #if statement can not be blank", location);
@@ -41,14 +41,14 @@ public class If extends Stat {
 		this.cond = cond.getActualExpr();
 		this.stat = statList.getActualStat();
 	}
-	
+
 	/**
 	 * take over setStat(...) method of super class
 	 */
 	public void setStat(Stat elseIfOrElse) {
 		this.elseIfOrElse = elseIfOrElse;
 	}
-	
+
 	public void exec(Env env, Scope scope, Writer writer) {
 		if (Logic.isTrue(cond.eval(scope))) {
 			stat.exec(env, scope, writer);

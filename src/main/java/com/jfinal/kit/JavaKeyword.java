@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package com.jfinal.kit;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import com.jfinal.kit.StrKit;
 
 /**
  * JavaKeyword.

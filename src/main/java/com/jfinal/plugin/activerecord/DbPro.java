@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1303,6 +1303,13 @@ public class DbPro {
     		return new int[0];
     	
     	Model model = modelList.get(0);
+    	
+    	// 新增支持 modifyFlag
+    	if (model.modifyFlag == null || model.modifyFlag.isEmpty()) {
+    		return new int[0];
+    	}
+    	Set<String> modifyFlag = model._getModifyFlag();
+    	
     	Table table = TableMapping.me().getTable(model.getClass());
     	String[] pKeys = table.getPrimaryKey();
     	Map<String, Object> attrs = model._getAttrs();
@@ -1310,7 +1317,7 @@ public class DbPro {
     	// the same as the iterator in Dialect.forModelSave() to ensure the order of the attrs
     	for (Entry<String, Object> e : attrs.entrySet()) {
     		String attr = e.getKey();
-    		if (config.dialect.isPrimaryKey(attr, pKeys) == false && table.hasColumnLabel(attr))
+    		if (modifyFlag.contains(attr) && !config.dialect.isPrimaryKey(attr, pKeys) && table.hasColumnLabel(attr))
     			attrNames.add(attr);
     	}
     	for (String pKey : pKeys)
@@ -1318,7 +1325,7 @@ public class DbPro {
     	String columns = StrKit.join(attrNames.toArray(new String[attrNames.size()]), ",");
     	
     	// update all attrs of the model not use the midifyFlag of every single model
-    	Set<String> modifyFlag = attrs.keySet();	// model.getModifyFlag();
+    	// Set<String> modifyFlag = attrs.keySet();	// model.getModifyFlag();
     	
     	StringBuilder sql = new StringBuilder();
     	List<Object> parasNoUse = new ArrayList<Object>();
@@ -1340,12 +1347,19 @@ public class DbPro {
     	config.dialect.trimPrimaryKeys(pKeys);
     	
     	Record record = recordList.get(0);
+    	
+    	// Record 新增支持 modifyFlag
+    	if (record.modifyFlag == null || record.modifyFlag.isEmpty()) {
+    		return new int[0];
+    	}
+    	Set<String> modifyFlag = record._getModifyFlag();
+    	
     	Map<String, Object> cols = record.getColumns();
     	List<String> colNames = new ArrayList<String>();
     	// the same as the iterator in Dialect.forDbUpdate() to ensure the order of the columns
     	for (Entry<String, Object> e : cols.entrySet()) {
     		String col = e.getKey();
-    		if (config.dialect.isPrimaryKey(col, pKeys) == false)
+    		if (modifyFlag.contains(col) && !config.dialect.isPrimaryKey(col, pKeys))
     			colNames.add(col);
     	}
     	for (String pKey : pKeys)
