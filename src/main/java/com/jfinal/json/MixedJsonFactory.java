@@ -27,6 +27,11 @@ public class MixedJsonFactory implements IJsonFactory {
 	
 	private static final MixedJsonFactory me = new MixedJsonFactory();
 	
+	public MixedJsonFactory() {
+	    // 尽早触发 fastjson 的配置代码
+        new FastJson();
+	}
+	
 	public static MixedJsonFactory me() {
 		return me;
 	}
