@@ -34,6 +34,7 @@ import com.jfinal.kit.TimeKit;
  * true|false				Boolean
  * null						null
  */
+@SuppressWarnings("deprecation")
 public class Jackson extends Json {
 
 	// Jackson 生成 json 的默认行为是生成 null value，可设置此值全局改变默认行为
