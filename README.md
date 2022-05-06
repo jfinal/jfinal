@@ -12,7 +12,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 - 自动加载修改后的 Java 文件，开发过程中无需重启服务
 - AOP支持，拦截器配置灵活，功能强大
 - Plugin 体系结构，扩展性强
-- 多视图支持，支持 Enjoy、FreeMarker、JSP、Velocity
+- 多视图支持，支持 Enjoy、FreeMarker、JSP
 - 强大的 Validator 后端校验功能
 - 功能齐全，拥有传统 SSH 框架的绝大部分核心功能
 - 体积小仅 818 KB，并且无第三方依赖
@@ -31,7 +31,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 
 ## 以下是JFinal实现Blog管理的示例：
 
-**1. 控制器(支持 Enjoy、JSP、Velocity、JSON等等以及自定义视图渲染)**
+**1. 控制器(支持 Enjoy、JSP、JSON等等以及自定义视图渲染)**
 
 ```java
 @Before(BlogInterceptor.class)
