@@ -1386,6 +1386,10 @@ public class DbPro {
     	return config.getSqlKit().getSql(key);
     }
     
+    public String getSql(String key, Map data) {
+        return config.getSqlKit().getSql(key, data);
+    }
+    
     public SqlPara getSqlPara(String key, Record record) {
     	return getSqlPara(key, record.getColumns());
     }

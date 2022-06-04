@@ -704,6 +704,10 @@ public class Db {
     	return MAIN.getSql(key);
     }
     
+    public static String getSql(String key, Map data) {
+        return MAIN.getSql(key, data);
+    }
+    
     public static SqlPara getSqlPara(String key, Record record) {
     	return MAIN.getSqlPara(key, record);
     }

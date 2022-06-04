@@ -113,7 +113,7 @@ public class SqlKit {
 		return false;
 	}
 	
-	private Template getSqlTemplate(String key) {
+	public Template getSqlTemplate(String key) {
 		Template template = sqlTemplateMap.get(key);
 		if (template == null) {	// 此 if 分支，处理起初没有定义，但后续不断追加 sql 的情况
 			if ( !devMode ) {
@@ -143,9 +143,13 @@ public class SqlKit {
 	}
 	
 	public String getSql(String key) {
-		Template template = getSqlTemplate(key);
-		return template != null ? template.renderToString(null) : null;
+		return getSql(key, null);
 	}
+	
+	public String getSql(String key, Map data) {
+        Template template = getSqlTemplate(key);
+        return template != null ? template.renderToString(data) : null;
+    }
 	
 	/**
 	 * 示例：
