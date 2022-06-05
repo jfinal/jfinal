@@ -142,10 +142,18 @@ public class SqlKit {
 		return template;
 	}
 	
+	/**
+     * 通过 key 获取 sql
+     */
 	public String getSql(String key) {
 		return getSql(key, null);
 	}
 	
+	/**
+	 * 通过 key 获取 sql
+	 * 传入变量 Map data 参与 sql 生成
+	 * 警告：变量值如果来自用户输入，需避免被 sql 注入
+	 */
 	public String getSql(String key, Map data) {
         Template template = getSqlTemplate(key);
         return template != null ? template.renderToString(data) : null;
