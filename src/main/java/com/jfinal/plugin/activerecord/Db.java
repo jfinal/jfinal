@@ -704,9 +704,10 @@ public class Db {
     	return MAIN.getSql(key);
     }
     
-    public static String getSql(String key, Map data) {
-        return MAIN.getSql(key, data);
-    }
+    // 支持传入变量用于 sql 生成。为了避免用户将参数拼接在 sql 中引起 sql 注入风险，只在 SqlKit 中开放该功能
+    // public static String getSql(String key, Map data) {
+    //     return MAIN.getSql(key, data);
+    // }
     
     public static SqlPara getSqlPara(String key, Record record) {
     	return MAIN.getSqlPara(key, record);

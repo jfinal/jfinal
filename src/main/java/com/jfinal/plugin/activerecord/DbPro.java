@@ -1386,9 +1386,10 @@ public class DbPro {
     	return config.getSqlKit().getSql(key);
     }
     
-    public String getSql(String key, Map data) {
-        return config.getSqlKit().getSql(key, data);
-    }
+    // 支持传入变量用于 sql 生成。为了避免用户将参数拼接在 sql 中引起 sql 注入风险，只在 SqlKit 中开放该功能
+    // public String getSql(String key, Map data) {
+    //     return config.getSqlKit().getSql(key, data);
+    // }
     
     public SqlPara getSqlPara(String key, Record record) {
     	return getSqlPara(key, record.getColumns());
