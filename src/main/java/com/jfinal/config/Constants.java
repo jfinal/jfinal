@@ -22,12 +22,12 @@ import javax.servlet.http.HttpServletRequest;
 import com.jfinal.aop.AopManager;
 import com.jfinal.captcha.CaptchaManager;
 import com.jfinal.captcha.ICaptchaCache;
+import com.jfinal.core.ActionHandler;
 import com.jfinal.core.ActionMapping;
 import com.jfinal.core.ActionReporter;
 import com.jfinal.core.Const;
 import com.jfinal.core.ControllerFactory;
 import com.jfinal.core.paragetter.JsonRequest;
-import com.jfinal.core.paragetter.ParaProcessor;
 import com.jfinal.i18n.I18n;
 import com.jfinal.json.IJsonFactory;
 import com.jfinal.json.JsonManager;
@@ -483,14 +483,14 @@ final public class Constants {
 	 * 配置是否解析 json 请求，支持 action 参数注入并支持 Controller 中与参数有关的 get 系方法，便于前后端分离项目
 	 */
 	public void setResolveJsonRequest(boolean resolveJsonRequest) {
-		ParaProcessor.setResolveJson(resolveJsonRequest);
+		ActionHandler.setResolveJson(resolveJsonRequest);
 	}
 	
 	/**
 	 * 配置 JsonRequest 工厂，用于切换 JsonRequest 扩展实现
 	 */
 	public void setJsonRequestFactory(BiFunction<String, HttpServletRequest, JsonRequest> jsonRequestFactory) {
-		ParaProcessor.setJsonRequestFactory(jsonRequestFactory);
+		ActionHandler.setJsonRequestFactory(jsonRequestFactory);
 	}
 	
 	// ---------

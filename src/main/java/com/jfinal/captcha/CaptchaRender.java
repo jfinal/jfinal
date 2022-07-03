@@ -44,9 +44,9 @@ public class CaptchaRender extends Render {
 	// 默认的验证码大小
 	protected static final int WIDTH = 108, HEIGHT = 40;
 	// 验证码随机字符数组
-	protected static final char[] charArray = "3456789ABCDEFGHJKMNPQRSTUVWXY".toCharArray();
+	protected static char[] charArray = "3456789ABCDEFGHJKMNPQRSTUVWXY".toCharArray();
 	// 验证码字体
-	protected static final Font[] RANDOM_FONT = new Font[] {
+	protected static Font[] RANDOM_FONT = new Font[] {
 		new Font(Font.DIALOG, Font.BOLD, 33),
 		new Font(Font.DIALOG_INPUT, Font.BOLD, 34),
 		new Font(Font.SERIF, Font.BOLD, 33),
@@ -61,6 +61,10 @@ public class CaptchaRender extends Render {
 		new Font("Impact", Font.BOLD, 32),
 		new Font(Font.MONOSPACED, Font.BOLD, 40)
 	};*/
+
+	public static void setCharArray(char[] charArray) {
+		CaptchaRender.charArray = charArray;
+	}
 
 	/**
 	 * 设置 captchaName
@@ -148,11 +152,11 @@ public class CaptchaRender extends Render {
 		g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 		ThreadLocalRandom random = ThreadLocalRandom.current();
-		
+
 		// 设定背景色
 		g.setColor(getRandomColor(210, 250, random));
 		g.fillRect(0, 0, WIDTH, HEIGHT);
-		
+
 		//绘制小字符背景
 		Color color = null;
 		for(int i = 0; i < 20; i++){

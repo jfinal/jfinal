@@ -4,7 +4,7 @@
 
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
-	<version>5.0.0</version>
+	<version>5.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>JFinal</name>
@@ -73,7 +73,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.32</version>
+			<version>1.7.36</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -106,7 +106,11 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- druid 数据源连接池 -->
+		<!-- druid 数据源连接池
+		     注意：从 druid 1.2.5 版本开始，DruidStatViewHandler 中无法使用父类中的 username
+		          与 password，所以升级到比 1.2.4 更高版本时，druid 监控将无法无法通过 jfinal
+		          扩展的 DruidStatViewHandler 使用。可以通过 druid 内置配置方式使用
+		 -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>druid</artifactId>
@@ -134,7 +138,7 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>1.2.80</version>
+			<version>1.2.83</version>
 			<scope>provided</scope>
 		</dependency>
 

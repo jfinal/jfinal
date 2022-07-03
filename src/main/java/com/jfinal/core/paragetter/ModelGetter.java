@@ -17,6 +17,7 @@ package com.jfinal.core.paragetter;
 
 import java.util.Map;
 import com.jfinal.core.Action;
+import com.jfinal.core.ActionHandler;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.ReflectKit;
 import com.jfinal.plugin.activerecord.Model;
@@ -36,7 +37,7 @@ public class ModelGetter<T> extends ParaGetter<T> {
 	@Override
 	public T get(Action action, Controller c) {
 		// 支持 json 数据请求注入 action 形参
-		if (ParaProcessor.resolveJson && c.isJsonRequest()) {
+		if (ActionHandler.resolveJson && c.isJsonRequest()) {
 			return resolveJson((JsonRequest)c.getRequest());
 		} else {
 			return c.getModel(modelClass, this.getParameterName(), true);
