@@ -17,6 +17,7 @@
 package com.jfinal.kit;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -116,13 +117,28 @@ public class TypeKit {
 			return null;
 		}
 
-		// 支持 String 类型转换，并且支持数字 1/0 与字符串 "1"/"0" 转换
-		// 此处不能在判断 instanceof String 后强转 String，要支持 int、long 型的 1/0 值
-		String s = b.toString();
-		if ("true".equalsIgnoreCase(s) || "1".equals(s)) {
-			return Boolean.TRUE;
-		} else if ("false".equalsIgnoreCase(s) || "0".equals(s)) {
-			return Boolean.FALSE;
+		// 支持 Number 之下的整数类型
+		if (b instanceof Number) {
+			if (b instanceof Integer || b instanceof Long || b instanceof BigInteger || b instanceof Byte || b instanceof Short) {
+				int n = ((Number)b).intValue();
+				if (n == 1) {
+					return Boolean.TRUE;
+				} else if (n == 0) {
+					return Boolean.FALSE;
+				}
+			}
+			// Number 之下的其它类型需要抛出异常提示调用方，例如 Double、Float、BigDecimal
+			return (Boolean)b;
+		}
+
+		// 支持 String
+		if (b instanceof String) {
+			String s = b.toString();
+			if ("true".equalsIgnoreCase(s) || "1".equals(s)) {
+				return Boolean.TRUE;
+			} else if ("false".equalsIgnoreCase(s) || "0".equals(s)) {
+				return Boolean.FALSE;
+			}
 		}
 
 		return (Boolean)b;
