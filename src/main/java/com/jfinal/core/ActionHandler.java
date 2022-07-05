@@ -86,7 +86,7 @@ public class ActionHandler extends Handler {
 		Action action = getAction(target, urlPara);
 		
 		if (action == null) {
-			if (log.isWarnEnabled()) {
+			if (log.isInfoEnabled()) {
 				String qs = request.getQueryString();
 				log.info("404 Action Not Found: " + (qs == null ? target : target + "?" + qs));
 			}
