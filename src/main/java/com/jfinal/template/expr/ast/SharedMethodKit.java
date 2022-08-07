@@ -32,9 +32,9 @@ import com.jfinal.kit.SyncWriteMap;
  * SharedMethodKit
  */
 public class SharedMethodKit {
-	
+
 	private static final Set<Long> excludedMethodKey = new HashSet<Long>();
-	
+
 	static {
 		Method[] methods = Object.class.getMethods();
 		for (Method method : methods) {
@@ -42,10 +42,10 @@ public class SharedMethodKit {
 			excludedMethodKey.add(key);
 		}
 	}
-	
+
 	private final List<SharedMethodInfo> sharedMethodList = new ArrayList<SharedMethodInfo>();
 	private final HashMap<Long, SharedMethodInfo> methodCache = new SyncWriteMap<Long, SharedMethodInfo>(512, 0.25F);
-	
+
 	public SharedMethodInfo getSharedMethodInfo(String methodName, Object[] argValues) {
 		Class<?>[] argTypes = MethodKit.getArgTypes(argValues);
 		Long key = getSharedMethodKey(methodName, argTypes);
@@ -59,7 +59,7 @@ public class SharedMethodKit {
 		}
 		return method;
 	}
-	
+
 	private SharedMethodInfo doGetSharedMethodInfo(String methodName, Class<?>[] argTypes) {
 		for (SharedMethodInfo smi : sharedMethodList) {
 			if (smi.getName().equals(methodName)) {
@@ -74,37 +74,41 @@ public class SharedMethodKit {
 		}
 		return null;
 	}
-	
+
 	public void addSharedMethod(Object sharedMethodFromObject) {
 		addSharedMethod(sharedMethodFromObject.getClass(), sharedMethodFromObject);
 	}
-	
+
 	public void addSharedMethod(Class<?> sharedMethodFromClass) {
 		addSharedMethod(sharedMethodFromClass, ReflectKit.newInstance(sharedMethodFromClass));
 	}
-	
+
 	public void addSharedStaticMethod(Class<?> sharedStaticMethodFromClass) {
 		addSharedMethod(sharedStaticMethodFromClass, null);
 	}
-	
+
 	public void removeSharedMethod(String methodName) {
 		Iterator<SharedMethodInfo> it = sharedMethodList.iterator();
 		while(it.hasNext()) {
-			if (it.next().getName().equals(methodName)) {
+			SharedMethodInfo smi = it.next();
+			if (smi.getName().equals(methodName)) {
 				it.remove();
+				methodCache.remove(smi.getKey());
 			}
 		}
 	}
-	
+
 	public void removeSharedMethod(Class<?> sharedClass) {
 		Iterator<SharedMethodInfo> it = sharedMethodList.iterator();
 		while(it.hasNext()) {
-			if (it.next().getClazz() == sharedClass) {
+			SharedMethodInfo smi = it.next();
+			if (smi.getClazz() == sharedClass) {
 				it.remove();
+				methodCache.remove(smi.getKey());
 			}
 		}
 	}
-	
+
 	public void removeSharedMethod(Method method) {
 		Iterator<SharedMethodInfo> it = sharedMethodList.iterator();
 		while(it.hasNext()) {
@@ -114,29 +118,36 @@ public class SharedMethodKit {
 				Long key = getSharedMethodKey(methodName, method.getParameterTypes());
 				if (current.getKey().equals(key)) {
 					it.remove();
+					methodCache.remove(current.getKey());
 				}
 			}
 		}
 	}
-	
+
+	public void removeSharedMethod(String methodName, Class<?>... paraTypes) {
+		Long key = getSharedMethodKey(methodName, paraTypes);
+		sharedMethodList.removeIf(sharedMethodInfo -> sharedMethodInfo.getKey().equals(key));
+		methodCache.remove(key);
+	}
+
 	private synchronized void addSharedMethod(Class<?> sharedClass, Object target) {
 		if (MethodKit.isForbiddenClass(sharedClass)) {
 			throw new IllegalArgumentException("Forbidden class: " + sharedClass.getName());
 		}
-		
+
 		Method[] methods = sharedClass.getMethods();
 		for (Method method : methods) {
 			Long key = getSharedMethodKey(method.getName(), method.getParameterTypes());
 			if (excludedMethodKey.contains(key)) {
 				continue ;
 			}
-			
+
 			for (SharedMethodInfo smi : sharedMethodList) {
 				if (smi.getKey().equals(key)) {
 					throw new RuntimeException("The shared method is already exists : " + smi.toString());
 				}
 			}
-			
+
 			if (target != null) {
 				sharedMethodList.add(new SharedMethodInfo(key, sharedClass, method, target));
 			} else if (Modifier.isStatic(method.getModifiers())) { 	// target 为 null 时添加 static method
@@ -144,12 +155,12 @@ public class SharedMethodKit {
 			}
 		}
 	}
-	
+
 	private static Long getSharedMethodKey(String methodName, Class<?>[] argTypes) {
 		long hash = HashKit.FNV_OFFSET_BASIS_64;
 		hash ^= methodName.hashCode();
 		hash *= HashKit.FNV_PRIME_64;
-		
+
 		if (argTypes != null) {
 			for (int i=0; i<argTypes.length; i++) {
 				Class<?> type = argTypes[i];
@@ -164,19 +175,19 @@ public class SharedMethodKit {
 		}
 		return hash;
 	}
-	
+
 	static class SharedMethodInfo extends MethodInfo {
 		final Object target;
-		
+
 		private SharedMethodInfo(Long key, Class<?> clazz, Method method, Object target) {
 			super(key, clazz, method);
 			this.target = target;
 		}
-		
+
 		public Object invoke(Object... args) throws ReflectiveOperationException {
 			return super.invoke(target, args);
 		}
-		
+
 		Class<?> getClazz() {
 			return clazz;
 		}
