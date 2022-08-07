@@ -760,6 +760,22 @@ public class Engine {
 	public static void setChineseExpression(boolean enable) {
 		CharTable.setChineseExpression(enable);
 	}
+	
+	/**
+     * 设置为 true 支持静态方法调用表达式，自 jfinal 5.0.2 版本开始默认值为 false
+     */
+    public Engine setStaticMethodExpression(boolean enable) {
+        config.setStaticMethodExpression(enable);
+        return this;
+    }
+    
+    /**
+     * 设置为 true 支持静态属性访问表达式，自 jfinal 5.0.2 版本开始默认值为 false
+     */
+    public Engine setStaticFieldExpression(boolean enable) {
+        config.setStaticFieldExpression(enable);
+        return this;
+    }
 }
 
 

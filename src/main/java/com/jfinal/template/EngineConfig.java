@@ -487,7 +487,7 @@ public class EngineConfig {
     }
     
     public boolean isStaticFieldExpressionEnabled() {
-        return this.supportStaticFieldExpression;
+        return supportStaticFieldExpression;
     }
 }
 

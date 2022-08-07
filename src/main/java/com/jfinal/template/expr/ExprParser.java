@@ -326,7 +326,7 @@ public class ExprParser {
 				
 				if (! engineConfig.isStaticMethodExpressionEnabled()) {
 					throw new ParseException("Static Method expression is not enabled", location);
-				}	
+				}
 				return new StaticMethod(clazz, memberName, location);
 			}
 			
