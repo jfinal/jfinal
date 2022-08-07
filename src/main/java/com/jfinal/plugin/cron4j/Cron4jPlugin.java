@@ -103,22 +103,24 @@ import it.sauronsoftware.cron4j.Task;
  * ProcessTask task = new ProcessTask(command, null, directory);
  */
 public class Cron4jPlugin implements IPlugin {
-	
+
 	private List<TaskInfo> taskInfoList = new ArrayList<TaskInfo>();
 	public static final String defaultConfigName = "cron4j";
-	
+
+	protected volatile boolean isStarted = false;
+
 	public List<TaskInfo> getTaskInfoList() {
 		return taskInfoList;
 	}
-	
+
 	public Cron4jPlugin() {
 
 	}
-	
+
 	public Cron4jPlugin(String configFile) {
 		this(new Prop(configFile), defaultConfigName);
 	}
-	
+
 	public Cron4jPlugin(Prop configProp) {
 		this(configProp, defaultConfigName);
 	}
@@ -126,7 +128,7 @@ public class Cron4jPlugin implements IPlugin {
 	public Cron4jPlugin(String configFile, String configName) {
 		this(new Prop(configFile), configName);
 	}
-	
+
 	public Cron4jPlugin(Prop configProp, String configName) {
 		try {
 			addTask(configProp, configName);
@@ -214,24 +216,32 @@ public class Cron4jPlugin implements IPlugin {
 	public Cron4jPlugin addTask(String cron, Task task) {
 		return addTask(cron, task, true, true);
 	}
-	
+
 	public boolean start() {
+		if (isStarted) {
+			return true;
+		}
+
 		for (TaskInfo taskInfo : taskInfoList) {
 			taskInfo.schedule();
 		}
 		for (TaskInfo taskInfo : taskInfoList) {
 			taskInfo.start();
 		}
+
+		isStarted = true;
 		return true;
 	}
-	
+
 	public boolean stop() {
 		for (TaskInfo taskInfo : taskInfoList) {
 			taskInfo.stop();
 		}
+
+		isStarted = false;
 		return true;
 	}
-	
+
 	private static class TaskInfo {
 		Scheduler scheduler;
 
