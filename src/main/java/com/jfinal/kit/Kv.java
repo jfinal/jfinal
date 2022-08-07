@@ -86,9 +86,9 @@ public class Kv extends HashMap {
 		return (T)get(key);
 	}
 
-	public <T> T getAs(Object key, Object defaultValue) {
+	public <T> T getAs(Object key, T defaultValue) {
 		Object ret = get(key);
-		return (T) (ret != null ? ret : defaultValue);
+		return ret != null ? (T) ret : defaultValue;
 	}
 
 	public String getStr(Object key) {
