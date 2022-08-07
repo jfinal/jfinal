@@ -78,6 +78,9 @@ public class EngineConfig {
 
 	// 浮点数输出与运算时使用的舍入模式，默认值为 "四舍五入"
 	private RoundingMode roundingMode = RoundingMode.HALF_UP;
+	
+	private boolean supportStaticMethodExpression = false;
+	private boolean supportStaticFieldExpression = false;
 
 	public EngineConfig() {
 		// 内置指令 #() 与 #include() 需要配置，保留指令所在行前后空白字符以及行尾换行字符 '\n'
@@ -464,6 +467,28 @@ public class EngineConfig {
 	public RoundingMode getRoundingMode() {
 		return roundingMode;
 	}
+	
+	/**
+     * 设置为 true 支持静态方法调用表达式，自 jfinal 5.0.2 版本开始默认值为 false
+     */
+    public void setStaticMethodExpression(boolean enable) {
+        this.supportStaticMethodExpression = enable;
+    }
+    
+    public boolean isStaticMethodExpressionEnabled() {
+        return supportStaticMethodExpression;
+    }
+    
+    /**
+     * 设置为 true 支持静态属性访问表达式，自 jfinal 5.0.2 版本开始默认值为 false
+     */
+    public void setStaticFieldExpression(boolean enable) {
+        this.supportStaticFieldExpression = enable;
+    }
+    
+    public boolean isStaticFieldExpressionEnabled() {
+        return this.supportStaticFieldExpression;
+    }
 }
 
 
