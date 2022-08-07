@@ -15,7 +15,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 - 多视图支持，支持 Enjoy、FreeMarker、JSP
 - 强大的 Validator 后端校验功能
 - 功能齐全，拥有传统 SSH 框架的绝大部分核心功能
-- 体积小仅 818 KB，并且无第三方依赖
+- 体积小仅 832 KB，并且无第三方依赖
 
 **JFinal 极速开发微信公众号欢迎你的加入: JFinal**
 
@@ -25,7 +25,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 <dependency>
     <groupId>com.jfinal</groupId>
     <artifactId>jfinal</artifactId>
-    <version>5.0.1</version>
+    <version>5.0.2</version>
 </dependency>
 ```
 
