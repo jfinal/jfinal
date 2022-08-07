@@ -318,19 +318,30 @@ public class ExprParser {
 		match(Sym.STATIC);
 		String memberName = match(Sym.ID).value();
 		
-		// com.jfinal.kit.Str::isBlank(str)
+		// com.jfinal.kit.StrKit::isBlank(str)
 		if (peek().sym == Sym.LPAREN) {
 			move();
 			if (peek().sym == Sym.RPAREN) {
 				move();
+				
+				if (! engineConfig.isStaticMethodExpressionEnabled()) {
+					throw new ParseException("Static Method expression is not enabled", location);
+				}
 				return new StaticMethod(clazz, memberName, location);
 			}
 			
 			ExprList exprList = exprList();
 			match(Sym.RPAREN);
+			
+			if (! engineConfig.isStaticMethodExpressionEnabled()) {
+				throw new ParseException("Static Method expression is not enabled", location);
+			}
 			return new StaticMethod(clazz, memberName, exprList, location);
 		}
 		
+		if (! engineConfig.isStaticFieldExpressionEnabled()) {
+			throw new ParseException("Static Field expression is not enabled", location);
+		}
 		// com.jfinal.core.Const::JFINAL_VERSION
 		return new StaticField(clazz, memberName, location);
 	}
