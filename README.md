@@ -41,7 +41,7 @@ public class BlogController extends Controller {
     BlogService service;
 
     public void index() {
-        set("blogPage", service.paginate(getParaToInt(0, 1), 10));
+        set("blogPage", service.paginate(getInt(0, 1), 10));
         render("blog.html");
     }
 
@@ -55,7 +55,7 @@ public class BlogController extends Controller {
     }
 
     public void edit() {
-        set("blog", service.findById(getParaToInt()));
+        set("blog", service.findById(getInt()));
     }
 
     @Before(BlogValidator.class)
@@ -65,7 +65,7 @@ public class BlogController extends Controller {
     }
 
     public void delete() {
-        service.deleteById(getParaToInt());
+        service.deleteById(getInt());
         redirect("/blog");
     }
 }
