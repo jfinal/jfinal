@@ -27,7 +27,7 @@ import com.jfinal.log.Log;
  * 调度工具类
  * 1：scheduleWithFixedDelay 以上一次任务的 "结束时间" 为间隔调度任务
  * 2：scheduleAtFixedRate    以上一次任务的 "开始时间" 为间隔调度任务。当本次调度来临时，如果上一次任务未执行完，则等待它执行完成后再立即调度
- * 3：注意要在被调度的任务(Runnable/Callable)中捕获异常，否则调度将会停止
+ * 3：警告：必须要在被调度的任务(Runnable/Callable)中捕获异常，否则调度将会停止
  */
 public class ScheduledKit {
 
@@ -78,6 +78,22 @@ public class ScheduledKit {
 	}
 
 	/**
+	 * 任务添加 try catch ，避免 scheduleWithFixedDelay 方法在调度任务出现异常后会终止调度
+ 	 */
+	public static ScheduledFuture<?> scheduleWithFixedDelayWithTryCatch(Runnable task, long initialDelay, long delay, TimeUnit unit) {
+		return scheduleWithFixedDelay(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					task.run();
+				} catch (Throwable t) {
+					Log.getLog(ScheduledKit.class).error(t.getMessage(), t);
+				}
+			}
+		}, initialDelay, delay, unit);
+	}
+
+	/**
 	 * 以固定频率执行任务
 	 * @param task 被执行的任务
 	 * @param initialDelay 第一次启动前的延迟
@@ -86,6 +102,22 @@ public class ScheduledKit {
 	 */
 	public static ScheduledFuture<?> scheduleAtFixedRate(Runnable task, long initialDelay, long period, TimeUnit unit) {
 		return getExecutor().scheduleAtFixedRate(task, initialDelay, period, unit);
+	}
+
+	/**
+	 * 任务添加 try catch ，避免 scheduleAtFixedRate 方法在调度任务出现异常后会终止调度
+ 	 */
+	public static ScheduledFuture<?> scheduleAtFixedRateWithTryCatch(Runnable task, long initialDelay, long period, TimeUnit unit) {
+		return scheduleAtFixedRate(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					task.run();
+				} catch (Throwable t) {
+					Log.getLog(ScheduledKit.class).error(t.getMessage(), t);
+				}
+			}
+		}, initialDelay, period, unit);
 	}
 
 	/**
