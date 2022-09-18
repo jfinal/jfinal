@@ -101,13 +101,37 @@ public class Generator {
 	}
 
 	/**
-	 * 配置 MetaBuilder、BaseModelGenerator、ModelGenerator、MappingKitGenerator、DataDictionaryGenerator
+	 * 配置 MetaBuilder
 	 */
-	public void config(F10<MetaBuilder> metaBuilder, F10<BaseModelGenerator> baseModelGenerator, F10<ModelGenerator> modelGenerator, F10<MappingKitGenerator> mappingKitGenerator, F10<DataDictionaryGenerator> dataDictionaryGenerator) {
+	public void configMetaBuilder(F10<MetaBuilder> metaBuilder) {
 		metaBuilder.call(this.metaBuilder);
+	}
+
+	/**
+	 * 配置 BaseModelGenerator
+	 */
+	public void configBaseModelGenerator(F10<BaseModelGenerator> baseModelGenerator) {
 		baseModelGenerator.call(this.baseModelGenerator);
+	}
+
+	/**
+	 * 配置 ModelGenerator
+	 */
+	public void configModelGenerator(F10<ModelGenerator> modelGenerator) {
 		modelGenerator.call(this.modelGenerator);
+	}
+
+	/**
+	 * 配置 MappingKitGenerator
+	 */
+	public void configMappingKitGenerator(F10<MappingKitGenerator> mappingKitGenerator) {
 		mappingKitGenerator.call(this.mappingKitGenerator);
+	}
+
+	/**
+	 * 配置 DataDictionaryGenerator
+	 */
+	public void configDataDictionaryGenerator(F10<DataDictionaryGenerator> dataDictionaryGenerator) {
 		dataDictionaryGenerator.call(this.dataDictionaryGenerator);
 	}
 
