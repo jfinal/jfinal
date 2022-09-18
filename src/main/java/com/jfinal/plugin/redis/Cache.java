@@ -1425,7 +1425,7 @@ public class Cache {
 	 * @param millisecondsToTimeout 获取锁的超时时间，单位毫秒
 	 * @return 获取成功返回字符串，否则返回 false。释放锁时需要用到返回的字符串
 	 */
-	public String lock(String name, int secondsToExpire, long millisecondsToTimeout) {
+	public String lock(String name, int secondsToExpire, int millisecondsToTimeout) {
 		Jedis jedis = getJedis();
 		try {
 			String lockId = java.util.UUID.randomUUID().toString();
@@ -1459,6 +1459,25 @@ public class Cache {
 		}
 		finally {
 			close(jedis);
+		}
+	}
+
+	/**
+	 * 为业务封装分布式锁，免去锁的获取、释放
+	 * withLock("lockStock", 120, 1000, () -> {
+	 * 		// 业务操作代码
+	 * });
+	 */
+	public boolean withLock(String name, int secondsToExpire, int millisecondsToTimeout, com.jfinal.kit.Func.F00 fun) {
+		String lockId = lock(name, secondsToExpire, millisecondsToTimeout);
+		if (lockId == null) {
+			return false;
+		}
+		try {
+			fun.call();
+			return true;
+		} finally {
+			unlock(name, lockId);
 		}
 	}
 }
