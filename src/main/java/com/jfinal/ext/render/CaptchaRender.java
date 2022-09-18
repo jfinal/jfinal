@@ -40,7 +40,7 @@ import com.jfinal.render.Render;
 public class CaptchaRender extends Render {
 
 	private static final int WIDTH = 80, HEIGHT = 26;
-	private static final String[] strArr = {"3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"};
+	private static final char[] strArr = "3456789ABCDEFGHJKMNPQRSTUVWXYabcdefghjkmnpqrstuvwxy".toCharArray();
 
 	private String captchaName;
 
