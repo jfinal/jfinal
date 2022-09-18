@@ -1469,7 +1469,7 @@ public class Cache {
 	 * });
 	 */
 	public boolean withLock(String name, int secondsToExpire, long millisecondsToTimeout, com.jfinal.kit.Func.F00 fun) {
-		String lockId = Redis.use().lock(name, secondsToExpire, millisecondsToTimeout);
+		String lockId = lock(name, secondsToExpire, millisecondsToTimeout);
 		if (lockId == null) {
 			return false;
 		}
@@ -1477,7 +1477,7 @@ public class Cache {
 			fun.call();
 			return true;
 		} finally {
-			Redis.use().unlock("lockStock", lockId);
+			unlock(name, lockId);
 		}
 	}
 }
