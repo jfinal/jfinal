@@ -18,6 +18,7 @@ package com.jfinal.plugin.activerecord.generator;
 
 import java.util.List;
 import javax.sql.DataSource;
+import com.jfinal.kit.Func.F10;
 import com.jfinal.plugin.activerecord.dialect.Dialect;
 
 /**
@@ -97,6 +98,17 @@ public class Generator {
 		this.modelGenerator = modelGenerator;
 		this.mappingKitGenerator = new MappingKitGenerator(modelGenerator.modelPackageName, modelGenerator.modelOutputDir);
 		this.dataDictionaryGenerator = new DataDictionaryGenerator(dataSource, modelGenerator.modelOutputDir);
+	}
+
+	/**
+	 * 配置 MetaBuilder、BaseModelGenerator、ModelGenerator、MappingKitGenerator、DataDictionaryGenerator
+	 */
+	public void config(F10<MetaBuilder> metaBuilder, F10<BaseModelGenerator> baseModelGenerator, F10<ModelGenerator> modelGenerator, F10<MappingKitGenerator> mappingKitGenerator, F10<DataDictionaryGenerator> dataDictionaryGenerator) {
+		metaBuilder.call(this.metaBuilder);
+		baseModelGenerator.call(this.baseModelGenerator);
+		modelGenerator.call(this.modelGenerator);
+		mappingKitGenerator.call(this.mappingKitGenerator);
+		dataDictionaryGenerator.call(this.dataDictionaryGenerator);
 	}
 
 	/**
