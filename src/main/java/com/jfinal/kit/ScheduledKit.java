@@ -81,14 +81,11 @@ public class ScheduledKit {
 	 * 任务添加 try catch ，避免 scheduleWithFixedDelay 方法在调度任务出现异常后会终止调度
  	 */
 	public static ScheduledFuture<?> scheduleWithFixedDelayWithTryCatch(Runnable task, long initialDelay, long delay, TimeUnit unit) {
-		return scheduleWithFixedDelay(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					task.run();
-				} catch (Throwable t) {
-					Log.getLog(ScheduledKit.class).error(t.getMessage(), t);
-				}
+		return scheduleWithFixedDelay(() -> {
+			try {
+				task.run();
+			} catch (Throwable t) {
+				Log.getLog(ScheduledKit.class).error(t.getMessage(), t);
 			}
 		}, initialDelay, delay, unit);
 	}
@@ -108,14 +105,11 @@ public class ScheduledKit {
 	 * 任务添加 try catch ，避免 scheduleAtFixedRate 方法在调度任务出现异常后会终止调度
  	 */
 	public static ScheduledFuture<?> scheduleAtFixedRateWithTryCatch(Runnable task, long initialDelay, long period, TimeUnit unit) {
-		return scheduleAtFixedRate(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					task.run();
-				} catch (Throwable t) {
-					Log.getLog(ScheduledKit.class).error(t.getMessage(), t);
-				}
+		return scheduleAtFixedRate(() -> {
+			try {
+				task.run();
+			} catch (Throwable t) {
+				Log.getLog(ScheduledKit.class).error(t.getMessage(), t);
 			}
 		}, initialDelay, period, unit);
 	}
