@@ -141,6 +141,15 @@ public class Generator {
 	}
 
 	/**
+	 * 配置是否取出字段的自增属性
+	 */
+	public void setFetchFieldAutoIncrement(boolean fetchFieldAutoIncrement) {
+		if (metaBuilder != null) {
+			metaBuilder.setFetchFieldAutoIncrement(fetchFieldAutoIncrement);
+		}
+	}
+
+	/**
 	 * 切换 TypeMapping
 	 * jfinal 4.9.08 版本新增了 addTypeMapping(...) 可以替代该方法的使用
 	 */
