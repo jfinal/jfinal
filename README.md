@@ -25,7 +25,7 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 <dependency>
     <groupId>com.jfinal</groupId>
     <artifactId>jfinal</artifactId>
-    <version>5.0.2</version>
+    <version>5.0.3</version>
 </dependency>
 ```
 
@@ -41,7 +41,7 @@ public class BlogController extends Controller {
     BlogService service;
 
     public void index() {
-        set("blogPage", service.paginate(getParaToInt(0, 1), 10));
+        set("blogPage", service.paginate(getInt(0, 1), 10));
         render("blog.html");
     }
 
@@ -55,7 +55,7 @@ public class BlogController extends Controller {
     }
 
     public void edit() {
-        set("blog", service.findById(getParaToInt()));
+        set("blog", service.findById(getInt()));
     }
 
     @Before(BlogValidator.class)
@@ -65,7 +65,7 @@ public class BlogController extends Controller {
     }
 
     public void delete() {
-        service.deleteById(getParaToInt());
+        service.deleteById(getInt());
         redirect("/blog");
     }
 }
