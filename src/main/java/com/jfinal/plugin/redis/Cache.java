@@ -1461,6 +1461,25 @@ public class Cache {
 			close(jedis);
 		}
 	}
+
+	/**
+	 * 为业务封装分布式锁，免去锁的获取、释放
+	 * withLock("lockStock", 120, 1000, () -> {
+	 * 		// 业务操作代码
+	 * });
+	 */
+	public boolean withLock(String name, int secondsToExpire, long millisecondsToTimeout, com.jfinal.kit.Func.F00 fun) {
+		String lockId = Redis.use().lock(name, secondsToExpire, millisecondsToTimeout);
+		if (lockId == null) {
+			return false;
+		}
+		try {
+			fun.call();
+			return true;
+		} finally {
+			Redis.use().unlock("lockStock", lockId);
+		}
+	}
 }
 
 
