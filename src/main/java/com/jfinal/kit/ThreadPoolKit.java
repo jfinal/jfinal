@@ -20,6 +20,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import com.jfinal.log.Log;
 
 /**
@@ -205,6 +206,13 @@ public class ThreadPoolKit {
 		if (executor != null) {
 			executor.shutdownNow();
 		}
+	}
+
+	/**
+	 * 在 shutdown 线程池之后，阻塞等待所有任务执行完，或发生超时，或当前线程中断，以先发生者为准
+	 */
+	public static boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+		return executor == null || executor.awaitTermination(timeout, unit);
 	}
 }
 
