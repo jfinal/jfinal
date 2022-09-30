@@ -217,21 +217,12 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 * Switching data source, dialect and all config by configName
 	 */
 	public M use(String configName) {
-		// if (attrs == DaoContainerFactory.daoMap) {
-		// 	throw new RuntimeException("dao 只允许调用查询方法");
-		// }
-		//
-		// this.configName = configName;
-		// return (M)this;
-
-		try {
-			// 支持 dao().use(configName)
-			M ret = (M) _getUsefulClass().newInstance();
-			ret.configName = configName;
-			return ret;
-		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException(e);
+		if (attrs == DaoContainerFactory.daoMap) {
+			throw new RuntimeException("dao 只允许调用查询方法");
 		}
+
+		this.configName = configName;
+		return (M)this;
 	}
 
 	/**
