@@ -31,12 +31,21 @@ import com.jfinal.plugin.activerecord.NestedTransactionHelpException;
  * Example: @Before(Tx.class)
  */
 public class Tx implements Interceptor {
-	
+
+	private static TxFun txFun = null;
+
+	public static void setTxFun(TxFun txFun) {
+		if (Tx.txFun != null) {
+			throw new IllegalStateException("txFun already set");
+		}
+		Tx.txFun = txFun;
+	}
+
 	public static Config getConfigWithTxConfig(Invocation inv) {
 		TxConfig txConfig = inv.getMethod().getAnnotation(TxConfig.class);
 		if (txConfig == null)
 			txConfig = inv.getTarget().getClass().getAnnotation(TxConfig.class);
-		
+
 		if (txConfig != null) {
 			Config config = DbKit.getConfig(txConfig.value());
 			if (config == null)
@@ -45,16 +54,16 @@ public class Tx implements Interceptor {
 		}
 		return null;
 	}
-	
+
 	protected int getTransactionLevel(Config config) {
 		return config.getTransactionLevel();
 	}
-	
+
 	public void intercept(Invocation inv) {
 		Config config = getConfigWithTxConfig(inv);
 		if (config == null)
 			config = DbKit.getConfig();
-		
+
 		Connection conn = config.getThreadLocalConnection();
 		if (conn != null) {	// Nested transaction support
 			try {
@@ -66,7 +75,7 @@ public class Tx implements Interceptor {
 				throw new ActiveRecordException(e);
 			}
 		}
-		
+
 		Boolean autoCommit = null;
 		try {
 			conn = config.getConnection();
@@ -74,14 +83,20 @@ public class Tx implements Interceptor {
 			config.setThreadLocalConnection(conn);
 			conn.setTransactionIsolation(getTransactionLevel(config));	// conn.setTransactionIsolation(transactionLevel);
 			conn.setAutoCommit(false);
-			inv.invoke();
-			conn.commit();
+
+			if (txFun == null) {
+				inv.invoke();
+				conn.commit();
+			} else {
+				txFun.call(inv, conn);
+			}
+
 		} catch (NestedTransactionHelpException e) {
 			if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}
 			LogKit.logNothing(e);
 		} catch (Throwable t) {
 			if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}
-			
+
 			// 支持在 controller 中 try catch 的 catch 块中使用 render(...) 并 throw e，实现灵活控制 render
 			if (inv.isActionInvocation() && inv.getController().getRender() != null) {
 				LogKit.error(t.getMessage(), t);
