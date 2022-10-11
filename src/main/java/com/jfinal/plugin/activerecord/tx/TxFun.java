@@ -41,7 +41,7 @@ import java.sql.SQLException;
  *       }
  *
  *       // 返回其它类型值的情况
- *       conn.commit();;
+ *       conn.commit();
  *    });
  * </pre>
  */
