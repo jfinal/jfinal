@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.Invocation;
 import com.jfinal.kit.LogKit;
+import com.jfinal.log.Log;
 import com.jfinal.plugin.activerecord.ActiveRecordException;
 import com.jfinal.plugin.activerecord.Config;
 import com.jfinal.plugin.activerecord.DbKit;
@@ -36,9 +37,13 @@ public class Tx implements Interceptor {
 
 	public static void setTxFun(TxFun txFun) {
 		if (Tx.txFun != null) {
-			throw new IllegalStateException("txFun already set");
+			Log.getLog(Tx.class).warn("txFun already set");
 		}
 		Tx.txFun = txFun;
+	}
+
+	public static TxFun getTxFun() {
+		return Tx.txFun;
 	}
 
 	public static Config getConfigWithTxConfig(Invocation inv) {
