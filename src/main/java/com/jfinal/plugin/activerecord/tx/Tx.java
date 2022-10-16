@@ -74,7 +74,13 @@ public class Tx implements Interceptor {
 			try {
 				if (conn.getTransactionIsolation() < getTransactionLevel(config))
 					conn.setTransactionIsolation(getTransactionLevel(config));
-				inv.invoke();
+				
+				if (txFun == null) {
+				    inv.invoke();
+				} else {
+				    txFun.call(inv, conn);
+				}
+				
 				return ;
 			} catch (SQLException e) {
 				throw new ActiveRecordException(e);
