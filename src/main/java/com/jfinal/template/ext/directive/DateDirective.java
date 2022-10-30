@@ -96,7 +96,7 @@ public class DateDirective extends Directive {
 				throw new TemplateException("The first parameter of #date directive can not be " + date.getClass().getName(), location);
 			}
 
-		} catch (TemplateException e) {
+		} catch (TemplateException | ParseException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);

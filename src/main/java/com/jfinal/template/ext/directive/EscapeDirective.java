@@ -53,9 +53,9 @@ public class EscapeDirective extends Directive {
 			} else if (value != null) {
 				escape(value.toString(), writer);
 			}
-		} catch(TemplateException | ParseException e) {
+		} catch (TemplateException | ParseException e) {
 			throw e;
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}
 	}
