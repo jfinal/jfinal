@@ -158,6 +158,7 @@ public class FreeMarkerRender extends Render {
 			template.process(data, writer);		// Merge the data-model and the template
 			writer.flush();
 		} catch (Exception e) {
+			close(writer);
 			throw new RenderException(e);
 		}
 	}

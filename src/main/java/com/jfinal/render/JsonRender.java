@@ -16,7 +16,6 @@
 
 package com.jfinal.render;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -139,7 +138,8 @@ public class JsonRender extends Render {
 			writer = response.getWriter();
 			writer.write(jsonText);
 			writer.flush();
-		} catch (IOException e) {
+		} catch (Exception e) {
+			close(writer);
 			throw new RenderException(e);
 		}
 	}

@@ -56,13 +56,16 @@ public class TemplateRender extends Render {
 			data.put(attrName, request.getAttribute(attrName));
 		}
 		
+		OutputStream os = null;
 		try {
 			
-			OutputStream os = response.getOutputStream();
+			os = response.getOutputStream();
 			engine.getTemplate(view).render(data, os);
 			os.flush();
 			
 		} catch (RuntimeException e) {	// 捕获 ByteWriter.close() 抛出的 RuntimeException
+			close(os);
+			
 			Throwable cause = e.getCause();
 			if (cause instanceof IOException) {	// ClientAbortException、EofException 直接或间接继承自 IOException
 				String name = cause.getClass().getSimpleName();
@@ -72,7 +75,8 @@ public class TemplateRender extends Render {
 			}
 			
 			throw e;
-		} catch (IOException e) {
+		} catch (Exception e) {
+			close(os);
 			throw new RenderException(e);
 		}
 	}

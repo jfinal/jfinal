@@ -24,6 +24,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.jfinal.kit.StrKit;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -110,6 +111,7 @@ public class QrCodeRender extends Render {
 			hints.put(EncodeHintType.ERROR_CORRECTION, errorCorrectionLevel);
 		}
 
+		OutputStream os = null;
 		try {
 			// MultiFormatWriter 可支持多种格式的条形码，在此直接使用 QRCodeWriter，通过查看源码可知少创建一个对象
 			// BitMatrix bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, width, height, hints);
@@ -117,15 +119,18 @@ public class QrCodeRender extends Render {
 			QRCodeWriter writer = new QRCodeWriter();
 			BitMatrix bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, width, height, hints);
 
+			os = response.getOutputStream();
 			// 经测试 200 X 200 大小的二维码使用 "png" 格式只有 412B，而 "jpg" 却达到 15KB
-			MatrixToImageWriter.writeToStream(bitMatrix, "png", response.getOutputStream());    // format: "jpg"、"png"
+			MatrixToImageWriter.writeToStream(bitMatrix, "png", os);    // format: "jpg"、"png"
 		} catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
+			close(os);
 			String name = e.getClass().getSimpleName();
 			if ("ClientAbortException".equals(name) || "EofException".equals(name)) {
 			} else {
 				throw new RenderException(e);
 			}
 		} catch (Exception e) {
+			close(os);
 			throw new RenderException(e);
 		}
 	}

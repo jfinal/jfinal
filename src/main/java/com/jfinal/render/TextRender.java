@@ -16,7 +16,6 @@
 
 package com.jfinal.render;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
@@ -66,7 +65,8 @@ public class TextRender extends Render {
 			writer = response.getWriter();
 			writer.write(text);
 			writer.flush();
-		} catch (IOException e) {
+		} catch (Exception e) {
+			close(writer);
 			throw new RenderException(e);
 		}
 	}
