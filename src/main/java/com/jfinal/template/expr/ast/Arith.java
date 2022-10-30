@@ -78,7 +78,7 @@ public class Arith extends Expr {
 	public Object eval(Scope scope) {
 		try {
 			return doEval(scope);
-		} catch (TemplateException e) {
+		} catch (TemplateException | ParseException e) {
 			throw e;
 		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);

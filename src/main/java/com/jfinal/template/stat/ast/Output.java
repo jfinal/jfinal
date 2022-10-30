@@ -67,9 +67,9 @@ public class Output extends Stat {
 			} else if (value != null) {
 				writer.write(value.toString());
 			}
-		} catch(TemplateException | ParseException e) {
+		} catch (TemplateException | ParseException e) {
 			throw e;
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}
 	}

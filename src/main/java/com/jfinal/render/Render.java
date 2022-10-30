@@ -73,18 +73,18 @@ public abstract class Render {
 	 * Render to client
 	 */
 	public abstract void render();
-	
-	/**
-	 * OutputStream、Writer 写入异常时，关闭它们，ActionHandler 中未向底层容器继续抛出 IOException，
-	 * 以防容器在意外情况下未关闭它们（虽然调试 undertow 源码得知，无论异常产生与否，都将关闭它们）
-	 */
-	protected void close(AutoCloseable autoCloseable) {
-	    if (autoCloseable != null) {
-	        try {
+    
+    /**
+     * OutputStream、Writer 写入异常时，关闭它们，ActionHandler 中未向底层容器继续抛出 IOException，
+     * 以防容器在意外情况下未关闭它们（虽然调试 undertow 源码得知，无论异常产生与否，都将关闭它们）
+     */
+    protected void close(AutoCloseable autoCloseable) {
+        if (autoCloseable != null) {
+            try {
                 autoCloseable.close();
             } catch (Exception e) {
                 Log.getLog(getClass()).error(e.getMessage(), e);
             }
-	    }
-	}
+        }
+    }
 }

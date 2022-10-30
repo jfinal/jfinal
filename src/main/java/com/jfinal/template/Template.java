@@ -218,7 +218,7 @@ public class Template {
         }
     }
 	
-	/**
+    /**
      * 渲染到 OutputStream 中去，autoCloseOutputStream 指定是否自动关闭 OutputStream
      */
     public void render(Map<?, ?> data, OutputStream outputStream, boolean autoCloseOutputStream) {

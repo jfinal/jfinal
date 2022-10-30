@@ -66,7 +66,10 @@ public class TextRender extends Render {
 			writer = response.getWriter();
 			writer.write(text);
 			writer.flush();
-		} catch (IOException e) {
+		} catch (Exception e) {
+		    if (e instanceof IOException) {
+		        close(writer);
+		    }
 			throw new RenderException(e);
 		}
 	}
