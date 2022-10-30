@@ -1471,7 +1471,7 @@ public class Cache {
 	 * 		// 业务操作代码
 	 * });
 	 */
-	public boolean withLock(String name, int secondsToExpire, int secondsToTimeout, com.jfinal.kit.Func.F00 fun) {
+	public boolean withLock(String name, int secondsToExpire, int secondsToTimeout, F00 fun) {
 		String lockId = lock(name, secondsToExpire, secondsToTimeout);
 		if (lockId == null) {
 			return false;
