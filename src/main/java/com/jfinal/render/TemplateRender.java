@@ -74,8 +74,10 @@ public class TemplateRender extends Render {
 			}
 			
 			throw e;
-		} catch (IOException e) {
-			close(os);
+		} catch (Exception e) {
+		    if (e instanceof IOException) {
+		        close(os);
+		    }
 			throw new RenderException(e);
 		}
 	}

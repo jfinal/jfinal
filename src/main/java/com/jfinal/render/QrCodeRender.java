@@ -130,7 +130,6 @@ public class QrCodeRender extends Render {
 				throw new RenderException(e);
 			}
 		} catch (Exception e) {
-			close(os);
 			throw new RenderException(e);
 		}
 	}
