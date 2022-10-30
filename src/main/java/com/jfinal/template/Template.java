@@ -206,6 +206,39 @@ public class Template {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	// ---------
+	
+    private void close(boolean autoClose, AutoCloseable autoCloseable) {
+        if (autoClose && autoCloseable != null) {
+            try {
+                autoCloseable.close();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+	
+	/**
+     * 渲染到 OutputStream 中去，autoCloseOutputStream 指定是否自动关闭 OutputStream
+     */
+    public void render(Map<?, ?> data, OutputStream outputStream, boolean autoCloseOutputStream) {
+        try {
+            render(data, outputStream);
+        } finally {
+            close(autoCloseOutputStream, outputStream);
+        }
+    }
+    
+    /**
+     * 渲染到 Writer 中去，autoCloseWriter 指定是否自动关闭 Writer
+     */
+    public void render(Map<?, ?> data, Writer writer, boolean autoCloseWriter) {
+        try {
+            render(data, writer);
+        } finally {
+            close(autoCloseWriter, writer);
+        }
+    }
 }
 
 
