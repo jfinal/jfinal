@@ -16,6 +16,7 @@
 
 package com.jfinal.render;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -140,7 +141,9 @@ public class ErrorRender extends Render {
 			os = response.getOutputStream();
 			os.write(isJsonContentType ? getErrorJson() : getErrorHtml());
 		} catch (Exception e) {
-			close(os);
+		    if (e instanceof IOException) {
+		        close(os);
+		    }
 			throw new RenderException(e);
 		}
 	}
