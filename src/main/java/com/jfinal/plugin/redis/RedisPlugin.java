@@ -166,6 +166,7 @@ public class RedisPlugin implements IPlugin {
 	
 	public void setSerializer(ISerializer serializer) {
 		this.serializer = serializer;
+		Serializer.serializer = serializer;
 	}
 	
 	public void setKeyNamingPolicy(IKeyNamingPolicy keyNamingPolicy) {
