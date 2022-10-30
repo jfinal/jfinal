@@ -1485,7 +1485,7 @@ public class Cache {
 	}
 
 	/**
-	 * redis 事务，返回值不为 null 表示 redis 事务执行成功，否则执行失败
+	 * redis 事务，返回值为非 null 时表示 redis 事务执行成功，否则执行失败
 	 * 被监视的 watchKey 值发生变化时，事务将会执行失败
 	 *
 	 * @param watchKeys 被监视的 key，多个 key 使用逗号分隔，例如： "key1, key2"。无监视 key 传入 null 值或者使用 tx(F10<Transaction> tx)
