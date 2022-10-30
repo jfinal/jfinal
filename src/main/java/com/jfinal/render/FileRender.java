@@ -27,13 +27,15 @@ import java.net.URLEncoder;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
+import com.jfinal.log.Log;
 
 /**
  * FileRender.
  */
 public class FileRender extends Render {
+    
+    private static final Log log = Log.getLog(FileRender.class);
 	
 	protected static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
 	protected static String baseDownloadPath;
@@ -184,7 +186,7 @@ public class FileRender extends Render {
 				outputStream.write(buffer, 0, len);
 			}
 			outputStream.flush();
-			outputStream.close();
+			
 		} catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
 			String name = e.getClass().getSimpleName();
 			if (name.equals("ClientAbortException") || name.equals("EofException")) {
@@ -194,8 +196,12 @@ public class FileRender extends Render {
 		} catch (Exception e) {
 			throw new RenderException(e);
 		} finally {
-			if (inputStream != null)
-				try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
+			if (inputStream != null) {
+				try {inputStream.close();} catch (IOException e) {log.error(e.getMessage(), e);}
+			}
+			if (outputStream != null) {
+			    try {outputStream.close();} catch (IOException e) {log.error(e.getMessage(), e);}
+			}
 		}
 	}
 	
@@ -235,7 +241,7 @@ public class FileRender extends Render {
 				}
 			}
 			outputStream.flush();
-			outputStream.close();
+			
 		}
 		catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
 			String name = e.getClass().getSimpleName();
@@ -248,8 +254,12 @@ public class FileRender extends Render {
 			throw new RenderException(e);
 		}
 		finally {
-			if (inputStream != null)
-				try {inputStream.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
+			if (inputStream != null) {
+				try {inputStream.close();} catch (IOException e) {log.error(e.getMessage(), e);}
+			}
+			if (outputStream != null) {
+			    try {outputStream.close();} catch (IOException e) {log.error(e.getMessage(), e);}
+			}
 		}
 	}
 	
@@ -291,8 +301,9 @@ public class FileRender extends Render {
 		}
 		
 		// check final range
-		if (range[0] == null || range[1] == null || range[0].longValue() > range[1].longValue())
+		if (range[0] == null || range[1] == null || range[0].longValue() > range[1].longValue()) {
 			throw new RuntimeException("Range error");
+		}
 	}
 }
 
