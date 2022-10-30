@@ -25,10 +25,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
+import com.jfinal.kit.Func.*;
+import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.redis.serializer.ISerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
+import redis.clients.jedis.Transaction;
 import redis.clients.jedis.params.SetParams;
 import redis.clients.jedis.util.SafeEncoder;
 
@@ -1410,7 +1413,7 @@ public class Cache {
 	 *
 	 * <pre>
 	 * 例子：
-	 * String lockId = Redis.use().lock("lockStock", 120, 1500)
+	 * String lockId = Redis.use().lock("lockStock", 120, 5)
 	 * if (lockId != null) {
 	 *     try {
 	 *        业务操作代码
@@ -1422,10 +1425,10 @@ public class Cache {
 	 *
 	 * @param name 锁的名称，通常与业务逻辑相关
 	 * @param secondsToExpire 锁过期时间，单位秒
-	 * @param millisecondsToTimeout 获取锁的超时时间，单位毫秒
+	 * @param secondsToTimeout 获取锁的超时时间，单位秒
 	 * @return 获取成功返回字符串，否则返回 false。释放锁时需要用到返回的字符串
 	 */
-	public String lock(String name, int secondsToExpire, int millisecondsToTimeout) {
+	public String lock(String name, int secondsToExpire, int secondsToTimeout) {
 		Jedis jedis = getJedis();
 		try {
 			String lockId = java.util.UUID.randomUUID().toString();
@@ -1435,8 +1438,8 @@ public class Cache {
 				if ("OK".equals(jedis.set(name, lockId, setParams))) {
 					return lockId;
 				}
-				try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
-			} while (System.currentTimeMillis() - startTime < millisecondsToTimeout);
+				try {Thread.sleep(50);} catch (InterruptedException e) {break;}
+			} while (System.currentTimeMillis() - startTime < secondsToTimeout * 1000);
 			return null;
 		}
 		finally {
@@ -1464,12 +1467,12 @@ public class Cache {
 
 	/**
 	 * 为业务封装分布式锁，免去锁的获取、释放
-	 * withLock("lockStock", 120, 1000, () -> {
+	 * Redis.use().withLock("lockStock", 120, 5, () -> {
 	 * 		// 业务操作代码
 	 * });
 	 */
-	public boolean withLock(String name, int secondsToExpire, int millisecondsToTimeout, com.jfinal.kit.Func.F00 fun) {
-		String lockId = lock(name, secondsToExpire, millisecondsToTimeout);
+	public boolean withLock(String name, int secondsToExpire, int secondsToTimeout, com.jfinal.kit.Func.F00 fun) {
+		String lockId = lock(name, secondsToExpire, secondsToTimeout);
 		if (lockId == null) {
 			return false;
 		}
@@ -1479,6 +1482,49 @@ public class Cache {
 		} finally {
 			unlock(name, lockId);
 		}
+	}
+
+	/**
+	 * redis 事务，返回值不为 null 表示 redis 事务执行成功，否则执行失败
+	 * 被监视的 watchKey 值发生变化时，事务将会执行失败
+	 *
+	 * @param watchKeys 被监视的 key，多个 key 使用逗号分隔，例如： "key1, key2"。无监视 key 传入 null 值或者使用 tx(F10<Transaction> tx)
+	 * @param tx lambda 提供 Transaction 对象，使用该对象对 redis 的操作产生的命令集合将成为原子操作
+	 */
+	public List<Object> tx(String watchKeys, F10<Transaction> tx) {
+		Jedis jedis = getJedis();
+
+		boolean watched = false;
+		// 多个 watchKey 使用逗号分隔
+		if (StrKit.notBlank(watchKeys)) {
+			String[] keys = watchKeys.split(",");
+			for (String k : keys) {
+			    if (StrKit.notBlank(k)) {
+			        jedis.watch(k.trim());
+			        watched = true;
+			    }
+			}
+		}
+
+		Transaction transaction = null;
+		try {
+			transaction = jedis.multi();
+			tx.call(transaction);
+			return transaction.exec();
+		} catch (Throwable e) {
+			if (transaction != null) {
+				transaction.discard();
+			}
+			return null;
+		}
+		finally {
+			try {if (watched) {jedis.unwatch();}} catch (Exception ignore) {}
+			close(jedis);
+		}
+	}
+
+	public List<Object> tx(F10<Transaction> tx) {
+		return tx(null, tx);
 	}
 }
 
