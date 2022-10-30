@@ -28,14 +28,11 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.jfinal.kit.StrKit;
-import com.jfinal.log.Log;
 
 /**
  * FileRender.
  */
 public class FileRender extends Render {
-    
-    private static final Log log = Log.getLog(FileRender.class);
 	
 	protected static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
 	protected static String baseDownloadPath;
@@ -196,12 +193,8 @@ public class FileRender extends Render {
 		} catch (Exception e) {
 			throw new RenderException(e);
 		} finally {
-			if (inputStream != null) {
-				try {inputStream.close();} catch (IOException e) {log.error(e.getMessage(), e);}
-			}
-			if (outputStream != null) {
-			    try {outputStream.close();} catch (IOException e) {log.error(e.getMessage(), e);}
-			}
+		    close(inputStream);
+			close(outputStream);
 		}
 	}
 	
@@ -223,8 +216,9 @@ public class FileRender extends Render {
 			long start = range[0];
 			long end = range[1];
 			inputStream = new BufferedInputStream(new FileInputStream(file));
-			if (inputStream.skip(start) != start)
-					throw new RuntimeException("File skip error");
+			if (inputStream.skip(start) != start) {
+				throw new RuntimeException("File skip error");
+			}
 			outputStream = response.getOutputStream();
 			byte[] buffer = new byte[1024];
 			long position = start;
@@ -242,24 +236,17 @@ public class FileRender extends Render {
 			}
 			outputStream.flush();
 			
-		}
-		catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
+		} catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
 			String name = e.getClass().getSimpleName();
 			if (name.equals("ClientAbortException") || name.equals("EofException")) {
 			} else {
 				throw new RenderException(e);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new RenderException(e);
-		}
-		finally {
-			if (inputStream != null) {
-				try {inputStream.close();} catch (IOException e) {log.error(e.getMessage(), e);}
-			}
-			if (outputStream != null) {
-			    try {outputStream.close();} catch (IOException e) {log.error(e.getMessage(), e);}
-			}
+		} finally {
+		    close(inputStream);
+		    close(outputStream);
 		}
 	}
 	
@@ -273,20 +260,23 @@ public class FileRender extends Render {
 	protected void processRange(Long[] range) {
 		String rangeStr = request.getHeader("Range");
 		int index = rangeStr.indexOf(',');
-		if (index != -1)
+		if (index != -1) {
 			rangeStr = rangeStr.substring(0, index);
+		}
 		rangeStr = rangeStr.replace("bytes=", "");
 		
 		String[] arr = rangeStr.split("-", 2);
-		if (arr.length < 2)
+		if (arr.length < 2) {
 			throw new RuntimeException("Range error");
+		}
 		
 		long fileLength = file.length();
 		for (int i=0; i<range.length; i++) {
 			if (StrKit.notBlank(arr[i])) {
 				range[i] = Long.parseLong(arr[i].trim());
-				if (range[i] >= fileLength)
+				if (range[i] >= fileLength) {
 					range[i] = fileLength - 1;
+				}
 			}
 		}
 		
