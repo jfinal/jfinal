@@ -64,10 +64,9 @@ public class TemplateRender extends Render {
 			os.flush();
 			
 		} catch (RuntimeException e) {	// 捕获 ByteWriter.close() 抛出的 RuntimeException
-			close(os);
-			
 			Throwable cause = e.getCause();
 			if (cause instanceof IOException) {	// ClientAbortException、EofException 直接或间接继承自 IOException
+				close(os);
 				String name = cause.getClass().getSimpleName();
 				if ("ClientAbortException".equals(name) || "EofException".equals(name)) {
 					return ;
@@ -75,7 +74,7 @@ public class TemplateRender extends Render {
 			}
 			
 			throw e;
-		} catch (Exception e) {
+		} catch (IOException e) {
 			close(os);
 			throw new RenderException(e);
 		}
