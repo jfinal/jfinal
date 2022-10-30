@@ -1493,21 +1493,20 @@ public class Cache {
 	 */
 	public List<Object> tx(String watchKeys, F10<Transaction> tx) {
 		Jedis jedis = getJedis();
-
 		boolean watched = false;
-		// 多个 watchKey 使用逗号分隔
-		if (StrKit.notBlank(watchKeys)) {
-			String[] keys = watchKeys.split(",");
-			for (String k : keys) {
-			    if (StrKit.notBlank(k)) {
-			        jedis.watch(k.trim());
-			        watched = true;
-			    }
-			}
-		}
-
 		Transaction transaction = null;
 		try {
+			// 多个 watchKey 使用逗号分隔
+			if (StrKit.notBlank(watchKeys)) {
+				String[] keys = watchKeys.split(",");
+				for (String k : keys) {
+					if (StrKit.notBlank(k)) {
+						jedis.watch(k.trim());
+						watched = true;
+					}
+				}
+			}
+
 			transaction = jedis.multi();
 			tx.call(transaction);
 			return transaction.exec();
