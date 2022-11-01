@@ -120,6 +120,17 @@ public class Cache {
 	}
 
 	/**
+	 * psetex 与 setex 功能相同，但是生存时间为 milliseconds (以毫秒为单位)。
+	 */
+	public String psetex(Object key, long milliseconds, Object value) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.psetex(keyToBytes(key), milliseconds, valueToBytes(value));
+		}
+		finally {close(jedis);}
+	}
+
+	/**
 	 * 返回 key 所关联的 value 值
 	 * 如果 key 不存在那么返回特殊值 nil 。
 	 */
