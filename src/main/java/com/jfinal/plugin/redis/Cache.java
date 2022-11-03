@@ -1505,9 +1505,9 @@ public class Cache {
 	 * @param tx lambda 提供 Transaction 对象，使用该对象对 redis 的操作产生的命令集合将成为原子操作
 	 */
 	public List<Object> tx(String watchKeys, F10<Transaction> tx) {
-		Jedis jedis = getJedis();
 		boolean watched = false;
 		Transaction transaction = null;
+		Jedis jedis = getJedis();
 		try {
 			// 多个 watchKey 使用逗号分隔
 			if (StrKit.notBlank(watchKeys)) {
@@ -1560,9 +1560,9 @@ public class Cache {
             scanParams.count(count);
         }
         
-        Jedis jedis = getJedis();
         Boolean continueScan;
         ScanResult<String> scanResult;
+        Jedis jedis = getJedis();
         try {
             do {
                 scanResult = jedis.scan(cursorStr, scanParams);
