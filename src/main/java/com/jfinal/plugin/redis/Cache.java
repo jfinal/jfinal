@@ -31,6 +31,8 @@ import com.jfinal.plugin.redis.serializer.ISerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.params.SetParams;
 import redis.clients.jedis.util.SafeEncoder;
@@ -1536,6 +1538,48 @@ public class Cache {
 	public List<Object> tx(F10<Transaction> tx) {
 		return tx(null, tx);
 	}
+	
+	/**
+	 * scan 命令查找符合给定模式 pattern 的 key
+	 * 
+	 * @param cursor 游标值，值为 0 时表示一次新的查找
+	 * @param pattern 用于匹配 key 的模式
+	 * @param count 调整每次 scan 命令返回 key 的数量。注意该值只能大致调整数量，并不能精确指定数量，
+	 *              返回值数量可以大于或者小于该值
+	 * @param keyList 每次 scan 返回数据后被回调的函数，该函数接收每次 scan 返回的 key 值列表，
+	 *                 返回 true 继续调用 scan 命令，否则终止 scan
+     */
+    public void scan(Integer cursor, String pattern, Integer count, F11<List<String>, Boolean> keyList) {
+        String cursorStr = cursor != null ? cursor.toString() : ScanParams.SCAN_POINTER_START;
+        
+        ScanParams scanParams = new ScanParams().match(pattern);
+        if (count != null) {
+            scanParams.count(count);
+        }
+        
+        Jedis jedis = getJedis();
+        ScanResult<String> scanResult;
+        try {
+            Boolean continueScan;
+            do {
+                scanResult = jedis.scan(cursorStr, scanParams);
+                // 更新 cursorStr 用于 scan 继续迭代。注意，cursorStr 为 "0" 时，scanResult.getResult() 可以有数据
+                cursorStr = scanResult.getCursor();
+                List<String> list = scanResult.getResult();
+                // 经测试，scanResult.getResult().size() 有时为 0
+                continueScan = list != null && list.size() > 0 ? keyList.call(list) : true;
+            } while (continueScan && !ScanParams.SCAN_POINTER_START.equals(cursorStr));
+        }
+        finally {close(jedis);}
+    }
+    
+    public void scan(Integer cursor, String pattern, F11<List<String>, Boolean> fun) {
+        scan(cursor, pattern, null, fun);
+    }
+    
+    public void scan(Integer cursor, F11<List<String>, Boolean> fun) {
+        scan(cursor, "*", null, fun);
+    }
 }
 
 
