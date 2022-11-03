@@ -1552,7 +1552,10 @@ public class Cache {
     public void scan(Integer cursor, String pattern, Integer count, F11<List<String>, Boolean> keyList) {
         String cursorStr = cursor != null ? cursor.toString() : ScanParams.SCAN_POINTER_START;
         
-        ScanParams scanParams = new ScanParams().match(pattern);
+        ScanParams scanParams = new ScanParams();
+        if (StrKit.notBlank(pattern)) {
+            scanParams.match(pattern);
+        }
         if (count != null) {
             scanParams.count(count);
         }
@@ -1566,7 +1569,7 @@ public class Cache {
                 // 更新 cursorStr 用于 scan 继续迭代。注意，cursorStr 为 "0" 时，scanResult.getResult() 可以有数据
                 cursorStr = scanResult.getCursor();
                 List<String> list = scanResult.getResult();
-                // 经测试，scanResult.getResult().size() 有时为 0
+                // scanResult.getResult().size() 有时为 0
                 continueScan = list != null && list.size() > 0 ? keyList.call(list) : true;
             } while (continueScan && !ScanParams.SCAN_POINTER_START.equals(cursorStr));
         }
@@ -1578,7 +1581,7 @@ public class Cache {
     }
     
     public void scan(Integer cursor, F11<List<String>, Boolean> fun) {
-        scan(cursor, "*", null, fun);
+        scan(cursor, null, null, fun);
     }
 }
 
