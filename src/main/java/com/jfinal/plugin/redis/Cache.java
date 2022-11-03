@@ -1561,9 +1561,9 @@ public class Cache {
         }
         
         Jedis jedis = getJedis();
+        Boolean continueScan;
         ScanResult<String> scanResult;
         try {
-            Boolean continueScan;
             do {
                 scanResult = jedis.scan(cursorStr, scanParams);
                 // 更新 cursorStr 用于 scan 继续迭代。注意，cursorStr 为 "0" 时，scanResult.getResult() 可以有数据
