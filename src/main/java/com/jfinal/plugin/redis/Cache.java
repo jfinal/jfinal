@@ -43,6 +43,9 @@ import redis.clients.jedis.util.SafeEncoder;
  * Jedis api 的方法名称及使用方法，以便于仅仅通过查看 Redis 文档
  * 即可快速掌握使用方法
  * Redis 命令参考: http://redisdoc.com/
+ * 
+ * 注意：不要提供 strlen、append、setrange、getrange，经测试这类操作字符串的方法在序列化模式下无法工作
+ *      因为 String 序列化后的 value 值为会多出来一些额外的字符
  */
 public class Cache {
 
@@ -212,6 +215,28 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
+	
+	/**
+	 * 当且仅当所有给定键都不存在时， 为所有给定键设置值。
+	 * 即使只有一个给定键已经存在， MSETNX 命令也会拒绝执行对所有键的设置操作。
+	 * MSETNX 是一个原子性(atomic)操作， 所有给定键要么就全部都被设置， 要么就全部都不设置， 不可能出现第三种状态。
+	 */
+	public Long msetnx(Object... keysValues) {
+        if (keysValues.length % 2 != 0)
+            throw new IllegalArgumentException("wrong number of arguments for msetnx, keysValues length can not be odd");
+        Jedis jedis = getJedis();
+        try {
+            byte[][] kv = new byte[keysValues.length][];
+            for (int i=0; i<keysValues.length; i++) {
+                if (i % 2 == 0)
+                    kv[i] = keyToBytes(keysValues[i]);
+                else
+                    kv[i] = valueToBytes(keysValues[i]);
+            }
+            return jedis.msetnx(kv);
+        }
+        finally {close(jedis);}
+    }
 
 	/**
 	 * 返回所有(一个或多个)给定 key 的值。
@@ -333,6 +358,18 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
+	
+	/**
+	 * 当且仅当 newkey 不存在时，将 key 改名为 newkey
+	 * 修改成功时，返回 1 ； 如果 newkey 已经存在，返回 0 
+	 */
+	public Long renamenx(Object oldkey, Object newkey) {
+        Jedis jedis = getJedis();
+        try {
+            return jedis.renamenx(keyToBytes(oldkey), keyToBytes(newkey));
+        }
+        finally {close(jedis);}
+    }
 
 	/**
 	 * 将当前数据库的 key 移动到给定的数据库 db 当中。
@@ -755,6 +792,18 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
+	
+	/**
+	 * 将值 value 插入到列表 key 的表头，当且仅当 key 存在并且是一个列表。
+	 * 和 LPUSH key value [value …] 命令相反，当 key 不存在时， LPUSHX 命令什么也不做。
+	 */
+	public Long lpushx(Object key, Object... values) {
+        Jedis jedis = getJedis();
+        try {
+            return jedis.lpushx(keyToBytes(key), valuesToBytesArray(values));
+        }
+        finally {close(jedis);}
+    }
 
 	/**
 	 * 将列表 key 下标为 index 的元素的值设置为 value 。
@@ -864,6 +913,18 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
+	
+	/**
+	 * 将值 value 插入到列表 key 的表尾，当且仅当 key 存在并且是一个列表。
+	 * 和 RPUSH key value [value …] 命令相反，当 key 不存在时， RPUSHX 命令什么也不做。
+	 */
+	public Long rpushx(Object key, Object... values) {
+        Jedis jedis = getJedis();
+        try {
+            return jedis.rpushx(keyToBytes(key), valuesToBytesArray(values));
+        }
+        finally {close(jedis);}
+    }
 
 	/**
 	 * BLPOP 是列表的阻塞式(blocking)弹出原语。
@@ -1576,12 +1637,12 @@ public class Cache {
         finally {close(jedis);}
     }
     
-    public void scan(Integer cursor, String pattern, F11<List<String>, Boolean> fun) {
-        scan(cursor, pattern, null, fun);
+    public void scan(Integer cursor, String pattern, F11<List<String>, Boolean> keyList) {
+        scan(cursor, pattern, null, keyList);
     }
     
-    public void scan(Integer cursor, F11<List<String>, Boolean> fun) {
-        scan(cursor, null, null, fun);
+    public void scan(Integer cursor, F11<List<String>, Boolean> keyList) {
+        scan(cursor, null, null, keyList);
     }
 }
 
