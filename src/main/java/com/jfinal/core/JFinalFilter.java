@@ -134,27 +134,11 @@ public class JFinalFilter implements Filter {
 		log = Log.getLog(JFinalFilter.class);
 	}
 	
-	boolean isJsp(String t) {
-		char c;
-		int end = t.length() - 1;
-		
-		if ( (end > 3) && ((c = t.charAt(end)) == 'x' || c == 'X') ) {
-			end--;
+	boolean isJsp(String target) {
+		int lastIndexOf = target.lastIndexOf(".");
+		if (lastIndexOf > -1) {
+			return target.substring(lastIndexOf).toLowerCase().startsWith(".jsp");
 		}
-		
-		if ( (end > 2) && ((c = t.charAt(end)) == 'p' || c == 'P') ) {
-			end--;
-			if ( (end > 1) && ((c = t.charAt(end)) == 's' || c == 'S') ) {
-				end--;
-				if ( (end > 0) && ((c = t.charAt(end)) == 'j' || c == 'J') ) {
-					end--;
-					if ( (end > -1) && ((c = t.charAt(end)) == '.') ) {
-						return true;
-					}
-				}
-			}
-		}
-		
 		return false;
 	}
 }

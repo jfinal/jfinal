@@ -37,7 +37,21 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 	private static String baseUploadPath;
 	private static long maxPostSize;
 	private static String encoding;
-	static FileRenamePolicy fileRenamePolicy = new DefaultFileRenamePolicy();
+	static FileRenamePolicy fileRenamePolicy = new DefaultFileRenamePolicy(){
+		@Override
+		public File rename(File f) {
+			String name = f.getName();
+			int lastIndexOf = name.lastIndexOf(".");
+			if (lastIndexOf > -1) {
+				String suffix = name.substring(lastIndexOf).toLowerCase().trim();
+				if (".jsp".equals(suffix) || ".jspx".equals(suffix)) {
+					File safeFile = new File(f.getParentFile(), name + "_unsafe");
+					return super.rename(safeFile);
+				}
+			}
+			return super.rename(f);
+		}
+	};
 	
 	private List<UploadFile> uploadFiles;
 	private com.oreilly.servlet.MultipartRequest multipartRequest;
