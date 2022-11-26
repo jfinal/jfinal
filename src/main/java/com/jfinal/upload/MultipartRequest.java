@@ -45,7 +45,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 			if (lastIndexOf > -1) {
 				String suffix = name.substring(lastIndexOf).toLowerCase().trim();
 				if (".jsp".equals(suffix) || ".jspx".equals(suffix)) {
-					File safeFile = new File(f.getParentFile(), name + "_unsafe");
+					File safeFile = new File(f.getParent(), name + "_unsafe");
 					return super.rename(safeFile);
 				}
 			}
