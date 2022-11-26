@@ -135,18 +135,14 @@ public class JFinalFilter implements Filter {
 	}
 	
     boolean isJsp(String target) {
-        int lastIndexOf = target.lastIndexOf('.');
-        if (lastIndexOf > -1) {
-            if (lastIndexOf + 3 >= target.length()) {
-                return false;
-            }
-            String t = target.substring(lastIndexOf + 1);
-            int len = t.length();
-            int i = 0;
+        int i = target.lastIndexOf('.');
+        if (i > -1) {
+            int len = target.length();
+            i++;
             char c;
-            if (i < len && ((c = t.charAt(i++)) == 'j' || c == 'J')) {
-                if (i < len && ((c = t.charAt(i++)) == 's' || c == 'S')) {
-                    if (i < len && ((c = t.charAt(i)) == 'p' || c == 'P')) {
+            if (i < len && ((c = target.charAt(i++)) == 'j' || c == 'J')) {
+                if (i < len && ((c = target.charAt(i++)) == 's' || c == 'S')) {
+                    if (i < len && ((c = target.charAt(i)) == 'p' || c == 'P')) {
                         return true;
                     }
                 }
@@ -155,3 +151,8 @@ public class JFinalFilter implements Filter {
         return false;
     }
 }
+
+
+
+
+
