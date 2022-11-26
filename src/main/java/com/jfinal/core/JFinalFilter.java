@@ -138,6 +138,9 @@ public class JFinalFilter implements Filter {
         int lastIndexOf = target.lastIndexOf('.');
         if (lastIndexOf > -1) {
             String t = target.substring(lastIndexOf + 1);
+            if (t.length() < 3) {
+                return false;
+            }
             int len = t.length();
             int i = 0;
             char c;
