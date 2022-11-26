@@ -201,7 +201,7 @@ public class Cache {
 	 */
 	public String mset(Object... keysValues) {
 		if (keysValues.length % 2 != 0)
-			throw new IllegalArgumentException("wrong number of arguments for met, keysValues length can not be odd");
+			throw new IllegalArgumentException("wrong number of arguments for mset, keysValues length can not be odd");
 		Jedis jedis = getJedis();
 		try {
 			byte[][] kv = new byte[keysValues.length][];
