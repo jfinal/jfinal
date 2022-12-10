@@ -52,20 +52,23 @@ public class StaticHtmlRender extends TemplateRender {
 			data.put(attrName, request.getAttribute(attrName));
 		}
 
+		OutputStream os = null;
 		try {
+			os = response.getOutputStream();
 			Template template = engine.getTemplate(view);
-
-			OutputStream os = response.getOutputStream();
 			template.render(data, os);
 			os.flush();
 
 			File parentFile = file.getParentFile();
-			if (! parentFile.exists()) parentFile.mkdirs();
+			if (! parentFile.exists()) {
+				parentFile.mkdirs();
+			}
 			template.render(data, file);
 
 		} catch (RuntimeException e) {	// 捕获 ByteWriter.close() 抛出的 RuntimeException
 			Throwable cause = e.getCause();
 			if (cause instanceof IOException) {	// ClientAbortException、EofException 直接或间接继承自 IOException
+				close(os);
 				String name = cause.getClass().getSimpleName();
 				if ("ClientAbortException".equals(name) || "EofException".equals(name)) {
 					return ;
@@ -73,7 +76,10 @@ public class StaticHtmlRender extends TemplateRender {
 			}
 
 			throw e;
-		} catch (IOException e) {
+		} catch (Exception e) {
+			if (e instanceof IOException) {
+				close(os);
+			}
 			throw new RenderException(e);
 		}
 	}
