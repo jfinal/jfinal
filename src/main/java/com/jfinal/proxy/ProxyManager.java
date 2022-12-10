@@ -42,6 +42,11 @@ public class ProxyManager {
 		return Proxy.proxyFactory;
 	}
 	
+	public ProxyFactory setPrintGeneratedClassToLog(boolean printGeneratedClassToLog) {
+        Proxy.proxyFactory.getProxyGenerator().setPrintGeneratedClassToLog(printGeneratedClassToLog);
+        return Proxy.proxyFactory;
+    }
+	
 	public ProxyFactory getProxyFactory() {
 		return Proxy.proxyFactory;
 	}
