@@ -16,10 +16,7 @@
 
 package com.jfinal.plugin.activerecord;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings("rawtypes")
 public interface IContainerFactory {
@@ -34,7 +31,7 @@ public interface IContainerFactory {
 		}
 		
 		public Map<String, Object> getColumnsMap() {
-			return new HashMap<String, Object>();
+			return new LinkedHashMap<>();
 		}
 		
 		public Set<String> getModifyFlagSet() {
