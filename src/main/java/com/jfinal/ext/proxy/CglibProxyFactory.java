@@ -34,9 +34,9 @@ public class CglibProxyFactory extends ProxyFactory {
 	public <T> T get(Class<T> target) {
 		// 被 cglib 代理过的类名包含 "$$EnhancerBy"。仅需调用一次 getSuperclass() 即可
 		if (target.getName().indexOf("$$EnhancerBy") > -1) {
-			target =(Class<T>) target.getSuperclass();
+			target = (Class<T>) target.getSuperclass();
 		}
-		return (T)net.sf.cglib.proxy.Enhancer.create(target, new CglibCallback());
+		return (T) net.sf.cglib.proxy.Enhancer.create(target, new CglibCallback());
 	}
 }
 
