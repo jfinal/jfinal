@@ -39,11 +39,11 @@ class CglibCallback implements MethodInterceptor {
 			return methodProxy.invokeSuper(target, args);
 		}
 		
-		Class<?> targetClass = target.getClass();
-		if (targetClass.getName().indexOf("$$EnhancerBy") != -1) {
-			targetClass = targetClass.getSuperclass();
-		}
-		
+		// Class<?> targetClass = target.getClass();
+		// if (targetClass.getName().indexOf("$$EnhancerBy") != -1) {
+		// 	targetClass = targetClass.getSuperclass();
+		// }
+		Class<?> targetClass = target.getClass().getSuperclass();
 		
 		MethodKey key = InterceptorCache.getMethodKey(targetClass, method);
 		Interceptor[] inters = InterceptorCache.get(key);
