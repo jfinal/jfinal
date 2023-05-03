@@ -30,29 +30,29 @@ import com.jfinal.template.stat.ast.*;
  * DLRD (Double Layer Recursive Descent) Parser
  */
 public class Parser {
-	
+
 	private static final Token EOF = new Token(Symbol.EOF, -1);
-	
+
 	private int forward = 0;
 	private List<Token> tokenList;
 	private StringBuilder content;
 	private String fileName;
 	private Env env;
-	
+
 	public Parser(Env env, StringBuilder content, String fileName) {
 		this.env = env;
 		this.content = content;
 		this.fileName = fileName;
 	}
-	
+
 	private Token peek() {
 		return tokenList.get(forward);
 	}
-	
+
 	private Token move() {
 		return tokenList.get(++forward);
 	}
-	
+
 	private Token matchPara(Token name) {
 		Token current = peek();
 		if (current.symbol == Symbol.PARA) {
@@ -61,7 +61,7 @@ public class Parser {
 		}
 		throw new ParseException("Can not match the parameter of directive #" + name.value(), getLocation(name.row));
 	}
-	
+
 	private void matchEnd(Token name) {
 		if (peek().symbol == Symbol.END) {
 			move();
@@ -69,7 +69,7 @@ public class Parser {
 		}
 		throw new ParseException("Can not match the #end of directive #" + name.value(), getLocation(name.row));
 	}
-	
+
 	public StatList parse() {
 		EngineConfig ec = env.getEngineConfig();
 		tokenList = new Lexer(content, fileName, ec.getKeepLineBlankDirectives()).scan();
@@ -80,7 +80,7 @@ public class Parser {
 		}
 		return statList;
 	}
-	
+
 	private StatList statList() {
 		List<Stat> statList = new ArrayList<Stat>();
 		while (true) {
@@ -88,22 +88,22 @@ public class Parser {
 			if (stat == null) {
 				break ;
 			}
-			
+
 			if (stat instanceof Define) {
 				env.addFunction((Define)stat);
 				continue ;
 			}
-			
+
 			// 过滤内容为空的 Text 节点，通常是处于两个指令之间的空白字符被移除以后的结果，详见 TextToken.deleteBlankTails()
 			if (stat instanceof Text && ((Text)stat).isEmpty()) {
 				continue ;
 			}
-			
+
 			statList.add(stat);
 		}
 		return new StatList(statList);
 	}
-	
+
 	private Stat stat() {
 		Token name = peek();
 		switch (name.symbol) {
@@ -136,7 +136,7 @@ public class Parser {
 			para = matchPara(name);
 			statList = statList();
 			Stat ret = new If(parseExprList(para), statList, getLocation(name.row));
-			
+
 			Stat current = ret;
 			for (Token elseIfToken=peek(); elseIfToken.symbol == Symbol.ELSEIF; elseIfToken=peek()) {
 				move();
@@ -192,6 +192,10 @@ public class Parser {
 		case RETURN:
 			move();
 			return Return.me;
+		case RETURN_IF:
+			move();
+			para = matchPara(name);
+			return new ReturnIf(parseExprList(para), getLocation(name.row));
 		case ID:
 			Class<? extends Directive> dire = env.getEngineConfig().getDirective(name.value());
 			if (dire == null) {
@@ -201,7 +205,7 @@ public class Parser {
 			move();
 			para = matchPara(name);
 			ret.setExprList(parseExprList(para));
-			
+
 			if (ret.hasEnd()) {
 				statList = statList();
 				ret.setStat(statList.getActualStat());
@@ -220,7 +224,7 @@ public class Parser {
 			move();
 			para = matchPara(name);
 			Switch _switch = new Switch(parseExprList(para), getLocation(name.row));
-			
+
 			CaseSetter currentCaseSetter = _switch;
 			for (Token currentToken=peek(); ; currentToken=peek()) {
 				if (currentToken.symbol == Symbol.CASE) {
@@ -245,18 +249,18 @@ public class Parser {
 					break ;
 				}
 			}
-			
+
 			matchEnd(name);
 			return _switch;
 		default :
 			throw new ParseException("Syntax error: can not match the token: " + name.value(), getLocation(name.row));
 		}
 	}
-	
+
 	private Location getLocation(int row) {
 		return new Location(fileName, row);
 	}
-	
+
 	private Stat createDirective(Class<? extends Directive> dire, Token name) {
 		try {
 			return dire.newInstance();
@@ -264,11 +268,11 @@ public class Parser {
 			throw new ParseException(e.getMessage(), getLocation(name.row), e);
 		}
 	}
-	
+
 	private ExprList parseExprList(Token paraToken) {
 		return new ExprParser((ParaToken)paraToken, env.getEngineConfig(), fileName).parseExprList();
 	}
-	
+
 	private ForCtrl parseForCtrl(Token paraToken) {
 		return new ExprParser((ParaToken)paraToken, env.getEngineConfig(), fileName).parseForCtrl();
 	}
