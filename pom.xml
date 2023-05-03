@@ -4,7 +4,7 @@
 
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
-	<version>5.0.8</version>
+	<version>5.0.9</version>
 	<packaging>jar</packaging>
 
 	<name>JFinal</name>
@@ -219,6 +219,14 @@
 			<version>3.4.1</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- javassist 扩展 JavassistProxyFactory extends ProxyFactory -->
+		<dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.29.2-GA</version>
+            <scope>provided</scope>
+        </dependency>
 
 		<!-- cglib 扩展 CglibProxyFactory extends ProxyFactory -->
 		<dependency>
