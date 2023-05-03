@@ -22,8 +22,7 @@ import java.util.Set;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.InterceptorManager;
 import com.jfinal.aop.Invocation;
-import com.jfinal.ext.proxy.CglibProxyFactory.IntersCache;
-import com.jfinal.ext.proxy.CglibProxyFactory.MethodKey;
+import com.jfinal.ext.proxy.InterceptorCache.MethodKey;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
@@ -46,11 +45,11 @@ class CglibCallback implements MethodInterceptor {
 		}
 		
 		
-		MethodKey key = IntersCache.getMethodKey(targetClass, method);
-		Interceptor[] inters = IntersCache.get(key);
+		MethodKey key = InterceptorCache.getMethodKey(targetClass, method);
+		Interceptor[] inters = InterceptorCache.get(key);
 		if (inters == null) {
 			inters = interMan.buildServiceMethodInterceptor(targetClass, method);
-			IntersCache.put(key, inters);
+			InterceptorCache.put(key, inters);
 		}
 		
 		Invocation invocation = new Invocation(target, method, inters,
