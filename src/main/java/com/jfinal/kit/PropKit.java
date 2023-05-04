@@ -73,21 +73,14 @@ public class PropKit {
 	 * @param encoding the encoding
 	 */
 	public static Prop use(String fileName, String encoding) {
-		Prop result = cache.get(fileName);
-		if (result == null) {
-			synchronized (PropKit.class) {
-				result = cache.get(fileName);
-				if (result == null) {
-					result = new Prop(fileName, encoding);
-					handleEnv(result, fileName);
-					cache.put(fileName, result);
-					if (PropKit.prop == null) {
-						PropKit.prop = result;
-					}
-				}
+	    return cache.computeIfAbsent(fileName, key -> {
+    		Prop ret = new Prop(key, encoding);
+			handleEnv(ret, key);
+			if (PropKit.prop == null) {
+				PropKit.prop = ret;
 			}
-		}
-		return result;
+			return ret;
+	    });
 	}
 
 	/**
@@ -125,21 +118,14 @@ public class PropKit {
 	 * @param encoding the encoding
 	 */
 	public static Prop use(File file, String encoding) {
-		Prop result = cache.get(file.getName());
-		if (result == null) {
-			synchronized (PropKit.class) {
-				result = cache.get(file.getName());
-				if (result == null) {
-					result = new Prop(file, encoding);
-					handleEnv(result, file.getName());
-					cache.put(file.getName(), result);
-					if (PropKit.prop == null) {
-						PropKit.prop = result;
-					}
-				}
+	    return cache.computeIfAbsent(file.getName(), key -> {
+			Prop ret = new Prop(file, encoding);
+			handleEnv(ret, key);
+			if (PropKit.prop == null) {
+				PropKit.prop = ret;
 			}
-		}
-		return result;
+			return ret;
+	    });
 	}
 
 	public static Prop useless(String fileName) {
