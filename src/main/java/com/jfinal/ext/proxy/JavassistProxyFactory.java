@@ -16,8 +16,8 @@
 
 package com.jfinal.ext.proxy;
 
+import java.util.HashMap;
 import java.util.Map;
-import com.jfinal.kit.SyncWriteMap;
 import com.jfinal.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
@@ -33,49 +33,47 @@ import javassist.util.proxy.ProxyObject;
  */
 public class JavassistProxyFactory extends ProxyFactory {
     
-    protected Map<Class<?>, Class<?>> cache = new SyncWriteMap<>(1024, 0.25F);
+    protected Map<Class<?>, Class<?>> cache = new HashMap<>(1024, 0.25F);
     protected JavassistCallback callback = new JavassistCallback();
-	
+    
     @SuppressWarnings("unchecked")
     public <T> T get(Class<T> target) {
+        // 被 javassist 代理过的类名包含 "_$$_"。不存在代理过两层的情况，仅需调用一次 getSuperclass() 即可
+        if (target.getName().indexOf("_$$_") > -1) {
+            target = (Class<T>) target.getSuperclass();
+        }
+        
         try {
-            // 被 javassist 代理过的类名包含 "_$$_"。不存在代理过两层的情况，仅需调用一次 getSuperclass() 即可
-            if (target.getName().indexOf("_$$_") > -1) {
-                target = (Class<T>) target.getSuperclass();
-            }
-            
-            Object ret;
             Class<T> clazz = (Class<T>) cache.get(target);
-            if (clazz != null) {
-                ret = (T) clazz.newInstance();
-            } else {
-                ret = doGet(target);
+            if (clazz == null) {
+                clazz = getProxyClass(target);
             }
             
+            T ret = clazz.newInstance();
             ((ProxyObject) ret).setHandler(callback);
-            return (T) ret;
+            return ret;
+            
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
     }
     
     @SuppressWarnings("unchecked")
-    protected <T> T doGet(Class<T> target) throws ReflectiveOperationException {
+    protected <T> Class<T> getProxyClass(Class<T> target) throws ReflectiveOperationException {
         synchronized (target) {
-            Class<T> clazz = (Class<T>) cache.get(target);
-            if (clazz != null) {
-                return (T) clazz.newInstance();
-            }
-            
-            javassist.util.proxy.ProxyFactory factory = new javassist.util.proxy.ProxyFactory();
-            factory.setSuperclass(target);
-            clazz = (Class<T>) factory.createClass();
-            T ret = clazz.newInstance();
-            cache.put(target, clazz);
-            return ret;
+            return (Class<T>) cache.computeIfAbsent(target, key -> {
+                javassist.util.proxy.ProxyFactory factory = new javassist.util.proxy.ProxyFactory();
+                factory.setSuperclass(key);
+                return factory.createClass();
+            });
         }
 	}
 }
+
+
+
+
+
 
 
 
