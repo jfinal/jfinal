@@ -16,8 +16,7 @@
 
 package com.jfinal.ext.proxy;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.jfinal.kit.SyncWriteMap;
 import com.jfinal.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 
@@ -33,7 +32,7 @@ import javassist.util.proxy.ProxyObject;
  */
 public class JavassistProxyFactory extends ProxyFactory {
     
-    protected Map<Class<?>, Class<?>> cache = new HashMap<>(1024, 0.25F);
+    protected SyncWriteMap<Class<?>, Class<?>> cache = new SyncWriteMap<>(1024, 0.25F);
     protected JavassistCallback callback = new JavassistCallback();
     
     @SuppressWarnings("unchecked")
@@ -60,14 +59,12 @@ public class JavassistProxyFactory extends ProxyFactory {
     
     @SuppressWarnings("unchecked")
     protected <T> Class<T> getProxyClass(Class<T> target) throws ReflectiveOperationException {
-        synchronized (target) {
-            return (Class<T>) cache.computeIfAbsent(target, key -> {
-                javassist.util.proxy.ProxyFactory factory = new javassist.util.proxy.ProxyFactory();
-                factory.setSuperclass(key);
-                return factory.createClass();
-            });
-        }
-	}
+        return (Class<T>) cache.computeIfAbsent(target, key -> {
+            javassist.util.proxy.ProxyFactory factory = new javassist.util.proxy.ProxyFactory();
+            factory.setSuperclass(key);
+            return factory.createClass();
+        });
+    }
 }
 
 
