@@ -28,7 +28,7 @@ public class PropKit {
 	private static String envKey = "app.env";
 
 	private static Prop prop = null;
-	private static final ConcurrentHashMap<String, Prop> map = new ConcurrentHashMap<String, Prop>();
+	private static final ConcurrentHashMap<String, Prop> cache = new ConcurrentHashMap<String, Prop>();
 
 	private PropKit() {}
 
@@ -73,14 +73,14 @@ public class PropKit {
 	 * @param encoding the encoding
 	 */
 	public static Prop use(String fileName, String encoding) {
-		Prop result = map.get(fileName);
+		Prop result = cache.get(fileName);
 		if (result == null) {
 			synchronized (PropKit.class) {
-				result = map.get(fileName);
+				result = cache.get(fileName);
 				if (result == null) {
 					result = new Prop(fileName, encoding);
 					handleEnv(result, fileName);
-					map.put(fileName, result);
+					cache.put(fileName, result);
 					if (PropKit.prop == null) {
 						PropKit.prop = result;
 					}
@@ -125,14 +125,14 @@ public class PropKit {
 	 * @param encoding the encoding
 	 */
 	public static Prop use(File file, String encoding) {
-		Prop result = map.get(file.getName());
+		Prop result = cache.get(file.getName());
 		if (result == null) {
 			synchronized (PropKit.class) {
-				result = map.get(file.getName());
+				result = cache.get(file.getName());
 				if (result == null) {
 					result = new Prop(file, encoding);
 					handleEnv(result, file.getName());
-					map.put(file.getName(), result);
+					cache.put(file.getName(), result);
 					if (PropKit.prop == null) {
 						PropKit.prop = result;
 					}
@@ -143,7 +143,7 @@ public class PropKit {
 	}
 
 	public static Prop useless(String fileName) {
-		Prop previous = map.remove(fileName);
+		Prop previous = cache.remove(fileName);
 		if (PropKit.prop == previous) {
 			PropKit.prop = null;
 		}
@@ -152,7 +152,7 @@ public class PropKit {
 
 	public static void clear() {
 		prop = null;
-		map.clear();
+		cache.clear();
 	}
 
 	public static Prop append(Prop prop) {
@@ -226,7 +226,7 @@ public class PropKit {
 	}
 
 	public static Prop getProp(String fileName) {
-		return map.get(fileName);
+		return cache.get(fileName);
 	}
 
 	public static String get(String key) {
