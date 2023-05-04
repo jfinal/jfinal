@@ -16,8 +16,12 @@
 
 package com.jfinal.ext.proxy;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import com.jfinal.proxy.ProxyFactory;
+import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.ProxyObject;
 
 /**
@@ -34,6 +38,7 @@ public class JavassistProxyFactory extends ProxyFactory {
     
     protected HashMap<Class<?>, Class<?>> cache = new HashMap<>(1024, 0.25F);
     protected JavassistCallback callback = new JavassistCallback();
+    protected JavassistMethodFilter methodFilter = new JavassistMethodFilter();
     
     @SuppressWarnings("unchecked")
     public <T> T get(Class<T> target) {
@@ -63,16 +68,38 @@ public class JavassistProxyFactory extends ProxyFactory {
             return (Class<T>) cache.computeIfAbsent(target, key -> {
                 javassist.util.proxy.ProxyFactory factory = new javassist.util.proxy.ProxyFactory();
                 factory.setSuperclass(key);
+                factory.setFilter(methodFilter);
                 return factory.createClass();
             });
         }
     }
+    
+    /**
+     * 过滤不需要代理的方法，参考资料：
+     * https://github.com/jboss-javassist/javassist/blob/master/src/test/testproxy/ProxyTester.java
+     */
+    private static class JavassistMethodFilter implements MethodFilter {
+        
+        private static final Set<String> excludedMethodName = buildExcludedMethodName();
+        
+        @Override
+        public boolean isHandled(Method method) {
+            return ! excludedMethodName.contains(method.getName());
+        }
+        
+        private static final Set<String> buildExcludedMethodName() {
+            Set<String> excludedMethodName = new HashSet<String>(64, 0.25F);
+            Method[] methods = Object.class.getDeclaredMethods();
+            for (Method m : methods) {
+                excludedMethodName.add(m.getName());
+            }
+            // getClass() registerNatives() can not be enhanced
+            // excludedMethodName.remove("getClass");   
+            // excludedMethodName.remove("registerNatives");
+            return excludedMethodName;
+        }
+    }
 }
-
-
-
-
-
 
 
 
