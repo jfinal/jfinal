@@ -94,7 +94,7 @@ public class Parser {
 				continue ;
 			}
 
-			// 过滤内容为空的 Text 节点，通常是处于两个指令之间的空白字符被移除以后的结果，详见 TextToken.deleteBlankTails()
+			// 过滤内容为空的 Text 节点，通常是处于两个指令之间的空白字符被移除以后的结果，详见 TextToken.deleteBlankTail()
 			if (stat instanceof Text && ((Text)stat).isEmpty()) {
 				continue ;
 			}

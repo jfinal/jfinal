@@ -24,10 +24,10 @@ import java.util.Set;
  * DKFF(Dynamic Key Feature Forward) Lexer
  */
 class Lexer {
-	
+
 	static final char EOF = (char)-1;
 	static final int TEXT_STATE_DIAGRAM = 999;
-	
+
 	char[] buf;
 	int state = 0;
 	int lexemeBegin = 0;
@@ -35,29 +35,29 @@ class Lexer {
 	int beginRow = 1;
 	int forwardRow = 1;
 	TextToken previousTextToken = null;
-	
+
 	String fileName;
 	Set<String> keepLineBlankDirectives;
-	
+
 	List<Token> tokens = new ArrayList<Token>();
-	
+
 	public Lexer(StringBuilder content, String fileName, Set<String> keepLineBlankDirectives) {
 		this.keepLineBlankDirectives = keepLineBlankDirectives;
-		
+
 		int len = content.length();
 		buf = new char[len + 1];
 		content.getChars(0, content.length(), buf, 0);
 		buf[len] = EOF;
 		this.fileName = fileName;
 	}
-	
+
 	/**
 	 * 进入每个扫描方法之前 peek() 处于可用状态，不需要 next()
 	 * 每个扫描方法内部是否要 next() 移动，取决定具体情况
 	 * 每个扫描方法成功返回前，将 forward 置于下一次扫描需要处理的地方
 	 * 让下个扫描方法不必 next()
 	 * 紧靠 scanText() 之前的扫描方法在失败后必须保持住forward
-	 * 这是 scanText() 可以一直向前的保障 
+	 * 这是 scanText() 可以一直向前的保障
 	 */
 	public List<Token> scan() {
 		while (peek() != EOF) {
@@ -75,12 +75,12 @@ class Lexer {
 					continue ;
 				}
 			}
-			
+
 			scanText();
 		}
 		return tokens;
 	}
-	
+
 	/**
 	 * 指令模式与解析规则
 	 * 1：指令 pattern
@@ -89,12 +89,12 @@ class Lexer {
 	 *   #define id(p)
 	 *   #@id(p) / #@id?(p)
 	 *   #else / #end
-	 *   
+	 *
 	 * 2：关键字类型指令在获取到关键字以后，必须要正确解析出后续内容，否则抛异常
 	 *    2020-02-28: 该规则改为与 "非关键字指令" 一样
-	 * 
+	 *
 	 * 3：非关键字类型指令只有在本行内出现 # id ( 三个序列以后，才要求正确解析出后续内容
-	 *    否则当成普通文本 
+	 *    否则当成普通文本
 	 */
 	boolean scanDire() {
 		String id = null;
@@ -140,13 +140,13 @@ class Lexer {
 					state = 11;
 					continue ;
 				}
-				
+
 				// define 指令
 				if (symbol == Symbol.DEFINE) {
 					state = 12;
 					continue ;
 				}
-				
+
 				// 在支持 #seleif 的基础上，支持 #else if
 				if (symbol == Symbol.ELSE) {
 					if (foundFollowingIf()) {
@@ -154,12 +154,12 @@ class Lexer {
 						symbol = Symbol.ELSEIF;
 					}
 				}
-				
+
 				// 无参关键字指令
 				if (symbol.noPara()) {
 					return addNoParaToken(new Token(symbol, id, beginRow));
 				}
-				
+
 				// 有参关键字指令
 				skipBlanks();
 				if (peek() == '(') {
@@ -168,10 +168,10 @@ class Lexer {
 					paraToken = new ParaToken(para, beginRow);
 					return addIdParaToken(idToken, paraToken);
 				}
-				
+
 				// throw new ParseException("#" + id + " directive requires parentheses \"()\"", new Location(fileName, beginRow));
 				return fail();	// 2020-02-28: 关键字指令在没有左括号的情况下也当作普通文本。支持更多应用场景，例如：jquery id 选择器用法 $("#if")
-				
+
 			case 11: 	// 用户自定义指令必须有参数
 				skipBlanks();
 				if (peek() == '(') {
@@ -215,7 +215,7 @@ class Lexer {
 			}
 		}
 	}
-	
+
 	boolean foundFollowingIf() {
 		int p = forward;
 		while (CharTable.isBlank(buf[p])) {p++;}
@@ -231,7 +231,7 @@ class Lexer {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 调用者已确定以字母或下划线开头，故一定可以获取到 id值
 	 */
@@ -242,7 +242,7 @@ class Lexer {
 		}
 		return subBuf(idStart, forward - 1).toString();
 	}
-	
+
 	/**
 	 * 扫描指令参数，成功则返回，否则抛出词法分析异常
 	 */
@@ -264,26 +264,26 @@ class Lexer {
 						}
 						continue ;
 					}
-					
+
 					if (c == '(') {
 						parenDepth++;
 						continue ;
 					}
-					
+
 					if (c == '"' || c == '\'') {
 						quotes = c;
 						localState = 1;
 						break ;
 					}
-					
+
 					if (CharTable.isExprChar(c)) {
 						continue ;
 					}
-					
+
 					if (c == EOF) {
 						throw new ParseException("#" + id + " parameter can not match the end char ')'", new Location(fileName, beginRow));
 					}
-					
+
 					throw new ParseException("#" + id + " parameter exists illegal char: '" + c + "'", new Location(fileName, beginRow));
 				}
 				break ;
@@ -298,7 +298,7 @@ class Lexer {
 							continue ;
 						}
 					}
-					
+
 					if (c == EOF) {
 						throw new ParseException("#" + id + " parameter error, the string parameter not ending", new Location(fileName, beginRow));
 					}
@@ -307,7 +307,7 @@ class Lexer {
 			}
 		}
 	}
-	
+
 	/**
 	 * 单行注释，开始状态 100，关注换行与 EOF
 	 */
@@ -339,7 +339,7 @@ class Lexer {
 			}
 		}
 	}
-	
+
 	/**
 	 * 多行注释，开始状态 200，关注结尾标记与 EOF
 	 */
@@ -371,7 +371,7 @@ class Lexer {
 			}
 		}
 	}
-	
+
 	/**
 	 * 非解析块，开始状态 300，关注结尾标记与 EOF
 	 */
@@ -388,7 +388,7 @@ class Lexer {
 				for (char c=next(); true; c=next()) {
 					if (c == ']' && buf[forward + 1] == ']' && buf[forward + 2] == '#') {
 						addTextToken(subBuf(getNoParseStart(), forward - 1));	// NoParse 块使用 TextToken
-						
+
 						// return prepareNextScan(3);
 						forward = forward + 3;
 						if (lookForwardLineFeedAndEof() && deletePreviousTextTokenBlankTails()) {
@@ -397,7 +397,7 @@ class Lexer {
 							return prepareNextScan(0);
 						}
 					}
-					
+
 					if (c == EOF) {
 						throw new ParseException("The \"no parse\" start block \"#[[\" can not match the end block: \"]]#\"", new Location(fileName, beginRow));
 					}
@@ -407,7 +407,7 @@ class Lexer {
 			}
 		}
 	}
-	
+
 	// 非解析块头部 #[[ 处在独立一行时，要删除行尾的换行字符
 	int getNoParseStart() {
 		int fp = lexemeBegin + 3;
@@ -415,7 +415,7 @@ class Lexer {
 			if (CharTable.isBlank(c)) {
 				continue ;
 			}
-			
+
 			// #[[ 处在独立一行
 			if (c == '\n' && deletePreviousTextTokenBlankTails()) {
 				return fp + 1;
@@ -424,7 +424,7 @@ class Lexer {
 			}
 		}
 	}
-	
+
 	boolean scanText() {
 		for (char c=peek(); true; c=next()) {
 			if (c == '#' || c == EOF) {
@@ -433,7 +433,7 @@ class Lexer {
 			}
 		}
 	}
-	
+
 	boolean fail() {
 		if (state < 300) {
 			forward = lexemeBegin;
@@ -450,24 +450,24 @@ class Lexer {
 		}
 		return false;
 	}
-	
+
 	char next() {
 		if (buf[forward] == '\n') {
 			forwardRow++;
 		}
 		return buf[++forward];
 	}
-	
+
 	char peek() {
 		return buf[forward];
 	}
-	
+
 	void skipBlanks() {
 		while (CharTable.isBlank(buf[forward])) {
 			next();
 		}
 	}
-	
+
 	/**
 	 * scanPara 与 scanNoParse 存在 start > end 的情况
 	 */
@@ -481,23 +481,23 @@ class Lexer {
 		}
 		return ret;
 	}
-	
+
 	boolean prepareNextScan(int moveForward) {
 		for (int i=0; i<moveForward; i++) {
 			next();
 		}
-		
+
 		state = 0;
 		lexemeBegin = forward;
 		beginRow = forwardRow;
 		return true;
 	}
-	
+
 	void addTextToken(StringBuilder text) {
 		if (text == null || text.length() == 0) {
 			return ;
 		}
-		
+
 		if (previousTextToken != null) {
 			previousTextToken.append(text);
 		} else {
@@ -505,21 +505,21 @@ class Lexer {
 			tokens.add(previousTextToken);
 		}
 	}
-	
+
 	/**
 	 * 带参指令处于独立行时删除前后空白字符，并且再删除一个后续的换行符
 	 * 处于独立行是指：向前看无有用内容，在前面情况成立的基础之上
 	 *             再向后看如果也无可用内容，前一个条件成立才开执行后续动作
-	 * 
+	 *
 	 * 向前看时 forward 在移动，意味着正在删除空白字符(通过 lookForwardLineFeed()方法)
 	 * 向后看时也会在碰到空白 + '\n' 时删空白字符 (通过 deletePreviousTextTokenBlankTails()方法)
 	 */
 	boolean addIdParaToken(Token idToken, Token paraToken) {
 		tokens.add(idToken);
 		tokens.add(paraToken);
-		
+
 		skipFollowingComment();
-		
+
 		// 保留指令所在行空白字符
 		// #define xxx() 模板函数名、#@xxx() 模板函数名，可以与指令同名，需要排除掉这三种 Symbol
 		if (keepLineBlankDirectives.contains(idToken.value())
@@ -527,16 +527,16 @@ class Lexer {
 			&& idToken.symbol != Symbol.CALL
 			&& idToken.symbol != Symbol.CALL_IF_DEFINED
 			) {
-			
+
 			prepareNextScan(0);
 		} else {
 			trimLineBlank();
 		}
-		
+
 		previousTextToken = null;
 		return true;
 	}
-	
+
 	// #set 这类指令，处在独立一行时，需要删除当前行的前后空白字符以及行尾字符 '\n'
 	void trimLineBlank() {
 		// if (lookForwardLineFeed() && (deletePreviousTextTokenBlankTails() || lexemeBegin == 0)) {
@@ -546,23 +546,23 @@ class Lexer {
 			prepareNextScan(0);
 		}
 	}
-	
+
 	// 无参指令无条件调用 trimLineBlank()
 	boolean addNoParaToken(Token noParaToken) {
 		tokens.add(noParaToken);
-		
+
 		skipFollowingComment();
-		
+
 		if (CharTable.isBlank(peek())) {
 			next();	// 无参指令之后紧随的一个空白字符仅为分隔符，不参与后续扫描
 		}
-		
+
 		trimLineBlank();
-		
+
 		previousTextToken = null;
 		return true;
 	}
-	
+
 	// 向前看后续是否跟随的是空白 + 换行或者是空白 + EOF，是则表示当前指令后续没有其它有用内容
 	boolean lookForwardLineFeedAndEof() {
 		int fp = forward;
@@ -570,25 +570,25 @@ class Lexer {
 			if (CharTable.isBlank(c)) {
 				continue ;
 			}
-			
+
 			if (c == '\n' || c == EOF) {
 				forward = fp;
 				return true;
 			}
-			
+
 			return false;
 		}
 	}
-	
+
 	/**
 	 * 1：当前指令前方仍然是指令 (previousTextToken 为 null)，直接返回 true
-	 * 2：当前指令前方为 TextToken 时的处理逻辑与返回值完全依赖于 TextToken.deleteBlankTails()
+	 * 2：当前指令前方为 TextToken 时的处理逻辑与返回值完全依赖于 TextToken.deleteBlankTail()
 	 */
 	boolean deletePreviousTextTokenBlankTails() {
-		// return previousTextToken != null ? previousTextToken.deleteBlankTails() : false;
-		return previousTextToken == null || previousTextToken.deleteBlankTails();
+		// return previousTextToken != null ? previousTextToken.deleteBlankTail() : false;
+		return previousTextToken == null || previousTextToken.deleteBlankTail();
 	}
-	
+
 	/**
 	 * 跳过指令后方跟随的注释，以便正确处理各类换行逻辑
 	 */
@@ -598,7 +598,7 @@ class Lexer {
 			if (CharTable.isBlank(c)) {
 				continue ;
 			}
-			
+
 			// 勿使用 next()
 			if (c == '#') {
 				if (buf[fp + 1] == '#' && buf[fp + 2] == '#') {
@@ -609,11 +609,11 @@ class Lexer {
 					skipFollowingMultiLineComment();
 				}
 			}
-			
+
 			return ;
 		}
 	}
-	
+
 	void skipFollowingSingleLineComment() {
 		forward = forward + 3;
 		for (char c=peek(); true; c=next()) {
@@ -622,7 +622,7 @@ class Lexer {
 			}
 		}
 	}
-	
+
 	void skipFollowingMultiLineComment() {
 		forward = forward + 3;
 		for (char c=peek(); true; c=next()) {
@@ -630,7 +630,7 @@ class Lexer {
 				forward = forward + 3;
 				break ;
 			}
-			
+
 			if (c == EOF) {
 				throw new ParseException("The multiline comment start block \"#--\" can not match the end block: \"--#\"", new Location(fileName, beginRow));
 			}

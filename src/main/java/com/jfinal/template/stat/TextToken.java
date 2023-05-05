@@ -48,7 +48,7 @@ class TextToken extends Token {
 	 * 2：当前指令前方仍然是指令，两指令之间有空白字符，吃掉前方(即所有)的空白字符，并告知调用方吃掉行尾 '\n'
 	 * 3：情况 2 时，相当于本 TextToken 内容变成了空字符串，后续的 Parser 将过滤掉这类节点
 	 */
-	public boolean deleteBlankTails() {
+	public boolean deleteBlankTail() {
 		for (int i = text.length() - 1; i >= 0; i--) {
 			if (CharTable.isBlank(text.charAt(i))) {
 				continue ;
