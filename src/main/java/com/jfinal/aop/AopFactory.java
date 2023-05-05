@@ -190,7 +190,9 @@ public class AopFactory {
 	protected Class<?> getUsefulClass(Class<?> clazz) {
 		// com.demo.blog.Blog$$EnhancerByCGLIB$$69a17158
 		// return (Class<? extends Model>)((modelClass.getName().indexOf("EnhancerByCGLIB") == -1 ? modelClass : modelClass.getSuperclass()));
-		return (Class<?>)(clazz.getName().indexOf("$$EnhancerBy") == -1 ? clazz : clazz.getSuperclass());
+		// return (Class<?>)(clazz.getName().indexOf("$$EnhancerBy") == -1 ? clazz : clazz.getSuperclass());
+	    String n = clazz.getName();
+	    return (Class<?>)(n.indexOf("_$$_") > -1 || n.indexOf("$$Enhancer") > -1 ? clazz.getSuperclass() : clazz);
 	}
 	
 	/**
