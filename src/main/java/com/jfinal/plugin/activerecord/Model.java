@@ -210,7 +210,9 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		// guice : Model$$EnhancerByGuice$$40471411
 		// cglib : com.demo.blog.Blog$$EnhancerByCGLIB$$69a17158
 		// return c.getName().indexOf("EnhancerByCGLIB") == -1 ? c : c.getSuperclass();
-		return c.getName().indexOf("$$EnhancerBy") == -1 ? c : c.getSuperclass();
+		// return c.getName().indexOf("$$EnhancerBy") == -1 ? c : c.getSuperclass();
+		String n = c.getName();
+		return n.indexOf("_$$_") > -1 || n.indexOf("$$Enhancer") > -1 ? c.getSuperclass() : c;
 	}
 
 	/**

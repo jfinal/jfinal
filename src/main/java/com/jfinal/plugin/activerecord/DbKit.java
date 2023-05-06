@@ -29,28 +29,28 @@ import java.util.Set;
  */
 @SuppressWarnings("rawtypes")
 public final class DbKit {
-	
+
 	/**
 	 * The main Config object for system
 	 */
 	static Config config = null;
-	
+
 	/**
 	 * 1: For ActiveRecordPlugin.useAsDataTransfer(...) 用于分布式场景
 	 * 2: For Model.getAttrsMap()/getModifyFlag() and Record.getColumnsMap()
 	 * while the ActiveRecordPlugin not start or the Exception throws of HashSessionManager.restorSession(..) by Jetty
 	 */
 	static Config brokenConfig = Config.createBrokenConfig();
-	
+
 	private static Map<Class<? extends Model>, Config> modelToConfig = new HashMap<Class<? extends Model>, Config>(512, 0.5F);
 	private static Map<String, Config> configNameToConfig = new HashMap<String, Config>(32, 0.25F);
-	
+
 	static final Object[] NULL_PARA_ARRAY = new Object[0];
 	public static final String MAIN_CONFIG_NAME = "main";
 	public static final int DEFAULT_TRANSACTION_LEVEL = Connection.TRANSACTION_REPEATABLE_READ;
-	
+
 	private DbKit() {}
-	
+
 	/**
 	 * Add Config object
 	 * @param config the Config contains DataSource, Dialect and so on
@@ -62,17 +62,17 @@ public final class DbKit {
 		if (configNameToConfig.containsKey(config.getName())) {
 			throw new IllegalArgumentException("Config already exists: " + config.getName());
 		}
-		
+
 		configNameToConfig.put(config.getName(), config);
-		
-		/** 
+
+		/**
 		 * Replace the main config if current config name is MAIN_CONFIG_NAME
 		 */
 		if (MAIN_CONFIG_NAME.equals(config.getName())) {
 			DbKit.config = config;
 			Db.init(DbKit.config.getName());
 		}
-		
+
 		/**
 		 * The configName may not be MAIN_CONFIG_NAME,
 		 * the main config have to set the first comming Config if it is null
@@ -82,55 +82,57 @@ public final class DbKit {
 			Db.init(DbKit.config.getName());
 		}
 	}
-	
+
 	public static Config removeConfig(String configName) {
 		if (DbKit.config != null && DbKit.config.getName().equals(configName)) {
 			// throw new RuntimeException("Can not remove the main config.");
 			DbKit.config = null;
 		}
-		
+
 		Db.removeDbProWithConfig(configName);
 		return configNameToConfig.remove(configName);
 	}
-	
+
 	static void addModelToConfigMapping(Class<? extends Model> modelClass, Config config) {
 		modelToConfig.put(modelClass, config);
 	}
-	
+
 	public static Config getConfig() {
 		return config;
 	}
-	
+
 	public static Config getConfig(String configName) {
 		return configNameToConfig.get(configName);
 	}
-	
+
 	public static Config getConfig(Class<? extends Model> modelClass) {
 		return modelToConfig.get(modelClass);
 	}
-	
+
 	static final void close(ResultSet rs, Statement st) throws SQLException {
 		if (rs != null) {rs.close();}
 		if (st != null) {st.close();}
 	}
-	
+
 	static final void close(ResultSet rs) throws SQLException {
 		if (rs != null) {rs.close();}
 	}
-	
+
 	static final void close(Statement st) throws SQLException {
 		if (st != null) {st.close();}
 	}
-	
+
 	public static Set<Map.Entry<String, Config>> getConfigSet() {
 		return configNameToConfig.entrySet();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static Class<? extends Model> getUsefulClass(Class<? extends Model> modelClass) {
 		// com.demo.blog.Blog$$EnhancerByCGLIB$$69a17158
 		// return (Class<? extends Model>)((modelClass.getName().indexOf("EnhancerByCGLIB") == -1 ? modelClass : modelClass.getSuperclass()));
-		return (Class<? extends Model>)(modelClass.getName().indexOf("$$EnhancerBy") == -1 ? modelClass : modelClass.getSuperclass());
+		// return (Class<? extends Model>)(modelClass.getName().indexOf("$$EnhancerBy") == -1 ? modelClass : modelClass.getSuperclass());
+		String n = modelClass.getName();
+		return (Class<? extends Model>)(n.indexOf("_$$_") > -1 || n.indexOf("$$Enhancer") > -1 ? modelClass.getSuperclass() : modelClass);
 	}
 }
 
