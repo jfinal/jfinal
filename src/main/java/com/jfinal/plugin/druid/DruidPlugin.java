@@ -291,6 +291,15 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		return ds;
 	}
 	
+	/**
+	 * 支持高版本 druid 下配置 connectTimeout、socketTimeout。使用方法如下：
+	 *    druidPlugin.getDruidDataSource().setConnectTimeout(xxx);
+	 *    druidPlugin.getDruidDataSource().setSocketTimeout(xxx);
+	 */
+	public DruidDataSource getDruidDataSource() {
+	    return ds;
+	}
+	
 	public DruidPlugin set(int initialSize, int minIdle, int maxActive) {
 		this.initialSize = initialSize;
 		this.minIdle = minIdle;
