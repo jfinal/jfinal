@@ -17,32 +17,21 @@
 package com.jfinal.ext.proxy;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.InterceptorManager;
 import com.jfinal.aop.Invocation;
 import com.jfinal.ext.proxy.InterceptorCache.MethodKey;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+import javassist.util.proxy.MethodHandler;
 
 /**
- * CglibCallback.
+ * JavassistCallback.
  */
-class CglibCallback implements MethodInterceptor {
+class JavassistCallback implements MethodHandler {
 	
-	private static final Set<String> excludedMethodName = buildExcludedMethodName();
 	private static final InterceptorManager interMan = InterceptorManager.me();
 	
-	public Object intercept(Object target, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-		if (excludedMethodName.contains(method.getName())) {
-			return methodProxy.invokeSuper(target, args);
-		}
-		
-		// Class<?> targetClass = target.getClass();
-		// if (targetClass.getName().indexOf("$$EnhancerBy") != -1) {
-		// 	targetClass = targetClass.getSuperclass();
-		// }
+	@Override
+    public Object invoke(Object target, Method method, Method methodProxy, Object[] args) throws Throwable {
 		Class<?> targetClass = target.getClass().getSuperclass();
 		
 		MethodKey key = InterceptorCache.getMethodKey(targetClass, method);
@@ -53,29 +42,20 @@ class CglibCallback implements MethodInterceptor {
 		}
 		
 		if (inters.length == 0) {
-		    return methodProxy.invokeSuper(target, args);
+		    return methodProxy.invoke(target, args);
 		}
 		
 		Invocation invocation = new Invocation(target, method, inters,
 			x -> {
-				return methodProxy.invokeSuper(target, x);
+				return methodProxy.invoke(target, x);
 			}
 		, args);
 		invocation.invoke();
 		return invocation.getReturnValue();
 	}
-	
-	private static final Set<String> buildExcludedMethodName() {
-		Set<String> excludedMethodName = new HashSet<String>(64, 0.25F);
-		Method[] methods = Object.class.getDeclaredMethods();
-		for (Method m : methods) {
-			excludedMethodName.add(m.getName());
-		}
-		// getClass() registerNatives() can not be enhanced
-		// excludedMethodName.remove("getClass");	
-		// excludedMethodName.remove("registerNatives");
-		return excludedMethodName;
-	}
 }
+
+
+
 
 

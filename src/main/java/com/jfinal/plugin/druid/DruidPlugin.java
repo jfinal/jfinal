@@ -132,7 +132,7 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		}else if(url.startsWith("jdbc:hsqldb")){
 			return "select 1 from INFORMATION_SCHEMA.SYSTEM_USERS";
 		}else if(url.startsWith("jdbc:derby")){
-			return "select 1 from INFORMATION_SCHEMA.SYSTEM_USERS";
+			return "values (1)";
 		}
 		return "select 1";
 	}

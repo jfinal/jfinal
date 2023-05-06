@@ -57,6 +57,7 @@ public class ProxyGenerator {
 	protected Template template = engine.getTemplate("com/jfinal/proxy/proxy_class_template.jf");
 	
 	protected boolean printGeneratedClassToConsole = false;
+	protected boolean printGeneratedClassToLog = true;
 	
 	public ProxyClass generate(Class<?> target) {
 		ProxyClass proxyClass = new ProxyClass(target);
@@ -147,7 +148,7 @@ public class ProxyGenerator {
 				System.out.print(msg);
 				System.out.println(sourceCode);
 			}
-			if (log.isDebugEnabled()) {
+			if (printGeneratedClassToLog && log.isDebugEnabled()) {
 				String msg = "\nGenerate proxy class \"" + proxyClass.getPkg() + "." + proxyClass.getName() + "\":";
 				log.debug(msg + sourceCode);
 			}
@@ -387,6 +388,13 @@ public class ProxyGenerator {
 	public void setPrintGeneratedClassToConsole(boolean printGeneratedClassToConsole) {
 		this.printGeneratedClassToConsole = printGeneratedClassToConsole;
 	}
+	
+	/**
+     * 配置打印生成类到日志
+     */
+    public void setPrintGeneratedClassToLog(boolean printGeneratedClassToLog) {
+        this.printGeneratedClassToLog = printGeneratedClassToLog;
+    }
 	
 	public void setProxyClassTemplate(String proxyClassTemplate) {
 		template = engine.getTemplate(proxyClassTemplate);

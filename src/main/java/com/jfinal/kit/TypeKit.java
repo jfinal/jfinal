@@ -200,14 +200,14 @@ public class TypeKit {
 			return (LocalDateTime)ldt;
 		}
 
+		if (ldt instanceof java.util.Date) {
+			return TimeKit.toLocalDateTime((java.util.Date)ldt);
+		}
 		if (ldt instanceof LocalDate) {
 			return ((LocalDate)ldt).atStartOfDay();
 		}
 		if (ldt instanceof LocalTime) {
 			return LocalDateTime.of(LocalDate.now(), (LocalTime)ldt);
-		}
-		if (ldt instanceof java.util.Date) {
-			return TimeKit.toLocalDateTime((java.util.Date)ldt);
 		}
 
 		if (ldt instanceof String) {

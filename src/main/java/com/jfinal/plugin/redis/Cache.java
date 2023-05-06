@@ -25,10 +25,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Function;
+import com.jfinal.kit.Func.*;
+import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.redis.serializer.ISerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
+import redis.clients.jedis.Transaction;
 import redis.clients.jedis.params.SetParams;
 import redis.clients.jedis.util.SafeEncoder;
 
@@ -38,6 +43,9 @@ import redis.clients.jedis.util.SafeEncoder;
  * Jedis api 的方法名称及使用方法，以便于仅仅通过查看 Redis 文档
  * 即可快速掌握使用方法
  * Redis 命令参考: http://redisdoc.com/
+ * 
+ * 注意：不要提供 strlen、append、setrange、getrange，经测试这类操作字符串的方法在序列化模式下无法工作
+ *      因为 String 序列化后的 value 值为会多出来一些额外的字符
  */
 public class Cache {
 
@@ -117,6 +125,17 @@ public class Cache {
 	}
 
 	/**
+	 * psetex 与 setex 功能相同，但是生存时间为 milliseconds (以毫秒为单位)。
+	 */
+	public String psetex(Object key, long milliseconds, Object value) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.psetex(keyToBytes(key), milliseconds, valueToBytes(value));
+		}
+		finally {close(jedis);}
+	}
+
+	/**
 	 * 返回 key 所关联的 value 值
 	 * 如果 key 不存在那么返回特殊值 nil 。
 	 */
@@ -182,7 +201,7 @@ public class Cache {
 	 */
 	public String mset(Object... keysValues) {
 		if (keysValues.length % 2 != 0)
-			throw new IllegalArgumentException("wrong number of arguments for met, keysValues length can not be odd");
+			throw new IllegalArgumentException("wrong number of arguments for mset, keysValues length can not be odd");
 		Jedis jedis = getJedis();
 		try {
 			byte[][] kv = new byte[keysValues.length][];
@@ -196,6 +215,28 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
+	
+	/**
+	 * 当且仅当所有给定键都不存在时， 为所有给定键设置值。
+	 * 即使只有一个给定键已经存在， MSETNX 命令也会拒绝执行对所有键的设置操作。
+	 * MSETNX 是一个原子性(atomic)操作， 所有给定键要么就全部都被设置， 要么就全部都不设置， 不可能出现第三种状态。
+	 */
+	public Long msetnx(Object... keysValues) {
+        if (keysValues.length % 2 != 0)
+            throw new IllegalArgumentException("wrong number of arguments for msetnx, keysValues length can not be odd");
+        Jedis jedis = getJedis();
+        try {
+            byte[][] kv = new byte[keysValues.length][];
+            for (int i=0; i<keysValues.length; i++) {
+                if (i % 2 == 0)
+                    kv[i] = keyToBytes(keysValues[i]);
+                else
+                    kv[i] = valueToBytes(keysValues[i]);
+            }
+            return jedis.msetnx(kv);
+        }
+        finally {close(jedis);}
+    }
 
 	/**
 	 * 返回所有(一个或多个)给定 key 的值。
@@ -317,6 +358,18 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
+	
+	/**
+	 * 当且仅当 newkey 不存在时，将 key 改名为 newkey
+	 * 修改成功时，返回 1 ； 如果 newkey 已经存在，返回 0 
+	 */
+	public Long renamenx(Object oldkey, Object newkey) {
+        Jedis jedis = getJedis();
+        try {
+            return jedis.renamenx(keyToBytes(oldkey), keyToBytes(newkey));
+        }
+        finally {close(jedis);}
+    }
 
 	/**
 	 * 将当前数据库的 key 移动到给定的数据库 db 当中。
@@ -739,6 +792,18 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
+	
+	/**
+	 * 将值 value 插入到列表 key 的表头，当且仅当 key 存在并且是一个列表。
+	 * 和 LPUSH key value [value …] 命令相反，当 key 不存在时， LPUSHX 命令什么也不做。
+	 */
+	public Long lpushx(Object key, Object... values) {
+        Jedis jedis = getJedis();
+        try {
+            return jedis.lpushx(keyToBytes(key), valuesToBytesArray(values));
+        }
+        finally {close(jedis);}
+    }
 
 	/**
 	 * 将列表 key 下标为 index 的元素的值设置为 value 。
@@ -848,6 +913,18 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
+	
+	/**
+	 * 将值 value 插入到列表 key 的表尾，当且仅当 key 存在并且是一个列表。
+	 * 和 RPUSH key value [value …] 命令相反，当 key 不存在时， RPUSHX 命令什么也不做。
+	 */
+	public Long rpushx(Object key, Object... values) {
+        Jedis jedis = getJedis();
+        try {
+            return jedis.rpushx(keyToBytes(key), valuesToBytesArray(values));
+        }
+        finally {close(jedis);}
+    }
 
 	/**
 	 * BLPOP 是列表的阻塞式(blocking)弹出原语。
@@ -1410,7 +1487,7 @@ public class Cache {
 	 *
 	 * <pre>
 	 * 例子：
-	 * String lockId = Redis.use().lock("lockStock", 120, 1500)
+	 * String lockId = Redis.use().lock("lockStock", 120, 5)
 	 * if (lockId != null) {
 	 *     try {
 	 *        业务操作代码
@@ -1422,10 +1499,10 @@ public class Cache {
 	 *
 	 * @param name 锁的名称，通常与业务逻辑相关
 	 * @param secondsToExpire 锁过期时间，单位秒
-	 * @param millisecondsToTimeout 获取锁的超时时间，单位毫秒
+	 * @param secondsToTimeout 获取锁的超时时间，单位秒
 	 * @return 获取成功返回字符串，否则返回 false。释放锁时需要用到返回的字符串
 	 */
-	public String lock(String name, int secondsToExpire, int millisecondsToTimeout) {
+	public String lock(String name, int secondsToExpire, int secondsToTimeout) {
 		Jedis jedis = getJedis();
 		try {
 			String lockId = java.util.UUID.randomUUID().toString();
@@ -1435,8 +1512,8 @@ public class Cache {
 				if ("OK".equals(jedis.set(name, lockId, setParams))) {
 					return lockId;
 				}
-				try {Thread.sleep(50);} catch (InterruptedException e) {e.printStackTrace();}
-			} while (System.currentTimeMillis() - startTime < millisecondsToTimeout);
+				try {Thread.sleep(50);} catch (InterruptedException e) {break;}
+			} while (System.currentTimeMillis() - startTime < secondsToTimeout * 1000);
 			return null;
 		}
 		finally {
@@ -1464,12 +1541,12 @@ public class Cache {
 
 	/**
 	 * 为业务封装分布式锁，免去锁的获取、释放
-	 * withLock("lockStock", 120, 1000, () -> {
+	 * Redis.use().withLock("lockStock", 120, 5, () -> {
 	 * 		// 业务操作代码
 	 * });
 	 */
-	public boolean withLock(String name, int secondsToExpire, int millisecondsToTimeout, com.jfinal.kit.Func.F00 fun) {
-		String lockId = lock(name, secondsToExpire, millisecondsToTimeout);
+	public boolean withLock(String name, int secondsToExpire, int secondsToTimeout, F00 fun) {
+		String lockId = lock(name, secondsToExpire, secondsToTimeout);
 		if (lockId == null) {
 			return false;
 		}
@@ -1480,6 +1557,93 @@ public class Cache {
 			unlock(name, lockId);
 		}
 	}
+
+	/**
+	 * redis 事务，返回值为非 null 时表示 redis 事务执行成功，否则执行失败
+	 * 被监视的 watchKey 值发生变化时，事务将会执行失败
+	 *
+	 * @param watchKeys 被监视的 key，多个 key 使用逗号分隔，例如： "key1, key2"。无监视 key 传入 null 值或者使用 tx(F10<Transaction> tx)
+	 * @param tx lambda 提供 Transaction 对象，使用该对象对 redis 的操作产生的命令集合将成为原子操作
+	 */
+	public List<Object> tx(String watchKeys, F10<Transaction> tx) {
+		boolean watched = false;
+		Transaction transaction = null;
+		Jedis jedis = getJedis();
+		try {
+			// 多个 watchKey 使用逗号分隔
+			if (StrKit.notBlank(watchKeys)) {
+				String[] keys = watchKeys.split(",");
+				for (String k : keys) {
+					if (StrKit.notBlank(k)) {
+						jedis.watch(k.trim());
+						watched = true;
+					}
+				}
+			}
+
+			transaction = jedis.multi();
+			tx.call(transaction);
+			return transaction.exec();
+		} catch (Throwable e) {
+			if (transaction != null) {
+				transaction.discard();
+			}
+			return null;
+		}
+		finally {
+			try {if (watched) {jedis.unwatch();}} catch (Exception ignore) {}
+			close(jedis);
+		}
+	}
+
+	public List<Object> tx(F10<Transaction> tx) {
+		return tx(null, tx);
+	}
+	
+	/**
+	 * scan 命令查找符合给定模式 pattern 的 key
+	 * 
+	 * @param cursor 游标值，值为 0 时表示一次新的查找
+	 * @param pattern 用于匹配 key 的模式
+	 * @param count 调整每次 scan 命令返回 key 的数量。注意该值只能大致调整数量，并不能精确指定数量，
+	 *              返回值数量可以大于或者小于该值
+	 * @param keyList 每次 scan 返回数据后被回调的函数，该函数接收每次 scan 返回的 key 值列表，
+	 *                 返回 true 继续调用 scan 命令，否则终止 scan
+     */
+    public void scan(Integer cursor, String pattern, Integer count, F11<List<String>, Boolean> keyList) {
+        String cursorStr = cursor != null ? cursor.toString() : ScanParams.SCAN_POINTER_START;
+        
+        ScanParams scanParams = new ScanParams();
+        if (StrKit.notBlank(pattern)) {
+            scanParams.match(pattern);
+        }
+        if (count != null) {
+            scanParams.count(count);
+        }
+        
+        Boolean continueScan;
+        ScanResult<String> scanResult;
+        Jedis jedis = getJedis();
+        try {
+            do {
+                scanResult = jedis.scan(cursorStr, scanParams);
+                // 更新 cursorStr 用于 scan 继续迭代。注意，cursorStr 为 "0" 时，scanResult.getResult() 可以有数据
+                cursorStr = scanResult.getCursor();
+                List<String> list = scanResult.getResult();
+                // scanResult.getResult().size() 有时为 0
+                continueScan = list != null && list.size() > 0 ? keyList.call(list) : true;
+            } while (continueScan && !ScanParams.SCAN_POINTER_START.equals(cursorStr));
+        }
+        finally {close(jedis);}
+    }
+    
+    public void scan(Integer cursor, String pattern, F11<List<String>, Boolean> keyList) {
+        scan(cursor, pattern, null, keyList);
+    }
+    
+    public void scan(Integer cursor, F11<List<String>, Boolean> keyList) {
+        scan(cursor, null, null, keyList);
+    }
 }
 
 

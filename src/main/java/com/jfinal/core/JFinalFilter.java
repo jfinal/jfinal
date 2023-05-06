@@ -134,27 +134,25 @@ public class JFinalFilter implements Filter {
 		log = Log.getLog(JFinalFilter.class);
 	}
 	
-	boolean isJsp(String t) {
-		char c;
-		int end = t.length() - 1;
-		
-		if ( (end > 3) && ((c = t.charAt(end)) == 'x' || c == 'X') ) {
-			end--;
-		}
-		
-		if ( (end > 2) && ((c = t.charAt(end)) == 'p' || c == 'P') ) {
-			end--;
-			if ( (end > 1) && ((c = t.charAt(end)) == 's' || c == 'S') ) {
-				end--;
-				if ( (end > 0) && ((c = t.charAt(end)) == 'j' || c == 'J') ) {
-					end--;
-					if ( (end > -1) && ((c = t.charAt(end)) == '.') ) {
-						return true;
-					}
-				}
-			}
-		}
-		
-		return false;
-	}
+    boolean isJsp(String target) {
+        int i = target.lastIndexOf('.');
+        if (i > -1) {
+            int len = target.length();
+            i++;
+            char c;
+            if (i < len && ((c = target.charAt(i++)) == 'j' || c == 'J')) {
+                if (i < len && ((c = target.charAt(i++)) == 's' || c == 'S')) {
+                    if (i < len && ((c = target.charAt(i)) == 'p' || c == 'P')) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
+
+
+
+
+

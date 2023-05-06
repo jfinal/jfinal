@@ -432,6 +432,10 @@ public class MetaBuilder {
 				cm.isAutoIncrement = rsmd.isAutoIncrement(i);
 			}
 
+			// 移除包名前缀 java.lang.
+			// if (cm.javaType != null && cm.javaType.startsWith("java.lang.")) {
+			// 	cm.javaType = cm.javaType.replaceFirst("java.lang.", "");
+			// }
 			tableMeta.columnMetas.add(cm);
 		}
 

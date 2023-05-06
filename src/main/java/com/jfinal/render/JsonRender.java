@@ -139,7 +139,10 @@ public class JsonRender extends Render {
 			writer = response.getWriter();
 			writer.write(jsonText);
 			writer.flush();
-		} catch (IOException e) {
+		} catch (Exception e) {
+		    if (e instanceof IOException) {
+		        close(writer);
+		    }
 			throw new RenderException(e);
 		}
 	}

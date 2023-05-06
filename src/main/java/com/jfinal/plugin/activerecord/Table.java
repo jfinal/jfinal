@@ -87,7 +87,8 @@ public class Table {
 	 * Think about auto saving the related table's column in the future.
 	 */
 	public boolean hasColumnLabel(String columnLabel) {
-		return columnTypeMap.containsKey(columnLabel);
+	    // TreeMap.containsKey(...) 不允许参数为 null，故需添加 null 值判断
+		return columnLabel != null && columnTypeMap.containsKey(columnLabel);
 	}
 	
 	/**

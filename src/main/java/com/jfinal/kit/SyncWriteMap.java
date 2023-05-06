@@ -18,6 +18,8 @@ package com.jfinal.kit;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * SyncWriteMap 同步写 HashMap
@@ -85,7 +87,62 @@ public class SyncWriteMap<K, V> extends HashMap<K, V> {
 			super.clear();
 		}
 	}
+	
+	@Override
+    public V computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction) {
+        synchronized (this) {
+            return super.computeIfAbsent(key, mappingFunction);
+        }
+    }
+    
+    @Override
+    public V computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        synchronized (this) {
+            return super.computeIfPresent(key, remappingFunction);
+        }
+    }
+    
+    @Override
+    public V compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        synchronized (this) {
+            return super.compute(key, remappingFunction);
+        }
+    }
+    
+    @Override
+    public boolean replace(K key, V oldValue, V newValue) {
+        synchronized (this) {
+            return super.replace(key, oldValue, newValue);
+        }
+    }
+    
+    @Override
+    public V replace(K key, V value) {
+        synchronized (this) {
+            return super.replace(key, value);
+        }
+    }
+    
+    @Override
+    public void replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
+        synchronized (this) {
+            super.replaceAll(function);
+        }
+    }
+    
+    @Override
+    public V merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
+        synchronized (this) {
+            return super.merge(key, value, remappingFunction);
+        }
+    }
 }
+
+
+
+
+
+
 
 
 

@@ -154,12 +154,28 @@ final public class Constants {
 	 * 配置 ProxyFactory 用于切换代理实现
 	 * <pre>
 	 * 例如：
-	 * me.setProxyFactory(new CglibProxyFactory());
+	 * me.setProxyFactory(new JavassistProxyFactory());
 	 * </pre>
 	 */
 	public void setProxyFactory(ProxyFactory proxyFactory) {
 		ProxyManager.me().setProxyFactory(proxyFactory);
 	}
+	
+	/**
+	 * 配置 JavassistProxyFactory 实现业务层 AOP。支持 JDK 17。
+	 * 
+	 * 该配置需要引入 Javassist 依赖：
+     * <pre>
+     *   <dependency>
+     *     <groupId>org.javassist</groupId>
+     *     <artifactId>javassist</artifactId>
+     *     <version>3.29.2-GA</version>
+     *   </dependency>
+     * </pre>
+	 */
+	public void setToJavassistProxyFactory() {
+        setProxyFactory(new com.jfinal.ext.proxy.JavassistProxyFactory());
+    }
 	
 	/**
 	 * proxy 模块需要 JDK 环境，如果运行环境为 JRE，可以调用本配置方法支持

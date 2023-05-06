@@ -59,22 +59,15 @@ public class FastFieldGetter extends FieldGetter {
 		for (java.lang.reflect.Method method : methodArray) {
 			if (method.getName().equals(getterName) && method.getParameterCount() == 0) {
 
-				Proxy proxy = cache.get(targetClass);
-				if (proxy == null) {
-					synchronized (targetClass) {
-						proxy = cache.get(targetClass);
-						if (proxy == null) {
-							try {
-								proxy = createProxy(targetClass, fieldName);
-							} catch (Throwable e) {
-								return null;
-							}
-							cache.putIfAbsent(targetClass, proxy);
-						}
+				Proxy proxy = cache.computeIfAbsent(targetClass, key -> {
+					try {
+						return createProxy(key, fieldName);
+					} catch (Throwable e) {
+						return null;
 					}
-				}
-
-				return new FastFieldGetter(proxy, method);
+				});
+				return proxy != null ? new FastFieldGetter(proxy, method) : null;
+				
 			}
 		}
 

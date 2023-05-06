@@ -16,10 +16,7 @@
 
 package com.jfinal.kit;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import com.jfinal.log.Log;
 
 /**
@@ -94,9 +91,21 @@ public class ThreadPoolKit {
 	 *
 	 * @param nThreads the number of threads in the pool
 	 */
-	public synchronized static void init(int nThreads) {
+	public static void init(int nThreads) {
+		init(nThreads, nThreads);
+	}
+
+	/**
+	 * 初始化
+	 *
+	 * @param corePoolSize the number of threads to keep in the pool,
+	 *                     even if they are idle, unless allowCoreThreadTimeOut is set
+	 * @param maximumPoolSize the maximum number of threads to allow in the pool
+	 */
+	public synchronized static void init(int corePoolSize, int maximumPoolSize) {
 		if (executor == null) {
-			executor = Executors.newFixedThreadPool(nThreads);
+			// executor = Executors.newFixedThreadPool(nThreads);
+			executor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 		} else {
 			Log.getLog(ThreadPoolKit.class).warn(ThreadPoolKit.class.getName() + " 已经初始化");
 		}
@@ -115,7 +124,7 @@ public class ThreadPoolKit {
 
 	public static ExecutorService getExecutor() {
 		if (executor == null) {
-			init(3);
+			init(5, 128);
 		}
 		return executor;
 	}
@@ -205,6 +214,13 @@ public class ThreadPoolKit {
 		if (executor != null) {
 			executor.shutdownNow();
 		}
+	}
+
+	/**
+	 * 在 shutdown 线程池之后，阻塞等待所有任务执行完，或发生超时，或当前线程中断，以先发生者为准
+	 */
+	public static boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+		return executor == null || executor.awaitTermination(timeout, unit);
 	}
 }
 

@@ -34,14 +34,14 @@ import com.jfinal.kit.SyncWriteMap;
 public class Db {
 	
 	private static DbPro MAIN = null;
-	private static final Map<String, DbPro> map = new SyncWriteMap<String, DbPro>(32, 0.25F);
+	private static final Map<String, DbPro> cache = new SyncWriteMap<String, DbPro>(32, 0.25F);
 	
 	/**
 	 * for DbKit.addConfig(configName)
 	 */
 	static void init(String configName) {
 		MAIN = DbKit.getConfig(configName).dbProFactory.getDbPro(configName); // new DbPro(configName);
-		map.put(configName, MAIN);
+		cache.put(configName, MAIN);
 	}
 	
     /**
@@ -51,18 +51,18 @@ public class Db {
     	if (MAIN != null && MAIN.config.getName().equals(configName)) {
     		MAIN = null;
     	}
-    	map.remove(configName);
+    	cache.remove(configName);
     }
     
     public static DbPro use(String configName) {
-		DbPro result = map.get(configName);
+		DbPro result = cache.get(configName);
 		if (result == null) {
 			Config config = DbKit.getConfig(configName);
 			if (config == null) {
 				throw new IllegalArgumentException("Config not found by configName: " + configName);
 			}
 			result = config.dbProFactory.getDbPro(configName);	// new DbPro(configName);
-			map.put(configName, result);
+			cache.put(configName, result);
 		}
 		return result;
 	}

@@ -182,6 +182,8 @@ public class AopFactory {
 	}
 	
 	/**
+	 * 字符串包含判断之 "_$$_" 支持 javassist，"$$Enhancer" 支持 cglib
+	 * 
 	 * 被 cglib、guice 增强过的类需要通过本方法获取到被增强之前的类型
 	 * 否则调用其 targetClass.getDeclaredFields() 方法时
 	 * 获取到的是一堆 cglib guice 生成类中的 Field 对象
@@ -190,7 +192,9 @@ public class AopFactory {
 	protected Class<?> getUsefulClass(Class<?> clazz) {
 		// com.demo.blog.Blog$$EnhancerByCGLIB$$69a17158
 		// return (Class<? extends Model>)((modelClass.getName().indexOf("EnhancerByCGLIB") == -1 ? modelClass : modelClass.getSuperclass()));
-		return (Class<?>)(clazz.getName().indexOf("$$EnhancerBy") == -1 ? clazz : clazz.getSuperclass());
+		// return (Class<?>)(clazz.getName().indexOf("$$EnhancerBy") == -1 ? clazz : clazz.getSuperclass());
+	    String n = clazz.getName();
+	    return (Class<?>)(n.indexOf("_$$_") > -1 || n.indexOf("$$Enhancer") > -1 ? clazz.getSuperclass() : clazz);
 	}
 	
 	/**
