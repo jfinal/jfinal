@@ -1368,6 +1368,78 @@ public class Cache {
 		finally {close(jedis);}
 	}
 
+	public Object eval(String script, int keyCount, String... params) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.eval(script, keyCount, params);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object eval(String script, List<String> keys, List<String> args) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.eval(script, keys, args);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object eval(String script) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.eval(script);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object evalsha(String sha1) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.evalsha(sha1);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object evalsha(String sha1, List<String> keys, List<String> args) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.evalsha(sha1, keys, args);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object evalsha(String sha1, int keyCount, String... params) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.evalsha(sha1, keyCount, params);
+		}
+		finally {close(jedis);}
+	}
+
+	public Boolean scriptExists(String sha1) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.scriptExists(sha1);
+		}
+		finally {close(jedis);}
+	}
+
+	public List<Boolean> scriptExists(String... sha1) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.scriptExists(sha1);
+		}
+		finally {close(jedis);}
+	}
+
+	public String scriptLoad(String script) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.scriptLoad(script);
+		}
+		finally {close(jedis);}
+	}
+
 	// ---------
 
 	protected byte[] keyToBytes(Object key) {
@@ -1644,78 +1716,6 @@ public class Cache {
     public void scan(Integer cursor, F11<List<String>, Boolean> keyList) {
         scan(cursor, null, null, keyList);
     }
-
-	public Object eval(String script, int keyCount, String... params) {
-		Jedis jedis = getJedis();
-		try {
-			return jedis.eval(script, keyCount, params);
-		}
-		finally {close(jedis);}
-	}
-
-	public Object eval(String script, List<String> keys, List<String> args) {
-		Jedis jedis = getJedis();
-		try {
-			return jedis.eval(script, keys, args);
-		}
-		finally {close(jedis);}
-	}
-
-	public Object eval(String script) {
-		Jedis jedis = getJedis();
-		try {
-			return jedis.eval(script);
-		}
-		finally {close(jedis);}
-	}
-
-	public Object evalsha(String sha1) {
-		Jedis jedis = getJedis();
-		try {
-			return jedis.evalsha(sha1);
-		}
-		finally {close(jedis);}
-	}
-
-	public Object evalsha(String sha1, List<String> keys, List<String> args) {
-		Jedis jedis = getJedis();
-		try {
-			return jedis.evalsha(sha1, keys, args);
-		}
-		finally {close(jedis);}
-	}
-
-	public Object evalsha(String sha1, int keyCount, String... params) {
-		Jedis jedis = getJedis();
-		try {
-			return jedis.evalsha(sha1, keyCount, params);
-		}
-		finally {close(jedis);}
-	}
-
-	public Boolean scriptExists(String sha1) {
-		Jedis jedis = getJedis();
-		try {
-			return jedis.scriptExists(sha1);
-		}
-		finally {close(jedis);}
-	}
-
-	public List<Boolean> scriptExists(String... sha1) {
-		Jedis jedis = getJedis();
-		try {
-			return jedis.scriptExists(sha1);
-		}
-		finally {close(jedis);}
-	}
-
-	public String scriptLoad(String script) {
-		Jedis jedis = getJedis();
-		try {
-			return jedis.scriptLoad(script);
-		}
-		finally {close(jedis);}
-	}
 }
 
 
