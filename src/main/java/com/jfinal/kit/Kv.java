@@ -187,6 +187,10 @@ public class Kv extends HashMap {
 
 		return this;
 	}
+
+	public <K, V>Map<K, V> toMap() {
+		return this;
+	}
 }
 
 

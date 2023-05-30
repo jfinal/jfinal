@@ -190,6 +190,10 @@ public class Okv extends LinkedHashMap {
 
 		return this;
 	}
+
+	public <K, V>Map<K, V> toMap() {
+		return this;
+	}
 }
 
 
