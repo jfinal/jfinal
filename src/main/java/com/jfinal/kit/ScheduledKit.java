@@ -25,9 +25,11 @@ import com.jfinal.log.Log;
 
 /**
  * 调度工具类
+ * <pre>
  * 1：scheduleWithFixedDelay 以上一次任务的 "结束时间" 为间隔调度任务
  * 2：scheduleAtFixedRate    以上一次任务的 "开始时间" 为间隔调度任务。当本次调度来临时，如果上一次任务未执行完，则等待它执行完成后再立即调度
  * 3：警告：必须要在被调度的任务(Runnable/Callable)中捕获异常，否则调度将会停止
+ * </pre>
  */
 public class ScheduledKit {
 

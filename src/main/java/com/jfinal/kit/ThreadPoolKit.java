@@ -22,6 +22,7 @@ import com.jfinal.log.Log;
 /**
  * ThreadPoolKit
  *
+ * <pre>
  * execute 与 submit（核心区别：前者提交不需要返回值的任务，后者提交需要返回值的任务）
  * 0: submit 会吃掉 task 中的异常，所以需要在 task 的 run/call 方法中使用 try catch
  *    对异常做日志
@@ -78,7 +79,7 @@ import com.jfinal.log.Log;
  * 1：ScheduledExecutorService 的 schedule、scheduleAtFixedRate、scheduleWithFixedDelay
  *    在碰到异常时将停止调度，注意用 try catch 处理好
  * 2：综上，所有 ExecutorService 的调度方法都要使用 try catch 处理好异常，除非明确知道无需处理异常
- *
+ * </pre>
  */
 public class ThreadPoolKit {
 
