@@ -1574,7 +1574,7 @@ public class Cache {
 	 * @param secondsToTimeout 获取锁的超时时间，单位秒
 	 * @return 获取成功返回字符串，否则返回 false。释放锁时需要用到返回的字符串
 	 */
-	public String lock(String name, int secondsToExpire, int secondsToTimeout) {
+	public String lock(String name, int secondsToExpire, double secondsToTimeout) {
 		Jedis jedis = getJedis();
 		try {
 			String lockId = java.util.UUID.randomUUID().toString();
@@ -1617,7 +1617,7 @@ public class Cache {
 	 * 		// 业务操作代码
 	 * });
 	 */
-	public boolean withLock(String name, int secondsToExpire, int secondsToTimeout, F00 fun) {
+	public boolean withLock(String name, int secondsToExpire, double secondsToTimeout, F00 fun) {
 		String lockId = lock(name, secondsToExpire, secondsToTimeout);
 		if (lockId == null) {
 			return false;
