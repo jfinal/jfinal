@@ -4,7 +4,7 @@
 
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
-	<version>5.1.0</version>
+	<version>5.1.1</version>
 	<packaging>jar</packaging>
 
 	<name>JFinal</name>
@@ -219,7 +219,7 @@
 			<version>3.4.1</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<!-- javassist 扩展 JavassistProxyFactory extends ProxyFactory -->
 		<dependency>
             <groupId>org.javassist</groupId>

@@ -43,7 +43,7 @@ import redis.clients.jedis.util.SafeEncoder;
  * Jedis api 的方法名称及使用方法，以便于仅仅通过查看 Redis 文档
  * 即可快速掌握使用方法
  * Redis 命令参考: http://redisdoc.com/
- * 
+ *
  * 注意：不要提供 strlen、append、setrange、getrange，经测试这类操作字符串的方法在序列化模式下无法工作
  *      因为 String 序列化后的 value 值为会多出来一些额外的字符
  */
@@ -215,7 +215,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 当且仅当所有给定键都不存在时， 为所有给定键设置值。
 	 * 即使只有一个给定键已经存在， MSETNX 命令也会拒绝执行对所有键的设置操作。
@@ -358,10 +358,10 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 当且仅当 newkey 不存在时，将 key 改名为 newkey
-	 * 修改成功时，返回 1 ； 如果 newkey 已经存在，返回 0 
+	 * 修改成功时，返回 1 ； 如果 newkey 已经存在，返回 0
 	 */
 	public Long renamenx(Object oldkey, Object newkey) {
         Jedis jedis = getJedis();
@@ -792,7 +792,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将值 value 插入到列表 key 的表头，当且仅当 key 存在并且是一个列表。
 	 * 和 LPUSH key value [value …] 命令相反，当 key 不存在时， LPUSHX 命令什么也不做。
@@ -913,7 +913,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将值 value 插入到列表 key 的表尾，当且仅当 key 存在并且是一个列表。
 	 * 和 RPUSH key value [value …] 命令相反，当 key 不存在时， RPUSHX 命令什么也不做。
@@ -1368,6 +1368,78 @@ public class Cache {
 		finally {close(jedis);}
 	}
 
+	public Object eval(String script, int keyCount, String... params) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.eval(script, keyCount, params);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object eval(String script, List<String> keys, List<String> args) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.eval(script, keys, args);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object eval(String script) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.eval(script);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object evalsha(String sha1) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.evalsha(sha1);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object evalsha(String sha1, List<String> keys, List<String> args) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.evalsha(sha1, keys, args);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object evalsha(String sha1, int keyCount, String... params) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.evalsha(sha1, keyCount, params);
+		}
+		finally {close(jedis);}
+	}
+
+	public Boolean scriptExists(String sha1) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.scriptExists(sha1);
+		}
+		finally {close(jedis);}
+	}
+
+	public List<Boolean> scriptExists(String... sha1) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.scriptExists(sha1);
+		}
+		finally {close(jedis);}
+	}
+
+	public String scriptLoad(String script) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.scriptLoad(script);
+		}
+		finally {close(jedis);}
+	}
+
 	// ---------
 
 	protected byte[] keyToBytes(Object key) {
@@ -1599,10 +1671,10 @@ public class Cache {
 	public List<Object> tx(F10<Transaction> tx) {
 		return tx(null, tx);
 	}
-	
+
 	/**
 	 * scan 命令查找符合给定模式 pattern 的 key
-	 * 
+	 *
 	 * @param cursor 游标值，值为 0 时表示一次新的查找
 	 * @param pattern 用于匹配 key 的模式
 	 * @param count 调整每次 scan 命令返回 key 的数量。注意该值只能大致调整数量，并不能精确指定数量，
@@ -1612,7 +1684,7 @@ public class Cache {
      */
     public void scan(Integer cursor, String pattern, Integer count, F11<List<String>, Boolean> keyList) {
         String cursorStr = cursor != null ? cursor.toString() : ScanParams.SCAN_POINTER_START;
-        
+
         ScanParams scanParams = new ScanParams();
         if (StrKit.notBlank(pattern)) {
             scanParams.match(pattern);
@@ -1620,7 +1692,7 @@ public class Cache {
         if (count != null) {
             scanParams.count(count);
         }
-        
+
         Boolean continueScan;
         ScanResult<String> scanResult;
         Jedis jedis = getJedis();
@@ -1636,11 +1708,11 @@ public class Cache {
         }
         finally {close(jedis);}
     }
-    
+
     public void scan(Integer cursor, String pattern, F11<List<String>, Boolean> keyList) {
         scan(cursor, pattern, null, keyList);
     }
-    
+
     public void scan(Integer cursor, F11<List<String>, Boolean> keyList) {
         scan(cursor, null, null, keyList);
     }
