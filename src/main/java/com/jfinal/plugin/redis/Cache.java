@@ -1704,8 +1704,8 @@ public class Cache {
                 List<String> list = scanResult.getResult();
                 // scanResult.getResult().size() 有时为 0
                 continueScan = list != null && list.size() > 0 ? keyList.call(list) : true;
-            } while (continueScan && !ScanParams.SCAN_POINTER_START.equals(cursorStr));
-            // } while (continueScan && !scanResult.isCompleteIteration());
+            // } while (continueScan && !ScanParams.SCAN_POINTER_START.equals(cursorStr));
+            } while (continueScan && !scanResult.isCompleteIteration());
         }
         finally {close(jedis);}
     }
