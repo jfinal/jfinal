@@ -70,12 +70,12 @@ public class ScheduledKit {
 
 	/**
 	 * 以固定延迟执行任务
-	 * @param task 被执行的任务
 	 * @param initialDelay 第一次启动前的延迟
 	 * @param delay 上次任务 "完成" 时间与本次任务 "开始" 时间的间隔
 	 * @param unit 时间单位
+	 * @param task 被执行的任务
 	 */
-	public static ScheduledFuture<?> scheduleWithFixedDelay(long initialDelay, long delay, TimeUnit unit , Runnable task) {
+	public static ScheduledFuture<?> scheduleWithFixedDelay(long initialDelay, long delay, TimeUnit unit, Runnable task) {
 		return getExecutor().scheduleWithFixedDelay(task, initialDelay, delay, unit);
 	}
 
@@ -94,10 +94,10 @@ public class ScheduledKit {
 
 	/**
 	 * 以固定频率执行任务
-	 * @param task 被执行的任务
 	 * @param initialDelay 第一次启动前的延迟
 	 * @param period 上次任务 "开始" 时间与本次任务 "开始" 时间的间隔，如果任务执行时长超出 period 值，则在任务执行完成后立即调度任务执行
 	 * @param unit 时间单位
+	 * @param task 被执行的任务
 	 */
 	public static ScheduledFuture<?> scheduleAtFixedRate(long initialDelay, long period, TimeUnit unit, Runnable task) {
 		return getExecutor().scheduleAtFixedRate(task, initialDelay, period, unit);
@@ -118,9 +118,9 @@ public class ScheduledKit {
 
 	/**
      * 创建一次性调度，在给定的 delay 时间后调度
-     * @param task 被执行任务
      * @param delay 从现在开始的延迟时间
      * @param unit 时间单位
+	 * @param task 被执行任务
      */
 	public static ScheduledFuture<?> schedule(long delay, TimeUnit unit, Runnable task) {
 		return getExecutor().schedule(task, delay, unit);
@@ -128,9 +128,9 @@ public class ScheduledKit {
 
 	/**
      * 创建一次性调度，在给定的 delay 时间后调度
-     * @param task 被执行任务
      * @param delay 从现在开始的延迟时间
      * @param unit 时间单位
+	 * @param task 被执行任务
      */
 	public static <V> ScheduledFuture<V> schedule(long delay, TimeUnit unit, Callable<V> task) {
 		return getExecutor().schedule(task, delay, unit);
