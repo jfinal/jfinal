@@ -18,19 +18,14 @@ package com.jfinal.template.expr.ast;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import com.jfinal.kit.ReflectKit;
 import com.jfinal.kit.SyncWriteMap;
-import com.jfinal.template.ext.extensionmethod.ByteExt;
-import com.jfinal.template.ext.extensionmethod.DoubleExt;
-import com.jfinal.template.ext.extensionmethod.FloatExt;
-import com.jfinal.template.ext.extensionmethod.IntegerExt;
-import com.jfinal.template.ext.extensionmethod.LongExt;
-import com.jfinal.template.ext.extensionmethod.ShortExt;
-import com.jfinal.template.ext.extensionmethod.StringExt;
+import com.jfinal.template.ext.extensionmethod.*;
 
 /**
  * MethodKit
@@ -252,6 +247,8 @@ public class MethodKit {
 		addExtensionMethod(Double.class, new DoubleExt());
 		addExtensionMethod(Short.class, new ShortExt());
 		addExtensionMethod(Byte.class, new ByteExt());
+		
+		addExtensionMethod(BigInteger.class, new BigIntegerExt());
 	}
 	
 	public synchronized static void addExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
