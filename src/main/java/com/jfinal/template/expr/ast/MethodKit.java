@@ -31,31 +31,31 @@ import com.jfinal.template.ext.extensionmethod.*;
  * MethodKit
  */
 public class MethodKit {
-	
+
 	private static final Class<?>[] NULL_ARG_TYPES = new Class<?>[0];
 	private static final Set<String> forbiddenMethods = new HashSet<String>(64);
 	private static final Set<Class<?>> forbiddenClasses = new HashSet<Class<?>>(64);
 	private static final Map<Class<?>, Class<?>> primitiveMap = new HashMap<Class<?>, Class<?>>(64);
 	private static final SyncWriteMap<Long, MethodInfo> methodCache = new SyncWriteMap<Long, MethodInfo>(2048, 0.25F);
-	
+
 	// 初始化在模板中调用 method 时所在的被禁止使用类
 	static {
 		Class<?>[] cs = {
 			System.class, Runtime.class, Thread.class, Class.class, ClassLoader.class, File.class,
 			Compiler.class, InheritableThreadLocal.class, Package.class, Process.class,
 			RuntimePermission.class, SecurityManager.class, ThreadGroup.class, ThreadLocal.class,
-			
+
 			java.lang.reflect.Method.class,
 			java.lang.reflect.Proxy.class,
 			java.lang.ProcessBuilder.class,
-			
+
 			MethodKit.class
 		};
 		for (Class<?> c : cs) {
 			forbiddenClasses.add(c);
 		}
 	}
-	
+
 	// 初始化在模板中被禁止使用的 method name
 	static {
 		String[] ms = {
@@ -64,7 +64,7 @@ public class MethodKit {
 			"notify", "notifyAll", "wait",
 			"exit", "loadLibrary", "halt", // "load",
 			"stop", "suspend", "resume", // "setDaemon", "setPriority"
-			
+
 			"removeForbiddenClass",
 			"removeForbiddenMethod"
 		};
@@ -72,7 +72,7 @@ public class MethodKit {
 			forbiddenMethods.add(m);
 		}
 	}
-	
+
 	// 初始化 primitive type 与 boxed type 双向映射关系
 	static {
 		primitiveMap.put(byte.class, Byte.class);
@@ -83,7 +83,7 @@ public class MethodKit {
 		primitiveMap.put(double.class, Double.class);
 		primitiveMap.put(char.class, Character.class);
 		primitiveMap.put(boolean.class, Boolean.class);
-		
+
 		primitiveMap.put(Byte.class, byte.class);
 		primitiveMap.put(Short.class, short.class);
 		primitiveMap.put(Integer.class, int.class);
@@ -93,35 +93,35 @@ public class MethodKit {
 		primitiveMap.put(Character.class, char.class);
 		primitiveMap.put(Boolean.class, boolean.class);
 	}
-	
+
 	public static boolean isForbiddenClass(Class<?> clazz) {
 		return forbiddenClasses.contains(clazz);
 	}
-	
+
 	public static void addForbiddenClass(Class<?> clazz) {
 		forbiddenClasses.add(clazz);
 	}
-	
+
 	public static void removeForbiddenClass(Class<?> clazz) {
 		forbiddenClasses.remove(clazz);
 	}
-	
+
 	public static boolean isForbiddenMethod(String methodName) {
 		return forbiddenMethods.contains(methodName);
 	}
-	
+
 	public static void addForbiddenMethod(String methodName) {
 		forbiddenMethods.add(methodName);
 	}
-	
+
 	public static void removeForbiddenMethod(String methodName) {
 		forbiddenMethods.remove(methodName);
 	}
-	
+
 	public static void clearCache() {
 		methodCache.clear();
 	}
-	
+
 	public static MethodInfo getMethod(Class<?> targetClass, String methodName, Object[] argValues) {
 		Class<?>[] argTypes = getArgTypes(argValues);
 		Long key = getMethodKey(targetClass, methodName, argTypes);
@@ -132,10 +132,10 @@ public class MethodKit {
 			method = doGetMethod(key, targetClass, methodName, argTypes);
 			methodCache.putIfAbsent(key, method);
 		}
-		
+
 		return method;
 	}
-	
+
 	static Class<?>[] getArgTypes(Object[] argValues) {
 		if (argValues == null || argValues.length == 0) {
 			return NULL_ARG_TYPES;
@@ -146,18 +146,18 @@ public class MethodKit {
 		}
 		return argTypes;
 	}
-	
+
 	private static MethodInfo doGetMethod(Long key, Class<?> targetClass, String methodName, Class<?>[] argTypes) {
 		if (forbiddenClasses.contains(targetClass)) {
 			throw new RuntimeException("Forbidden class: " + targetClass.getName());
 		}
-		
+
 		// 仅开启 forbiddenClasses 检测
 		// Method、SharedMethod、StaticMethod 已用 MethodKit.isForbiddenMethod(...) 检测
 		// if (forbiddenMethods.contains(methodName)) {
 		// 	throw new RuntimeException("Forbidden method: " + methodName);
 		// }
-		
+
 		Method[] methodArray = targetClass.getMethods();
 		for (Method method : methodArray) {
 			if (method.getName().equals(methodName)) {
@@ -170,17 +170,17 @@ public class MethodKit {
 				}
 			}
 		}
-		
+
 		return NullMethodInfo.me;
 	}
-	
+
 	static boolean matchFixedArgTypes(Class<?>[] paraTypes, Class<?>[] argTypes) {
 		if (paraTypes.length != argTypes.length) {
 			return false;
 		}
 		return matchRangeTypes(paraTypes, argTypes, paraTypes.length);
 	}
-	
+
 	private static boolean matchRangeTypes(Class<?>[] paraTypes, Class<?>[] argTypes, int matchLength) {
 		for (int i=0; i<matchLength; i++) {
 			if (argTypes[i] == null) {
@@ -200,7 +200,7 @@ public class MethodKit {
 		}
 		return true;
 	}
-	
+
 	static boolean matchVarArgTypes(Class<?>[] paraTypes, Class<?>[] argTypes) {
 		int fixedParaLength = paraTypes.length - 1;
 		if (argTypes.length < fixedParaLength) {
@@ -209,7 +209,7 @@ public class MethodKit {
 		if (!matchRangeTypes(paraTypes, argTypes, fixedParaLength)) {
 			return false;
 		}
-		
+
 		Class<?> varArgType = paraTypes[paraTypes.length - 1].getComponentType();
 		for (int i=fixedParaLength; i<argTypes.length; i++) {
 			if (argTypes[i] == null) {
@@ -228,16 +228,16 @@ public class MethodKit {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * 获取方法用于缓存的 key
 	 */
 	private static Long getMethodKey(Class<?> targetClass, String methodName, Class<?>[] argTypes) {
 		return MethodKeyBuilder.instance.getMethodKey(targetClass, methodName, argTypes);
 	}
-	
+
 	// 以下代码实现 extension method 功能 --------------------
-	
+
 	// 添加 jfinal 官方扩展方法 extension method
 	static {
 		addExtensionMethod(String.class, new StringExt());
@@ -247,34 +247,34 @@ public class MethodKit {
 		addExtensionMethod(Double.class, new DoubleExt());
 		addExtensionMethod(Short.class, new ShortExt());
 		addExtensionMethod(Byte.class, new ByteExt());
-		
+
 		addExtensionMethod(BigInteger.class, new BigIntegerExt());
 	}
-	
+
 	public synchronized static void addExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
 		Class<?> extensionClass = objectOfExtensionClass.getClass();
 		java.lang.reflect.Method[] methodArray = extensionClass.getMethods();
 		for (java.lang.reflect.Method method : methodArray) {
-			Class<?> decClass = method.getDeclaringClass();	
+			Class<?> decClass = method.getDeclaringClass();
 			if (decClass == Object.class) {		// 考虑用于优化路由生成那段代码
 				continue ;
 			}
-			
+
 			Class<?>[] extensionMethodParaTypes = method.getParameterTypes();
 			String methodName = method.getName();
 			if (extensionMethodParaTypes.length == 0) {
 				throw new RuntimeException(buildMethodSignatureForException("Extension method requires at least one argument: " + extensionClass.getName() + ".", methodName, extensionMethodParaTypes));
 			}
-			
+
 			// Extension method 第一个参数必须与当前对象的类型一致，在调用时会将当前对象自身传给扩展方法的第一个参数
 			// if (targetClass != extensionMethodParaTypes[0]) {
 			if (!extensionMethodParaTypes[0].isAssignableFrom(targetClass)) {	// 支持第一个参数为被扩展类的父类，注意在注册时仍要确切的子类
 				throw new RuntimeException(buildMethodSignatureForException("The first argument type of : " + extensionClass.getName() + ".", methodName, extensionMethodParaTypes) + " must be: " + targetClass.getName());
 			}
-			
+
 			Class<?>[] targetParaTypes = new Class<?>[extensionMethodParaTypes.length - 1];
 			System.arraycopy(extensionMethodParaTypes, 1, targetParaTypes, 0, targetParaTypes.length);
-			
+
 			try {
 				Method error = targetClass.getMethod(methodName, targetParaTypes);
 				if (error != null) {
@@ -285,38 +285,38 @@ public class MethodKit {
 				if (methodCache.containsKey(key)) {
 					throw new RuntimeException(buildMethodSignatureForException("The extension method is already exists: " + extensionClass.getName() + ".", methodName, targetParaTypes));
 				}
-				
+
 				MethodInfoExt mie = new MethodInfoExt(objectOfExtensionClass, key, extensionClass/* targetClass */, method);
 				methodCache.putIfAbsent(key, mie);
 			}
 		}
 	}
-	
+
 	public static void addExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {
 		addExtensionMethod(targetClass, ReflectKit.newInstance(extensionClass));
 	}
-	
+
 	public static void removeExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
 		Class<?> extensionClass = objectOfExtensionClass.getClass();
 		java.lang.reflect.Method[] methodArray = extensionClass.getMethods();
 		for (java.lang.reflect.Method method : methodArray) {
-			Class<?> decClass = method.getDeclaringClass();	
+			Class<?> decClass = method.getDeclaringClass();
 			if (decClass == Object.class) {		// 考虑用于优化路由生成那段代码
 				continue ;
 			}
-			
+
 			Class<?>[] extensionMethodParaTypes = method.getParameterTypes();
 			String methodName = method.getName();
 			Class<?>[] targetParaTypes = new Class<?>[extensionMethodParaTypes.length - 1];
 			System.arraycopy(extensionMethodParaTypes, 1, targetParaTypes, 0, targetParaTypes.length);
-			
+
 			Long key = MethodKit.getMethodKey(targetClass, methodName, toBoxedType(targetParaTypes));
 			methodCache.remove(key);
 		}
 	}
-	
+
 	private static final Map<Class<?>, Class<?>> primitiveToBoxedMap = new HashMap<Class<?>, Class<?>>(64);
-	
+
 	// 初始化 primitive type 到 boxed type 的映射
 	static {
 		primitiveToBoxedMap.put(byte.class, Byte.class);
@@ -328,12 +328,12 @@ public class MethodKit {
 		primitiveToBoxedMap.put(char.class, Character.class);
 		primitiveToBoxedMap.put(boolean.class, Boolean.class);
 	}
-	
+
 	/**
 	 * 由于从在模板中传递的基本数据类型参数只可能是 boxed 类型，当 extension method 中的方法参数是
 	 * primitive 类型时，在 getMethod(key) 时无法获取 addExtensionMethod(...) 注册的扩展方法
 	 * 所以为扩展方法调用 getMethodKey(...) 生成 key 时一律转成 boxed 类型去生成方法的 key 值
-	 * 
+	 *
 	 * 注意：该值仅用于在获取方法是通过 key 能获取到 MethindInfoExt，而 MethindInfoExt.paraType 仍然
 	 *      是原来的参数值
 	 */
@@ -342,7 +342,7 @@ public class MethodKit {
 		if (len == 0) {
 			return targetParaTypes;
 		}
-		
+
 		Class<?>[] ret = new Class<?>[len];
 		for (int i=0; i<len; i++) {
 			Class<?> temp = primitiveToBoxedMap.get(targetParaTypes[i]);
@@ -354,11 +354,11 @@ public class MethodKit {
 		}
 		return ret;
 	}
-	
+
 	public static void removeExtensionMethod(Class<?> targetClass, Class<?> extensionClass) {
 		removeExtensionMethod(targetClass, ReflectKit.newInstance(extensionClass));
 	}
-	
+
 	private static String buildMethodSignatureForException(String preMsg, String methodName, Class<?>[] argTypes) {
 		StringBuilder ret = new StringBuilder().append(preMsg).append(methodName).append("(");
 		if (argTypes != null) {
@@ -372,6 +372,7 @@ public class MethodKit {
 		return ret.append(")").toString();
 	}
 }
+
 
 
 

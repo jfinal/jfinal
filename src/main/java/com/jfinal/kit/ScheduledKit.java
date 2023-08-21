@@ -75,21 +75,21 @@ public class ScheduledKit {
 	 * @param delay 上次任务 "完成" 时间与本次任务 "开始" 时间的间隔
 	 * @param unit 时间单位
 	 */
-	public static ScheduledFuture<?> scheduleWithFixedDelay(Runnable task, long initialDelay, long delay, TimeUnit unit) {
+	public static ScheduledFuture<?> scheduleWithFixedDelay(long initialDelay, long delay, TimeUnit unit , Runnable task) {
 		return getExecutor().scheduleWithFixedDelay(task, initialDelay, delay, unit);
 	}
 
 	/**
 	 * 任务添加 try catch ，避免 scheduleWithFixedDelay 方法在调度任务出现异常后会终止调度
  	 */
-	public static ScheduledFuture<?> scheduleWithFixedDelayWithTryCatch(Runnable task, long initialDelay, long delay, TimeUnit unit) {
-		return scheduleWithFixedDelay(() -> {
+	public static ScheduledFuture<?> scheduleWithFixedDelayWithTryCatch(long initialDelay, long delay, TimeUnit unit, Runnable task) {
+		return scheduleWithFixedDelay(initialDelay, delay, unit, () -> {
 			try {
 				task.run();
 			} catch (Throwable t) {
 				Log.getLog(ScheduledKit.class).error(t.getMessage(), t);
 			}
-		}, initialDelay, delay, unit);
+		});
 	}
 
 	/**
@@ -99,21 +99,21 @@ public class ScheduledKit {
 	 * @param period 上次任务 "开始" 时间与本次任务 "开始" 时间的间隔，如果任务执行时长超出 period 值，则在任务执行完成后立即调度任务执行
 	 * @param unit 时间单位
 	 */
-	public static ScheduledFuture<?> scheduleAtFixedRate(Runnable task, long initialDelay, long period, TimeUnit unit) {
+	public static ScheduledFuture<?> scheduleAtFixedRate(long initialDelay, long period, TimeUnit unit, Runnable task) {
 		return getExecutor().scheduleAtFixedRate(task, initialDelay, period, unit);
 	}
 
 	/**
 	 * 任务添加 try catch ，避免 scheduleAtFixedRate 方法在调度任务出现异常后会终止调度
  	 */
-	public static ScheduledFuture<?> scheduleAtFixedRateWithTryCatch(Runnable task, long initialDelay, long period, TimeUnit unit) {
-		return scheduleAtFixedRate(() -> {
+	public static ScheduledFuture<?> scheduleAtFixedRateWithTryCatch(long initialDelay, long period, TimeUnit unit, Runnable task) {
+		return scheduleAtFixedRate(initialDelay, period, unit, () -> {
 			try {
 				task.run();
 			} catch (Throwable t) {
 				Log.getLog(ScheduledKit.class).error(t.getMessage(), t);
 			}
-		}, initialDelay, period, unit);
+		});
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class ScheduledKit {
      * @param delay 从现在开始的延迟时间
      * @param unit 时间单位
      */
-	public static ScheduledFuture<?> schedule(Runnable task, long delay, TimeUnit unit) {
+	public static ScheduledFuture<?> schedule(long delay, TimeUnit unit, Runnable task) {
 		return getExecutor().schedule(task, delay, unit);
 	}
 
@@ -132,7 +132,7 @@ public class ScheduledKit {
      * @param delay 从现在开始的延迟时间
      * @param unit 时间单位
      */
-	public static <V> ScheduledFuture<V> schedule(Callable<V> task, long delay, TimeUnit unit) {
+	public static <V> ScheduledFuture<V> schedule(long delay, TimeUnit unit, Callable<V> task) {
 		return getExecutor().schedule(task, delay, unit);
 	}
 
