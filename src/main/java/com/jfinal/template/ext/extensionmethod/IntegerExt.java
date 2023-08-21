@@ -16,6 +16,8 @@
 
 package com.jfinal.template.ext.extensionmethod;
 
+import java.math.BigInteger;
+
 /**
  * 针对 java.lang.Integer 的扩展方法
  *
@@ -70,6 +72,10 @@ public class IntegerExt {
 
 	public Byte toByte(Integer self) {
 		return self.byteValue();
+	}
+
+	public BigInteger toBigInteger(Integer self) {
+		return BigInteger.valueOf(self);
 	}
 }
 

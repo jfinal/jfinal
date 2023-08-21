@@ -16,6 +16,8 @@
 
 package com.jfinal.template.ext.extensionmethod;
 
+import java.math.BigInteger;
+
 /**
  * 针对 java.lang.Short 的扩展方法
  *
@@ -50,6 +52,10 @@ public class ShortExt {
 
 	public Byte toByte(Short self) {
 		return self.byteValue();
+	}
+
+	public BigInteger toBigInteger(Short self) {
+		return BigInteger.valueOf(self);
 	}
 }
 

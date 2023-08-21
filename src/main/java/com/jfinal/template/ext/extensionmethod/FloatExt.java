@@ -16,6 +16,8 @@
 
 package com.jfinal.template.ext.extensionmethod;
 
+import java.math.BigInteger;
+
 /**
  * 针对 java.lang.Float 的扩展方法
  *
@@ -50,6 +52,10 @@ public class FloatExt {
 
 	public Byte toByte(Float self) {
 		return self.byteValue();
+	}
+
+	public BigInteger toBigInteger(Float self) {
+		return BigInteger.valueOf(self.longValue());
 	}
 }
 

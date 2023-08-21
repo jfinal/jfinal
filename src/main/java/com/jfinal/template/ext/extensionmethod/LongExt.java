@@ -16,6 +16,8 @@
 
 package com.jfinal.template.ext.extensionmethod;
 
+import java.math.BigInteger;
+
 /**
  * 针对 java.lang.Long 的扩展方法
  *
@@ -50,6 +52,10 @@ public class LongExt {
 
 	public Byte toByte(Long self) {
 		return self.byteValue();
+	}
+
+	public BigInteger toBigInteger(Long self) {
+		return BigInteger.valueOf(self);
 	}
 }
 

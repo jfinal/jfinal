@@ -18,6 +18,8 @@ package com.jfinal.template.ext.extensionmethod;
 
 import com.jfinal.kit.StrKit;
 
+import java.math.BigInteger;
+
 /**
  * 针对 java.lang.String 的扩展方法
  *
@@ -86,6 +88,10 @@ public class StringExt {
 
 	public Byte toByte(String self) {
 		return StrKit.isBlank(self) ? null : Byte.parseByte(self);
+	}
+
+	public BigInteger toBigInteger(String self) {
+		return new BigInteger(self);
 	}
 }
 

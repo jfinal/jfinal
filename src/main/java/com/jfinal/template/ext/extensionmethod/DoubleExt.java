@@ -16,6 +16,8 @@
 
 package com.jfinal.template.ext.extensionmethod;
 
+import java.math.BigInteger;
+
 /**
  * 针对 java.lang.Double 的扩展方法
  *
@@ -50,6 +52,10 @@ public class DoubleExt {
 
 	public Byte toByte(Double self) {
 		return self.byteValue();
+	}
+
+	public BigInteger toBigInteger(Double self) {
+		return BigInteger.valueOf(self.longValue());
 	}
 }
 
