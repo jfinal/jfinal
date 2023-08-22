@@ -54,9 +54,10 @@ public class BigDecimalExt {
         return self.byteValueExact();
     }
 
-    public BigInteger toBigInteger(BigDecimal self) {
-        return self.toBigIntegerExact();
-    }
+    // BigDecimal.toBigInteger() 已存在
+    // public BigInteger toBigInteger(BigDecimal self) {
+    //     return self.toBigIntegerExact();
+    // }
 
     public BigDecimal toBigDecimal(BigDecimal self) {
         return self;
