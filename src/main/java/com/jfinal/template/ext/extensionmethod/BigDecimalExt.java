@@ -26,7 +26,7 @@ import java.math.BigDecimal;
  */
 public class BigDecimalExt {
     public Boolean toBoolean(BigDecimal self) {
-        return !self.equals(BigDecimal.ZERO);
+        return self.compareTo(BigDecimal.ZERO) != 0;
     }
 
     public Integer toInt(BigDecimal self) {
