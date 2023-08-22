@@ -18,6 +18,7 @@ package com.jfinal.template.expr.ast;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -249,6 +250,7 @@ public class MethodKit {
 		addExtensionMethod(Byte.class, new ByteExt());
 
 		addExtensionMethod(BigInteger.class, new BigIntegerExt());
+		addExtensionMethod(BigDecimal.class, new BigDecimalExt());
 	}
 
 	public synchronized static void addExtensionMethod(Class<?> targetClass, Object objectOfExtensionClass) {
