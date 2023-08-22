@@ -16,6 +16,7 @@
 
 package com.jfinal.template.ext.extensionmethod;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -56,6 +57,10 @@ public class FloatExt {
 
 	public BigInteger toBigInteger(Float self) {
 		return BigInteger.valueOf(self.longValue());
+	}
+
+	public BigDecimal toBigDecimal(Float self) {
+		return new BigDecimal(self);
 	}
 }
 

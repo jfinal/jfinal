@@ -18,6 +18,7 @@ package com.jfinal.template.ext.extensionmethod;
 
 import com.jfinal.kit.StrKit;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -92,6 +93,10 @@ public class StringExt {
 
 	public BigInteger toBigInteger(String self) {
 		return StrKit.isBlank(self) ? null : new BigInteger(self);
+	}
+
+	public BigDecimal toBigDecimal(String self) {
+		return StrKit.isBlank(self) ? null : new BigDecimal(self);
 	}
 }
 

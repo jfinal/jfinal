@@ -16,6 +16,7 @@
 
 package com.jfinal.template.ext.extensionmethod;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -55,5 +56,9 @@ public class BigIntegerExt {
 
     public BigInteger toBigInteger(BigInteger self) {
         return self;
+    }
+
+    public BigDecimal toBigDecimal(BigInteger self) {
+        return new BigDecimal(self);
     }
 }
