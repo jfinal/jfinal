@@ -17,7 +17,6 @@
 package com.jfinal.template.ext.extensionmethod;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * 针对 java.math.BigDecimal 的扩展方法
