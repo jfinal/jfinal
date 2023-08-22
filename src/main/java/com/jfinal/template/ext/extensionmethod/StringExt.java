@@ -91,7 +91,7 @@ public class StringExt {
 	}
 
 	public BigInteger toBigInteger(String self) {
-		return new BigInteger(self);
+		return StrKit.isBlank(self) ? null : new BigInteger(self);
 	}
 }
 
