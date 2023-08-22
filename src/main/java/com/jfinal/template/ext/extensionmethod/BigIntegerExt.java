@@ -31,11 +31,11 @@ public class BigIntegerExt {
     }
 
     public Integer toInt(BigInteger self) {
-        return self.intValueExact();
+        return self.intValue();
     }
 
     public Long toLong(BigInteger self) {
-        return self.longValueExact();
+        return self.longValue();
     }
 
     public Float toFloat(BigInteger self) {
@@ -47,11 +47,11 @@ public class BigIntegerExt {
     }
 
     public Short toShort(BigInteger self) {
-        return self.shortValueExact();
+        return self.shortValue();
     }
 
     public Byte toByte(BigInteger self) {
-        return self.byteValueExact();
+        return self.byteValue();
     }
 
     public BigInteger toBigInteger(BigInteger self) {
