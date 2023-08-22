@@ -55,7 +55,7 @@ public class BigDecimalExt {
     }
 
     public BigInteger toBigInteger(BigDecimal self) {
-        return self.toBigInteger();
+        return self.toBigIntegerExact();
     }
 
     public BigDecimal toBigDecimal(BigDecimal self) {
