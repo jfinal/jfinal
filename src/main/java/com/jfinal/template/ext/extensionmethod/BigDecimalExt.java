@@ -30,11 +30,11 @@ public class BigDecimalExt {
     }
 
     public Integer toInt(BigDecimal self) {
-        return self.intValueExact();
+        return self.intValue();
     }
 
     public Long toLong(BigDecimal self) {
-        return self.longValueExact();
+        return self.longValue();
     }
 
     public Float toFloat(BigDecimal self) {
@@ -46,16 +46,16 @@ public class BigDecimalExt {
     }
 
     public Short toShort(BigDecimal self) {
-        return self.shortValueExact();
+        return self.shortValue();
     }
 
     public Byte toByte(BigDecimal self) {
-        return self.byteValueExact();
+        return self.byteValue();
     }
 
     // BigDecimal.toBigInteger() 已存在
     // public BigInteger toBigInteger(BigDecimal self) {
-    //     return self.toBigIntegerExact();
+    //     return self.toBigInteger();
     // }
 
     public BigDecimal toBigDecimal(BigDecimal self) {
