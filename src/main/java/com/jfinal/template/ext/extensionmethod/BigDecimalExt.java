@@ -17,6 +17,7 @@
 package com.jfinal.template.ext.extensionmethod;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * 针对 java.math.BigDecimal 的扩展方法
@@ -60,5 +61,14 @@ public class BigDecimalExt {
 
     public BigDecimal toBigDecimal(BigDecimal self) {
         return self;
+    }
+
+    /**
+     * 四舍五入
+     * @param self BigDecimal 对象自身
+     * @param newScale 设置返回值的小数位数
+     */
+    public BigDecimal halfUp(BigDecimal self, int newScale) {
+        return self.setScale(newScale, RoundingMode.HALF_UP);
     }
 }
