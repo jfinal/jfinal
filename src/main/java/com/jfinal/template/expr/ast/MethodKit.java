@@ -39,6 +39,20 @@ public class MethodKit {
 	private static final Map<Class<?>, Class<?>> primitiveMap = new HashMap<Class<?>, Class<?>>(64);
 	private static final SyncWriteMap<Long, MethodInfo> methodCache = new SyncWriteMap<Long, MethodInfo>(2048, 0.25F);
 
+	private static final Map<Class<?>, Class<?>> primitiveToBoxedMap = new HashMap<Class<?>, Class<?>>(64);
+
+	// 初始化 primitive type 到 boxed type 的映射
+	static {
+		primitiveToBoxedMap.put(byte.class, Byte.class);
+		primitiveToBoxedMap.put(short.class, Short.class);
+		primitiveToBoxedMap.put(int.class, Integer.class);
+		primitiveToBoxedMap.put(long.class, Long.class);
+		primitiveToBoxedMap.put(float.class, Float.class);
+		primitiveToBoxedMap.put(double.class, Double.class);
+		primitiveToBoxedMap.put(char.class, Character.class);
+		primitiveToBoxedMap.put(boolean.class, Boolean.class);
+	}
+
 	// 初始化在模板中调用 method 时所在的被禁止使用类
 	static {
 		Class<?>[] cs = {
@@ -315,20 +329,6 @@ public class MethodKit {
 			Long key = MethodKit.getMethodKey(targetClass, methodName, toBoxedType(targetParaTypes));
 			methodCache.remove(key);
 		}
-	}
-
-	private static final Map<Class<?>, Class<?>> primitiveToBoxedMap = new HashMap<Class<?>, Class<?>>(64);
-
-	// 初始化 primitive type 到 boxed type 的映射
-	static {
-		primitiveToBoxedMap.put(byte.class, Byte.class);
-		primitiveToBoxedMap.put(short.class, Short.class);
-		primitiveToBoxedMap.put(int.class, Integer.class);
-		primitiveToBoxedMap.put(long.class, Long.class);
-		primitiveToBoxedMap.put(float.class, Float.class);
-		primitiveToBoxedMap.put(double.class, Double.class);
-		primitiveToBoxedMap.put(char.class, Character.class);
-		primitiveToBoxedMap.put(boolean.class, Boolean.class);
 	}
 
 	/**
