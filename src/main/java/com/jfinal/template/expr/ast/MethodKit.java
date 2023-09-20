@@ -57,7 +57,7 @@ public class MethodKit {
 	static {
 		Class<?>[] cs = {
 			System.class, Runtime.class, Thread.class, Class.class, ClassLoader.class, File.class,
-			Compiler.class, InheritableThreadLocal.class, Package.class, Process.class,
+			InheritableThreadLocal.class, Package.class, Process.class,
 			RuntimePermission.class, SecurityManager.class, ThreadGroup.class, ThreadLocal.class,
 
 			java.lang.reflect.Method.class,
