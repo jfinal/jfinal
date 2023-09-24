@@ -89,6 +89,10 @@ public class TimeKit {
 		return localDateTime.format(getDateTimeFormatter(pattern));
 	}
 	
+	public static String format(LocalDateTime localDateTime) {
+        return format(localDateTime, "yyyy-MM-dd HH:mm:ss");
+    }
+	
 	/**
 	 * 按指定 pattern 将 LocalDate 转换成 String
 	 */
@@ -110,6 +114,10 @@ public class TimeKit {
 	public static String format(Date date, String pattern) {
 		return getSimpleDateFormat(pattern).format(date);
 	}
+	
+	public static String format(Date date) {
+        return format(date, "yyyy-MM-dd HH:mm:ss");
+    }
 	
 	/**
 	 * 按指定 pattern 将 String 转换成 Date
