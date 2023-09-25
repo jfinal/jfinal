@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,7 +132,7 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		}else if(url.startsWith("jdbc:hsqldb")){
 			return "select 1 from INFORMATION_SCHEMA.SYSTEM_USERS";
 		}else if(url.startsWith("jdbc:derby")){
-			return "select 1 from INFORMATION_SCHEMA.SYSTEM_USERS";
+			return "values (1)";
 		}
 		return "select 1";
 	}
@@ -289,6 +289,15 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 	
 	public DataSource getDataSource() {
 		return ds;
+	}
+	
+	/**
+	 * 支持高版本 druid 下配置 connectTimeout、socketTimeout。使用方法如下：
+	 *    druidPlugin.getDruidDataSource().setConnectTimeout(xxx);
+	 *    druidPlugin.getDruidDataSource().setSocketTimeout(xxx);
+	 */
+	public DruidDataSource getDruidDataSource() {
+	    return ds;
 	}
 	
 	public DruidPlugin set(int initialSize, int minIdle, int maxActive) {

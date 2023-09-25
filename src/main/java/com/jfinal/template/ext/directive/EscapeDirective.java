@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,9 +53,9 @@ public class EscapeDirective extends Directive {
 			} else if (value != null) {
 				escape(value.toString(), writer);
 			}
-		} catch(TemplateException | ParseException e) {
+		} catch (TemplateException | ParseException e) {
 			throw e;
-		} catch(Exception e) {
+		} catch (Exception e) {
 			throw new TemplateException(e.getMessage(), location, e);
 		}
 	}

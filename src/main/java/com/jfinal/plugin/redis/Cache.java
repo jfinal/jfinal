@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.function.Function;
+import com.jfinal.kit.Func.*;
+import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.redis.serializer.ISerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
-import redis.clients.util.SafeEncoder;
+import redis.clients.jedis.ScanParams;
+import redis.clients.jedis.ScanResult;
+import redis.clients.jedis.Transaction;
+import redis.clients.jedis.params.SetParams;
+import redis.clients.jedis.util.SafeEncoder;
 
 /**
  * Cache.
@@ -36,27 +43,50 @@ import redis.clients.util.SafeEncoder;
  * Jedis api 的方法名称及使用方法，以便于仅仅通过查看 Redis 文档
  * 即可快速掌握使用方法
  * Redis 命令参考: http://redisdoc.com/
+ *
+ * 注意：不要提供 strlen、append、setrange、getrange，经测试这类操作字符串的方法在序列化模式下无法工作
+ *      因为 String 序列化后的 value 值为会多出来一些额外的字符
  */
 public class Cache {
-	
+
 	protected String name;
 	protected JedisPool jedisPool;
 	protected ISerializer serializer;
 	protected IKeyNamingPolicy keyNamingPolicy;
-	
+
 	protected final ThreadLocal<Jedis> threadLocalJedis = new ThreadLocal<Jedis>();
-	
-	protected Cache() {
-		
+
+	/**
+	 * 使用 lambda 开放 Jedis API，建议优先使用本方法
+	 * <pre>
+	 * 例子 1：
+	 *   Long ret = Redis.use().call(j -> j.incrBy("key", 1));
+	 *
+	 * 例子 2：
+	 *   Long ret = Redis.use().call(jedis -> {
+	 *       return jedis.incrBy("key", 1);
+	 *   });
+	 * </pre>
+	 */
+	public <R> R call(Function<Jedis, R> jedis) {
+		Jedis jd = getJedis();
+		try {
+			return jedis.apply(jd);
+		}
+		finally {close(jd);}
 	}
-	
+
+	protected Cache() {
+
+	}
+
 	public Cache(String name, JedisPool jedisPool, ISerializer serializer, IKeyNamingPolicy keyNamingPolicy) {
 		this.name = name;
 		this.jedisPool = jedisPool;
 		this.serializer = serializer;
 		this.keyNamingPolicy = keyNamingPolicy;
 	}
-	
+
 	/**
 	 * 存放 key value 对到 redis
 	 * 如果 key 已经持有其他值， SET 就覆写旧值，无视类型。
@@ -69,19 +99,42 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
+	/**
+	 * setnx 的工作原理与 set 完全相同，唯一的区别是，如果 key 已经存在，则不执行任何操作
+	 * @return 1 表示 key 不存在，0 表示 key 存在
+	 */
+	public Long setnx(Object key, Object value) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.setnx(keyToBytes(key), valueToBytes(value));
+		}
+		finally {close(jedis);}
+	}
+
 	/**
 	 * 存放 key value 对到 redis，并将 key 的生存时间设为 seconds (以秒为单位)。
 	 * 如果 key 已经存在， SETEX 命令将覆写旧值。
 	 */
-	public String setex(Object key, int seconds, Object value) {
+	public String setex(Object key, long seconds, Object value) {
 		Jedis jedis = getJedis();
 		try {
 			return jedis.setex(keyToBytes(key), seconds, valueToBytes(value));
 		}
 		finally {close(jedis);}
 	}
-	
+
+	/**
+	 * psetex 与 setex 功能相同，但是生存时间为 milliseconds (以毫秒为单位)。
+	 */
+	public String psetex(Object key, long milliseconds, Object value) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.psetex(keyToBytes(key), milliseconds, valueToBytes(value));
+		}
+		finally {close(jedis);}
+	}
+
 	/**
 	 * 返回 key 所关联的 value 值
 	 * 如果 key 不存在那么返回特殊值 nil 。
@@ -94,7 +147,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 删除给定的一个 key
 	 * 不存在的 key 会被忽略。
@@ -106,7 +159,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 删除给定的多个 key
 	 * 不存在的 key 会被忽略。
@@ -118,7 +171,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 查找所有符合给定模式 pattern 的 key 。
 	 * KEYS * 匹配数据库中所有 key 。
@@ -134,7 +187,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 同时设置一个或多个 key-value 对。
 	 * 如果某个给定 key 已经存在，那么 MSET 会用新值覆盖原来的旧值，如果这不是你所希望的效果，请考虑使用 MSETNX 命令：它只会在所有给定 key 都不存在的情况下进行设置操作。
@@ -148,7 +201,7 @@ public class Cache {
 	 */
 	public String mset(Object... keysValues) {
 		if (keysValues.length % 2 != 0)
-			throw new IllegalArgumentException("wrong number of arguments for met, keysValues length can not be odd");
+			throw new IllegalArgumentException("wrong number of arguments for mset, keysValues length can not be odd");
 		Jedis jedis = getJedis();
 		try {
 			byte[][] kv = new byte[keysValues.length][];
@@ -162,7 +215,29 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
+	/**
+	 * 当且仅当所有给定键都不存在时， 为所有给定键设置值。
+	 * 即使只有一个给定键已经存在， MSETNX 命令也会拒绝执行对所有键的设置操作。
+	 * MSETNX 是一个原子性(atomic)操作， 所有给定键要么就全部都被设置， 要么就全部都不设置， 不可能出现第三种状态。
+	 */
+	public Long msetnx(Object... keysValues) {
+        if (keysValues.length % 2 != 0)
+            throw new IllegalArgumentException("wrong number of arguments for msetnx, keysValues length can not be odd");
+        Jedis jedis = getJedis();
+        try {
+            byte[][] kv = new byte[keysValues.length][];
+            for (int i=0; i<keysValues.length; i++) {
+                if (i % 2 == 0)
+                    kv[i] = keyToBytes(keysValues[i]);
+                else
+                    kv[i] = valueToBytes(keysValues[i]);
+            }
+            return jedis.msetnx(kv);
+        }
+        finally {close(jedis);}
+    }
+
 	/**
 	 * 返回所有(一个或多个)给定 key 的值。
 	 * 如果给定的 key 里面，有某个 key 不存在，那么这个 key 返回特殊值 nil 。因此，该命令永不失败。
@@ -177,7 +252,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将 key 中储存的数字值减一。
 	 * 如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 DECR 操作。
@@ -192,7 +267,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将 key 所储存的值减去减量 decrement 。
 	 * 如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 DECRBY 操作。
@@ -207,7 +282,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将 key 中储存的数字值增一。
 	 * 如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 INCR 操作。
@@ -221,7 +296,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 获取记数器的值
 	 */
@@ -233,13 +308,13 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将 key 所储存的值加上增量 increment 。
 	 * 如果 key 不存在，那么 key 的值会先被初始化为 0 ，然后再执行 INCRBY 命令。
 	 * 如果值包含错误的类型，或字符串类型的值不能表示为数字，那么返回一个错误。
 	 * 本操作的值限制在 64 位(bit)有符号数字表示之内。
-	 * 关于递增(increment) / 递减(decrement)操作的更多信息，参见 INCR 命令。 
+	 * 关于递增(increment) / 递减(decrement)操作的更多信息，参见 INCR 命令。
 	 */
 	public Long incrBy(Object key, long longValue) {
 		Jedis jedis = getJedis();
@@ -248,7 +323,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 检查给定 key 是否存在。
 	 */
@@ -259,7 +334,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 从当前数据库中随机返回(不删除)一个 key 。
 	 */
@@ -270,7 +345,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将 key 改名为 newkey 。
 	 * 当 key 和 newkey 相同，或者 key 不存在时，返回一个错误。
@@ -283,7 +358,19 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
+	/**
+	 * 当且仅当 newkey 不存在时，将 key 改名为 newkey
+	 * 修改成功时，返回 1 ； 如果 newkey 已经存在，返回 0
+	 */
+	public Long renamenx(Object oldkey, Object newkey) {
+        Jedis jedis = getJedis();
+        try {
+            return jedis.renamenx(keyToBytes(oldkey), keyToBytes(newkey));
+        }
+        finally {close(jedis);}
+    }
+
 	/**
 	 * 将当前数据库的 key 移动到给定的数据库 db 当中。
 	 * 如果当前数据库(源数据库)和给定数据库(目标数据库)有相同名字的给定 key ，或者 key 不存在于当前数据库，那么 MOVE 没有任何效果。
@@ -296,18 +383,18 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将 key 原子性地从当前实例传送到目标实例的指定数据库上，一旦传送成功， key 保证会出现在目标实例上，而当前实例上的 key 会被删除。
 	 */
 	public String migrate(String host, int port, Object key, int destinationDb, int timeout) {
 		Jedis jedis = getJedis();
 		try {
-			return jedis.migrate(valueToBytes(host), port, keyToBytes(key), destinationDb, timeout);
+			return jedis.migrate(host, port, keyToBytes(key), destinationDb, timeout);
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 切换到指定的数据库，数据库索引号 index 用数字值指定，以 0 作为起始索引值。
 	 * 默认使用 0 号数据库。
@@ -324,19 +411,19 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 为给定 key 设置生存时间，当 key 过期时(生存时间为 0 )，它会被自动删除。
 	 * 在 Redis 中，带有生存时间的 key 被称为『易失的』(volatile)。
 	 */
-	public Long expire(Object key, int seconds) {
+	public Long expire(Object key, long seconds) {
 		Jedis jedis = getJedis();
 		try {
 			return jedis.expire(keyToBytes(key), seconds);
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * EXPIREAT 的作用和 EXPIRE 类似，都用于为 key 设置生存时间。不同在于 EXPIREAT 命令接受的时间参数是 UNIX 时间戳(unix timestamp)。
 	 */
@@ -347,7 +434,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 这个命令和 EXPIRE 命令的作用类似，但是它以毫秒为单位设置 key 的生存时间，而不像 EXPIRE 命令那样，以秒为单位。
 	 */
@@ -358,7 +445,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 这个命令和 EXPIREAT 命令类似，但它以毫秒为单位设置 key 的过期 unix 时间戳，而不是像 EXPIREAT 那样，以秒为单位。
 	 */
@@ -369,7 +456,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将给定 key 的值设为 value ，并返回 key 的旧值(old value)。
 	 * 当 key 存在但不是字符串类型时，返回一个错误。
@@ -382,7 +469,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 移除给定 key 的生存时间，将这个 key 从『易失的』(带生存时间 key )转换成『持久的』(一个不带生存时间、永不过期的 key )。
 	 */
@@ -393,7 +480,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回 key 所储存的值的类型。
 	 */
@@ -404,7 +491,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 以秒为单位，返回给定 key 的剩余生存时间(TTL, time to live)。
 	 */
@@ -415,7 +502,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 这个命令类似于 TTL 命令，但它以毫秒为单位返回 key 的剩余生存时间，而不是像 TTL 命令那样，以秒为单位。
 	 */
@@ -426,7 +513,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 对象被引用的数量
 	 */
@@ -437,7 +524,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 对象没有被访问的空闲时间
 	 */
@@ -448,7 +535,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将哈希表 key 中的域 field 的值设为 value 。
 	 * 如果 key 不存在，一个新的哈希表被创建并进行 HSET 操作。
@@ -461,7 +548,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 同时将多个 field-value (域-值)对设置到哈希表 key 中。
 	 * 此命令会覆盖哈希表中已存在的域。
@@ -477,7 +564,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回哈希表 key 中给定域 field 的值。
 	 */
@@ -489,7 +576,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回哈希表 key 中，一个或多个给定域的值。
 	 * 如果给定的域不存在于哈希表，那么返回一个 nil 值。
@@ -504,7 +591,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 删除哈希表 key 中的一个或多个指定域，不存在的域将被忽略。
 	 */
@@ -515,7 +602,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 查看哈希表 key 中，给定域 field 是否存在。
 	 */
@@ -526,7 +613,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回哈希表 key 中，所有的域和值。
 	 * 在返回值里，紧跟每个域名(field name)之后是域的值(value)，所以返回值的长度是哈希表大小的两倍。
@@ -540,7 +627,7 @@ public class Cache {
 			if (data == null) {
 				return result;
 			}
-			
+
 			for (Entry<byte[], byte[]> e : data.entrySet()) {
 				result.put(fieldFromBytes(e.getKey()), valueFromBytes(e.getValue()));
 			}
@@ -548,7 +635,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回哈希表 key 中所有域的值。
 	 */
@@ -561,7 +648,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回哈希表 key 中的所有域。
 	 * 底层实现此方法取名为 hfields 更为合适，在此仅为与底层保持一致
@@ -576,9 +663,9 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
-	 * 返回哈希表 key 中域的数量。 
+	 * 返回哈希表 key 中域的数量。
 	 */
 	public Long hlen(Object key) {
 		Jedis jedis = getJedis();
@@ -587,7 +674,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 为哈希表 key 中的域 field 的值加上增量 increment 。
 	 * 增量也可以为负数，相当于对给定域进行减法操作。
@@ -603,7 +690,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 获取哈希表内记数器的值
 	 */
@@ -615,7 +702,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 为哈希表 key 中的域 field 加上浮点数增量 increment 。
 	 * 如果哈希表中没有域 field ，那么 HINCRBYFLOAT 会先将域 field 的值设为 0 ，然后再执行加法操作。
@@ -632,7 +719,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	public Double hgetFloatCounter(Object key, Object field) {
 		Jedis jedis = getJedis();
 		try {
@@ -641,7 +728,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回列表 key 中，下标为 index 的元素。
 	 * 下标(index)参数 start 和 stop 都以 0 为底，也就是说，以 0 表示列表的第一个元素，以 1 表示列表的第二个元素，以此类推。
@@ -649,7 +736,7 @@ public class Cache {
 	 * 如果 key 不是列表类型，返回一个错误。
 	 */
 	@SuppressWarnings("unchecked")
-	
+
 	/**
 	 * 返回列表 key 中，下标为 index 的元素。
 	 * 下标(index)参数 start 和 stop 都以 0 为底，也就是说，以 0 表示列表的第一个元素，
@@ -664,7 +751,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回列表 key 的长度。
 	 * 如果 key 不存在，则 key 被解释为一个空列表，返回 0 .
@@ -677,7 +764,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 移除并返回列表 key 的头元素。
 	 */
@@ -689,7 +776,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将一个或多个值 value 插入到列表 key 的表头
 	 * 如果有多个 value 值，那么各个 value 值按从左到右的顺序依次插入到表头： 比如说，
@@ -705,7 +792,19 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
+	/**
+	 * 将值 value 插入到列表 key 的表头，当且仅当 key 存在并且是一个列表。
+	 * 和 LPUSH key value [value …] 命令相反，当 key 不存在时， LPUSHX 命令什么也不做。
+	 */
+	public Long lpushx(Object key, Object... values) {
+        Jedis jedis = getJedis();
+        try {
+            return jedis.lpushx(keyToBytes(key), valuesToBytesArray(values));
+        }
+        finally {close(jedis);}
+    }
+
 	/**
 	 * 将列表 key 下标为 index 的元素的值设置为 value 。
 	 * 当 index 参数超出范围，或对一个空列表( key 不存在)进行 LSET 时，返回一个错误。
@@ -718,7 +817,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 根据参数 count 的值，移除列表中与参数 value 相等的元素。
 	 * count 的值可以是以下几种：
@@ -733,7 +832,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回列表 key 中指定区间内的元素，区间以偏移量 start 和 stop 指定。
 	 * 下标(index)参数 start 和 stop 都以 0 为底，也就是说，以 0 表示列表的第一个元素，以 1 表示列表的第二个元素，以此类推。
@@ -757,7 +856,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 对一个列表进行修剪(trim)，就是说，让列表只保留指定区间内的元素，不在指定区间之内的元素都将被删除。
 	 * 举个例子，执行命令 LTRIM list 0 2 ，表示只保留列表 list 的前三个元素，其余元素全部删除。
@@ -772,7 +871,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 移除并返回列表 key 的尾元素。
 	 */
@@ -784,7 +883,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 命令 RPOPLPUSH 在一个原子时间内，执行以下两个动作：
 	 * 将列表 source 中的最后一个元素(尾元素)弹出，并返回给客户端。
@@ -798,7 +897,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将一个或多个值 value 插入到列表 key 的表尾(最右边)。
 	 * 如果有多个 value 值，那么各个 value 值按从左到右的顺序依次插入到表尾：比如
@@ -816,10 +915,22 @@ public class Cache {
 	}
 
 	/**
+	 * 将值 value 插入到列表 key 的表尾，当且仅当 key 存在并且是一个列表。
+	 * 和 RPUSH key value [value …] 命令相反，当 key 不存在时， RPUSHX 命令什么也不做。
+	 */
+	public Long rpushx(Object key, Object... values) {
+        Jedis jedis = getJedis();
+        try {
+            return jedis.rpushx(keyToBytes(key), valuesToBytesArray(values));
+        }
+        finally {close(jedis);}
+    }
+
+	/**
 	 * BLPOP 是列表的阻塞式(blocking)弹出原语。
 	 * 它是 LPOP 命令的阻塞版本，当给定列表内没有任何元素可供弹出的时候，连接将被 BLPOP 命令阻塞，直到等待超时或发现可弹出元素为止。
 	 * 当给定多个 key 参数时，按参数 key 的先后顺序依次检查各个列表，弹出第一个非空列表的头元素。
-	 * 
+	 *
 	 * 参考：http://redisdoc.com/list/blpop.html
 	 * 命令行：BLPOP key [key ...] timeout
 	 */
@@ -832,13 +943,13 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * BRPOP 是列表的阻塞式(blocking)弹出原语。
 	 * 它是 RPOP 命令的阻塞版本，当给定列表内没有任何元素可供弹出的时候，连接将被 BRPOP 命令阻塞，直到等待超时或发现可弹出元素为止。
 	 * 当给定多个 key 参数时，按参数 key 的先后顺序依次检查各个列表，弹出第一个非空列表的尾部元素。
 	 * 关于阻塞操作的更多信息，请查看 BLPOP 命令， BRPOP 除了弹出元素的位置和 BLPOP 不同之外，其他表现一致。
-	 * 
+	 *
 	 * 参考：http://redisdoc.com/list/brpop.html
 	 * 命令行：BRPOP key [key ...] timeout
 	 */
@@ -851,7 +962,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 使用客户端向 Redis 服务器发送一个 PING ，如果服务器运作正常的话，会返回一个 PONG 。
 	 * 通常用于测试与服务器的连接是否仍然生效，或者用于测量延迟值。
@@ -863,7 +974,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将一个或多个 member 元素加入到集合 key 当中，已经存在于集合的 member 元素将被忽略。
 	 * 假如 key 不存在，则创建一个只包含 member 元素作成员的集合。
@@ -876,7 +987,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回集合 key 的基数(集合中元素的数量)。
 	 */
@@ -887,7 +998,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 移除并返回集合中的一个随机元素。
 	 * 如果只想获取一个随机元素，但不想该元素从集合中被移除的话，可以使用 SRANDMEMBER 命令。
@@ -900,7 +1011,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回集合 key 中的所有成员。
 	 * 不存在的 key 被视为空集合。
@@ -916,7 +1027,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 判断 member 元素是否集合 key 的成员。
 	 */
@@ -927,7 +1038,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回多个集合的交集，多个集合由 keys 指定
 	 */
@@ -942,7 +1053,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回集合中的一个随机元素。
 	 */
@@ -954,7 +1065,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回集合中的 count 个随机元素。
 	 * 从 Redis 2.6 版本开始， SRANDMEMBER 命令接受可选的 count 参数：
@@ -972,7 +1083,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 移除集合 key 中的一个或多个 member 元素，不存在的 member 元素会被忽略。
 	 */
@@ -983,7 +1094,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回多个集合的并集，多个集合由 keys 指定
 	 * 不存在的 key 被视为空集。
@@ -999,7 +1110,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回一个集合的全部成员，该集合是所有给定集合之间的差集。
 	 * 不存在的 key 被视为空集。
@@ -1015,7 +1126,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 将一个或多个 member 元素及其 score 值加入到有序集 key 当中。
 	 * 如果某个 member 已经是有序集的成员，那么更新这个 member 的 score 值，
@@ -1028,7 +1139,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	public Long zadd(Object key, Map<Object, Double> scoreMembers) {
 		Jedis jedis = getJedis();
 		try {
@@ -1039,7 +1150,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回有序集 key 的基数。
 	 */
@@ -1050,7 +1161,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回有序集 key 中， score 值在 min 和 max 之间(默认包括 score 值等于 min 或 max )的成员的数量。
 	 * 关于参数 min 和 max 的详细使用方法，请参考 ZRANGEBYSCORE 命令。
@@ -1062,7 +1173,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 为有序集 key 的成员 member 的 score 值加上增量 increment 。
 	 */
@@ -1073,7 +1184,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回有序集 key 中，指定区间内的成员。
 	 * 其中成员的位置按 score 值递增(从小到大)来排序。
@@ -1091,7 +1202,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回有序集 key 中，指定区间内的成员。
 	 * 其中成员的位置按 score 值递减(从大到小)来排列。
@@ -1109,7 +1220,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回有序集 key 中，所有 score 值介于 min 和 max 之间(包括等于 min 或 max )的成员。
 	 * 有序集成员按 score 值递增(从小到大)次序排列。
@@ -1125,7 +1236,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回有序集 key 中成员 member 的排名。其中有序集成员按 score 值递增(从小到大)顺序排列。
 	 * 排名以 0 为底，也就是说， score 值最小的成员排名为 0 。
@@ -1138,7 +1249,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回有序集 key 中成员 member 的排名。其中有序集成员按 score 值递减(从大到小)排序。
 	 * 排名以 0 为底，也就是说， score 值最大的成员排名为 0 。
@@ -1151,7 +1262,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 移除有序集 key 中的一个或多个成员，不存在的成员将被忽略。
 	 * 当 key 存在但不是有序集类型时，返回一个错误。
@@ -1163,7 +1274,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 返回有序集 key 中，成员 member 的 score 值。
 	 * 如果 member 元素不是有序集 key 的成员，或 key 不存在，返回 nil 。
@@ -1175,7 +1286,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 删除当前 db 所有数据
 	 */
@@ -1186,7 +1297,7 @@ public class Cache {
 		}
 		finally {close(jedis);}
 	}
-	
+
 	/**
 	 * 删除所有 db 的所有数据
 	 */
@@ -1257,8 +1368,80 @@ public class Cache {
 		finally {close(jedis);}
 	}
 
+	public Object eval(String script, int keyCount, String... params) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.eval(script, keyCount, params);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object eval(String script, List<String> keys, List<String> args) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.eval(script, keys, args);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object eval(String script) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.eval(script);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object evalsha(String sha1) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.evalsha(sha1);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object evalsha(String sha1, List<String> keys, List<String> args) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.evalsha(sha1, keys, args);
+		}
+		finally {close(jedis);}
+	}
+
+	public Object evalsha(String sha1, int keyCount, String... params) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.evalsha(sha1, keyCount, params);
+		}
+		finally {close(jedis);}
+	}
+
+	public Boolean scriptExists(String sha1) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.scriptExists(sha1);
+		}
+		finally {close(jedis);}
+	}
+
+	public List<Boolean> scriptExists(String... sha1) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.scriptExists(sha1);
+		}
+		finally {close(jedis);}
+	}
+
+	public String scriptLoad(String script) {
+		Jedis jedis = getJedis();
+		try {
+			return jedis.scriptLoad(script);
+		}
+		finally {close(jedis);}
+	}
+
 	// ---------
-	
+
 	protected byte[] keyToBytes(Object key) {
 		String keyStr = keyNamingPolicy.getKeyName(key);
 		return serializer.keyToBytes(keyStr);
@@ -1267,56 +1450,56 @@ public class Cache {
 	protected Object keyFromBytes(byte[] bytes) {
 		return serializer.keyFromBytes(bytes);
 	}
-	
+
 	protected byte[][] keysToBytesArray(Object... keys) {
 		byte[][] result = new byte[keys.length][];
 		for (int i=0; i<result.length; i++)
 			result[i] = keyToBytes(keys[i]);
 		return result;
 	}
-	
+
 	protected byte[] fieldToBytes(Object field) {
 		return serializer.fieldToBytes(field);
 	}
-	
+
 	protected Object fieldFromBytes(byte[] bytes) {
 		return serializer.fieldFromBytes(bytes);
 	}
-	
+
 	protected byte[][] fieldsToBytesArray(Object... fieldsArray) {
 		byte[][] data = new byte[fieldsArray.length][];
 		for (int i=0; i<data.length; i++)
 			data[i] = fieldToBytes(fieldsArray[i]);
 		return data;
 	}
-	
+
 	protected void fieldSetFromBytesSet(Set<byte[]> data, Set<Object> result) {
 		for (byte[] fieldBytes : data) {
 			result.add(fieldFromBytes(fieldBytes));
 		}
 	}
-	
+
 	protected byte[] valueToBytes(Object value) {
 		return serializer.valueToBytes(value);
 	}
-	
+
 	protected Object valueFromBytes(byte[] bytes) {
 		return serializer.valueFromBytes(bytes);
 	}
-	
+
 	protected byte[][] valuesToBytesArray(Object... valuesArray) {
 		byte[][] data = new byte[valuesArray.length][];
 		for (int i=0; i<data.length; i++)
 			data[i] = valueToBytes(valuesArray[i]);
 		return data;
 	}
-	
+
 	protected void valueSetFromBytesSet(Set<byte[]> data, Set<Object> result) {
 		for (byte[] valueBytes : data) {
 			result.add(valueFromBytes(valueBytes));
 		}
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	protected List valueListFromBytesList(List<byte[]> data) {
 		List<Object> result = new ArrayList<Object>();
@@ -1324,7 +1507,7 @@ public class Cache {
 			result.add(valueFromBytes(d));
 		return result;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	protected List keyValueListFromBytesList(List<byte[]> data) {
 		List<Object> result = new ArrayList<Object>();
@@ -1332,44 +1515,207 @@ public class Cache {
 		result.add(valueFromBytes(data.get(1)));
 		return result;
 	}
-	
+
 	// ---------
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public ISerializer getSerializer() {
 		return serializer;
 	}
-	
+
 	public IKeyNamingPolicy getKeyNamingPolicy() {
 		return keyNamingPolicy;
 	}
-	
+
 	// ---------
-	
+
 	public Jedis getJedis() {
 		Jedis jedis = threadLocalJedis.get();
 		return jedis != null ? jedis : jedisPool.getResource();
 	}
-	
+
 	public void close(Jedis jedis) {
 		if (threadLocalJedis.get() == null && jedis != null)
 			jedis.close();
 	}
-	
+
 	public Jedis getThreadLocalJedis() {
 		return threadLocalJedis.get();
 	}
-	
+
 	public void setThreadLocalJedis(Jedis jedis) {
 		threadLocalJedis.set(jedis);
 	}
-	
+
 	public void removeThreadLocalJedis() {
 		threadLocalJedis.remove();
 	}
+
+	/**
+	 * 利用 set 方法实现锁
+	 *
+	 * <pre>
+	 * 例子：
+	 * String lockId = Redis.use().lock("lockStock", 120, 5)
+	 * if (lockId != null) {
+	 *     try {
+	 *        业务操作代码
+	 *     } finally {
+	 *         Redis.use().unlock("lockStock", lockId);
+	 *     }
+	 * }
+	 * </pre>
+	 *
+	 * @param name 锁的名称，通常与业务逻辑相关
+	 * @param secondsToExpire 锁过期时间，单位秒
+	 * @param secondsToTimeout 获取锁的超时时间，单位秒
+	 * @return 获取成功返回字符串，否则返回 false。释放锁时需要用到返回的字符串
+	 */
+	public String lock(String name, int secondsToExpire, int secondsToTimeout) {
+		Jedis jedis = getJedis();
+		try {
+			String lockId = java.util.UUID.randomUUID().toString();
+			SetParams setParams = new SetParams().nx().ex((long)secondsToExpire);
+			long startTime = System.currentTimeMillis();
+			do {
+				if ("OK".equals(jedis.set(name, lockId, setParams))) {
+					return lockId;
+				}
+				try {Thread.sleep(50);} catch (InterruptedException e) {break;}
+			} while (System.currentTimeMillis() - startTime < secondsToTimeout * 1000);
+			return null;
+		}
+		finally {
+			close(jedis);
+		}
+	}
+
+	/**
+	 * 释放锁
+	 * @param name 锁的名称
+	 * @param lockId 调用 lock(...) 方法成功获取锁时得到的返回值
+	 */
+	public void unlock(String name, String lockId) {
+		Jedis jedis = getJedis();
+		try {
+			String value = jedis.get(name);
+			if (value != null && value.equals(lockId)) {
+				jedis.del(name);
+			}
+		}
+		finally {
+			close(jedis);
+		}
+	}
+
+	/**
+	 * 为业务封装分布式锁，免去锁的获取、释放
+	 * Redis.use().withLock("lockStock", 120, 5, () -> {
+	 * 		// 业务操作代码
+	 * });
+	 */
+	public boolean withLock(String name, int secondsToExpire, int secondsToTimeout, F00 fun) {
+		String lockId = lock(name, secondsToExpire, secondsToTimeout);
+		if (lockId == null) {
+			return false;
+		}
+		try {
+			fun.call();
+			return true;
+		} finally {
+			unlock(name, lockId);
+		}
+	}
+
+	/**
+	 * redis 事务，返回值为非 null 时表示 redis 事务执行成功，否则执行失败
+	 * 被监视的 watchKey 值发生变化时，事务将会执行失败
+	 *
+	 * @param watchKeys 被监视的 key，多个 key 使用逗号分隔，例如： "key1, key2"。无监视 key 传入 null 值或者使用 tx(F10<Transaction> tx)
+	 * @param tx lambda 提供 Transaction 对象，使用该对象对 redis 的操作产生的命令集合将成为原子操作
+	 */
+	public List<Object> tx(String watchKeys, F10<Transaction> tx) {
+		boolean watched = false;
+		Transaction transaction = null;
+		Jedis jedis = getJedis();
+		try {
+			// 多个 watchKey 使用逗号分隔
+			if (StrKit.notBlank(watchKeys)) {
+				String[] keys = watchKeys.split(",");
+				for (String k : keys) {
+					if (StrKit.notBlank(k)) {
+						jedis.watch(k.trim());
+						watched = true;
+					}
+				}
+			}
+
+			transaction = jedis.multi();
+			tx.call(transaction);
+			return transaction.exec();
+		} catch (Throwable e) {
+			if (transaction != null) {
+				transaction.discard();
+			}
+			return null;
+		}
+		finally {
+			try {if (watched) {jedis.unwatch();}} catch (Exception ignore) {}
+			close(jedis);
+		}
+	}
+
+	public List<Object> tx(F10<Transaction> tx) {
+		return tx(null, tx);
+	}
+
+	/**
+	 * scan 命令查找符合给定模式 pattern 的 key
+	 *
+	 * @param cursor 游标值，值为 0 时表示一次新的查找
+	 * @param pattern 用于匹配 key 的模式
+	 * @param count 调整每次 scan 命令返回 key 的数量。注意该值只能大致调整数量，并不能精确指定数量，
+	 *              返回值数量可以大于或者小于该值
+	 * @param keyList 每次 scan 返回数据后被回调的函数，该函数接收每次 scan 返回的 key 值列表，
+	 *                 返回 true 继续调用 scan 命令，否则终止 scan
+     */
+    public void scan(Integer cursor, String pattern, Integer count, F11<List<String>, Boolean> keyList) {
+        String cursorStr = cursor != null ? cursor.toString() : ScanParams.SCAN_POINTER_START;
+
+        ScanParams scanParams = new ScanParams();
+        if (StrKit.notBlank(pattern)) {
+            scanParams.match(pattern);
+        }
+        if (count != null) {
+            scanParams.count(count);
+        }
+
+        Boolean continueScan;
+        ScanResult<String> scanResult;
+        Jedis jedis = getJedis();
+        try {
+            do {
+                scanResult = jedis.scan(cursorStr, scanParams);
+                // 更新 cursorStr 用于 scan 继续迭代。注意，cursorStr 为 "0" 时，scanResult.getResult() 可以有数据
+                cursorStr = scanResult.getCursor();
+                List<String> list = scanResult.getResult();
+                // scanResult.getResult().size() 有时为 0
+                continueScan = list != null && list.size() > 0 ? keyList.call(list) : true;
+            } while (continueScan && !ScanParams.SCAN_POINTER_START.equals(cursorStr));
+        }
+        finally {close(jedis);}
+    }
+
+    public void scan(Integer cursor, String pattern, F11<List<String>, Boolean> keyList) {
+        scan(cursor, pattern, null, keyList);
+    }
+
+    public void scan(Integer cursor, F11<List<String>, Boolean> keyList) {
+        scan(cursor, null, null, keyList);
+    }
 }
 
 

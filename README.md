@@ -1,5 +1,5 @@
 ## JAVA 极速WEB+ORM框架 JFinal
-
+[中文](README.md) [English](README_en.md)
 
 JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标是开发迅速、代码量少、学习简单、功能强大、轻量级、易扩展、Restful。在拥有Java语言所有优势的同时再拥有 ruby、python 等动态语言的开发效率！为您节约更多时间，去陪恋人、家人和朋友 ;)
 
@@ -12,10 +12,10 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 - 自动加载修改后的 Java 文件，开发过程中无需重启服务
 - AOP支持，拦截器配置灵活，功能强大
 - Plugin 体系结构，扩展性强
-- 多视图支持，支持 Enjoy、FreeMarker、JSP、Velocity
+- 多视图支持，支持 Enjoy、FreeMarker、JSP
 - 强大的 Validator 后端校验功能
 - 功能齐全，拥有传统 SSH 框架的绝大部分核心功能
-- 体积小仅 777 KB，并且无第三方依赖
+- 体积小仅 832 KB，并且无第三方依赖
 
 **JFinal 极速开发微信公众号欢迎你的加入: JFinal**
 
@@ -25,13 +25,13 @@ JFinal 是基于 Java 语言的极速 WEB + ORM 框架，其核心设计目标�
 <dependency>
     <groupId>com.jfinal</groupId>
     <artifactId>jfinal</artifactId>
-    <version>4.9.15</version>
+    <version>5.1.1</version>
 </dependency>
 ```
 
 ## 以下是JFinal实现Blog管理的示例：
 
-**1. 控制器(支持 Enjoy、JSP、Velocity、JSON等等以及自定义视图渲染)**
+**1. 控制器(支持 Enjoy、JSP、JSON等等以及自定义视图渲染)**
 
 ```java
 @Before(BlogInterceptor.class)
@@ -41,7 +41,7 @@ public class BlogController extends Controller {
     BlogService service;
 
     public void index() {
-        set("blogPage", service.paginate(getParaToInt(0, 1), 10));
+        set("blogPage", service.paginate(getInt(0, 1), 10));
         render("blog.html");
     }
 
@@ -55,7 +55,7 @@ public class BlogController extends Controller {
     }
 
     public void edit() {
-        set("blog", service.findById(getParaToInt()));
+        set("blog", service.findById(getInt()));
     }
 
     @Before(BlogValidator.class)
@@ -65,7 +65,7 @@ public class BlogController extends Controller {
     }
 
     public void delete() {
-        service.deleteById(getParaToInt());
+        service.deleteById(getInt());
         redirect("/blog");
     }
 }

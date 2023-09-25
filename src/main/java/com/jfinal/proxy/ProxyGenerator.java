@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ public class ProxyGenerator {
 	protected Template template = engine.getTemplate("com/jfinal/proxy/proxy_class_template.jf");
 	
 	protected boolean printGeneratedClassToConsole = false;
+	protected boolean printGeneratedClassToLog = true;
 	
 	public ProxyClass generate(Class<?> target) {
 		ProxyClass proxyClass = new ProxyClass(target);
@@ -147,7 +148,7 @@ public class ProxyGenerator {
 				System.out.print(msg);
 				System.out.println(sourceCode);
 			}
-			if (log.isDebugEnabled()) {
+			if (printGeneratedClassToLog && log.isDebugEnabled()) {
 				String msg = "\nGenerate proxy class \"" + proxyClass.getPkg() + "." + proxyClass.getName() + "\":";
 				log.debug(msg + sourceCode);
 			}
@@ -387,6 +388,13 @@ public class ProxyGenerator {
 	public void setPrintGeneratedClassToConsole(boolean printGeneratedClassToConsole) {
 		this.printGeneratedClassToConsole = printGeneratedClassToConsole;
 	}
+	
+	/**
+     * 配置打印生成类到日志
+     */
+    public void setPrintGeneratedClassToLog(boolean printGeneratedClassToLog) {
+        this.printGeneratedClassToLog = printGeneratedClassToLog;
+    }
 	
 	public void setProxyClassTemplate(String proxyClassTemplate) {
 		template = engine.getTemplate(proxyClassTemplate);

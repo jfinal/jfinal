@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.jfinal.plugin.redis;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import redis.clients.jedis.Jedis;
 import com.jfinal.kit.StrKit;
 
@@ -72,15 +73,42 @@ public class Redis {
 		return cacheMap.get(cacheName);
 	}
 	
-	public static <T> T call(ICallback<T> callback) {
-		return call(callback, use());
+	/**
+	 * 使用 lambda 开放 Jedis API，建议优先使用本方法
+	 * <pre>
+	 * 例子 1：
+	 *   Long ret = Redis.call(j -> j.incrBy("key", 1));
+	 *   
+	 * 例子 2：
+	 *   Long ret = Redis.call(jedis -> {
+	 *       return jedis.incrBy("key", 1);
+	 *   });
+	 * </pre>
+	 */
+	public static <R> R call(Function<Jedis, R> jedis) {
+		return use().call(jedis);
 	}
 	
-	public static <T> T call(ICallback<T> callback, String cacheName) {
-		return call(callback, use(cacheName));
+	/**
+	 * 使用 lambda 开放 Jedis API，建议优先使用本方法
+	 * <pre>
+	 * 例子：
+	 *   Long ret = Redis.call("cacheName", j -> j.incrBy("key", 1));
+	 * </pre>
+	 */
+	public static <R> R call(String cacheName, Function<Jedis, R> jedis) {
+		return use(cacheName).call(jedis);
 	}
 	
-	private static <T> T call(ICallback<T> callback, Cache cache) {
+	public static <T> T callback(ICallback<T> callback) {
+		return callback(use(), callback);
+	}
+	
+	public static <T> T callback(String cacheName, ICallback<T> callback) {
+		return callback(use(cacheName), callback);
+	}
+	
+	private static <T> T callback(Cache cache, ICallback<T> callback) {
 		Jedis jedis = cache.getThreadLocalJedis();
 		boolean notThreadLocalJedis = (jedis == null);
 		if (notThreadLocalJedis) {

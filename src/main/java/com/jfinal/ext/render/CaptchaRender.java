@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -33,24 +33,24 @@ import com.jfinal.render.Render;
 
 /**
  * CaptchaRender.本验证码实现已被 Deprecated 不建使用.
- * 建议使用新版本的 Controller.renderCaptcha() 既简单又美观，并且还提供了 
+ * 建议使用新版本的 Controller.renderCaptcha() 既简单又美观，并且还提供了
  * Controller.validateCaptcha(para)与 Validator.validateCaptcha(para)支持
  */
 @Deprecated
 public class CaptchaRender extends Render {
-	
+
 	private static final int WIDTH = 80, HEIGHT = 26;
-	private static final String[] strArr = {"3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"};
-	
+	private static final char[] strArr = "3456789ABCDEFGHJKMNPQRSTUVWXYabcdefghjkmnpqrstuvwxy".toCharArray();
+
 	private String captchaName;
-	
+
 	public CaptchaRender(String captchaName) {
 		if (StrKit.isBlank(captchaName)) {
 			throw new IllegalArgumentException("captchaName can not be blank");
 		}
 		this.captchaName = captchaName;
 	}
-	
+
 	public void render() {
 		BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 		String vCode = drawGraphic(image);
@@ -65,7 +65,7 @@ public class CaptchaRender extends Render {
         response.setHeader("Cache-Control","no-cache");
         response.setDateHeader("Expires", 0);
         response.setContentType("image/jpeg");
-        
+
         ServletOutputStream sos = null;
         try {
 			sos = response.getOutputStream();
@@ -84,15 +84,15 @@ public class CaptchaRender extends Render {
 		// 获取图形上下文
 		Graphics g = image.createGraphics();
 		// 生成随机类
-		Random random = new Random();
+		ThreadLocalRandom random = ThreadLocalRandom.current();
 		// 设定背景色
-		g.setColor(getRandColor(200, 250));
+		g.setColor(getRandomColor(200, 250, random));
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		// 设定字体
 		g.setFont(new Font("Times New Roman", Font.PLAIN, 18));
 
 		// 随机产生155条干扰线，使图象中的认证码不易被其它程序探测到
-		g.setColor(getRandColor(160, 200));
+		g.setColor(getRandomColor(160, 200, random));
 		for (int i = 0; i < 155; i++) {
 			int x = random.nextInt(WIDTH);
 			int y = random.nextInt(HEIGHT);
@@ -114,34 +114,35 @@ public class CaptchaRender extends Render {
 
 		// 图象生效
 		g.dispose();
-		
+
 		return sRand;
 	}
-	
+
 	/*
 	 * 给定范围获得随机颜色
 	 */
-	private Color getRandColor(int fc, int bc) {
-		Random random = new Random();
-		if (fc > 255)
+	private Color getRandomColor(int fc, int bc, ThreadLocalRandom random) {
+		if (fc > 255) {
 			fc = 255;
-		if (bc > 255)
+		}
+		if (bc > 255) {
 			bc = 255;
+		}
 		int r = fc + random.nextInt(bc - fc);
 		int g = fc + random.nextInt(bc - fc);
 		int b = fc + random.nextInt(bc - fc);
 		return new Color(r, g, b);
 	}
-	
+
 	public static boolean validate(Controller controller, String userInputCaptcha, String captchaName) {
 		if (StrKit.isBlank(userInputCaptcha)) {
 			return false;
 		}
-		
+
 		userInputCaptcha = userInputCaptcha.toUpperCase();
 		userInputCaptcha = HashKit.md5(userInputCaptcha);
 		boolean result = userInputCaptcha.equals(controller.getCookie(captchaName));
-		if (result == true) {
+		if (result) {
 			controller.removeCookie(captchaName);
 		}
 		return result;

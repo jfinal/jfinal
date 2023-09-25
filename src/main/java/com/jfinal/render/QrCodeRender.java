@@ -1,3 +1,19 @@
+/**
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.jfinal.render;
 
 import com.google.zxing.BarcodeFormat;
@@ -7,9 +23,8 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.jfinal.kit.StrKit;
-import com.jfinal.render.Render;
-import com.jfinal.render.RenderException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,6 +111,7 @@ public class QrCodeRender extends Render {
 			hints.put(EncodeHintType.ERROR_CORRECTION, errorCorrectionLevel);
 		}
 
+		OutputStream os = null;
 		try {
 			// MultiFormatWriter 可支持多种格式的条形码，在此直接使用 QRCodeWriter，通过查看源码可知少创建一个对象
 			// BitMatrix bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, width, height, hints);
@@ -103,9 +119,11 @@ public class QrCodeRender extends Render {
 			QRCodeWriter writer = new QRCodeWriter();
 			BitMatrix bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, width, height, hints);
 
+			os = response.getOutputStream();
 			// 经测试 200 X 200 大小的二维码使用 "png" 格式只有 412B，而 "jpg" 却达到 15KB
-			MatrixToImageWriter.writeToStream(bitMatrix, "png", response.getOutputStream());    // format: "jpg"、"png"
+			MatrixToImageWriter.writeToStream(bitMatrix, "png", os);    // format: "jpg"、"png"
 		} catch (IOException e) {	// ClientAbortException、EofException 直接或间接继承自 IOException
+			close(os);
 			String name = e.getClass().getSimpleName();
 			if ("ClientAbortException".equals(name) || "EofException".equals(name)) {
 			} else {

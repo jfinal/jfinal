@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ class ExprLexer {
 	 * + - * / % ++ --
 	 * = == != < <= > >=
 	 * ! && ||
-	 * ? ?: ?!
+	 * ? ?? ?.
 	 * . .. : :: , ;
 	 * ( ) [ ] { }
 	 */
@@ -205,9 +205,13 @@ class ExprLexer {
 				throw new ParseException("Unsupported operator: '|'", location);
 			}
 			return ok(tok);
-		case '?':		// ? ??
-			if (next() == '?') {
+		case '?':		// ? ?? ?.
+			char c = next();
+			if (c == '?') {
 				tok = new Tok(Sym.NULL_SAFE, beginRow);
+				next();
+			} else if (c == '.') {
+				tok = new Tok(Sym.OPTIONAL_CHAIN, beginRow);
 				next();
 			} else {
 				tok = new Tok(Sym.QUESTION, beginRow);

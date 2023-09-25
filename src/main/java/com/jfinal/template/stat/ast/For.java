@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import com.jfinal.template.stat.Scope;
 /**
  * For 循环控制，支持 List、Map、数组、Collection、Iterator、Iterable
  * Enumeration、null 以及任意单个对象的迭代，简单说是支持所有对象迭代
- * 
+ *
  * 主要用法：
  * 1：#for(item : list) #(item) #end
  * 2：#for(item : list) #(item) #else content #end
@@ -36,17 +36,17 @@ import com.jfinal.template.stat.Scope;
  * 4：#for(i=0; i<9; i++) #(item) #else content #end
  */
 public class For extends Stat {
-	
+
 	private ForCtrl forCtrl;
 	private Stat stat;
 	private Stat _else;
-	
+
 	public For(ForCtrl forCtrl, StatList statList, Stat _else) {
 		this.forCtrl = forCtrl;
 		this.stat = statList.getActualStat();
 		this._else = _else;
 	}
-	
+
 	public void exec(Env env, Scope scope, Writer writer) {
 		scope = new Scope(scope);
 		if (forCtrl.isIterator()) {
@@ -55,7 +55,7 @@ public class For extends Stat {
 			forLoop(env, scope, writer);
 		}
 	}
-	
+
 	/**
 	 * #for( id : expr)
 	 */
@@ -66,14 +66,14 @@ public class For extends Stat {
 		ForIteratorStatus forIteratorStatus = new ForIteratorStatus(outer, forCtrl.getExpr().eval(scope), location);
 		ctrl.setWisdomAssignment();
 		scope.setLocal("for", forIteratorStatus);
-		
+
 		Iterator<?> it = forIteratorStatus.getIterator();
 		String itemName = forCtrl.getId();
 		while(it.hasNext()) {
 			scope.setLocal(itemName, it.next());
 			stat.exec(env, scope, writer);
 			forIteratorStatus.nextState();
-			
+
 			if (ctrl.isJump()) {
 				if (ctrl.isBreak()) {
 					ctrl.setJumpNone();
@@ -86,12 +86,12 @@ public class For extends Stat {
 				}
 			}
 		}
-		
+
 		if (_else != null && forIteratorStatus.getIndex() == 0) {
 			_else.exec(env, scope, writer);
 		}
 	}
-	
+
 	/**
 	 * #for(exprList; cond; update)
 	 */
@@ -100,18 +100,18 @@ public class For extends Stat {
 		Object outer = scope.get("for");
 		ForLoopStatus forLoopStatus = new ForLoopStatus(outer);
 		scope.setLocal("for", forLoopStatus);
-		
+
 		Expr init = forCtrl.getInit();
 		Expr cond = forCtrl.getCond();
 		Expr update = forCtrl.getUpdate();
-		
+
 		ctrl.setLocalAssignment();
 		for (init.eval(scope); cond == null || Logic.isTrue(cond.eval(scope)); update.eval(scope)) {
 			ctrl.setWisdomAssignment();
 			stat.exec(env, scope, writer);
 			ctrl.setLocalAssignment();
 			forLoopStatus.nextState();
-			
+
 			if (ctrl.isJump()) {
 				if (ctrl.isBreak()) {
 					ctrl.setJumpNone();
@@ -125,7 +125,7 @@ public class For extends Stat {
 				}
 			}
 		}
-		
+
 		ctrl.setWisdomAssignment();
 		if (_else != null && forLoopStatus.getIndex() == 0) {
 			_else.exec(env, scope, writer);

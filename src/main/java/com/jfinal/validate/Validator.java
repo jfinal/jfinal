@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ public abstract class Validator implements Interceptor {
 	final public void intercept(Invocation invocation) {
 		Validator validator = null;
 		try {
-			validator = getClass().getDeclaredConstructor().newInstance();
+			validator = getClass().newInstance();
 			
 			if (com.jfinal.aop.AopManager.me().isInjectDependency()) {
 				com.jfinal.aop.Aop.inject(validator);

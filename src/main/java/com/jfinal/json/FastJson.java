@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,21 @@ public class FastJson extends Json {
 			return JSON.toJSONString(object);
 		} else {
 			return JSON.toJSONStringWithDateFormat(object, dp, SerializerFeature.WriteDateUseDateFormat);	// return JSON.toJSONString(object, SerializerFeature.WriteDateUseDateFormat);
+		}
+	}
+	
+	/**
+	 * 支持传入更多 SerializerFeature
+	 * 
+	 * 例如：
+	 *    SerializerFeature.WriteMapNullValue 支持对 null 值字段的转换
+	 */
+	public String toJson(Object object, SerializerFeature... features) {
+		String dp = datePattern != null ? datePattern : getDefaultDatePattern();
+		if (dp == null) {
+			return JSON.toJSONString(object);
+		} else {
+			return JSON.toJSONStringWithDateFormat(object, dp, features);
 		}
 	}
 	

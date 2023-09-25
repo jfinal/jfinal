@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class Injector {
 	
 	private static <T> T createInstance(Class<T> objClass) {
 		try {
-			return objClass.getDeclaredConstructor().newInstance();
+			return objClass.newInstance();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

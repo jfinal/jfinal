@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import java.util.Set;
 import com.jfinal.aop.Interceptor;
 import com.jfinal.aop.InterceptorManager;
 import com.jfinal.aop.Invocation;
-import com.jfinal.ext.proxy.CglibProxyFactory.IntersCache;
-import com.jfinal.ext.proxy.CglibProxyFactory.MethodKey;
+import com.jfinal.ext.proxy.InterceptorCache.MethodKey;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
@@ -40,17 +39,21 @@ class CglibCallback implements MethodInterceptor {
 			return methodProxy.invokeSuper(target, args);
 		}
 		
-		Class<?> targetClass = target.getClass();
-		if (targetClass.getName().indexOf("$$EnhancerBy") != -1) {
-			targetClass = targetClass.getSuperclass();
-		}
+		// Class<?> targetClass = target.getClass();
+		// if (targetClass.getName().indexOf("$$EnhancerBy") != -1) {
+		// 	targetClass = targetClass.getSuperclass();
+		// }
+		Class<?> targetClass = target.getClass().getSuperclass();
 		
-		
-		MethodKey key = IntersCache.getMethodKey(targetClass, method);
-		Interceptor[] inters = IntersCache.get(key);
+		MethodKey key = InterceptorCache.getMethodKey(targetClass, method);
+		Interceptor[] inters = InterceptorCache.get(key);
 		if (inters == null) {
 			inters = interMan.buildServiceMethodInterceptor(targetClass, method);
-			IntersCache.put(key, inters);
+			InterceptorCache.put(key, inters);
+		}
+		
+		if (inters.length == 0) {
+		    return methodProxy.invokeSuper(target, args);
 		}
 		
 		Invocation invocation = new Invocation(target, method, inters,
@@ -58,8 +61,6 @@ class CglibCallback implements MethodInterceptor {
 				return methodProxy.invokeSuper(target, x);
 			}
 		, args);
-		
-		
 		invocation.invoke();
 		return invocation.getReturnValue();
 	}

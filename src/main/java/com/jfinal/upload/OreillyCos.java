@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import com.oreilly.servlet.multipart.FileRenamePolicy;
  */
 public class OreillyCos {
 	
-	public static void init(String uploadPath, int maxPostSize, String encoding) {
+	public static void init(String uploadPath, long maxPostSize, String encoding) {
 		if (StrKit.isBlank(uploadPath)) {
 			throw new IllegalArgumentException("uploadPath can not be blank.");
 		}
@@ -46,7 +46,7 @@ public class OreillyCos {
 		MultipartRequest.fileRenamePolicy = fileRenamePolicy;
 	}
 	
-	private static void doInit(String uploadPath, int maxPostSize, String encoding) {
+	private static void doInit(String uploadPath, long maxPostSize, String encoding) {
 		uploadPath = uploadPath.trim();
 		uploadPath = uploadPath.replaceAll("\\\\", "/");
 		

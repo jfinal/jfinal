@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.jfinal.render;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.jfinal.core.Const;
+import com.jfinal.log.Log;
 
 /**
  * Render.
@@ -72,4 +73,18 @@ public abstract class Render {
 	 * Render to client
 	 */
 	public abstract void render();
+    
+    /**
+     * OutputStream、Writer 写入异常时，关闭它们，ActionHandler 中未向底层容器继续抛出 IOException，
+     * 以防容器在意外情况下未关闭它们（虽然调试 undertow 源码得知，无论异常产生与否，都将关闭它们）
+     */
+    protected void close(AutoCloseable autoCloseable) {
+        if (autoCloseable != null) {
+            try {
+                autoCloseable.close();
+            } catch (Exception e) {
+                Log.getLog(getClass()).error(e.getMessage(), e);
+            }
+        }
+    }
 }

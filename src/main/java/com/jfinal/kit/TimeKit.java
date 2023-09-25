@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import com.jfinal.kit.SyncWriteMap;
 
 /**
  * TimeKit 用于简化 JDK 8 新增的时间 API
  * 
+ * 新旧日期转换通过桥梁 Instant 进行，转成 LocalDate、LocalTime 需要先转成 LocalDateTime：
+ *   新转旧：LocalDateTime.atZone(ZoneId).toInstant() -> Instant -> Date.from(Instant)
+ *   旧转新：Date.toInstant() -> Instant -> LocalDateTime.ofInstant(Instant, ZoneId)
  * 
  * 经测试，SimpleDateFormat 比 DateTimeFormatter 对 pattern 的支持更好
  * 对于同样的 pattern 值 "yyyy-MM-dd HH:mm:ss"，前者可以转换 "2020-06-9 12:13:19"

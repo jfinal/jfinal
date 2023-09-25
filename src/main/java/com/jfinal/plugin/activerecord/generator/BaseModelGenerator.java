@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,16 +32,16 @@ import com.jfinal.template.Engine;
  * Base model 生成器
  */
 public class BaseModelGenerator {
-	
+
 	protected Engine engine;
 	protected String template = "/com/jfinal/plugin/activerecord/generator/base_model_template.jf";
-	
+
 	protected String baseModelPackageName;
 	protected String baseModelOutputDir;
 	protected boolean generateChainSetter = false;
-	
+
 	protected JavaKeyword javaKeyword = JavaKeyword.me;
-	
+
 	/**
 	 * 针对 Model 中七种可以自动转换类型的 getter 方法，调用其具有确定类型返回值的 getter 方法
 	 * 享用自动类型转换的便利性，例如 getInt(String)、getStr(String)
@@ -57,12 +57,17 @@ public class BaseModelGenerator {
 		put("java.lang.Float", "getFloat");
 		put("java.lang.Short", "getShort");
 		put("java.lang.Byte", "getByte");
-		
+
 		// 新增两种可自动转换类型的 getter 方法
 		put("java.util.Date", "getDate");
 		put("java.time.LocalDateTime", "getLocalDateTime");
+
+		// 新增 TypeKit 转换类之后，支持了更多的类型
+		put("java.lang.Boolean", "getBoolean");
+		put("java.math.BigDecimal", "getBigDecimal");
+		put("java.math.BigInteger", "getBigInteger");
 	}};
-	
+
 	public BaseModelGenerator(String baseModelPackageName, String baseModelOutputDir) {
 		if (StrKit.isBlank(baseModelPackageName)) {
 			throw new IllegalArgumentException("baseModelPackageName can not be blank.");
@@ -73,13 +78,13 @@ public class BaseModelGenerator {
 		if (StrKit.isBlank(baseModelOutputDir)) {
 			throw new IllegalArgumentException("baseModelOutputDir can not be blank.");
 		}
-		
+
 		this.baseModelPackageName = baseModelPackageName;
 		this.baseModelOutputDir = baseModelOutputDir;
-		
+
 		initEngine();
 	}
-	
+
 	protected void initEngine() {
 		engine = new Engine();
 		engine.setToClassPathSourceFactory();	// 从 class path 内读模板文件
@@ -87,36 +92,36 @@ public class BaseModelGenerator {
 		engine.addSharedObject("getterTypeMap", getterTypeMap);
 		engine.addSharedObject("javaKeyword", javaKeyword);
 	}
-	
+
 	/**
 	 * 使用自定义模板生成 base model
 	 */
 	public void setTemplate(String template) {
 		this.template = template;
 	}
-	
+
 	public void setGenerateChainSetter(boolean generateChainSetter) {
 		this.generateChainSetter = generateChainSetter;
 	}
-	
+
 	public void generate(List<TableMeta> tableMetas) {
 		System.out.println("Generate base model ...");
 		System.out.println("Base Model Output Dir: " + baseModelOutputDir);
-		
+
 		for (TableMeta tableMeta : tableMetas) {
 			genBaseModelContent(tableMeta);
 		}
 		writeToFile(tableMetas);
 	}
-	
+
 	protected void genBaseModelContent(TableMeta tableMeta) {
 		Kv data = Kv.by("baseModelPackageName", baseModelPackageName);
 		data.set("generateChainSetter", generateChainSetter);
 		data.set("tableMeta", tableMeta);
-		
+
 		tableMeta.baseModelContent = engine.getTemplate(template).renderToString(data);
 	}
-	
+
 	protected void writeToFile(List<TableMeta> tableMetas) {
 		try {
 			for (TableMeta tableMeta : tableMetas) {
@@ -126,7 +131,7 @@ public class BaseModelGenerator {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * base model 覆盖写入
 	 */
@@ -135,24 +140,17 @@ public class BaseModelGenerator {
 		if (!dir.exists()) {
 			dir.mkdirs();
 		}
-		
+
 		String target = baseModelOutputDir + File.separator + tableMeta.baseModelName + ".java";
-		OutputStreamWriter osw = null;
-		try {
-			osw = new OutputStreamWriter(new FileOutputStream(target), "UTF-8");
+		try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(target), "UTF-8")) {
 			osw.write(tableMeta.baseModelContent);
 		}
-		finally {
-			if (osw != null) {
-				osw.close();
-			}
-		}
 	}
-	
+
 	public String getBaseModelPackageName() {
 		return baseModelPackageName;
 	}
-	
+
 	public String getBaseModelOutputDir() {
 		return baseModelOutputDir;
 	}

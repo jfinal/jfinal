@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,6 +81,7 @@ public class TableBuilder {
 		
 		// setColumnType(...) 置入的 java 类型主要用于 core 包下面的 parameter 转成正确的 java 类型
 		for (int i=1; i<=rsmd.getColumnCount(); i++) {
+			// 备忘：getColumnName 获取字段真实名称而非 sql as 子句指定的名称
 			String colName = rsmd.getColumnName(i);
 			String colClassName = rsmd.getColumnClassName(i);
 			

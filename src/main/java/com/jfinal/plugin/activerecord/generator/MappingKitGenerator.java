@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.List;
 import com.jfinal.kit.Kv;
-import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.Engine;
 
@@ -110,18 +109,11 @@ public class MappingKitGenerator {
 		}
 		
 		String target = mappingKitOutputDir + File.separator + mappingKitClassName + ".java";
-		OutputStreamWriter osw = null;
-		try {
-			osw = new OutputStreamWriter(new FileOutputStream(target), "UTF-8");
+		try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(target), "UTF-8")) {
 			osw.write(ret);
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);
-		}
-		finally {
-			if (osw != null) {
-				try {osw.close();} catch (IOException e) {LogKit.error(e.getMessage(), e);}
-			}
 		}
 	}
 }

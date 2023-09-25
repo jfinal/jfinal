@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,10 +176,13 @@ public class AnsiSqlDialect extends Dialect {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
 		
+		// Record 新增支持 modifyFlag
+		Set<String> modifyFlag = CPI.getModifyFlag(record);
+		
 		sql.append("update ").append(tableName).append(" set ");
 		for (Entry<String, Object> e: record.getColumns().entrySet()) {
 			String colName = e.getKey();
-			if (!isPrimaryKey(colName, pKeys)) {
+			if (modifyFlag.contains(colName) && !isPrimaryKey(colName, pKeys)) {
 				if (paras.size() > 0) {
 					sql.append(", ");
 				}
@@ -289,6 +292,7 @@ public class AnsiSqlDialect extends Dialect {
 	
 	private void buildLabelNamesAndTypes(ResultSetMetaData rsmd, String[] labelNames, int[] types) throws SQLException {
 		for (int i=1; i<labelNames.length; i++) {
+			// 备忘：getColumnLabel 获取 sql as 子句指定的名称而非字段真实名称
 			labelNames[i] = rsmd.getColumnLabel(i);
 			types[i] = rsmd.getColumnType(i);
 		}
@@ -357,7 +361,7 @@ public class AnsiSqlDialect extends Dialect {
 		int[] types = new int[columnCount + 1];
 		buildLabelNamesAndTypes(rsmd, labelNames, types);
 		for (int k=0; k<pageSize && rs.next(); k++) {
-			Model<?> ar = modelClass.getDeclaredConstructor().newInstance();
+			Model<?> ar = modelClass.newInstance();
 			Map<String, Object> attrs = CPI.getAttrs(ar);
 			for (int i=1; i<=columnCount; i++) {
 				Object value;

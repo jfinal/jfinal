@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import com.jfinal.template.stat.Scope;
  * #number(3.1415926, "#.##")
  * #number(0.9518, "#.##%")
  * #number(300000, "光速为每秒 ,### 公里。")
+ * #number(1299792458, ",###")	// 每三位以逗号进行分隔输出为：1,299,792,458
  * 
  * #set(n = 1.234)
  * #set(p = "#.##")

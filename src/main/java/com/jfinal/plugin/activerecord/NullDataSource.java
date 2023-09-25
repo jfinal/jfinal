@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@ import javax.sql.DataSource;
 /**
  * NullDataSource.
  */
-class NullDataSource implements DataSource {
-	
-	private String msg = "Can not invoke the method of NullDataSource";
-	
+public class NullDataSource implements DataSource {
+
+	private final String msg = "Can not invoke the method of NullDataSource";
+
 	public PrintWriter getLogWriter() throws SQLException {
 		throw new RuntimeException(msg);
 	}

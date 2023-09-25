@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.jfinal.plugin.redis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Protocol;
+import java.util.function.Consumer;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.plugin.redis.serializer.FstSerializer;
@@ -31,6 +32,8 @@ import com.jfinal.plugin.redis.serializer.ISerializer;
  * Redis 服务的不同 database，具体例子见 jfinal 手册
  */
 public class RedisPlugin implements IPlugin {
+	
+	protected volatile boolean isStarted = false;
 	
 	protected String cacheName;
 	
@@ -93,6 +96,10 @@ public class RedisPlugin implements IPlugin {
 	}
 	
 	public boolean start() {
+		if (isStarted) {
+			return true;
+		}
+		
 		JedisPool jedisPool;
 		if      (port != null && timeout != null && database != null && clientName != null)
 			jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password, database, clientName);
@@ -114,6 +121,8 @@ public class RedisPlugin implements IPlugin {
 		
 		Cache cache = new Cache(cacheName, jedisPool, serializer, keyNamingPolicy);
 		Redis.addCache(cache);
+		
+		isStarted = true;
 		return true;
 	}
 	
@@ -122,6 +131,8 @@ public class RedisPlugin implements IPlugin {
 		if (cache == Redis.mainCache)
 			Redis.mainCache = null;
 		cache.jedisPool.destroy();
+		
+		isStarted = false;
 		return true;
 	}
 	
@@ -137,10 +148,25 @@ public class RedisPlugin implements IPlugin {
 		return jedisPoolConfig;
 	}
 	
+	/**
+	 * lambda 方式配置 JedisPoolConfig
+	 * <pre>
+	 * 例子：
+	 *   RedisPlugin redisPlugin = new RedisPlugin(...);
+	 *   redisPlugin.config(c -> {
+	 *       c.setMaxIdle(123456);
+	 *   });
+	 * </pre>
+	 */
+	public void config(Consumer<JedisPoolConfig> config) {
+		config.accept(jedisPoolConfig);
+	}
+	
 	// ---------
 	
 	public void setSerializer(ISerializer serializer) {
 		this.serializer = serializer;
+		Serializer.serializer = serializer;
 	}
 	
 	public void setKeyNamingPolicy(IKeyNamingPolicy keyNamingPolicy) {

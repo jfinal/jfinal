@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ public class ActionException extends RuntimeException {
 	private static final long serialVersionUID = 1998063243843477017L;
 	// private static final Log log = Log.getLog(ActionException.class);
 	private int errorCode;
+	private String errorMessage;
 	private Render errorRender;
 	
 	public ActionException(int errorCode, Render errorRender) {
@@ -62,23 +63,33 @@ public class ActionException extends RuntimeException {
 		}
 	}
 	
-	public ActionException(int errorCode, String errorView) {
-		if (StrKit.isBlank(errorView)) {
-			throw new IllegalArgumentException("The parameter errorView can not be blank.");
+	public ActionException(int errorCode, String viewOrJson) {
+		if (StrKit.isBlank(viewOrJson)) {
+			throw new IllegalArgumentException("The parameter viewOrJson can not be blank.");
 		}
 		
 		this.errorCode = errorCode;
-		this.errorRender = RenderManager.me().getRenderFactory().getErrorRender(errorCode, errorView);
+		this.errorRender = RenderManager.me().getRenderFactory().getErrorRender(errorCode, viewOrJson);
 	}
 	
 	public ActionException(int errorCode, Render errorRender, String errorMessage) {
-		super(errorMessage);
+		this.errorMessage = errorMessage;
 		init(errorCode, errorRender);
 		// log.warn(errorMessage);		// ActionHandler 中添加了对 message 的日志输出
 	}
 	
 	public int getErrorCode() {
 		return errorCode;
+	}
+	
+	@Override
+	public String getMessage() {
+		return errorMessage;
+	}
+	
+	@Override
+	public String getLocalizedMessage() {
+		return errorMessage;
 	}
 	
 	public Render getErrorRender() {

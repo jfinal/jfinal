@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,9 @@ public class MethodInfo {
 		this.method = method;
 		this.isVarArgs = method.isVarArgs();
 		this.paraTypes = method.getParameterTypes();
+		
+		// 支持高版本 JDK 的安全策略
+		method.setAccessible(true);
 	}
 	
 	public Object invoke(Object target, Object... args) throws ReflectiveOperationException {

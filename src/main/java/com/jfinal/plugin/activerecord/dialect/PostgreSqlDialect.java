@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import com.jfinal.plugin.activerecord.CPI;
 import com.jfinal.plugin.activerecord.Model;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.Table;
@@ -186,10 +187,13 @@ public class PostgreSqlDialect extends Dialect {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
 		
+		// Record 新增支持 modifyFlag
+		Set<String> modifyFlag = CPI.getModifyFlag(record);
+		
 		sql.append("update \"").append(tableName).append("\" set ");
 		for (Entry<String, Object> e: record.getColumns().entrySet()) {
 			String colName = e.getKey();
-			if (!isPrimaryKey(colName, pKeys)) {
+			if (modifyFlag.contains(colName) && !isPrimaryKey(colName, pKeys)) {
 				if (paras.size() > 0) {
 					sql.append(", ");
 				}

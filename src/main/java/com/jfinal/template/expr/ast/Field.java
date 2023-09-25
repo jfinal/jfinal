@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,10 @@ public class Field extends Expr {
 	private String getterName;
 	private long getterNameHash;
 	
-	public Field(Expr expr, String fieldName, Location location) {
+	// 可选链操作符 ?.
+	private boolean optionalChain;
+	
+	public Field(Expr expr, String fieldName, boolean optionalChain, Location location) {
 		if (expr == null) {
 			throw new ParseException("The object for field access can not be null", location);
 		}
@@ -49,12 +52,16 @@ public class Field extends Expr {
 		this.getterName = "get" + StrKit.firstCharToUpperCase(fieldName);
 		// fnv1a64 hash 到比 String.hashCode() 更大的 long 值范围
 		this.getterNameHash = HashKit.fnv1a64(getterName);
+		this.optionalChain = optionalChain;
 		this.location = location;
 	}
 	
 	public Object eval(Scope scope) {
 		Object target = expr.eval(scope);
 		if (target == null) {
+			if (optionalChain) {
+				return null;
+			}
 			if (scope.getCtrl().isNullSafe()) {
 				return null;
 			}

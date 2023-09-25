@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2011-2021, James Zhan 詹波 (jfinal@126.com).
+ * Copyright (c) 2011-2023, James Zhan 詹波 (jfinal@126.com).
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package com.jfinal.core;
 
+import java.util.function.BiFunction;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.jfinal.config.Constants;
+import com.jfinal.core.paragetter.JsonRequest;
 import com.jfinal.aop.Invocation;
 import com.jfinal.handler.Handler;
 import com.jfinal.kit.ReflectKit;
@@ -38,6 +40,21 @@ public class ActionHandler extends Handler {
 	protected ActionReporter actionReporter;
 	protected static final RenderManager renderManager = RenderManager.me();
 	private static final Log log = Log.getLog(ActionHandler.class);
+	
+	public static boolean resolveJson = false;
+	
+	// 默认 JsonRequestFactory
+	private static BiFunction<String, HttpServletRequest, JsonRequest> jsonRequestFactory = (jsonString, req) -> {
+		return new JsonRequest(jsonString, req);
+	};
+	
+	public static void setResolveJson(boolean resolveJson) {
+		ActionHandler.resolveJson = resolveJson;
+	}
+	
+	public static void setJsonRequestFactory(BiFunction<String, HttpServletRequest, JsonRequest> jsonRequestFactory) {
+		ActionHandler.jsonRequestFactory = jsonRequestFactory;
+	}
 	
 	protected void init(ActionMapping actionMapping, Constants constants) {
 		this.actionMapping = actionMapping;
@@ -69,9 +86,9 @@ public class ActionHandler extends Handler {
 		Action action = getAction(target, urlPara);
 		
 		if (action == null) {
-			if (log.isWarnEnabled()) {
+			if (log.isInfoEnabled()) {
 				String qs = request.getQueryString();
-				log.warn("404 Action Not Found: " + (qs == null ? target : target + "?" + qs));
+				log.info("404 Action Not Found: " + (qs == null ? target : target + "?" + qs));
 			}
 			renderManager.getRenderFactory().getErrorRender(404).setContext(request, response).render();
 			return ;
@@ -82,6 +99,11 @@ public class ActionHandler extends Handler {
 			// Controller controller = action.getControllerClass().newInstance();
 			controller = controllerFactory.getController(action.getControllerClass());
 			controller._init_(action, request, response, urlPara[0]);
+			
+			if (resolveJson && controller.isJsonRequest()) {
+				// 注入 JsonRequest 包装对象接管 request
+				controller.setHttpServletRequest(jsonRequestFactory.apply(controller.getRawData(), controller.getRequest()));
+			}
 			
 			if (devMode) {
 				if (actionReporter.isReportAfterInvocation(request)) {
