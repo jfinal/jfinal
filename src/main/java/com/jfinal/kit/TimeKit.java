@@ -82,6 +82,20 @@ public class TimeKit {
 	}
 	
 	/**
+	 * 按 pattern "yyyy-MM-dd HH:mm:ss" 将当前时间转换成 String
+	 */
+	public static String now() {
+		return now("yyyy-MM-dd HH:mm:ss");
+	}
+	
+	/**
+	 * 按 pattern "yyyyMMddHHmmssSSS" 将当前时间精确到毫秒转换成 String，常用于生成订单号等等单据的部分字符
+	 */
+	public static String nowWithMillisecond() {
+		return now("yyyyMMddHHmmssSSS");
+	}
+	
+	/**
 	 * 按指定 pattern 将 LocalDateTime 转换成 String
 	 * 例如：format(LocalDateTime.now(), "yyyy-MM-dd HH:mm:ss")
 	 */
