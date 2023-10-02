@@ -1491,21 +1491,21 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * 获取带进度上传的 UploadFile，通过 callback 拿到上传进度数据
+	 * 获取带进度上传的 UploadFile，通过 callback 获取上传进度数据
 	 */
 	public UploadFile getProgressFile(Consumer<UploadProgress> callback) {
 		return getProgressFile(null, null, callback);
 	}
 
 	/**
-	 * 获取带进度上传的 UploadFile，通过callback拿到上传进度数据
+	 * 获取带进度上传的 UploadFile，通过 callback 获取上传进度数据
 	 */
 	public UploadFile getProgressFile(String uploadPath, Consumer<UploadProgress> callback) {
 		return getProgressFile(null, uploadPath, callback);
 	}
 
 	/**
-	 * 获取带进度上传的 UploadFile，通过 callback 拿到上传进度数据
+	 * 获取带进度上传的 UploadFile，通过 callback 获取上传进度数据
 	 * @param parameterName 上传文件对应的参数名称
 	 * @param uploadPath 上传目录
 	 * @param callback 回调函数获取上传进度数据
