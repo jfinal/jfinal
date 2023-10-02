@@ -45,11 +45,11 @@
 
 	<distributionManagement>
 		<snapshotRepository>
-			<id>ossrh</id>
+			<id>jfinal</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</snapshotRepository>
 		<repository>
-			<id>ossrh</id>
+			<id>jfinal</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
@@ -337,7 +337,7 @@
 				<extensions>true</extensions>
 				<configuration>
 					<!-- 对应 maven settings.xml 中的 server 配置 -->
-					<serverId>ossrh</serverId>
+					<serverId>jfinal</serverId>
 					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 					<autoReleaseAfterClose>true</autoReleaseAfterClose>
 				</configuration>
