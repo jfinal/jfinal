@@ -37,9 +37,7 @@ import com.jfinal.render.ContentType;
 import com.jfinal.render.JsonRender;
 import com.jfinal.render.Render;
 import com.jfinal.render.RenderManager;
-import com.jfinal.upload.MultipartRequest;
-import com.jfinal.upload.UploadFile;
-import com.jfinal.upload.UploadProgress;
+import com.jfinal.upload.*;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.ProgressListener;
@@ -1496,11 +1494,33 @@ public abstract class Controller {
 	/**
 	 * 获取带进度上传的UploadFile
 	 * 通过callback拿到上传进度数据
-	 * @param parameterName
 	 * @param callback
 	 * @return
 	 */
-	protected UploadFile getProgressFile(String parameterName, Consumer<UploadProgress> callback) {
+	protected UploadFile getProgressFile(Consumer<UploadProgress> callback) {
+		return getProgressFile(null,null,callback);
+	}
+
+	/**
+	 * 获取带进度上传的UploadFile
+	 * 通过callback拿到上传进度数据
+	 * @param uploadPath
+	 * @param callback
+	 * @return
+	 */
+	protected UploadFile getProgressFile(String uploadPath,Consumer<UploadProgress> callback) {
+		return getProgressFile(null,uploadPath,callback);
+	}
+
+	/**
+	 * 获取带进度上传的UploadFile
+	 * 通过callback拿到上传进度数据
+	 * @param parameterName
+	 * @param uploadPath
+	 * @param callback
+	 * @return
+	 */
+	protected UploadFile getProgressFile(String parameterName,String uploadPath, Consumer<UploadProgress> callback) {
 		HttpServletRequest request = getRequest();
 		// 检查请求是否包含文件上传
 		if (!ServletFileUpload.isMultipartContent(request)) {
@@ -1523,22 +1543,28 @@ public abstract class Controller {
 		try {
 			List<FileItem> formItems = upload.parseRequest(request);
 			if (formItems != null && !formItems.isEmpty()) {
-				for (FileItem item : formItems) {
-					// 处理普通表单字段
-					if (!item.isFormField() && parameterName.equals(item.getFieldName())) {
-						// 处理上传的文件
-						String fileName = new File(item.getName()).getName();
-						String uploadPath = JFinal.me().getConstants().getBaseUploadPath();
-						String filePath = uploadPath + File.separator + fileName;
-						File storeFile = new File(filePath);
-						// 保存文件到硬盘
-						item.write(storeFile);
-						progressFile = new UploadFile(parameterName, uploadPath, fileName, storeFile.getName(), item.getContentType());
-					}
+				FileItem fileItem = null;
+				if(StrKit.isBlank(parameterName)){
+					fileItem = formItems.stream().filter(item->!item.isFormField()).findFirst().orElse(null);
+				}else{
+					fileItem = formItems.stream().filter(item->(!item.isFormField() && parameterName.equals(item.getFieldName()))).findFirst().orElse(null);
 				}
+				if(fileItem != null){
+					// 处理上传的文件
+					String originFileName = fileItem.getName();
+					String finalUploadPath = JFinal.me().getConstants().getBaseUploadPath() + (StrKit.isBlank(uploadPath) ? "" : (File.separator + uploadPath));
+					String newFileName = ProgressUploadFileConfig.getRenameFunc().call(finalUploadPath,originFileName);
+					String filePath = finalUploadPath + File.separator+ newFileName;
+					File storeFile = new File(filePath);
+					// 保存文件到硬盘
+					fileItem.write(storeFile);
+					progressFile = new UploadFile(parameterName, finalUploadPath, storeFile.getName(),originFileName, fileItem.getContentType());
+				}
+
 			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
 		return progressFile;
 	}
