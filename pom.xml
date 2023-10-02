@@ -106,6 +106,14 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- common fileupload 文件上传 -->
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<version>1.5</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- druid 数据源连接池
 		     注意：从 druid 1.2.5 版本开始，DruidStatViewHandler 中无法使用父类中的 username
 		          与 password，所以升级到比 1.2.4 更高版本时，druid 监控将无法无法通过 jfinal
