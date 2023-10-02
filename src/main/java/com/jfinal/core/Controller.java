@@ -1491,41 +1491,33 @@ public abstract class Controller {
 	}
 	
 	/**
-	 * 获取带进度上传的UploadFile
-	 * 通过callback拿到上传进度数据
-	 * @param callback
-	 * @return
+	 * 获取带进度上传的 UploadFile，通过 callback 拿到上传进度数据
 	 */
-	protected UploadFile getProgressFile(Consumer<UploadProgress> callback) {
-		return getProgressFile(null,null,callback);
+	public UploadFile getProgressFile(Consumer<UploadProgress> callback) {
+		return getProgressFile(null, null, callback);
 	}
 
 	/**
-	 * 获取带进度上传的UploadFile
-	 * 通过callback拿到上传进度数据
-	 * @param uploadPath
-	 * @param callback
-	 * @return
+	 * 获取带进度上传的 UploadFile，通过callback拿到上传进度数据
 	 */
-	protected UploadFile getProgressFile(String uploadPath,Consumer<UploadProgress> callback) {
-		return getProgressFile(null,uploadPath,callback);
+	public UploadFile getProgressFile(String uploadPath, Consumer<UploadProgress> callback) {
+		return getProgressFile(null, uploadPath, callback);
 	}
 
 	/**
-	 * 获取带进度上传的UploadFile
-	 * 通过callback拿到上传进度数据
-	 * @param parameterName
-	 * @param uploadPath
-	 * @param callback
-	 * @return
+	 * 获取带进度上传的 UploadFile，通过 callback 拿到上传进度数据
+	 * @param parameterName 上传文件对应的参数名称
+	 * @param uploadPath 上传目录
+	 * @param callback 回调函数获取上传进度数据
+	 * @return UploadFile 对象
 	 */
-	protected UploadFile getProgressFile(String parameterName,String uploadPath, Consumer<UploadProgress> callback) {
+	public UploadFile getProgressFile(String parameterName, String uploadPath, Consumer<UploadProgress> callback) {
 		HttpServletRequest request = getRequest();
 		// 检查请求是否包含文件上传
 		if (!ServletFileUpload.isMultipartContent(request)) {
 			return null;
 		}
-		UploadFile progressFile=null;
+		UploadFile progressFile = null;
 		// 创建文件项工厂
 		FileItemFactory factory = new DiskFileItemFactory();
 		// 创建上传处理器
@@ -1534,7 +1526,7 @@ public abstract class Controller {
 		ProgressListener progressListener = new ProgressListener() {
 			@Override
 			public void update(long bytesRead, long contentLength, int items) {
-				callback.accept(new UploadProgress(items,contentLength,bytesRead));
+				callback.accept(new UploadProgress(items, contentLength, bytesRead));
 			}
 		};
 		// 将进度监听器添加到上传处理器
@@ -1543,21 +1535,21 @@ public abstract class Controller {
 			List<FileItem> formItems = upload.parseRequest(request);
 			if (formItems != null && !formItems.isEmpty()) {
 				FileItem fileItem = null;
-				if(StrKit.isBlank(parameterName)){
-					fileItem = formItems.stream().filter(item->!item.isFormField()).findFirst().orElse(null);
-				}else{
-					fileItem = formItems.stream().filter(item->(!item.isFormField() && parameterName.equals(item.getFieldName()))).findFirst().orElse(null);
+				if (StrKit.isBlank(parameterName)) {
+					fileItem = formItems.stream().filter(item -> !item.isFormField()).findFirst().orElse(null);
+				} else {
+					fileItem = formItems.stream().filter(item -> (!item.isFormField() && parameterName.equals(item.getFieldName()))).findFirst().orElse(null);
 				}
-				if(fileItem != null){
+				if (fileItem != null) {
 					// 处理上传的文件
 					String originFileName = fileItem.getName();
 					String finalUploadPath = JFinal.me().getConstants().getBaseUploadPath() + (StrKit.isBlank(uploadPath) ? "" : (File.separator + uploadPath));
-					String newFileName = ProgressUploadFileConfig.getRenameFunc().call(finalUploadPath,originFileName);
-					String filePath = finalUploadPath + File.separator+ newFileName;
+					String newFileName = ProgressUploadFileConfig.getRenameFunc().call(finalUploadPath, originFileName);
+					String filePath = finalUploadPath + File.separator + newFileName;
 					File storeFile = new File(filePath);
 					// 保存文件到硬盘
 					fileItem.write(storeFile);
-					progressFile = new UploadFile(parameterName, finalUploadPath, storeFile.getName(),originFileName, fileItem.getContentType());
+					progressFile = new UploadFile(parameterName, finalUploadPath, storeFile.getName(), originFileName, fileItem.getContentType());
 				}
 
 			}
