@@ -132,6 +132,56 @@ public class Kv extends HashMap {
 		return TypeKit.toLocalDateTime(get(key));
 	}
 
+	public String getStr(Object key, String defaultValue) {
+		Object s = get(key);
+		return s != null ? s.toString() : defaultValue;
+	}
+
+	public Integer getInt(Object key, Integer defaultValue) {
+		Object value = get(key);
+		return value != null ? TypeKit.toInt(value) : defaultValue;
+	}
+
+	public Long getLong(Object key, Long defaultValue) {
+		Object value = get(key);
+		return value != null ? TypeKit.toLong(value) : defaultValue;
+	}
+
+	public java.math.BigDecimal getBigDecimal(Object key, java.math.BigDecimal defaultValue) {
+		Object value = get(key);
+		return value != null ? TypeKit.toBigDecimal(value) : defaultValue;
+	}
+
+	public Double getDouble(Object key, Double defaultValue) {
+		Object value = get(key);
+		return value != null ? TypeKit.toDouble(value) : defaultValue;
+	}
+
+	public Float getFloat(Object key, Float defaultValue) {
+		Object value = get(key);
+		return value != null ? TypeKit.toFloat(value) : defaultValue;
+	}
+
+	public Number getNumber(Object key, Number defaultValue) {
+		Object value = get(key);
+		return value != null ? TypeKit.toNumber(value) : defaultValue;
+	}
+
+	public Boolean getBoolean(Object key, Boolean defaultValue) {
+		Object value = get(key);
+		return value != null ? TypeKit.toBoolean(value) : defaultValue;
+	}
+
+	public java.util.Date getDate(Object key, java.util.Date defaultValue) {
+		Object value = get(key);
+		return value != null ? TypeKit.toDate(value) : defaultValue;
+	}
+
+	public java.time.LocalDateTime getLocalDateTime(Object key, java.time.LocalDateTime defaultValue) {
+		Object value = get(key);
+		return value != null ? TypeKit.toLocalDateTime(value) : defaultValue;
+	}
+
 	/**
 	 * key 存在，并且 value 不为 null
 	 */
