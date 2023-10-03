@@ -63,7 +63,10 @@ public class ProgressUploadFileConfig {
     static class CountProgressUploadFileRenameFunc implements ProgressUploadFileRenameFunc {
         @Override
         public String call(String directory, String originFileName) {
-            File file = new File(directory + "/" + originFileName);
+            if(!directory.endsWith("/")){
+                directory = directory + '/';
+            }
+            File file = new File(directory + originFileName);
             int count = 1;
             String newFilename = originFileName;
             while (file.exists()) {
@@ -104,11 +107,14 @@ public class ProgressUploadFileConfig {
     static class TimeProgressUploadFileRenameFunc implements ProgressUploadFileRenameFunc {
         @Override
         public String call(String directory, String originFileName) {
+            if(!directory.endsWith("/")){
+                directory = directory + '/';
+            }
             File file;
             String newFilename = originFileName;
             do {
                 int dotIndex = originFileName.lastIndexOf(".");
-                newFilename = TimeKit.format(new Date(), "yyyyMMddHHmmssSSS");
+                newFilename = TimeKit.nowWithMillisecond();
                 String extension = "";
                 if (dotIndex != -1) {
                     extension = originFileName.substring(dotIndex);
