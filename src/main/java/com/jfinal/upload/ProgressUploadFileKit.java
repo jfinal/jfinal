@@ -77,6 +77,7 @@ public class ProgressUploadFileKit {
      * @return
      */
     private static boolean isSafeFile(String fileName) {
+        fileName = fileName.trim().toLowerCase();
         return !fileName.endsWith(".jsp") && !fileName.endsWith(".jspx");
     }
 
