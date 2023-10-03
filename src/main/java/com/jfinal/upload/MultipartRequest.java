@@ -34,9 +34,10 @@ import com.oreilly.servlet.multipart.FileRenamePolicy;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class MultipartRequest extends HttpServletRequestWrapper {
 	
-	private static String baseUploadPath;
-	private static long maxPostSize;
-	private static String encoding;
+	static String baseUploadPath;
+	static long maxPostSize;
+	static String encoding;
+	
 	static FileRenamePolicy fileRenamePolicy = new DefaultFileRenamePolicy(){
 		@Override
 		public File rename(File f) {
