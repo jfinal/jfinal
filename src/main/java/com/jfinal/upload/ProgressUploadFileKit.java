@@ -6,7 +6,6 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.ProgressListener;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.util.List;
@@ -87,18 +86,18 @@ public class ProgressUploadFileKit {
      */
     private static String getFinalPath(String uploadPath) {
         if (uploadPath == null) {
-            return MultipartRequest.baseUploadPath;
+            return UploadConfig.baseUploadPath;
         }
 
         uploadPath = uploadPath.trim();
         if (uploadPath.startsWith("/") || uploadPath.startsWith("\\")) {
-            if (MultipartRequest.baseUploadPath.equals("/")) {
+            if (UploadConfig.baseUploadPath.equals("/")) {
                 return uploadPath;
             } else {
-                return MultipartRequest.baseUploadPath + uploadPath;
+                return UploadConfig.baseUploadPath + uploadPath;
             }
         } else {
-            return MultipartRequest.baseUploadPath + File.separator + uploadPath;
+            return UploadConfig.baseUploadPath + File.separator + uploadPath;
         }
     }
 }

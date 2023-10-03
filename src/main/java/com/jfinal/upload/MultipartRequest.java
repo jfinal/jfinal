@@ -34,10 +34,6 @@ import com.oreilly.servlet.multipart.FileRenamePolicy;
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class MultipartRequest extends HttpServletRequestWrapper {
 	
-	static String baseUploadPath;
-	static long maxPostSize;
-	static String encoding;
-	
 	static FileRenamePolicy fileRenamePolicy = new DefaultFileRenamePolicy(){
 		@Override
 		public File rename(File f) {
@@ -57,12 +53,6 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 	private List<UploadFile> uploadFiles;
 	private com.oreilly.servlet.MultipartRequest multipartRequest;
 	
-	static void init(String baseUploadPath, long maxPostSize, String encoding) {
-		MultipartRequest.baseUploadPath = baseUploadPath;
-		MultipartRequest.maxPostSize = maxPostSize;
-		MultipartRequest.encoding = encoding;
-	}
-	
 	public MultipartRequest(HttpServletRequest request, String uploadPath, long maxPostSize, String encoding) {
 		super(request);
 		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, encoding);
@@ -70,17 +60,17 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 	
 	public MultipartRequest(HttpServletRequest request, String uploadPath, long maxPostSize) {
 		super(request);
-		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, encoding);
+		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, UploadConfig.encoding);
 	}
 	
 	public MultipartRequest(HttpServletRequest request, String uploadPath) {
 		super(request);
-		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, encoding);
+		wrapMultipartRequest(request, getFinalPath(uploadPath), UploadConfig.maxPostSize, UploadConfig.encoding);
 	}
 	
 	public MultipartRequest(HttpServletRequest request) {
 		super(request);
-		wrapMultipartRequest(request, baseUploadPath, maxPostSize, encoding);
+		wrapMultipartRequest(request, UploadConfig.baseUploadPath, UploadConfig.maxPostSize, UploadConfig.encoding);
 	}
 	
 	/**
@@ -93,13 +83,13 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 		
 		uploadPath = uploadPath.trim();
 		if (uploadPath.startsWith("/") || uploadPath.startsWith("\\")) {
-			if (baseUploadPath.equals("/")) {
+			if (UploadConfig.baseUploadPath.equals("/")) {
 				return uploadPath;
 			} else {
-				return baseUploadPath + uploadPath;
+				return UploadConfig.baseUploadPath + uploadPath;
 			}
 		} else {
-			return baseUploadPath + File.separator + uploadPath;
+			return UploadConfig.baseUploadPath + File.separator + uploadPath;
 		}
 	}
 	

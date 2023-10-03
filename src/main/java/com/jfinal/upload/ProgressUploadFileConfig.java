@@ -2,9 +2,7 @@ package com.jfinal.upload;
 
 import com.jfinal.kit.StrKit;
 import com.jfinal.kit.TimeKit;
-
 import java.io.File;
-import java.util.Date;
 
 /**
  * 进度上传文件配置

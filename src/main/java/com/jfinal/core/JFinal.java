@@ -29,7 +29,7 @@ import com.jfinal.render.RenderManager;
 import com.jfinal.server.IServer;
 import com.jfinal.token.ITokenCache;
 import com.jfinal.token.TokenManager;
-import com.jfinal.upload.OreillyCos;
+import com.jfinal.upload.UploadConfig;
 
 /**
  * JFinal
@@ -64,7 +64,7 @@ public final class JFinal {
 		initActionMapping();
 		initHandler();
 		initRender();
-		initOreillyCos();
+		initUploadConfig();
 		initTokenManager();
 	}
 	
@@ -85,8 +85,8 @@ public final class JFinal {
 		handler = HandlerFactory.getHandler(Config.getHandlers().getHandlerList(), actionHandler);
 	}
 	
-	private void initOreillyCos() {
-		OreillyCos.init(constants.getBaseUploadPath(), constants.getMaxPostSize(), constants.getEncoding());
+	private void initUploadConfig() {
+		UploadConfig.init(constants.getBaseUploadPath(), constants.getMaxPostSize(), constants.getEncoding());
 	}
 	
 	private void initPathKit() {
