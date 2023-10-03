@@ -1,6 +1,5 @@
 package com.jfinal.upload;
 
-import com.jfinal.core.JFinal;
 import com.jfinal.kit.StrKit;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
@@ -23,20 +22,25 @@ public class ProgressUploadFileKit {
         if (!ServletFileUpload.isMultipartContent(request)) {
             return null;
         }
+        String finalUploadPath = getFinalPath(uploadPath);
+        //创建不存在的文件夹
+        createNotExistsFolder(finalUploadPath);
         UploadFile progressFile = null;
         // 创建文件项工厂
         FileItemFactory factory = new DiskFileItemFactory();
         // 创建上传处理器
         ServletFileUpload upload = new ServletFileUpload(factory);
-        // 创建进度监听器
-        ProgressListener progressListener = new ProgressListener() {
-            @Override
-            public void update(long bytesRead, long contentLength, int items) {
-                callback.accept(new UploadProgress(items, contentLength, bytesRead));
-            }
-        };
-        // 将进度监听器添加到上传处理器
-        upload.setProgressListener(progressListener);
+        if(callback != null) {
+            // 创建进度监听器
+            ProgressListener progressListener = new ProgressListener() {
+                @Override
+                public void update(long bytesRead, long contentLength, int items) {
+                    callback.accept(new UploadProgress(items, contentLength, bytesRead));
+                }
+            };
+            // 将进度监听器添加到上传处理器
+            upload.setProgressListener(progressListener);
+        }
         try {
             List<FileItem> formItems = upload.parseRequest(request);
             if (formItems != null && !formItems.isEmpty()) {
@@ -49,7 +53,6 @@ public class ProgressUploadFileKit {
                 if (fileItem != null) {
                     // 处理上传的文件
                     String originFileName = fileItem.getName();
-                    String finalUploadPath = JFinal.me().getConstants().getBaseUploadPath() + (StrKit.isBlank(uploadPath) ? "" : (File.separator + uploadPath));
                     String newFileName = ProgressUploadFileConfig.getRenameFunc().call(finalUploadPath, originFileName);
                     String filePath = finalUploadPath + File.separator + newFileName;
                     File storeFile = new File(filePath);
@@ -64,5 +67,38 @@ public class ProgressUploadFileKit {
             return null;
         }
         return progressFile;
+    }
+
+    /**
+     * 创建出不存在的路径
+     * @param finalUploadPath
+     */
+    private static void createNotExistsFolder(String finalUploadPath) {
+        File dir = new File(finalUploadPath);
+        if ( !dir.exists()) {
+            if (!dir.mkdirs()) {
+                throw new RuntimeException("Directory " + finalUploadPath + " not exists and can not create directory.");
+            }
+        }
+    }
+
+    /**
+     * 路径允许为 "" 值，表示直接使用基础路径 baseUploadPath
+     */
+    private static String getFinalPath(String uploadPath) {
+        if (uploadPath == null) {
+            return MultipartRequest.baseUploadPath;
+        }
+
+        uploadPath = uploadPath.trim();
+        if (uploadPath.startsWith("/") || uploadPath.startsWith("\\")) {
+            if (MultipartRequest.baseUploadPath.equals("/")) {
+                return uploadPath;
+            } else {
+                return MultipartRequest.baseUploadPath + uploadPath;
+            }
+        } else {
+            return MultipartRequest.baseUploadPath + File.separator + uploadPath;
+        }
     }
 }
