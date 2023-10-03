@@ -183,12 +183,13 @@ public class Engine {
 	 * Get template by file name
 	 */
 	public Template getTemplate(String fileName) {
-		if (fileName.charAt(0) != '/') {
-			char[] arr = new char[fileName.length() + 1];
-			fileName.getChars(0, fileName.length(), arr, 1);
-			arr[0] = '/';
-			fileName = new String(arr);
-		}
+		// 不再追加前缀字符 "/"，前缀不同的相同文件不共用缓存
+		// if (fileName.charAt(0) != '/') {
+		// 	char[] arr = new char[fileName.length() + 1];
+		// 	fileName.getChars(0, fileName.length(), arr, 1);
+		// 	arr[0] = '/';
+		// 	fileName = new String(arr);
+		// }
 
 		Template template = templateCache.get(fileName);
 		if (template == null) {
@@ -760,7 +761,7 @@ public class Engine {
 	public static void setChineseExpression(boolean enable) {
 		CharTable.setChineseExpression(enable);
 	}
-	
+
 	/**
      * 设置为 true 支持静态方法调用表达式，自 jfinal 5.0.2 版本开始默认值为 false
      */
@@ -768,7 +769,7 @@ public class Engine {
         config.setStaticMethodExpression(enable);
         return this;
     }
-    
+
     /**
      * 设置为 true 支持静态属性访问表达式，自 jfinal 5.0.2 版本开始默认值为 false
      */
