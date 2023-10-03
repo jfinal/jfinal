@@ -52,12 +52,15 @@ public class ProgressUploadFileKit {
                 if (fileItem != null) {
                     // 处理上传的文件
                     String originFileName = fileItem.getName();
-                    String newFileName = ProgressUploadFileConfig.getRenameFunc().call(finalUploadPath, originFileName);
-                    String filePath = finalUploadPath + File.separator + newFileName;
-                    File storeFile = new File(filePath);
-                    // 保存文件到硬盘
-                    fileItem.write(storeFile);
-                    progressFile = new UploadFile(parameterName, finalUploadPath, storeFile.getName(), originFileName, fileItem.getContentType());
+                    //判断如果是安全文件 才写入磁盘
+                    if(isSafeFile(originFileName)){
+                        String newFileName = ProgressUploadFileConfig.getRenameFunc().call(finalUploadPath, originFileName);
+                        String filePath = finalUploadPath + File.separator + newFileName;
+                        File storeFile = new File(filePath);
+                        // 保存文件到硬盘
+                        fileItem.write(storeFile);
+                        progressFile = new UploadFile(parameterName, finalUploadPath, storeFile.getName(), originFileName, fileItem.getContentType());
+                    }
                 }
 
             }
@@ -66,6 +69,16 @@ public class ProgressUploadFileKit {
             return null;
         }
         return progressFile;
+    }
+
+    /**
+     * 判断是否是安全文件
+     * @param fileName
+     * @return
+     */
+    private static boolean isSafeFile(String fileName) {
+        fileName = fileName.trim().toLowerCase();
+        return !fileName.endsWith(".jsp") && !fileName.endsWith(".jspx");
     }
 
     /**
