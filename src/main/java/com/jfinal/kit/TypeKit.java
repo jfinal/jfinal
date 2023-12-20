@@ -21,6 +21,8 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 
 /**
@@ -170,6 +172,12 @@ public class TypeKit {
 			}
 			if (d instanceof LocalTime) {
 				return TimeKit.toDate((LocalTime)d);
+			}
+			if (d instanceof OffsetDateTime) {
+				return TimeKit.toDate(((OffsetDateTime)d).toLocalDateTime());
+			}
+			if (d instanceof ZonedDateTime) {
+				return TimeKit.toDate(((ZonedDateTime)d).toLocalDateTime());
 			}
 		}
 
