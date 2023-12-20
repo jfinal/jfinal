@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.IPlugin;
 import com.jfinal.plugin.activerecord.cache.ICache;
-import com.jfinal.plugin.activerecord.dialect.Dialect;
+import com.jfinal.plugin.activerecord.dialect.*;
 import com.jfinal.plugin.activerecord.sql.SqlKit;
 
 /**
@@ -75,6 +75,7 @@ public class ActiveRecordPlugin implements IPlugin {
 		}
 		this.dataSourceProvider = dataSourceProvider;
 		this.config = new Config(configName, null, transactionLevel);
+		this.autoConfigDialect(dataSourceProvider.getJdbcUrl());
 	}
 	
 	public ActiveRecordPlugin(IDataSourceProvider dataSourceProvider) {
@@ -329,6 +330,37 @@ public class ActiveRecordPlugin implements IPlugin {
 	public ActiveRecordPlugin setTableBuilder(TableBuilder tableBuilder) {
 		this.tableBuilder = tableBuilder;
 		return this;
+	}
+
+	private void autoConfigDialect(String jdbcUrl) {
+		if (jdbcUrl.startsWith("jdbc:") && jdbcUrl.substring("jdbc:".length()).contains(":")) {
+			String dialect = jdbcUrl.substring("jdbc:".length(), jdbcUrl.indexOf(":", "jdbc:".length())).toLowerCase();
+			switch (dialect) {
+				case "h2":
+					setDialect(new H2Dialect());
+					break;
+				case "informix-sqli":
+					setDialect(new InformixDialect());
+					break;
+				case "mysql":
+					setDialect(new MysqlDialect());
+					break;
+				case "oracle":
+					setDialect(new OracleDialect());
+					break;
+				case "postgresql":
+					setDialect(new PostgreSqlDialect());
+					break;
+				case "sqlite":
+					setDialect(new Sqlite3Dialect());
+					break;
+				case "sqlserver":
+					setDialect(new SqlServerDialect());
+					break;
+				default:
+					setDialect(new AnsiSqlDialect());
+            }
+        }
 	}
 }
 
