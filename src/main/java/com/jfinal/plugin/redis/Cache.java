@@ -1572,7 +1572,7 @@ public class Cache {
 	 * @param name 锁的名称，通常与业务逻辑相关
 	 * @param secondsToExpire 锁过期时间，单位秒
 	 * @param secondsToTimeout 获取锁的超时时间，单位秒
-	 * @return 获取成功返回 lockId，否则返回 null。释放锁时需要用到返回的 lockId
+	 * @return 获取锁成功则返回 lockId，否则返回 null。释放锁方法 unlock 必须传入正确的 lockId
 	 */
 	public String lock(String name, int secondsToExpire, double secondsToTimeout) {
 		Jedis jedis = getJedis();
