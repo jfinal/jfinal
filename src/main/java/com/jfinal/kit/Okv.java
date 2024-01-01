@@ -200,6 +200,20 @@ public class Okv extends LinkedHashMap {
 	}
 
 	/**
+	 * key 所对应的 value 值不为空白字符串
+	 */
+	public boolean notBlank(Object key) {
+		return StrKit.notBlank(getStr(key));
+	}
+
+	/**
+	 * key 所对应的 value 值为空白字符串
+	 */
+	public boolean isBlank(Object key) {
+		return StrKit.isBlank(getStr(key));
+	}
+
+	/**
 	 * key 存在，并且 value 为 true，则返回 true
 	 */
 	public boolean isTrue(Object key) {
