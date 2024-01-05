@@ -1557,6 +1557,8 @@ public class Cache {
 	/**
 	 * 利用 set 方法实现锁
 	 *
+	 * SET resource-name anystring NX EX max-lock-time
+	 *
 	 * <pre>
 	 * 例子：
 	 * String lockId = Redis.use().lock("lockStock", 120, 5)
@@ -1570,22 +1572,22 @@ public class Cache {
 	 * </pre>
 	 *
 	 * @param name 锁的名称，通常与业务逻辑相关
-	 * @param secondsToExpire 锁过期时间，单位秒
-	 * @param secondsToTimeout 获取锁的超时时间，单位秒
+	 * @param maxLockTime 最大锁定时间，单位秒
+	 * @param retryTime 获取锁的重试时间，单位秒，支持小数，如：3.5
 	 * @return 获取锁成功则返回 lockId，否则返回 null。释放锁方法 unlock 必须传入正确的 lockId
 	 */
-	public String lock(String name, int secondsToExpire, double secondsToTimeout) {
+	public String lock(String name, int maxLockTime, double retryTime) {
 		Jedis jedis = getJedis();
 		try {
 			String lockId = java.util.UUID.randomUUID().toString();
-			SetParams setParams = new SetParams().nx().ex((long)secondsToExpire);
+			SetParams setParams = new SetParams().nx().ex((long)maxLockTime);
 			long startTime = System.currentTimeMillis();
 			do {
 				if ("OK".equals(jedis.set(name, lockId, setParams))) {
 					return lockId;
 				}
 				try {Thread.sleep(50);} catch (InterruptedException e) {break;}
-			} while (System.currentTimeMillis() - startTime < secondsToTimeout * 1000);
+			} while (System.currentTimeMillis() - startTime < retryTime * 1000);
 			return null;
 		}
 		finally {
@@ -1612,13 +1614,23 @@ public class Cache {
 	}
 
 	/**
-	 * 为业务封装分布式锁，免去锁的获取、释放
+	 * redis 分布式锁。
+	 *
+	 * 为业务封装分布式锁，免去锁的获取、释放。在某些超长执行时间的业务中，锁的获取与释放间隔很长，所以锁的获取与释放不要共用同一个 jedis 连接
+	 * <pre>
+	 * 例子：
 	 * Redis.use().withLock("lockStock", 120, 5, () -> {
-	 * 		// 业务操作代码
+	 *     // 业务代码
 	 * });
+	 *</pre>
+	 * @param name 锁的名称或资源名称，与业务逻辑相关
+	 * @param maxLockTime 最大锁定时间，单位秒
+	 * @param retryTime 获取锁的重试时间，单位秒，支持小数，如：3.5
+	 * @param fun 获取锁成功之后被回调的函数
+	 * @return 获取锁成功则返回 true，否则返回 false
 	 */
-	public boolean withLock(String name, int secondsToExpire, double secondsToTimeout, F00 fun) {
-		String lockId = lock(name, secondsToExpire, secondsToTimeout);
+	public boolean withLock(String name, int maxLockTime, double retryTime, F00 fun) {
+		String lockId = lock(name, maxLockTime, retryTime);
 		if (lockId == null) {
 			return false;
 		}
