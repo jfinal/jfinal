@@ -28,21 +28,21 @@ import com.jfinal.validate.Validator;
  * AopFactory 是工具类 Aop 功能的具体实现，详细用法见 Aop
  */
 public class AopFactory {
-	
+
 	// 单例缓存
 	protected ConcurrentHashMap<Class<?>, Object> singletonCache = new ConcurrentHashMap<Class<?>, Object>();
-	
+
 	// 支持循环注入
 	protected ThreadLocal<HashMap<Class<?>, Object>> singletonTl = ThreadLocal.withInitial(() -> new HashMap<>());
 	protected ThreadLocal<HashMap<Class<?>, Object>> prototypeTl = ThreadLocal.withInitial(() -> new HashMap<>());
-	
+
 	// 父类到子类、接口到实现类之间的映射关系
 	protected HashMap<Class<?>, Class<?>> mapping = null;
-	
+
 	protected boolean singleton = true;					// 默认单例
-	
+
 	protected boolean injectSuperClass = false;			// 默认不对超类进行注入
-	
+
 	public <T> T get(Class<T> targetClass) {
 		try {
 			return doGet(targetClass);
@@ -50,31 +50,31 @@ public class AopFactory {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected <T> T doGet(Class<T> targetClass) throws ReflectiveOperationException {
 		// Aop.get(obj.getClass()) 可以用 Aop.inject(obj)，所以注掉下一行代码
 		// targetClass = (Class<T>)getUsefulClass(targetClass);
-		
+
 		targetClass = (Class<T>)getMappingClass(targetClass);
-		
+
 		Singleton si = targetClass.getAnnotation(Singleton.class);
 		boolean singleton = (si != null ? si.value() : this.singleton);
-		
+
 		if (singleton) {
 			return doGetSingleton(targetClass);
 		} else {
 			return doGetPrototype(targetClass);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected <T> T doGetSingleton(Class<T> targetClass) throws ReflectiveOperationException {
 		Object ret = singletonCache.get(targetClass);
 		if (ret != null) {
 			return (T)ret;
 		}
-		
+
 		HashMap<Class<?>, Object> map = singletonTl.get();
 		int size = map.size();
 		if (size > 0) {
@@ -83,7 +83,7 @@ public class AopFactory {
 				return (T)ret;
 			}
 		}
-		
+
 		synchronized (this) {
 			try {
 				ret = singletonCache.get(targetClass);
@@ -101,11 +101,11 @@ public class AopFactory {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected <T> T doGetPrototype(Class<T> targetClass) throws ReflectiveOperationException {
 		Object ret;
-		
+
 		HashMap<Class<?>, Object> map = prototypeTl.get();
 		int size = map.size();
 		if (size > 0) {
@@ -115,7 +115,7 @@ public class AopFactory {
 				return (T)createObject(targetClass);
 			}
 		}
-		
+
 		try {
 			ret = createObject(targetClass);
 			map.put(targetClass, ret);
@@ -127,7 +127,7 @@ public class AopFactory {
 			}
 		}
 	}
-	
+
 	public <T> T inject(T targetObject) {
 		try {
 			doInject(targetObject.getClass(), targetObject);
@@ -136,7 +136,7 @@ public class AopFactory {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	// 方法原型的参数测试过可以是：Class<? super T> targetClass, T targetObject
 	public <T> T inject(Class<T> targetClass, T targetObject) {
 		try {
@@ -146,7 +146,7 @@ public class AopFactory {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	protected void doInject(Class<?> targetClass, Object targetObject) throws ReflectiveOperationException {
 		targetClass = getUsefulClass(targetClass);
 		Field[] fields = targetClass.getDeclaredFields();
@@ -156,18 +156,18 @@ public class AopFactory {
 				if (inject == null) {
 					continue ;
 				}
-				
+
 				Class<?> fieldInjectedClass = inject.value();
 				if (fieldInjectedClass == Void.class) {
 					fieldInjectedClass = field.getType();
 				}
-				
+
 				Object fieldInjectedObject = doGet(fieldInjectedClass);
 				field.setAccessible(true);
 				field.set(targetObject, fieldInjectedObject);
 			}
 		}
-		
+
 		// 是否对超类进行注入
 		if (injectSuperClass) {
 			Class<?> c = targetClass.getSuperclass();
@@ -176,14 +176,14 @@ public class AopFactory {
 			}
 		}
 	}
-	
+
 	protected Object createObject(Class<?> targetClass) throws ReflectiveOperationException {
 		return Proxy.get(targetClass);
 	}
-	
+
 	/**
 	 * 字符串包含判断之 "_$$_" 支持 javassist，"$$Enhancer" 支持 cglib
-	 * 
+	 *
 	 * 被 cglib、guice 增强过的类需要通过本方法获取到被增强之前的类型
 	 * 否则调用其 targetClass.getDeclaredFields() 方法时
 	 * 获取到的是一堆 cglib guice 生成类中的 Field 对象
@@ -196,19 +196,19 @@ public class AopFactory {
 	    String n = clazz.getName();
 	    return (Class<?>)(n.indexOf("_$$_") > -1 || n.indexOf("$$Enhancer") > -1 ? clazz.getSuperclass() : clazz);
 	}
-	
+
 	/**
-	 * 设置被注入的对象是否为单例，可使用 @Singleton(boolean) 覆盖此默认值 
+	 * 设置被注入的对象是否为单例，可使用 @Singleton(boolean) 覆盖此默认值
 	 */
 	public AopFactory setSingleton(boolean singleton) {
 		this.singleton = singleton;
 		return this;
 	}
-	
+
 	public boolean isSingleton() {
 		return singleton;
 	}
-	
+
 	/**
 	 * 设置是否对超类进行注入
 	 */
@@ -216,11 +216,11 @@ public class AopFactory {
 		this.injectSuperClass = injectSuperClass;
 		return this;
 	}
-	
+
 	public boolean isInjectSuperClass() {
 		return injectSuperClass;
 	}
-	
+
 	public AopFactory addSingletonObject(Class<?> type, Object singletonObject) {
 		if (type == null) {
 			throw new IllegalArgumentException("type can not be null");
@@ -231,39 +231,39 @@ public class AopFactory {
 		if (singletonObject instanceof Class) {
 			throw new IllegalArgumentException("singletonObject can not be Class type");
 		}
-		
+
 		if ( ! (type.isAssignableFrom(singletonObject.getClass())) ) {
 			throw new IllegalArgumentException(singletonObject.getClass().getName() + " can not cast to " + type.getName());
 		}
-		
+
 		// Class<?> type = getUsefulClass(singletonObject.getClass());
 		if (singletonCache.putIfAbsent(type, singletonObject) != null) {
 			throw new RuntimeException("Singleton object already exists for type : " + type.getName());
 		}
-		
+
 		return this;
 	}
-	
+
 	public AopFactory addSingletonObject(Object singletonObject) {
 		Class<?> type = getUsefulClass(singletonObject.getClass());
 		return addSingletonObject(type, singletonObject);
 	}
-	
+
 	public synchronized <T> AopFactory addMapping(Class<T> from, Class<? extends T> to) {
 		if (from == null || to == null) {
 			throw new IllegalArgumentException("The parameter from and to can not be null");
 		}
-		
+
 		if (mapping == null) {
 			mapping = new HashMap<Class<?>, Class<?>>(128, 0.25F);
 		} else if (mapping.containsKey(from)) {
 			throw new RuntimeException("Class already mapped : " + from.getName());
 		}
-		
+
 		mapping.put(from, to);
 		return this;
 	}
-	
+
 	public <T> AopFactory addMapping(Class<T> from, String to) {
 		try {
 			@SuppressWarnings("unchecked")
@@ -277,10 +277,10 @@ public class AopFactory {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	/**
 	 * 获取父类到子类的映射值，或者接口到实现类的映射值
-	 * @param from 父类或者接口 
+	 * @param from 父类或者接口
 	 * @return 如果映射存在则返回映射值，否则返回参数 from 的值
 	 */
 	public Class<?> getMappingClass(Class<?> from) {
