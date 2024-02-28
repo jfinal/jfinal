@@ -91,6 +91,8 @@ public class BaseModelGenerator {
 		engine.addSharedMethod(new StrKit());
 		engine.addSharedObject("getterTypeMap", getterTypeMap);
 		engine.addSharedObject("javaKeyword", javaKeyword);
+		engine.setStaticFieldExpression(true);
+		engine.setStaticMethodExpression(true);
 	}
 
 	/**
