@@ -143,6 +143,10 @@ public class ModelGenerator {
 	public String getModelOutputDir() {
 		return modelOutputDir;
 	}
+
+	public Engine getEngine() {
+		return engine;
+	}
 }
 
 

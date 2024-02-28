@@ -118,6 +118,10 @@ public class MappingKitGenerator {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public Engine getEngine() {
+		return engine;
+	}
 }
 
 

@@ -156,6 +156,10 @@ public class BaseModelGenerator {
 	public String getBaseModelOutputDir() {
 		return baseModelOutputDir;
 	}
+
+	public Engine getEngine() {
+		return engine;
+	}
 }
 
 
