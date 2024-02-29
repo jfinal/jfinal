@@ -4,7 +4,7 @@
 
 	<groupId>com.jfinal</groupId>
 	<artifactId>jfinal</artifactId>
-	<version>5.1.6</version>
+	<version>5.1.7</version>
 	<packaging>jar</packaging>
 
 	<name>JFinal</name>
