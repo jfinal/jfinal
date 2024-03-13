@@ -270,26 +270,27 @@ public class TimeKit {
 	}
 
 	/**
-	 * 将 LocalDate 转为 int 类型
-	 * <pre>
-	 * 例子：
-	 *     toInt(LocalDate.now());
-	 *     toInt(LocalDateTime.now().toLocalDate());
-	 * </pre>
-	 */
-	public static int toInt(LocalDate localDate) {
-		return Integer.parseInt(TimeKit.format(localDate, "yyyyMMdd"));
-	}
-
-	/**
 	 * 将 LocalDateTime 转为 long 类型
 	 * <pre>
 	 * 例子：
-	 *     toLong(LocalDateTime.now());
+	 *     toLong(LocalDateTime.now(), 3);
 	 * </pre>
+	 * @param localDateTime LocalDateTime 类型数据
+	 * @param type 转换类型，取值必须为：1、2、3、4、5、6、7 的其中一个，分别表示转换精度为：年、月、日、时、分、秒、毫秒
 	 */
-	public static long toLong(LocalDateTime localDateTime) {
-		return Long.parseLong(TimeKit.format(localDateTime, "yyyyMMddHHmmss"));
+	public static long toLong(LocalDateTime localDateTime, int type) {
+		String pattern;
+		switch (type) {
+			case 1: pattern = "yyyy";break;
+			case 2: pattern = "yyyyMM";break;
+			case 3: pattern = "yyyyMMdd";break;
+			case 4: pattern = "yyyyMMddHH";break;
+			case 5: pattern = "yyyyMMddHHmm";break;
+			case 6: pattern = "yyyyMMddHHmmss";break;
+			case 7: pattern = "yyyyMMddHHmmssSSS";break;
+			default : throw new IllegalArgumentException("参数 type 必须为 1 到 7 的整数，分别表示从年到毫秒级别的转换");
+		}
+		return Long.parseLong(TimeKit.format(localDateTime, pattern));
 	}
 }
 
