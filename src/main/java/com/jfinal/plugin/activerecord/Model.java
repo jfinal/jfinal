@@ -329,9 +329,17 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	/**
 	 * Get attribute of any mysql type. Returns defaultValue if null.
 	 */
-	public <T> T get(String attr, Object defaultValue) {
+	public <T> T get(String attr, T defaultValue) {
 		Object result = attrs.get(attr);
 		return (T)(result != null ? result : defaultValue);
+	}
+
+	/**
+	 * Get column of any mysql type and convert type using converter. Returns defaultValue if null.
+	 */
+	public <T> T get(String attr, T defaultValue, com.jfinal.kit.Func.F11<Object, T> converter) {
+		Object result = attrs.get(attr);
+		return result != null ? converter.call(result) : defaultValue;
 	}
 
 	/**

@@ -58,7 +58,12 @@ public interface IRow<M> {
     /**
      * Get column of any mysql type. Returns defaultValue if null.
      */
-    public <T> T get(String column, Object defaultValue);
+    public <T> T get(String column, T defaultValue);
+
+    /**
+     * Get column of any mysql type and convert type using converter. Returns defaultValue if null.
+     */
+    public <T> T get(String column, T defaultValue, com.jfinal.kit.Func.F11<Object, T> converter);
 
     /**
      * Get column of mysql type: varchar, char, enum, set, text, tinytext, mediumtext, longtext

@@ -253,9 +253,17 @@ public class Record implements IRow<Record>, Serializable {
 	 * Get column of any mysql type. Returns defaultValue if null.
 	 */
 	@SuppressWarnings("unchecked")
-	public <T> T get(String column, Object defaultValue) {
+	public <T> T get(String column, T defaultValue) {
 		Object result = getColumns().get(column);
 		return (T)(result != null ? result : defaultValue);
+	}
+
+	/**
+	 * Get column of any mysql type and convert type using converter. Returns defaultValue if null.
+	 */
+	public <T> T get(String column, T defaultValue, com.jfinal.kit.Func.F11<Object, T> converter) {
+		Object result = getColumns().get(column);
+		return result != null ? converter.call(result) : defaultValue;
 	}
 
 	public Object getObject(String column) {
