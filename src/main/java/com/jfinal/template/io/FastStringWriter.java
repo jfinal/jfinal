@@ -16,7 +16,6 @@
 
 package com.jfinal.template.io;
 
-import java.io.IOException;
 import java.io.Writer;
 
 /**
@@ -99,7 +98,7 @@ public class FastStringWriter extends Writer {
 	}
 
 	@Override
-	public void write(char buffer[], int offset, int len) throws IOException {
+	public void write(char buffer[], int offset, int len) /* throws IOException */ {
 		int newLen = this.len + len;
 		if (newLen > value.length) {
 			expandCapacity(newLen);
@@ -110,7 +109,7 @@ public class FastStringWriter extends Writer {
 	}
 
 	@Override
-	public void write(String str, int offset, int len) throws IOException {
+	public void write(String str, int offset, int len) /* throws IOException */ {
 		int newLen = this.len + len;
 		if (newLen > value.length) {
 			expandCapacity(newLen);
@@ -121,23 +120,23 @@ public class FastStringWriter extends Writer {
 	}
 
 	@Override
-	public void write(int c) throws IOException {
+	public void write(int c) /* throws IOException */ {
 		char[] buffer = {(char)c};
 		write(buffer, 0, 1);
 	}
 
 	@Override
-	public void write(char buffer[]) throws IOException {
+	public void write(char buffer[]) /* throws IOException */ {
 		write(buffer, 0, buffer.length);
 	}
 
 	@Override
-	public void write(String str) throws IOException {
+	public void write(String str) /* throws IOException */ {
 		write(str, 0, str.length());
 	}
 
 	@Override
-	public Writer append(CharSequence csq) throws IOException {
+	public Writer append(CharSequence csq) /* throws IOException */ {
 		if (csq instanceof String) {
 			String str = (String)csq;
 			write(str, 0, str.length());
@@ -152,7 +151,7 @@ public class FastStringWriter extends Writer {
 	}
 
 	@Override
-	public Writer append(CharSequence csq, int start, int end) throws IOException {
+	public Writer append(CharSequence csq, int start, int end) /* throws IOException */ {
 		if (csq instanceof String) {
 			String str = (String)csq;
 			write(str, start, (end - start));
@@ -165,14 +164,14 @@ public class FastStringWriter extends Writer {
 	}
 
 	@Override
-	public Writer append(char c) throws IOException {
+	public Writer append(char c) /* throws IOException */ {
 		char[] buffer = {c};
 		write(buffer, 0, 1);
 		return this;
 	}
 
 	@Override
-	public void flush() throws IOException {
+	public void flush() /* throws IOException */ {
 
 	}
 }
