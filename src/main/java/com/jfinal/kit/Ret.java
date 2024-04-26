@@ -277,6 +277,11 @@ public class Ret extends HashMap {
 		return ret != null ? (T) ret : defaultValue;
 	}
 
+	public <T> T getAs(Object key, T defaultValue, com.jfinal.kit.Func.F11<Object, T> converter) {
+		Object ret = get(key);
+		return ret != null ? converter.call(ret) : defaultValue;
+	}
+
 	public String getStr(Object key) {
 		Object s = get(key);
 		return s != null ? s.toString() : null;
