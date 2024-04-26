@@ -331,7 +331,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 */
 	public <T> T get(String attr, T defaultValue) {
 		Object result = attrs.get(attr);
-		return (T)(result != null ? result : defaultValue);
+		return result != null ? (T) result : defaultValue;
 	}
 
 	/**

@@ -255,7 +255,7 @@ public class Record implements IRow<Record>, Serializable {
 	@SuppressWarnings("unchecked")
 	public <T> T get(String column, T defaultValue) {
 		Object result = getColumns().get(column);
-		return (T)(result != null ? result : defaultValue);
+		return result != null ? (T) result : defaultValue;
 	}
 
 	/**
