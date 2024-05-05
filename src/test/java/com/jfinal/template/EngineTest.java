@@ -22,7 +22,7 @@ public class EngineTest {
 	
 	@Test
 	public void renderToString() {
-		Kv para = Kv.by("key", "value");
+		Kv para = Kv.of("key", "value");
 		String result = engine.getTemplateByString("#(key)").renderToString(para);
 		Assert.assertEquals("value", result);
 	}

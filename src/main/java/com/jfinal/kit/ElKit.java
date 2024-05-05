@@ -32,7 +32,7 @@ import com.jfinal.template.stat.Scope;
  * 	  Integer value = ElKit.eval("1 + 2 * 3");
  * 
  * 2：带参示例
- * 	  Kv data = Kv.by("a", 2).set("b", 3);
+ * 	  Kv data = Kv.of("a", 2).set("b", 3);
  * 	  Integer value = ElKit.eval("1 + a * b", data);
  * </pre>
  */

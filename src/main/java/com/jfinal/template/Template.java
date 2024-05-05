@@ -159,7 +159,7 @@ public class Template {
 	 *   String ret = template.renderToString(data, (ast, env, scope, writer) -> {
 	 *      // 可以传入任意类型的 attachment 参数，以下以 Kv 对象为例
 	 *      // 该参数可以在指令中通过 scope.getCtrl().getAttachment() 获取
-	 *      scope.getCtrl().setAttachment(Kv.by("key", 456));
+	 *      scope.getCtrl().setAttachment(Kv.of("key", 456));
 	 *      
 	 *      // 接管内部的 ast、env、scope、writer，执行 ast.exec(...)
 	 *      ast.exec(env, scope, writer);

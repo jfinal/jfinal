@@ -92,7 +92,7 @@ public class ModelGenerator {
 	}
 
 	protected void genModelContent(TableMeta tableMeta) {
-		Kv data = Kv.by("modelPackageName", modelPackageName);
+		Kv data = Kv.of("modelPackageName", modelPackageName);
 		data.set("baseModelPackageName", baseModelPackageName);
 		data.set("generateDaoInModel", generateDaoInModel);
 		data.set("tableMeta", tableMeta);

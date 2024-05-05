@@ -1183,7 +1183,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 *
 	 * <pre>
 	 * 例子：
-	 * dao.template("blog.find", Kv.by("id", 123)).find();
+	 * dao.template("blog.find", Kv.of("id", 123)).find();
 	 * </pre>
 	 */
 	public DaoTemplate<M> template(String key, Map data) {
@@ -1215,7 +1215,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	 * <pre>
 	 * 例子：
 	 * String sql = "select * from blog where id = #para(id)";
-	 * dao.templateByString(sql, Kv.by("id", 123)).find();
+	 * dao.templateByString(sql, Kv.of("id", 123)).find();
 	 * </pre>
 	 */
 	public DaoTemplate<M> templateByString(String content, Map data) {

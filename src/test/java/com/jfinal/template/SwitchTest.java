@@ -24,7 +24,7 @@ public class SwitchTest {
 	@Test
 	public void switch_() {
 		Template template = engine.getTemplate("com/jfinal/template/switch.txt");
-		Kv kv = Kv.by("data", 123).set("b", 123);
+		Kv kv = Kv.of("data", 123).set("b", 123);
 		String ret = template.renderToString(kv);
 		System.out.print(ret);
 	}

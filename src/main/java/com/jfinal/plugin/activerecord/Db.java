@@ -778,7 +778,7 @@ public class Db {
 	 * 
 	 * <pre>
 	 * 例子：
-	 * Db.template("blog.find", Kv.by("id", 123).find();
+	 * Db.template("blog.find", Kv.of("id", 123).find();
 	 * </pre>
 	 */
 	public static DbTemplate template(String key, Map data) {
@@ -806,7 +806,7 @@ public class Db {
 	 * <pre>
 	 * 例子：
 	 * String sql = "select * from blog where id = #para(id)";
-	 * Db.templateByString(sql, Kv.by("id", 123).find();
+	 * Db.templateByString(sql, Kv.of("id", 123).find();
 	 * </pre>
 	 */
 	public static DbTemplate templateByString(String content, Map data) {

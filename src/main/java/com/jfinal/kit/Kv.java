@@ -25,7 +25,7 @@ import com.jfinal.json.Json;
  * Kv (Key Value)
  *
  * Example：
- *    Kv para = Kv.by("id", 123);
+ *    Kv para = Kv.of("id", 123);
  *    User user = user.findFirst(getSqlPara("find", para));
  */
 @SuppressWarnings({"rawtypes", "unchecked"})

@@ -167,7 +167,7 @@ public class SqlKit {
 	 *	#end
 	 *
 	 * 2：java 代码
-	 * 	Kv cond = Kv.by("id", 123).set("age", 18);
+	 * 	Kv cond = Kv.of("id", 123).set("age", 18);
 	 * 	getSqlPara("key", cond);
 	 */
 	public SqlPara getSqlPara(String key, Map data) {
@@ -224,7 +224,7 @@ public class SqlKit {
 	 * <pre>
 	 * 例子：
 	 *     String content = "select * from user where id = #para(id)";
-	 *     SqlPara sqlPara = getSqlParaByString(content, Kv.by("id", 123));
+	 *     SqlPara sqlPara = getSqlParaByString(content, Kv.of("id", 123));
 	 * 
 	 * 特别注意：content 参数中不能包含 #sql 指令
 	 * </pre>

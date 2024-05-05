@@ -117,7 +117,7 @@ public class BaseModelGenerator {
 	}
 
 	protected void genBaseModelContent(TableMeta tableMeta) {
-		Kv data = Kv.by("baseModelPackageName", baseModelPackageName);
+		Kv data = Kv.of("baseModelPackageName", baseModelPackageName);
 		data.set("generateChainSetter", generateChainSetter);
 		data.set("tableMeta", tableMeta);
 

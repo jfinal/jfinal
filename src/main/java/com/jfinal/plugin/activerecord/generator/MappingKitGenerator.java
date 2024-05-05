@@ -93,7 +93,7 @@ public class MappingKitGenerator {
 		System.out.println("Generate MappingKit file ...");
 		System.out.println("MappingKit Output Dir: " + mappingKitOutputDir);
 
-		Kv data = Kv.by("mappingKitPackageName", mappingKitPackageName);
+		Kv data = Kv.of("mappingKitPackageName", mappingKitPackageName);
 		data.set("mappingKitClassName", mappingKitClassName);
 		data.set("tableMetas", tableMetas);
 
