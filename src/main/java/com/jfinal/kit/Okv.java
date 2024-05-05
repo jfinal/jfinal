@@ -28,7 +28,7 @@ import com.jfinal.json.Json;
  * 所以对 Okv 中的数据进行迭代输出的次序与数据插入的先后次序一致
  *
  * Example：
- *    Okv para = Okv.by("id", 123);
+ *    Okv para = Okv.of("id", 123);
  *    User user = user.findFirst(getSqlPara("find", para));
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
