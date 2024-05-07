@@ -195,6 +195,13 @@
 			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>org.furyio</groupId>
+			<artifactId>fury-core</artifactId>
+			<version>0.4.1</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!--
 		<dependency>
 			<groupId>mysql</groupId>
