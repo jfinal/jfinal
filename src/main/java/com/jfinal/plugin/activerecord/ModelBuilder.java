@@ -115,7 +115,8 @@ public class ModelBuilder {
 	}
 	
 	public String handleClob(Clob clob) throws SQLException {
-		if (clob == null)
+		return clob == null ? null : clob.getSubString(1, (int) clob.length());
+		/*if (clob == null)
 			return null;
 		
 		Reader reader = null;
@@ -134,7 +135,7 @@ public class ModelBuilder {
 		finally {
 			if (reader != null)
 				try {reader.close();} catch (IOException e) {throw new RuntimeException(e);}
-		}
+		}*/
 	}
 	
 	/* backup before use columnType
