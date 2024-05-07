@@ -28,7 +28,9 @@ import com.zaxxer.hikari.HikariDataSource;
  * At roughly 130Kb, the library is very light
  * @ClassName: HikaricpPlugin
  */
-public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
+@SuppressWarnings({"unused", "JavadocDeclaration"})
+public class HikariCpPlugin implements IPlugin, IDataSourceProvider {
+
 	/**
 	 * jdbc Url
 	 */
@@ -68,6 +70,12 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	 * Default: 1800000 (30 minutes)
 	 */
 	private long maxLifetime = 1800000;
+
+	/**
+	 * keepalive time must be less than maxLifetime (if maxLifetime is enabled)
+	 * Default: 180000 (3 minutes)
+	 */
+	private long keepaliveTime = 180000;
 
 	/**
 	 * If your driver supports JDBC4 we strongly recommend not setting this property.
@@ -133,6 +141,8 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	 */
 	private long leakDetectionThreshold = 0;
 
+	private Boolean printLog;
+
 	/**
 	 * Hikari DataSource
 	 */
@@ -159,7 +169,7 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 
 	@Override
 	public boolean start() {
-		HikariConfig config = new HikariConfig();
+		HikariConfig config = newHikariConfig();
 		//设定基本参数
 		config.setJdbcUrl(jdbcUrl);
 		config.setUsername(username);
@@ -172,6 +182,7 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 		config.setConnectionTimeout(connectionTimeout);
 		config.setIdleTimeout(idleTimeout);
 		config.setMaxLifetime(maxLifetime);
+		config.setKeepaliveTime(keepaliveTime);
 		config.setMaximumPoolSize(maximumPoolSize);
 		config.setValidationTimeout(validationTimeout);
 
@@ -203,6 +214,12 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 			config.setConnectionInitSql(connectionInitSql);
 		}
 
+		// 配置日志记录器
+		if (printLog != null){
+			// 启用打印 SQL 语句和参数功能
+			config.addDataSourceProperty("printLog", printLog);
+		}
+
 		if(jdbcUrl.toLowerCase().contains(":mysql:")){
 			config.addDataSourceProperty("cachePrepStmts", "true");
 			config.addDataSourceProperty("useServerPrepStmts", "true");
@@ -221,6 +238,10 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 
 		ds = new HikariDataSource(config);
 		return true;
+	}
+
+	protected HikariConfig newHikariConfig() {
+		return new HikariConfig();
 	}
 
 	@Override
@@ -294,11 +315,21 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 
 	/**
 	 * 最大生命周期/最大存活时间(单位：毫秒) ，默认1800000 (30 分钟)
-	 * @param maxLifetime
+	 * @param maxLifetimeMs
 	 * @since V1.0.0
 	 */
 	public final void setMaxLifetime(long maxLifetimeMs) {
 		this.maxLifetime = maxLifetimeMs;
+	}
+
+	/**
+	 * 定时的对连接进行探活(单位：毫秒) ，默认180000 毫秒 (3 分钟)
+	 * 注意保活时间必须小于maxLifetime
+	 * @param keepaliveTime
+	 * @since V4.0.1
+	 */
+	public void setKeepaliveTime(long keepaliveTime) {
+		this.keepaliveTime = keepaliveTime;
 	}
 
 	/**
@@ -377,5 +408,14 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider{
 	public final void setLeakDetectionThreshold(long leakDetectionThresholdMs) {
 		this.leakDetectionThreshold = leakDetectionThresholdMs;
 	}
+
+	/**
+	 * 启用打印 SQL 语句和参数功能
+	 * @param printLog
+	 */
+	public void setPrintLog(boolean printLog) {
+		this.printLog = printLog;
+	}
+
 }
 
