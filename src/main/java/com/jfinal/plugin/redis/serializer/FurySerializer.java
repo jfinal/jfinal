@@ -9,6 +9,7 @@ import redis.clients.jedis.util.SafeEncoder;
  * FurySerializer
  */
 public class FurySerializer implements ISerializer {
+
     private static ThreadSafeFury fury;
 
     static {
@@ -54,3 +55,4 @@ public class FurySerializer implements ISerializer {
         return bytes != null && bytes.length != 0 ? fury.deserialize(bytes) : null;
     }
 }
+
