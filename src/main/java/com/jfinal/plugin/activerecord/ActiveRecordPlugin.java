@@ -44,6 +44,8 @@ public class ActiveRecordPlugin implements IPlugin {
 	protected volatile boolean isStarted = false;
 	protected List<Table> tableList = new ArrayList<Table>();
 
+	protected boolean autoConfigDialect = false;
+
 	public ActiveRecordPlugin(String configName, DataSource dataSource, int transactionLevel) {
 		if (StrKit.isBlank(configName)) {
 			throw new IllegalArgumentException("configName can not be blank");
@@ -75,7 +77,6 @@ public class ActiveRecordPlugin implements IPlugin {
 		}
 		this.dataSourceProvider = dataSourceProvider;
 		this.config = new Config(configName, null, transactionLevel);
-		// this.autoConfigDialect(dataSourceProvider.getJdbcUrl());
 	}
 
 	public ActiveRecordPlugin(IDataSourceProvider dataSourceProvider) {
@@ -224,6 +225,13 @@ public class ActiveRecordPlugin implements IPlugin {
 			throw new RuntimeException("ActiveRecord start error: ActiveRecordPlugin need DataSource or DataSourceProvider");
 		}
 
+		if (autoConfigDialect) {
+			if (dataSourceProvider == null) {
+				throw new RuntimeException("ActiveRecord start error: autoConfigDialect need DataSourceProvider");
+			}
+			autoConfigDialect(dataSourceProvider.getJdbcUrl());
+		}
+
 		config.sqlKit.parseSqlTemplate();
 
 		tableBuilder.build(tableList, config);
@@ -332,35 +340,42 @@ public class ActiveRecordPlugin implements IPlugin {
 		return this;
 	}
 
-	public void autoConfigDialect(String jdbcUrl) {
+	public ActiveRecordPlugin setAutoConfigDialect(boolean autoConfigDialect) {
+		this.autoConfigDialect = autoConfigDialect;
+		return this;
+	}
+
+	private void autoConfigDialect(String jdbcUrl) {
 		if (jdbcUrl.startsWith("jdbc:") && jdbcUrl.substring("jdbc:".length()).contains(":")) {
 			String dialect = jdbcUrl.substring("jdbc:".length(), jdbcUrl.indexOf(":", "jdbc:".length())).toLowerCase();
 			switch (dialect) {
 				case "h2":
 					setDialect(new H2Dialect());
-					break;
+					return;
 				case "informix-sqli":
 					setDialect(new InformixDialect());
-					break;
+					return;
 				case "mysql":
 					setDialect(new MysqlDialect());
-					break;
+					return;
 				case "oracle":
 					setDialect(new OracleDialect());
-					break;
+					return;
 				case "postgresql":
 					setDialect(new PostgreSqlDialect());
-					break;
+					return;
 				case "sqlite":
 					setDialect(new Sqlite3Dialect());
-					break;
+					return;
 				case "sqlserver":
 					setDialect(new SqlServerDialect());
-					break;
-				default:
-					setDialect(new AnsiSqlDialect());
+					return;
+				// default:
+					// setDialect(new AnsiSqlDialect());
             }
         }
+
+		throw new RuntimeException("autoConfigDialect 调用失败，无法从 jdbcUrl 确定可用的 Dialect：" + jdbcUrl);
 	}
 }
 
