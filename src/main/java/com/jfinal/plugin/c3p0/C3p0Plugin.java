@@ -166,6 +166,11 @@ public class C3p0Plugin implements IPlugin, IDataSourceProvider {
 	private Integer toInt(String str) {
 		return Integer.parseInt(str);
 	}
+
+	@Override
+	public String getJdbcUrl() {
+		return jdbcUrl;
+	}
 	
 	public DataSource getDataSource() {
 		return dataSource;

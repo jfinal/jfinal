@@ -286,6 +286,11 @@ public class DruidPlugin implements IPlugin, IDataSourceProvider {
 		isStarted = false;
 		return true;
 	}
+
+	@Override
+	public String getJdbcUrl() {
+		return url;
+	}
 	
 	public DataSource getDataSource() {
 		return ds;

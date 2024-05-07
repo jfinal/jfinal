@@ -161,6 +161,10 @@ public class HikariCpPlugin implements IPlugin, IDataSourceProvider {
 		this.driverClass = driverClass;
 	}
 
+	@Override
+	public String getJdbcUrl() {
+		return jdbcUrl;
+	}
 
 	@Override
 	public DataSource getDataSource() {
