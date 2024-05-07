@@ -19,8 +19,9 @@ public class FurySerializer implements ISerializer {
                 .withNumberCompressed(false)
                 .withAsyncCompilation(true)
                 .buildThreadSafeFury();
-                //.withCompatibleMode(CompatibleMode.SCHEMA_CONSISTENT)
-                //.buildThreadSafeFuryPool(8, 32, 5, TimeUnit.MINUTES);
+                // .withCompatibleMode(CompatibleMode.SCHEMA_CONSISTENT)
+                // .buildThreadSafeFuryPool(8, 32, 5, TimeUnit.MINUTES);
+                // .buildThreadLocalFury();
     }
 
     @Override
