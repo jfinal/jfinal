@@ -10,6 +10,8 @@ import redis.clients.jedis.util.SafeEncoder;
  */
 public class FurySerializer implements ISerializer {
 
+    public static final ISerializer me = new FurySerializer();
+
     private static ThreadSafeFury fury;
 
     static {
