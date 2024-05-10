@@ -36,19 +36,5 @@ public @interface Inject {
 	 * 被注入类的类型
  	 */
 	Class<?> value() default Void.class;
-
-	/**
-	 * 可用于配置远程服务名称，然后扩展 AopFactory 生成代理，以调用方法的方式来访问远程服务
-	 * <pre>
-	 * 例如：@Inject(remote = "orderService")
-	 *      OrderService service;
-	 *
-	 *      public void index(Integer orderId) {
-	 *      	// 调用名为 orderService 的远程服务
-	 *          renderJson(service.getById(orderId));
-	 *      }
-	 * </pre>
-	 */
-	String remote() default "";
 }
 
