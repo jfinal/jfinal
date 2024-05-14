@@ -346,7 +346,7 @@ public class ActiveRecordPlugin implements IPlugin {
 	}
 
 	private void autoConfigDialect(String jdbcUrl) {
-		if (jdbcUrl.startsWith("jdbc:") && jdbcUrl.substring("jdbc:".length()).contains(":")) {
+		if (jdbcUrl != null && jdbcUrl.startsWith("jdbc:") && jdbcUrl.substring("jdbc:".length()).contains(":")) {
 			String dialect = jdbcUrl.substring("jdbc:".length(), jdbcUrl.indexOf(":", "jdbc:".length())).toLowerCase();
 			switch (dialect) {
 				case "h2":

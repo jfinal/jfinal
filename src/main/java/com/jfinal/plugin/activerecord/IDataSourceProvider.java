@@ -24,8 +24,12 @@ import javax.sql.DataSource;
  * ActiveRecordPlugin constructor accept DataSourceProvider and DataSource
  */
 public interface IDataSourceProvider {
-	String getJdbcUrl();
+
 	DataSource getDataSource();
+
+	default String getJdbcUrl() {
+		return null;
+	}
 }
 
 
