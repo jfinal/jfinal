@@ -61,7 +61,7 @@ import it.sauronsoftware.cron4j.Task;
  * 后面的配置项均以 task1、task2 为前缀进行配置，具体意义如下
  * task1.cron 表示 task1 使用 cron 表达式调试任务
  * task1.class 表示 执行任务的类文件
- * task1.daemon 表示调试线程是否设置为守护线程，默认值为 false，守护线程会在 tomcat 关闭时自动关闭
+ * task1.daemon 表示调试线程是否设置为守护线程，默认值为 false，JVM 关闭时会终止守护线程正在执行的任务，非守护线程则会被等待直到任务执行完 
  * task1.enable 表示该任务是否有效，默认值为 true，为 false 时该任务无效，不会被调用
  * task2 的配置与 task1 类似，不在赘述
  *
