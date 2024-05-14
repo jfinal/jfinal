@@ -49,12 +49,12 @@ public class FurySerializer implements ISerializer {
 
     @Override
     public byte[] valueToBytes(Object value) {
-        return value != null ? fury.serialize(value) : null;
+        return fury.serialize(value);
     }
 
     @Override
     public Object valueFromBytes(byte[] bytes) {
-        return bytes != null && bytes.length != 0 ? fury.deserialize(bytes) : null;
+        return bytes != null ? fury.deserialize(bytes) : null;
     }
 }
 
