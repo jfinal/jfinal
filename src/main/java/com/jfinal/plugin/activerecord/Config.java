@@ -266,8 +266,8 @@ public class Config {
 				runnable.run();
 			} catch (Exception e) {
 				// conn.commit() 之后的回调异常不向外传播，保障事务主线不受影响
-				// com.jfinal.log.Log.getLog(Config.class).error(e.getMessage(), e);
-				e.printStackTrace();
+				// e.printStackTrace();
+				com.jfinal.log.Log.getLog(Config.class).error(e.getMessage(), e);
 			}
 		}
 	}
