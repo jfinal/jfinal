@@ -261,14 +261,13 @@ public class Config {
 	public void executeCallbackAfterTxCommit() {
 		Runnable runnable = callbackAfterTxCommitTL.get();
 		if (runnable != null) {
+			callbackAfterTxCommitTL.remove();
 			try {
 				runnable.run();
 			} catch (Exception e) {
-				// commit() 之后的回调异常不向外传播，保障事务主线完结
-				// e.printStackTrace();
-				com.jfinal.log.Log.getLog(Config.class).error(e.getMessage(), e);
-			} finally {
-				callbackAfterTxCommitTL.remove();
+				// conn.commit() 之后的回调异常不向外传播，保障事务主线不受影响
+				// com.jfinal.log.Log.getLog(Config.class).error(e.getMessage(), e);
+				e.printStackTrace();
 			}
 		}
 	}
