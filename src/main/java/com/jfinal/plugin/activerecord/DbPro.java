@@ -847,10 +847,12 @@ public class DbPro {
 			conn.setTransactionIsolation(transactionLevel);
 			conn.setAutoCommit(false);
 			boolean result = atom.run();
-			if (result)
+			if (result) {
 				conn.commit();
-			else
+				config.executeCallbackAfterTxCommit();
+			} else {
 				conn.rollback();
+			}
 			return result;
 		} catch (NestedTransactionHelpException e) {
 			if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}

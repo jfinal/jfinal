@@ -33,6 +33,8 @@ public class Config {
 
 	private final ThreadLocal<Connection> threadLocal = new ThreadLocal<Connection>();
 
+	private final ThreadLocal<Runnable> callbackAfterTxCommitTL = new ThreadLocal<>();
+
 	String name;
 	DataSource dataSource;
 
@@ -246,6 +248,29 @@ public class Config {
 		if (threadLocal.get() == null)		// in transaction if conn in threadlocal
 			if (conn != null)
 				try {conn.close();} catch (SQLException e) {throw new ActiveRecordException(e);}
+	}
+
+	public void setCallbackAfterTxCommit(Runnable callback) {
+		callbackAfterTxCommitTL.set(callback);
+	}
+
+	public void removeCallbackAfterTxCommit() {
+		callbackAfterTxCommitTL.remove();
+	}
+
+	public void executeCallbackAfterTxCommit() {
+		Runnable runnable = callbackAfterTxCommitTL.get();
+		if (runnable != null) {
+			try {
+				runnable.run();
+			} catch (Exception e) {
+				// commit() 之后的回调异常不向外传播，保障事务主线完结
+				// e.printStackTrace();
+				com.jfinal.log.Log.getLog(Config.class).error(e.getMessage(), e);
+			} finally {
+				callbackAfterTxCommitTL.remove();
+			}
+		}
 	}
 }
 
