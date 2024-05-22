@@ -34,17 +34,20 @@ public class TxByActionKeys implements Interceptor {
 	private Set<String> actionKeySet = new HashSet<String>();
 
 	public TxByActionKeys(String... actionKeys) {
-		if (actionKeys == null || actionKeys.length == 0)
+		if (actionKeys == null || actionKeys.length == 0) {
 			throw new IllegalArgumentException("actionKeys can not be blank.");
+		}
 
-		for (String actionKey : actionKeys)
+		for (String actionKey : actionKeys) {
 			actionKeySet.add(actionKey.trim());
+		}
 	}
 
 	public void intercept(final Invocation inv) {
 		Config config = Tx.getConfigByTxConfig(inv);
-		if (config == null)
+		if (config == null) {
 			config = DbKit.getConfig();
+		}
 
 		if (actionKeySet.contains(inv.getActionKey())) {
 			Db.use(config.getName()).tx(new IAtom() {
@@ -52,8 +55,7 @@ public class TxByActionKeys implements Interceptor {
 					inv.invoke();
 					return true;
 				}});
-		}
-		else {
+		} else {
 			inv.invoke();
 		}
 	}

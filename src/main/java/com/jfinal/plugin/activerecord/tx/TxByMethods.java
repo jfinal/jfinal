@@ -34,17 +34,20 @@ public class TxByMethods implements Interceptor {
 	private Set<String> methodSet = new HashSet<String>();
 
 	public TxByMethods(String... methods) {
-		if (methods == null || methods.length == 0)
+		if (methods == null || methods.length == 0) {
 			throw new IllegalArgumentException("methods can not be null.");
+		}
 
-		for (String method : methods)
+		for (String method : methods) {
 			methodSet.add(method.trim());
+		}
 	}
 
 	public void intercept(final Invocation inv) {
 		Config config = Tx.getConfigByTxConfig(inv);
-		if (config == null)
+		if (config == null) {
 			config = DbKit.getConfig();
+		}
 
 		if (methodSet.contains(inv.getMethodName())) {
 			Db.use(config.getName()).tx(new IAtom() {
@@ -52,8 +55,7 @@ public class TxByMethods implements Interceptor {
 					inv.invoke();
 					return true;
 				}});
-		}
-		else {
+		} else {
 			inv.invoke();
 		}
 	}

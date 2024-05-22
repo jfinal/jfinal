@@ -39,16 +39,18 @@ public class TxByActionKeyRegex implements Interceptor {
 	}
 
 	public TxByActionKeyRegex(String regex, boolean caseSensitive) {
-		if (StrKit.isBlank(regex))
+		if (StrKit.isBlank(regex)) {
 			throw new IllegalArgumentException("regex can not be blank.");
+		}
 
 		pattern = caseSensitive ? Pattern.compile(regex) : Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 	}
 
 	public void intercept(final Invocation inv) {
 		Config config = Tx.getConfigByTxConfig(inv);
-		if (config == null)
+		if (config == null) {
 			config = DbKit.getConfig();
+		}
 
 		if (pattern.matcher(inv.getActionKey()).matches()) {
 			Db.use(config.getName()).tx(new IAtom() {
@@ -56,8 +58,7 @@ public class TxByActionKeyRegex implements Interceptor {
 					inv.invoke();
 					return true;
 				}});
-		}
-		else {
+		} else {
 			inv.invoke();
 		}
 	}
