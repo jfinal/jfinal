@@ -903,7 +903,7 @@ public class DbPro {
 	public Future<Boolean> txInNewThread(IAtom atom) {
 		FutureTask<Boolean> task = new FutureTask<>(() -> tx(config, config.getTransactionLevel(), atom));
 		Thread thread = new Thread(task);
-		thread.setDaemon(true);
+		// thread.setDaemon(true);
 		thread.start();
 		return task;
 	}
@@ -911,7 +911,7 @@ public class DbPro {
 	public Future<Boolean> txInNewThread(int transactionLevel, IAtom atom) {
 		FutureTask<Boolean> task = new FutureTask<>(() -> tx(config, transactionLevel, atom));
 		Thread thread = new Thread(task);
-		thread.setDaemon(true);
+		// thread.setDaemon(true);
 		thread.start();
 		return task;
 	}
