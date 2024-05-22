@@ -31,25 +31,25 @@ import com.jfinal.plugin.activerecord.IAtom;
  * The regular expression match the controller key.
  */
 public class TxByActionKeyRegex implements Interceptor {
-	
+
 	private Pattern pattern;
-	
+
 	public TxByActionKeyRegex(String regex) {
 		this(regex, true);
 	}
-	
+
 	public TxByActionKeyRegex(String regex, boolean caseSensitive) {
 		if (StrKit.isBlank(regex))
 			throw new IllegalArgumentException("regex can not be blank.");
-		
+
 		pattern = caseSensitive ? Pattern.compile(regex) : Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 	}
-	
+
 	public void intercept(final Invocation inv) {
-		Config config = Tx.getConfigWithTxConfig(inv);
+		Config config = Tx.getConfigByTxConfig(inv);
 		if (config == null)
 			config = DbKit.getConfig();
-		
+
 		if (pattern.matcher(inv.getActionKey()).matches()) {
 			Db.use(config.getName()).tx(new IAtom() {
 				public boolean run() throws SQLException {

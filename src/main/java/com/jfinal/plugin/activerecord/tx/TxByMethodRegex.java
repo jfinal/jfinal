@@ -31,25 +31,25 @@ import com.jfinal.plugin.activerecord.IAtom;
  * The regular expression match the method name of the target.
  */
 public class TxByMethodRegex implements Interceptor {
-	
+
 	private Pattern pattern;
-	
+
 	public TxByMethodRegex(String regex) {
 		this(regex, true);
 	}
-	
+
 	public TxByMethodRegex(String regex, boolean caseSensitive) {
 		if (StrKit.isBlank(regex))
 			throw new IllegalArgumentException("regex can not be blank.");
-		
+
 		pattern = caseSensitive ? Pattern.compile(regex) : Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 	}
-	
+
 	public void intercept(final Invocation inv) {
-		Config config = Tx.getConfigWithTxConfig(inv);
+		Config config = Tx.getConfigByTxConfig(inv);
 		if (config == null)
 			config = DbKit.getConfig();
-		
+
 		if (pattern.matcher(inv.getMethodName()).matches()) {
 			Db.use(config.getName()).tx(new IAtom() {
 				public boolean run() throws SQLException {

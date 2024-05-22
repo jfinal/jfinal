@@ -46,7 +46,7 @@ public class Tx implements Interceptor {
 		return Tx.txFun;
 	}
 
-	public static Config getConfigWithTxConfig(Invocation inv) {
+	public static Config getConfigByTxConfig(Invocation inv) {
 		TxConfig txConfig = inv.getMethod().getAnnotation(TxConfig.class);
 		if (txConfig == null)
 			txConfig = inv.getTarget().getClass().getAnnotation(TxConfig.class);
@@ -65,7 +65,7 @@ public class Tx implements Interceptor {
 	}
 
 	public void intercept(Invocation inv) {
-		Config config = getConfigWithTxConfig(inv);
+		Config config = getConfigByTxConfig(inv);
 		if (config == null)
 			config = DbKit.getConfig();
 
