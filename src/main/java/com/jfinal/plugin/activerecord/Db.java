@@ -34,7 +34,7 @@ import com.jfinal.kit.SyncWriteMap;
 public class Db {
 
 	private static DbPro MAIN = null;
-	private static final Map<String, DbPro> cache = new SyncWriteMap<String, DbPro>(32, 0.25F);
+	private static final Map<String, DbPro> cache = new SyncWriteMap<>(32, 0.25F);
 
 	/**
 	 * for DbKit.addConfig(configName)
@@ -76,7 +76,7 @@ public class Db {
 	}
 
 	/**
-	 * @see #query(String, String, Object...)
+	 * sql paras 查询，从 JDBC 原样取值且不封装到 Record 对象
 	 */
 	public static <T> List<T> query(String sql, Object... paras) {
 		return MAIN.query(sql, paras);
@@ -286,14 +286,14 @@ public class Db {
 	}
 
 	/**
-	 * @see #find(String, String, Object...)
+	 * sql paras 查询，数据封装到 Record 对象
 	 */
 	public static List<Record> find(String sql, Object... paras) {
 		return MAIN.find(sql, paras);
 	}
 
 	/**
-	 * @see #find(String, String, Object...)
+	 * @see #find(String, Object...)
 	 * @param sql the sql statement
 	 */
 	public static List<Record> find(String sql) {
@@ -455,7 +455,7 @@ public class Db {
 	}
 
 	/**
-	 * @see #paginate(String, int, int, String, String, Object...)
+	 * 分页
 	 */
 	public static Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
 		return MAIN.paginate(pageNumber, pageSize, select, sqlExceptSelect);
@@ -483,7 +483,7 @@ public class Db {
 	 * @param tableName the table name of the table
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
 	 * @param record the record will be saved
-	 * @param true if save succeed otherwise false
+	 * @return true if save succeed otherwise false
 	 */
 	public static boolean save(String tableName, String primaryKey, Record record) {
 		return MAIN.save(tableName, primaryKey, record);
@@ -509,7 +509,7 @@ public class Db {
 	 * @param tableName the table name of the Record save to
 	 * @param primaryKey the primary key of the table, composite primary key is separated by comma character: ","
 	 * @param record the Record object
-	 * @param true if update succeed otherwise false
+	 * @return true if update succeed otherwise false
 	 */
 	public static boolean update(String tableName, String primaryKey, Record record) {
 		return MAIN.update(tableName, primaryKey, record);
@@ -528,7 +528,7 @@ public class Db {
 	}
 
 	/**
-	 * @see #execute(String, ICallback)
+	 * @see #execute(Config, ICallback)
 	 */
 	public static Object execute(ICallback callback) {
 		return MAIN.execute(callback);

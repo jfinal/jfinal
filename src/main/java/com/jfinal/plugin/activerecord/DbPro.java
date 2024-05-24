@@ -93,7 +93,7 @@ public class DbPro {
 	}
 
 	/**
-	 * @see #query(String, String, Object...)
+	 * sql paras 查询，从 JDBC 原样取值且不封装到 Record 对象
 	 */
 	public <T> List<T> query(String sql, Object... paras) {
 		Connection conn = null;
@@ -389,7 +389,7 @@ public class DbPro {
 	}
 
 	/**
-	 * @see #find(String, String, Object...)
+	 * sql paras 查询，数据封装到 Record 对象
 	 */
 	public List<Record> find(String sql, Object... paras) {
 		Connection conn = null;
@@ -404,7 +404,7 @@ public class DbPro {
 	}
 
 	/**
-	 * @see #find(String, String, Object...)
+	 * @see #find(String, Object...)
 	 * @param sql the sql statement
 	 */
 	public List<Record> find(String sql) {
@@ -586,7 +586,7 @@ public class DbPro {
 	}
 
 	/**
-	 * @see #paginate(String, int, int, String, String, Object...)
+	 * 分页
 	 */
 	public Page<Record> paginate(int pageNumber, int pageSize, String select, String sqlExceptSelect) {
 		return doPaginate(pageNumber, pageSize, null, select, sqlExceptSelect, NULL_PARA_ARRAY);
@@ -793,7 +793,7 @@ public class DbPro {
 	}
 
 	/**
-	 * @see #execute(String, ICallback)
+	 * @see #execute(Config, ICallback)
 	 */
 	public Object execute(ICallback callback) {
 		return execute(config, callback);
