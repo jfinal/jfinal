@@ -60,10 +60,14 @@ public class BeanGetter<T> extends ParaGetter<T> {
 
 	private T resolveJson(JsonRequest req) {
 		com.alibaba.fastjson.JSONObject jsonObj = req.getJSONObject();
-		if (jsonObj == null) {
+		if (jsonObj != null) {
+			return toBean(jsonObj);
+		} else {
 			return toList(req.getJSONArray());
 		}
+	}
 
+	private T toBean(com.alibaba.fastjson.JSONObject jsonObj) {
 		String paraName = this.getParameterName();
 		if (jsonObj.containsKey(paraName)) {
 			// 存在与 action 形参名相同的 request 参数则使用其 value 值进行转换
