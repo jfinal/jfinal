@@ -27,13 +27,13 @@ import java.util.TreeSet;
  */
 public class CaseInsensitiveContainerFactory implements IContainerFactory {
 
-	private static Boolean toLowerCase = null;
+	private Boolean toLowerCase = null;
 
 	public CaseInsensitiveContainerFactory() {
 	}
 
 	public CaseInsensitiveContainerFactory(boolean toLowerCase) {
-		CaseInsensitiveContainerFactory.toLowerCase = toLowerCase;
+		this.toLowerCase = toLowerCase;
 	}
 
 	public Map<String, Object> getAttrsMap() {
@@ -48,7 +48,7 @@ public class CaseInsensitiveContainerFactory implements IContainerFactory {
 		return new CaseInsensitiveSet();
 	}
 
-	private static String convertCase(String key) {
+	private String convertCase(String key) {
 		if (toLowerCase != null) {
 			return toLowerCase ? key.toLowerCase() : key.toUpperCase();
 		} else {
@@ -63,7 +63,7 @@ public class CaseInsensitiveContainerFactory implements IContainerFactory {
 	 * 3：外部类CaseInsensitiveContainerFactory 需要 implements Serializable 才能被序列化
 	 * 4：可以使用静态内部类来实现内部类的序列化，而非让外部类实现 implements Serializable
 	 */
-	public static class CaseInsensitiveSet extends TreeSet<String> {
+	public class CaseInsensitiveSet extends TreeSet<String> {
 
 		private static final long serialVersionUID = 6236541338642353211L;
 
@@ -86,7 +86,7 @@ public class CaseInsensitiveContainerFactory implements IContainerFactory {
 		}
 	}
 
-	public static class CaseInsensitiveMap<V> extends TreeMap<String, V> {
+	public class CaseInsensitiveMap<V> extends TreeMap<String, V> {
 
 		private static final long serialVersionUID = 7482853823611007217L;
 
