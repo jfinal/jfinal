@@ -1,8 +1,8 @@
 package com.jfinal.plugin.redis.serializer;
 
-import io.fury.Fury;
-import io.fury.ThreadSafeFury;
-import io.fury.config.Language;
+import org.apache.fury.Fury;
+import org.apache.fury.ThreadSafeFury;
+import org.apache.fury.config.Language;
 import redis.clients.jedis.util.SafeEncoder;
 
 /**
