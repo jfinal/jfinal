@@ -86,6 +86,7 @@ public class CaptchaRender extends Render {
 		Cookie cookie = new Cookie(captchaName, captcha.getKey());
 		cookie.setMaxAge(-1);
 		cookie.setPath("/");
+        cookie.setHttpOnly(true);
 		response.addCookie(cookie);
 		response.setHeader("Pragma","no-cache");
 		response.setHeader("Cache-Control","no-cache");
