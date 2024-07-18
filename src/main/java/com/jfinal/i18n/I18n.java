@@ -90,10 +90,16 @@ public class I18n {
 	
 	public static Locale toLocale(String locale) {
 		String[] array = locale.split("_");
+		if (array.length == 0) {
+            throw new IllegalArgumentException("Invalid locale format");
+        }
 		if (array.length == 1) {
 			return new Locale(array[0]);
+		} else if (array.length == 2) {
+			return new Locale(array[0], array[1]);
 		}
-		return new Locale(array[0], array[1]);
+        String variant = locale.substring(locale.indexOf(array[1]) + array[1].length()).replaceFirst("_", "");
+		return new Locale(array[0], array[1], variant);
 	}
 	
 	public static String toLocale(Locale locale) {
