@@ -103,6 +103,9 @@ public class I18n {
 	}
 	
 	public static String toLocale(Locale locale) {
+		if(locale.getVariant() != null && !locale.getVariant().isEmpty()) {
+			return locale.getLanguage() + "_" + locale.getCountry()+"_"+locale.getVariant();
+		}
 		return locale.getLanguage() + "_" + locale.getCountry();
 	}
 }
