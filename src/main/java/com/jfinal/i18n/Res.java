@@ -38,6 +38,17 @@ public class Res {
 		this.resourceBundle = ResourceBundle.getBundle(baseName, I18n.toLocale(locale));
 	}
 	
+	public Res(String baseName, String locale, ResourceBundle.Control control) {
+		if (StrKit.isBlank(baseName)) {
+			throw new IllegalArgumentException("baseName can not be blank");
+		}
+		if (StrKit.isBlank(locale)) {
+			throw new IllegalArgumentException("locale can not be blank, the format like this: zh_CN or en_US");
+		}
+		
+		this.resourceBundle = ResourceBundle.getBundle(baseName, I18n.toLocale(locale), control);
+	}
+	
 	/**
 	 * Get the message value from ResourceBundle of the related Locale.
 	 * @param key message key

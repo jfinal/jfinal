@@ -17,7 +17,9 @@
 package com.jfinal.i18n;
 
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
+
 import com.jfinal.kit.StrKit;
 
 /**
@@ -76,12 +78,26 @@ public class I18n {
 		return res;
 	}
 	
+	public static Res use(String baseName, String locale, ResourceBundle.Control control) {
+		String resKey = baseName + locale;
+		Res res = resMap.get(resKey);
+		if (res == null) {
+			res = new Res(baseName, locale, control);
+			resMap.put(resKey, res);
+		}
+		return res;
+	}
+	
 	public static Res use(String baseName, Locale locale) {
 		return use(baseName, toLocale(locale));
 	}
 	
 	public static Res use(String locale) {
 		return use(defaultBaseName, locale);
+	}
+	
+	public static Res use(String locale, ResourceBundle.Control control) {
+		return use(defaultBaseName, locale, control);
 	}
 	
 	public static Res use() {
@@ -103,6 +119,9 @@ public class I18n {
 	}
 	
 	public static String toLocale(Locale locale) {
+		if(locale.getVariant() != null && !locale.getVariant().isEmpty()) {
+			return locale.getLanguage() + "_" + locale.getCountry()+"_"+locale.getVariant();
+		}
 		return locale.getLanguage() + "_" + locale.getCountry();
 	}
 }
