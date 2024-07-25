@@ -55,11 +55,12 @@ public class ParaProcessorBuilder {
 		regist(java.lang.Integer[].class, IntegerArrayGetter.class, null);
 		regist(java.lang.Long[].class, LongArrayGetter.class, null);
 		regist(com.jfinal.core.paragetter.RawData.class, RawDataGetter.class, null);
-		
+		regist(com.jfinal.kit.Kv.class, KvGetter.class, null);
+
 	}
-	
+
 	/**
-	 * 注册一个类型对应的参数获取器 
+	 * 注册一个类型对应的参数获取器
 	 * ParameterGetterBuilder.me().regist(java.lang.String.class, StringParaGetter.class, null);
 	 * @param typeClass 类型，例如 java.lang.Integer.class
 	 * @param pgClass 参数获取器实现类，必须继承ParaGetter
@@ -71,20 +72,20 @@ public class ParaProcessorBuilder {
 
 	public ParaProcessor build(Class<? extends Controller> controllerClass, Method method) {
 		final int paraCount = method.getParameterCount();
-		
+
 		// 无参 action 共享同一个对象，该分支以外的所有 ParaProcessor 都是有参 action，不必进行 null 值判断
 		if (paraCount == 0) {
 			return NullParaProcessor.me;
 		}
-		
+
 		ParaProcessor ret = new ParaProcessor(paraCount);
-		
+
 		Parameter[] paras = method.getParameters();
 		for (int i=0; i<paraCount; i++) {
 			IParaGetter<?> pg = createParaGetter(controllerClass, method, paras[i]);
 			ret.addParaGetter(i, pg);
 		}
-		
+
 		return ret;
 	}
 
@@ -105,7 +106,7 @@ public class ParaProcessorBuilder {
 			if (!Para.NULL_VALUE.equals(para.value())) {
 				parameterName = para.value().trim();
 			}
-			
+
 			/*
 			defaultValue = para.defaultValue().trim();
 			if (defaultValue.isEmpty()) {
@@ -115,7 +116,7 @@ public class ParaProcessorBuilder {
 			if (!Para.NULL_VALUE.equals(para.defaultValue())) {
 				defaultValue = para.defaultValue();
 			}
-			
+
 		}
 		Holder holder = typeMap.get(typeClass);
 		if (holder != null) {

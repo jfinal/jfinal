@@ -15,42 +15,37 @@
  */
 package com.jfinal.core.paragetter;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.core.Action;
 import com.jfinal.core.ActionHandler;
 import com.jfinal.core.Controller;
+import com.jfinal.kit.Kv;
 import com.jfinal.kit.StrKit;
 
-public class LongArrayGetter extends ParaGetter<Long[]> {
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-	public LongArrayGetter(String parameterName, String defaultValue) {
-		super(parameterName,defaultValue);
+public class KvGetter extends ParaGetter<Kv> {
+
+	public KvGetter(String parameterName, String defaultValue){
+		super(parameterName, defaultValue);
 	}
 
 	@Override
-	public Long[] get(Action action, Controller c) {
+	public Kv get(Action action, Controller c) {
 		String paraName = getParameterName();
-		Long[] ret = null;
+		Kv ret = null;
 		if (ActionHandler.resolveJson && c.isJsonRequest()) {
 			JsonRequest jsonRequest = (JsonRequest) c.getRequest();
 			JSONObject jsonObject = jsonRequest.getJSONObject();
 			if(jsonObject != null && !jsonObject.isEmpty() && jsonObject.containsKey(paraName)){
-				Object values = jsonObject.get(paraName);
-				if(values !=null){
-					if(values instanceof String){
-						ret =to(values.toString());
-					}else if(values instanceof List){
-						ret = ((List<Long>)values).toArray(new Long[0]);
-					}else if(values instanceof String[]){
-						ret = (Long[])values;
-					}
-				}
+				ret = Kv.create().set(jsonObject.getJSONObject(paraName).getInnerMap());
 			}
 		}else{
-			ret = c.getParaValuesToLong(paraName);
+			ret = to(c.getPara(paraName));
 		}
 		if(null == ret) {
 			ret =  this.getDefaultValue();
@@ -59,16 +54,9 @@ public class LongArrayGetter extends ParaGetter<Long[]> {
 	}
 
 	@Override
-	protected Long[] to(String v) {
+	protected Kv to(String v) {
 		if(StrKit.notBlank(v)){
-			String[] ss = v.split(",");
-			List<Long> ls = new ArrayList<Long>(ss.length);
-			for(String s : ss){
-				if(StrKit.notBlank(s)){
-					ls.add(Long.parseLong(s.trim()));
-				}
-			}
-			return ls.toArray(new Long[0]);
+			return Kv.create().set(JSON.parseObject(v).getInnerMap());
 		}
 		return null;
 	}

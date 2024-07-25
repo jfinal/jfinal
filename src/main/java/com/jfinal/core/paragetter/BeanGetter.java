@@ -18,6 +18,9 @@ package com.jfinal.core.paragetter;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
+
 import com.jfinal.core.Action;
 import com.jfinal.core.ActionHandler;
 import com.jfinal.core.Controller;
@@ -70,9 +73,18 @@ public class BeanGetter<T> extends ParaGetter<T> {
 	private T toBean(com.alibaba.fastjson.JSONObject jsonObj) {
 		String paraName = this.getParameterName();
 		if (jsonObj.containsKey(paraName)) {
+			if(List.class.isAssignableFrom(beanClass)){
+				return toList(jsonObj.getJSONArray(paraName));
+			}else if(Map.class.isAssignableFrom(beanClass)){
+				return jsonObj.getJSONObject(paraName).toJavaObject(beanClass);
+			}
 			// 存在与 action 形参名相同的 request 参数则使用其 value 值进行转换
 			return jsonObj.getObject(paraName, beanClass);
 		} else {
+			//如果不是集合、数组、Map，则返回 null
+			if(List.class.isAssignableFrom(beanClass) || beanClass.isArray() || Map.class.isAssignableFrom(beanClass)){
+				return null;
+			}
 			// 否则使用整个请求中的 json 进行转换
 			return jsonObj.toJavaObject(beanClass);
 		}
