@@ -22,12 +22,6 @@ import com.jfinal.core.ActionHandler;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.StrKit;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 public class KvGetter extends ParaGetter<Kv> {
 
 	public KvGetter(String parameterName, String defaultValue){
