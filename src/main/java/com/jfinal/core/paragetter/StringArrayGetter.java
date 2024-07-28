@@ -15,19 +15,42 @@
  */
 package com.jfinal.core.paragetter;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jfinal.core.Action;
+import com.jfinal.core.ActionHandler;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 
+import java.util.List;
+
 public class StringArrayGetter extends ParaGetter<String[]> {
-	
+
 	public StringArrayGetter(String parameterName, String defaultValue) {
 		super(parameterName,defaultValue);
 	}
 	@Override
 	public String[] get(Action action, Controller c) {
-		String[] ret = c.getParaValues(getParameterName());
-		if( null == ret) {
+		String paraName = getParameterName();
+		String[] ret = null;
+		if (ActionHandler.resolveJson && c.isJsonRequest()) {
+			JsonRequest jsonRequest = (JsonRequest) c.getRequest();
+			JSONObject jsonObject = jsonRequest.getJSONObject();
+			if(jsonObject != null && !jsonObject.isEmpty() && jsonObject.containsKey(paraName)){
+				Object values = jsonObject.get(paraName);
+				if(values !=null){
+					if(values instanceof String){
+						ret = to(values.toString());
+					}else if(values instanceof List){
+						ret = ((List<String>)values).toArray(new String[0]);
+					}else if(values instanceof String[]){
+						ret = (String[])values;
+					}
+				}
+			}
+		}else{
+			ret = c.getParaValues(paraName);
+		}
+		if(null == ret) {
 			ret =  this.getDefaultValue();
 		}
 		return ret;

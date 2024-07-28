@@ -18,20 +18,41 @@ package com.jfinal.core.paragetter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jfinal.core.Action;
+import com.jfinal.core.ActionHandler;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
 
 public class IntegerArrayGetter extends ParaGetter<Integer[]> {
-	
+
 	public IntegerArrayGetter(String parameterName, String defaultValue) {
 		super(parameterName,defaultValue);
 	}
 
 	@Override
 	public Integer[] get(Action action, Controller c) {
-		Integer[] ret = c.getParaValuesToInt(getParameterName());
-		if( null == ret) {
+		String paraName = getParameterName();
+		Integer[] ret = null;
+		if (ActionHandler.resolveJson && c.isJsonRequest()) {
+			JsonRequest jsonRequest = (JsonRequest) c.getRequest();
+			JSONObject jsonObject = jsonRequest.getJSONObject();
+			if(jsonObject != null && !jsonObject.isEmpty() && jsonObject.containsKey(paraName)){
+				Object values = jsonObject.get(paraName);
+				if(values !=null){
+					if(values instanceof String){
+						ret = to(values.toString());
+					}else if(values instanceof List){
+						ret = ((List<Integer>)values).toArray(new Integer[0]);
+					}else if(values instanceof String[]){
+						ret = (Integer[])values;
+					}
+				}
+			}
+		}else{
+			ret = c.getParaValuesToInt(paraName);
+		}
+		if(null == ret) {
 			ret =  this.getDefaultValue();
 		}
 		return ret;
