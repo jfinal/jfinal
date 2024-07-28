@@ -43,7 +43,7 @@ public class KvGetter extends ParaGetter<Kv> {
 			ret = to(c.getPara(paraName));
 		}
 		if (null == ret) {
-			ret =  this.getDefaultValue();
+			ret = this.getDefaultValue();
 		}
 		return ret;
 	}

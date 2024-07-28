@@ -26,7 +26,7 @@ import com.jfinal.kit.StrKit;
 public class IntegerArrayGetter extends ParaGetter<Integer[]> {
 
 	public IntegerArrayGetter(String parameterName, String defaultValue) {
-		super(parameterName,defaultValue);
+		super(parameterName, defaultValue);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class IntegerArrayGetter extends ParaGetter<Integer[]> {
 			ret = c.getParaValuesToInt(paraName);
 		}
 		if (null == ret) {
-			ret =  this.getDefaultValue();
+			ret = this.getDefaultValue();
 		}
 		return ret;
 	}

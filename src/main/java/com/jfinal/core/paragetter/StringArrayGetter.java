@@ -25,8 +25,9 @@ import java.util.List;
 public class StringArrayGetter extends ParaGetter<String[]> {
 
 	public StringArrayGetter(String parameterName, String defaultValue) {
-		super(parameterName,defaultValue);
+		super(parameterName, defaultValue);
 	}
+
 	@Override
 	public String[] get(Action action, Controller c) {
 		String paraName = getParameterName();
@@ -50,10 +51,11 @@ public class StringArrayGetter extends ParaGetter<String[]> {
 			ret = c.getParaValues(paraName);
 		}
 		if (null == ret) {
-			ret =  this.getDefaultValue();
+			ret = this.getDefaultValue();
 		}
 		return ret;
 	}
+
 	@Override
 	protected String[] to(String v) {
 		if (StrKit.notBlank(v)) {

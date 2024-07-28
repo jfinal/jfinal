@@ -26,7 +26,7 @@ import com.jfinal.kit.StrKit;
 public class LongArrayGetter extends ParaGetter<Long[]> {
 
 	public LongArrayGetter(String parameterName, String defaultValue) {
-		super(parameterName,defaultValue);
+		super(parameterName, defaultValue);
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class LongArrayGetter extends ParaGetter<Long[]> {
 			ret = c.getParaValuesToLong(paraName);
 		}
 		if (null == ret) {
-			ret =  this.getDefaultValue();
+			ret = this.getDefaultValue();
 		}
 		return ret;
 	}

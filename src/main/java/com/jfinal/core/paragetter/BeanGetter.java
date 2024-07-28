@@ -41,9 +41,9 @@ public class BeanGetter<T> extends ParaGetter<T> {
 		if (parameter != null) {
 			Type type = parameter.getParameterizedType();
 			if (type instanceof ParameterizedType) {
-				Type[] ts = ((ParameterizedType)type).getActualTypeArguments();
+				Type[] ts = ((ParameterizedType) type).getActualTypeArguments();
 				if (ts != null && ts.length > 0) {
-					return ts[0] instanceof Class ? (Class<?>)ts[0] : null;
+					return ts[0] instanceof Class ? (Class<?>) ts[0] : null;
 				}
 			}
 		}
@@ -54,7 +54,7 @@ public class BeanGetter<T> extends ParaGetter<T> {
 	public T get(Action action, Controller c) {
 		// 支持 json 数据请求注入 action 形参
 		if (ActionHandler.resolveJson && c.isJsonRequest()) {
-			return resolveJson((JsonRequest)c.getRequest());
+			return resolveJson((JsonRequest) c.getRequest());
 		} else {
 			return c.getBean(beanClass, this.getParameterName(), true);
 		}
