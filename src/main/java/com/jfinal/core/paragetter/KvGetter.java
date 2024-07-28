@@ -22,9 +22,10 @@ import com.jfinal.core.ActionHandler;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.Kv;
 import com.jfinal.kit.StrKit;
+
 public class KvGetter extends ParaGetter<Kv> {
 
-	public KvGetter(String parameterName, String defaultValue){
+	public KvGetter(String parameterName, String defaultValue) {
 		super(parameterName, defaultValue);
 	}
 
@@ -35,13 +36,13 @@ public class KvGetter extends ParaGetter<Kv> {
 		if (ActionHandler.resolveJson && c.isJsonRequest()) {
 			JsonRequest jsonRequest = (JsonRequest) c.getRequest();
 			JSONObject jsonObject = jsonRequest.getJSONObject();
-			if(jsonObject != null && !jsonObject.isEmpty() && jsonObject.containsKey(paraName)){
+			if (jsonObject != null && jsonObject.containsKey(paraName)) {
 				ret = Kv.create().set(jsonObject.getJSONObject(paraName).getInnerMap());
 			}
-		}else{
+		} else {
 			ret = to(c.getPara(paraName));
 		}
-		if(null == ret) {
+		if (null == ret) {
 			ret =  this.getDefaultValue();
 		}
 		return ret;
@@ -49,7 +50,7 @@ public class KvGetter extends ParaGetter<Kv> {
 
 	@Override
 	protected Kv to(String v) {
-		if(StrKit.notBlank(v)){
+		if (StrKit.notBlank(v)) {
 			return Kv.create().set(JSON.parseObject(v).getInnerMap());
 		}
 		return null;

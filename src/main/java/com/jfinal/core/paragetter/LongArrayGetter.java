@@ -17,7 +17,6 @@ package com.jfinal.core.paragetter;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.core.Action;
 import com.jfinal.core.ActionHandler;
@@ -37,22 +36,22 @@ public class LongArrayGetter extends ParaGetter<Long[]> {
 		if (ActionHandler.resolveJson && c.isJsonRequest()) {
 			JsonRequest jsonRequest = (JsonRequest) c.getRequest();
 			JSONObject jsonObject = jsonRequest.getJSONObject();
-			if(jsonObject != null && !jsonObject.isEmpty() && jsonObject.containsKey(paraName)){
+			if (jsonObject != null && jsonObject.containsKey(paraName)) {
 				Object values = jsonObject.get(paraName);
-				if(values !=null){
-					if(values instanceof String){
-						ret =to(values.toString());
-					}else if(values instanceof List){
-						ret = ((List<Long>)values).toArray(new Long[0]);
-					}else if(values instanceof String[]){
-						ret = (Long[])values;
+				if (values != null) {
+					if (values instanceof String) {
+						ret = to(values.toString());
+					} else if (values instanceof List) {
+						ret = ((List<Long>) values).toArray(new Long[0]);
+					} else if (values instanceof String[]) {
+						ret = (Long[]) values;
 					}
 				}
 			}
-		}else{
+		} else {
 			ret = c.getParaValuesToLong(paraName);
 		}
-		if(null == ret) {
+		if (null == ret) {
 			ret =  this.getDefaultValue();
 		}
 		return ret;
@@ -60,11 +59,11 @@ public class LongArrayGetter extends ParaGetter<Long[]> {
 
 	@Override
 	protected Long[] to(String v) {
-		if(StrKit.notBlank(v)){
+		if (StrKit.notBlank(v)) {
 			String[] ss = v.split(",");
-			List<Long> ls = new ArrayList<Long>(ss.length);
-			for(String s : ss){
-				if(StrKit.notBlank(s)){
+			List<Long> ls = new ArrayList<>(ss.length);
+			for (String s : ss) {
+				if (StrKit.notBlank(s)) {
 					ls.add(Long.parseLong(s.trim()));
 				}
 			}

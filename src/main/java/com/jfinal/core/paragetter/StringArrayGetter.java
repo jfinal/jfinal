@@ -20,7 +20,6 @@ import com.jfinal.core.Action;
 import com.jfinal.core.ActionHandler;
 import com.jfinal.core.Controller;
 import com.jfinal.kit.StrKit;
-
 import java.util.List;
 
 public class StringArrayGetter extends ParaGetter<String[]> {
@@ -35,29 +34,29 @@ public class StringArrayGetter extends ParaGetter<String[]> {
 		if (ActionHandler.resolveJson && c.isJsonRequest()) {
 			JsonRequest jsonRequest = (JsonRequest) c.getRequest();
 			JSONObject jsonObject = jsonRequest.getJSONObject();
-			if(jsonObject != null && !jsonObject.isEmpty() && jsonObject.containsKey(paraName)){
+			if (jsonObject != null && jsonObject.containsKey(paraName)) {
 				Object values = jsonObject.get(paraName);
-				if(values !=null){
-					if(values instanceof String){
+				if (values != null) {
+					if (values instanceof String) {
 						ret = to(values.toString());
-					}else if(values instanceof List){
-						ret = ((List<String>)values).toArray(new String[0]);
-					}else if(values instanceof String[]){
-						ret = (String[])values;
+					} else if (values instanceof List) {
+						ret = ((List<String>) values).toArray(new String[0]);
+					} else if (values instanceof String[]) {
+						ret = (String[]) values;
 					}
 				}
 			}
-		}else{
+		} else {
 			ret = c.getParaValues(paraName);
 		}
-		if(null == ret) {
+		if (null == ret) {
 			ret =  this.getDefaultValue();
 		}
 		return ret;
 	}
 	@Override
 	protected String[] to(String v) {
-		if(StrKit.notBlank(v)){
+		if (StrKit.notBlank(v)) {
 			return v.split(",");
 		}
 		return null;
