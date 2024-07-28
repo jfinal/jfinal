@@ -56,7 +56,6 @@ public class ParaProcessorBuilder {
 		regist(java.lang.Long[].class, LongArrayGetter.class, null);
 		regist(com.jfinal.core.paragetter.RawData.class, RawDataGetter.class, null);
 		regist(com.jfinal.kit.Kv.class, KvGetter.class, null);
-
 	}
 
 	/**
@@ -66,8 +65,19 @@ public class ParaProcessorBuilder {
 	 * @param pgClass 参数获取器实现类，必须继承ParaGetter
 	 * @param defaultValue，默认值，比如int的默认值为0， java.lang.Integer的默认值为null
 	 */
-	public <T> void regist(Class<T> typeClass, Class<? extends ParaGetter<T>> pgClass, String defaultValue){
+	public <T> void regist(Class<T> typeClass, Class<? extends ParaGetter<T>> pgClass, String defaultValue) {
 		this.typeMap.put(typeClass, new Holder(pgClass, defaultValue));
+	}
+
+	/**
+	 * 移除参数获取器
+	 */
+	public void remove(Class<?> typeClass) {
+		typeMap.remove(typeClass);
+	}
+
+	public boolean contains(Class<?> typeClass) {
+		return typeMap.containsKey(typeClass);
 	}
 
 	public ParaProcessor build(Class<? extends Controller> controllerClass, Method method) {
@@ -90,13 +100,13 @@ public class ParaProcessorBuilder {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private IParaGetter<?> createParaGetter(Class<? extends Controller> controllerClass, Method method,
-			Parameter p) {
+	private IParaGetter<?> createParaGetter(Class<? extends Controller> controllerClass, Method method, Parameter p) {
 		if(!p.isNamePresent()) {
 			log.warn("You should config compiler argument \"-parameters\" for parameter injection of action : " +
 					controllerClass.getName() + "." + method.getName() + "(...) \n" +
 					"Visit https://jfinal.com/doc/3-3 for details \n");
 		}
+
 		String parameterName = p.getName();
 		String defaultValue = null;
 		Class<?> typeClass = p.getType();
@@ -130,12 +140,12 @@ public class ParaProcessorBuilder {
 			}
 		}
 		//枚举
-		if(Enum.class.isAssignableFrom(typeClass)){
-			return new EnumGetter(typeClass,parameterName,defaultValue);
-		}else if (com.jfinal.plugin.activerecord.IBean.class.isAssignableFrom(typeClass)) {
+		if (Enum.class.isAssignableFrom(typeClass)) {
+			return new EnumGetter(typeClass, parameterName, defaultValue);
+		} else if (com.jfinal.plugin.activerecord.IBean.class.isAssignableFrom(typeClass)) {
 			//实现了IBean接口，优先按BeanGetter来处理。
 			return new BeanGetter(typeClass, parameterName, p);
-		}else if (com.jfinal.plugin.activerecord.Model.class.isAssignableFrom(typeClass)) {
+		} else if (com.jfinal.plugin.activerecord.Model.class.isAssignableFrom(typeClass)) {
 			return new ModelGetter(typeClass, parameterName);
 		} else {
 			return new BeanGetter(typeClass, parameterName, p);
@@ -143,6 +153,7 @@ public class ParaProcessorBuilder {
 	}
 
 	private static class Holder {
+
 		private final String defaultValue;
 		private final Class<? extends ParaGetter<?>> clazz;
 
@@ -150,9 +161,11 @@ public class ParaProcessorBuilder {
 			this.clazz = clazz;
 			this.defaultValue = defaultValue;
 		}
+
 		final String getDefaultValue() {
 			return defaultValue;
 		}
+
 		ParaGetter<?> born(String parameterName, String defaultValue) throws Exception {
 			Constructor<? extends ParaGetter<?>> con = clazz.getConstructor(String.class, String.class);
 			return con.newInstance(parameterName, defaultValue);
