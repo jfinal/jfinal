@@ -52,6 +52,8 @@ public class Jackson extends Json {
 
 		// 没有 getter 方法时不抛异常
 		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		// 自动发现并注册所有可用的 jackson 模块
+		objectMapper.findAndRegisterModules();
 	}
 
 	public static void setDefaultGenerateNullValue(boolean defaultGenerateNullValue) {
