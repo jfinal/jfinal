@@ -21,10 +21,10 @@ package com.jfinal.log;
  */
 public class Log4j2Log extends Log {
 
-    private final transient org.apache.logging.log4j.Logger logger;
+    private final transient org.apache.logging.log4j.Logger log;
 
-    public Log4j2Log(org.apache.logging.log4j.Logger logger) {
-        this.logger = logger;
+    public Log4j2Log(org.apache.logging.log4j.Logger log) {
+        this.log = log;
     }
 
     public Log4j2Log(Class<?> clazz) {
@@ -39,161 +39,155 @@ public class Log4j2Log extends Log {
 
     @Override
     public void debug(String message) {
-        logger.debug(message);
+        log.debug(message);
     }
 
     @Override
     public void debug(String message, Throwable t) {
-        logger.debug(message, t);
+        log.debug(message, t);
     }
 
     @Override
     public void info(String message) {
-        logger.info(message);
+        log.info(message);
     }
 
     @Override
     public void info(String message, Throwable t) {
-        logger.info(message, t);
+        log.info(message, t);
     }
 
     @Override
     public void warn(String message) {
-        logger.warn(message);
+        log.warn(message);
     }
 
     @Override
     public void warn(String message, Throwable t) {
-        logger.warn(message, t);
+        log.warn(message, t);
     }
 
     @Override
     public void error(String message) {
-        logger.error(message);
+        log.error(message);
     }
 
     @Override
     public void error(String message, Throwable t) {
-        logger.error(message, t);
+        log.error(message, t);
     }
 
     @Override
     public void fatal(String message) {
-        logger.fatal(message);
+        log.fatal(message);
     }
 
     @Override
     public void fatal(String message, Throwable t) {
-        logger.fatal(message, t);
+        log.fatal(message, t);
     }
 
     @Override
     public void trace(String message) {
-        logger.trace(message);
+        log.trace(message);
     }
 
     @Override
     public void trace(String message, Throwable t) {
-        logger.trace(message, t);
+        log.trace(message, t);
     }
 
     //-------------------------------------------------------
 
     @Override
     public boolean isDebugEnabled() {
-        return logger.isDebugEnabled();
+        return log.isDebugEnabled();
     }
 
     @Override
     public boolean isInfoEnabled() {
-        return logger.isInfoEnabled();
+        return log.isInfoEnabled();
     }
 
     @Override
     public boolean isWarnEnabled() {
-        return logger.isWarnEnabled();
+        return log.isWarnEnabled();
     }
 
     @Override
     public boolean isErrorEnabled() {
-        return logger.isErrorEnabled();
+        return log.isErrorEnabled();
     }
 
     @Override
     public boolean isFatalEnabled() {
-        return logger.isFatalEnabled();
+        return log.isFatalEnabled();
     }
 
     @Override
     public boolean isTraceEnabled() {
-        return logger.isTraceEnabled();
+        return log.isTraceEnabled();
     }
 
     //-------------------------------------------------------
 
+    /**
+     * @param format 支持占位符 {}
+     * @param args 替换参数
+     */
     public void trace(String format, Object... args) {
         if (isTraceEnabled()) {
-            if (endsWithThrowable(args)) {
-                LogInfo li = parse(format, args);
-                trace(li.message, li.throwable);
-            } else {
-                trace(String.format(format, args));
-            }
+            log.trace(format, args);
         }
     }
 
+    /**
+     * @param format 支持占位符 {}
+     * @param args 替换参数
+     */
     public void debug(String format, Object... args) {
         if (isDebugEnabled()) {
-            if (endsWithThrowable(args)) {
-                LogInfo li = parse(format, args);
-                debug(li.message, li.throwable);
-            } else {
-                debug(String.format(format, args));
-            }
+            log.debug(format, args);
         }
     }
 
+    /**
+     * @param format 支持占位符 {}
+     * @param args 替换参数
+     */
     public void info(String format, Object... args) {
         if (isInfoEnabled()) {
-            if (endsWithThrowable(args)) {
-                LogInfo li = parse(format, args);
-                info(li.message, li.throwable);
-            } else {
-                info(String.format(format, args));
-            }
+            log.info(format, args);
         }
     }
 
+    /**
+     * @param format 支持占位符 {}
+     * @param args 替换参数
+     */
     public void warn(String format, Object... args) {
         if (isWarnEnabled()) {
-            if (endsWithThrowable(args)) {
-                LogInfo li = parse(format, args);
-                warn(li.message, li.throwable);
-            } else {
-                warn(String.format(format, args));
-            }
+            log.warn(format, args);
         }
     }
 
+    /**
+     * @param format 支持占位符 {}
+     * @param args 替换参数
+     */
     public void error(String format, Object... args) {
         if (isErrorEnabled()) {
-            if (endsWithThrowable(args)) {
-                LogInfo li = parse(format, args);
-                error(li.message, li.throwable);
-            } else {
-                error(String.format(format, args));
-            }
+            log.error(format, args);
         }
     }
 
+    /**
+     * @param format 支持占位符 {}
+     * @param args 替换参数
+     */
     public void fatal(String format, Object... args) {
         if (isFatalEnabled()) {
-            if (endsWithThrowable(args)) {
-                LogInfo li = parse(format, args);
-                fatal(li.message, li.throwable);
-            } else {
-                fatal(String.format(format, args));
-            }
+            log.fatal(format, args);
         }
     }
 }
