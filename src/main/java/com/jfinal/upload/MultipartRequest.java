@@ -141,7 +141,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 
 	protected boolean isSafeFile(UploadFile uploadFile) {
 		String fileName = uploadFile.getFileName().trim();
-		int index = fileName.indexOf('.');
+		int index = fileName.lastIndexOf('.');
 		if (index != -1) {
 			String extName = fileName.substring(index + 1);
 			if (UploadConfig.whitelist.contains(extName)) {
