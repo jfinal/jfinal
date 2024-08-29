@@ -35,16 +35,28 @@ public abstract class Log {
 	
 	static void init() {
 		if (defaultLogFactory == null) {
-			try {
-				Class.forName("org.apache.log4j.Logger");
-				Class<?> log4jLogFactoryClass = Class.forName("com.jfinal.log.Log4jLogFactory");
-				defaultLogFactory = (ILogFactory)log4jLogFactoryClass.newInstance();	// return new Log4jLogFactory();
-			} catch (Exception e) {
-				defaultLogFactory = new JdkLogFactory();
-			}
+			defaultLogFactory = newDefaultLogFactory(
+					"org.apache.log4j.Logger", "com.jfinal.log.Log4jLogFactory");
+		}
+		if (defaultLogFactory == null) {
+			defaultLogFactory = newDefaultLogFactory(
+					"org.apache.logging.log4j.Logger", "com.jfinal.log.Log4j2JfLogFactory");
+		}
+		if (defaultLogFactory == null) {
+			defaultLogFactory = new JdkLogFactory();
 		}
 	}
-	
+
+	private static ILogFactory newDefaultLogFactory(String logName, String logFactoryName) {
+		try {
+			Class.forName(logName);
+			Class<?> log4jLogFactoryClass = Class.forName(logFactoryName);
+			return (ILogFactory)log4jLogFactoryClass.newInstance();
+		} catch (Exception ignored) {
+			return null;
+		}
+	}
+
 	static void setDefaultLogFactory(ILogFactory defaultLogFactory) {
 		if (defaultLogFactory == null) {
 			throw new IllegalArgumentException("defaultLogFactory can not be null.");
