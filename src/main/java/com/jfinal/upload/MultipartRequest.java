@@ -128,26 +128,14 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 					}
 				}
 			}
+
+			// 处理非法上传。存在非法上传文件，无条件删除所有已上传文件
+			handleIllegalUpload();
+
 		} catch (com.oreilly.servlet.multipart.ExceededSizeException e) {
 			throw new ExceededSizeException(e);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
-		}
-
-		handleIllegalUploadFile();
-	}
-
-	// 处理非法上传。无条件删除所有已上传文件
-	private void handleIllegalUploadFile() {
-		if (illegalUploadFile != null) {
-			for (UploadFile uploadFile : uploadFiles) {
-				try {
-					uploadFile.getFile().delete();
-				} catch (Exception ignore) {
-					// ignore
-				}
-			}
-			throw new RuntimeException("上传文件类型白名单不支持上传该文件: \"" + illegalUploadFile + "\"");
 		}
 	}
 
@@ -168,6 +156,20 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 			// ignore
 		}
 		return false;
+	}
+
+	// 处理非法上传。存在非法上传文件，无条件删除所有已上传文件
+	private void handleIllegalUpload() {
+		if (illegalUploadFile != null) {
+			for (UploadFile uploadFile : uploadFiles) {
+				try {
+					uploadFile.getFile().delete();
+				} catch (Exception ignore) {
+					// ignore
+				}
+			}
+			throw new RuntimeException("上传文件类型白名单不支持上传该文件: \"" + illegalUploadFile + "\"");
+		}
 	}
 
 	public List<UploadFile> getFiles() {
