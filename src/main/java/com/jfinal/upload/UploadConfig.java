@@ -78,6 +78,13 @@ public class UploadConfig {
 		}
 	}
 
+	/**
+	 * 清空白名单，不允许文件上传。清除后可以添加指定允许上传的文件类型
+	 */
+	public static void clearWhitelist() {
+		whitelist.clear();
+	}
+
 	public static void init(String uploadPath, long maxPostSize, String encoding) {
 		if (StrKit.isBlank(uploadPath)) {
 			throw new IllegalArgumentException("uploadPath can not be blank.");
