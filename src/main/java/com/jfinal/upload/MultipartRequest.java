@@ -53,6 +53,9 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 	private List<UploadFile> uploadFiles;
 	private com.oreilly.servlet.MultipartRequest multipartRequest;
 
+	// 非法上传文件名
+	private String illegalUpload;
+
 	public MultipartRequest(HttpServletRequest request, String uploadPath, long maxPostSize, String encoding) {
 		super(request);
 		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, encoding);
@@ -130,15 +133,41 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+
+		handleIllegalUpload();
+	}
+
+	// 处理非法上传。无条件删除所有已上传文件
+	private void handleIllegalUpload() {
+		if (illegalUpload != null) {
+			for (UploadFile uploadFile : uploadFiles) {
+				try {
+					uploadFile.getFile().delete();
+				} catch (Exception ignore) {
+					// ignore
+				}
+			}
+			throw new RuntimeException("上传文件类型白名单不支持上传该文件: \"" + illegalUpload + "\"");
+		}
 	}
 
 	protected boolean isSafeFile(UploadFile uploadFile) {
-		String fileName = uploadFile.getFileName().trim().toLowerCase();
-		if (fileName.endsWith(".jsp") || fileName.endsWith(".jspx")) {
-			uploadFile.getFile().delete();
-			return false;
+		String fileName = uploadFile.getFileName().trim();
+		int index = fileName.indexOf('.');
+		if (index != -1) {
+			String extName = fileName.substring(index + 1);
+			if (UploadConfig.whitelist.contains(extName)) {
+				return true;
+			}
 		}
-		return true;
+
+		try {
+			illegalUpload = fileName;			// 记录非法上传文件名
+			uploadFile.getFile().delete();		// 尽早删除非法上传文件
+		} catch (Exception ignore) {
+			// ignore
+		}
+		return false;
 	}
 
 	public List<UploadFile> getFiles() {
