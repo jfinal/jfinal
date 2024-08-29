@@ -53,8 +53,8 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 	private List<UploadFile> uploadFiles;
 	private com.oreilly.servlet.MultipartRequest multipartRequest;
 
-	// 非法上传文件名
-	private String illegalUpload;
+	// 非法上传文件
+	private String illegalUploadFile;
 
 	public MultipartRequest(HttpServletRequest request, String uploadPath, long maxPostSize, String encoding) {
 		super(request);
@@ -134,12 +134,12 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 			throw new RuntimeException(e);
 		}
 
-		handleIllegalUpload();
+		handleIllegalUploadFile();
 	}
 
 	// 处理非法上传。无条件删除所有已上传文件
-	private void handleIllegalUpload() {
-		if (illegalUpload != null) {
+	private void handleIllegalUploadFile() {
+		if (illegalUploadFile != null) {
 			for (UploadFile uploadFile : uploadFiles) {
 				try {
 					uploadFile.getFile().delete();
@@ -147,7 +147,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 					// ignore
 				}
 			}
-			throw new RuntimeException("上传文件类型白名单不支持上传该文件: \"" + illegalUpload + "\"");
+			throw new RuntimeException("上传文件类型白名单不支持上传该文件: \"" + illegalUploadFile + "\"");
 		}
 	}
 
@@ -162,7 +162,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 		}
 
 		try {
-			illegalUpload = fileName;			// 记录非法上传文件名
+			illegalUploadFile = fileName;		// 记录非法上传文件
 			uploadFile.getFile().delete();		// 尽早删除非法上传文件
 		} catch (Exception ignore) {
 			// ignore
