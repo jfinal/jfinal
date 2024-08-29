@@ -16,7 +16,7 @@
 
 package com.jfinal.log;
 
-public class Log4j2JfLogFactory implements ILogFactory {
+public class Log4j2LogFactory implements ILogFactory {
 
     @Override
     public Log getLog(Class<?> clazz) {
