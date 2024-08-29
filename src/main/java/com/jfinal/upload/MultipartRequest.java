@@ -159,7 +159,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 	}
 
 	// 处理非法上传。存在非法上传文件，无条件删除所有已上传文件
-	private void handleIllegalUpload() {
+	protected void handleIllegalUpload() {
 		if (illegalUploadFile != null) {
 			for (UploadFile uploadFile : uploadFiles) {
 				try {
