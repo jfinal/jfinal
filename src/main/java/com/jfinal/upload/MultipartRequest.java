@@ -33,7 +33,7 @@ import com.oreilly.servlet.multipart.FileRenamePolicy;
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class MultipartRequest extends HttpServletRequestWrapper {
-	
+
 	static FileRenamePolicy fileRenamePolicy = new DefaultFileRenamePolicy(){
 		@Override
 		public File rename(File f) {
@@ -49,30 +49,30 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 			return super.rename(f);
 		}
 	};
-	
+
 	private List<UploadFile> uploadFiles;
 	private com.oreilly.servlet.MultipartRequest multipartRequest;
-	
+
 	public MultipartRequest(HttpServletRequest request, String uploadPath, long maxPostSize, String encoding) {
 		super(request);
 		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, encoding);
 	}
-	
+
 	public MultipartRequest(HttpServletRequest request, String uploadPath, long maxPostSize) {
 		super(request);
 		wrapMultipartRequest(request, getFinalPath(uploadPath), maxPostSize, UploadConfig.encoding);
 	}
-	
+
 	public MultipartRequest(HttpServletRequest request, String uploadPath) {
 		super(request);
 		wrapMultipartRequest(request, getFinalPath(uploadPath), UploadConfig.maxPostSize, UploadConfig.encoding);
 	}
-	
+
 	public MultipartRequest(HttpServletRequest request) {
 		super(request);
 		wrapMultipartRequest(request, UploadConfig.baseUploadPath, UploadConfig.maxPostSize, UploadConfig.encoding);
 	}
-	
+
 	/**
 	 * 路径允许为 "" 值，表示直接使用基础路径 baseUploadPath
 	 */
@@ -80,7 +80,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 		if (uploadPath == null) {
 			throw new IllegalArgumentException("uploadPath can not be null.");
 		}
-		
+
 		uploadPath = uploadPath.trim();
 		if (uploadPath.startsWith("/") || uploadPath.startsWith("\\")) {
 			if (UploadConfig.baseUploadPath.equals("/")) {
@@ -92,7 +92,7 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 			return UploadConfig.baseUploadPath + File.separator + uploadPath;
 		}
 	}
-	
+
 	private void wrapMultipartRequest(HttpServletRequest request, String uploadPath, long maxPostSize, String encoding) {
 		File dir = new File(uploadPath);
 		if ( !dir.exists()) {
@@ -100,21 +100,21 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 				throw new RuntimeException("Directory " + uploadPath + " not exists and can not create directory.");
 			}
 		}
-		
+
 //		String content_type = request.getContentType();
 //        if (content_type == null || content_type.indexOf("multipart/form-data") == -1) {
 //        	throw new RuntimeException("Not multipart request, enctype=\"multipart/form-data\" is not found of form.");
 //        }
-		
+
         uploadFiles = new ArrayList<UploadFile>();
-		
+
 		try {
 			multipartRequest = new  com.oreilly.servlet.MultipartRequest(request, uploadPath, maxPostSize, encoding, fileRenamePolicy);
 			Enumeration files = multipartRequest.getFileNames();
 			while (files.hasMoreElements()) {
 				String name = (String)files.nextElement();
 				String filesystemName = multipartRequest.getFilesystemName(name);
-				
+
 				// 文件没有上传则不生成 UploadFile, 这与 cos的解决方案不一样
 				if (filesystemName != null) {
 					String originalFileName = multipartRequest.getOriginalFileName(name);
@@ -131,8 +131,8 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	private boolean isSafeFile(UploadFile uploadFile) {
+
+	protected boolean isSafeFile(UploadFile uploadFile) {
 		String fileName = uploadFile.getFileName().trim().toLowerCase();
 		if (fileName.endsWith(".jsp") || fileName.endsWith(".jspx")) {
 			uploadFile.getFile().delete();
@@ -140,26 +140,26 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 		}
 		return true;
 	}
-	
+
 	public List<UploadFile> getFiles() {
 		return uploadFiles;
 	}
-	
+
 	/**
 	 * Methods to replace HttpServletRequest methods
 	 */
 	public Enumeration getParameterNames() {
 		return multipartRequest.getParameterNames();
 	}
-	
+
 	public String getParameter(String name) {
 		return multipartRequest.getParameter(name);
 	}
-	
+
 	public String[] getParameterValues(String name) {
 		return multipartRequest.getParameterValues(name);
 	}
-	
+
 	public Map getParameterMap() {
 		Map map = new HashMap();
 		Enumeration enumm = getParameterNames();
