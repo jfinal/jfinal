@@ -31,7 +31,7 @@ import com.jfinal.core.paragetter.JsonRequest;
  */
 public class ActionReporter {
 
-	protected static final String title = "\nJFinal-" + Const.JFINAL_VERSION + " action report -------- ";
+	protected static String title = "\nJFinal-" + Const.JFINAL_VERSION + " action report -------- ";
 	protected static final String[] BLANK_STRING_ARRAY = {""};
 	protected static boolean reportAfterInvocation = true;
 	protected static int maxOutputLengthOfParaValue = 512;
@@ -42,6 +42,10 @@ public class ActionReporter {
 			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		}
 	};
+
+	public static void setTitle(String title) {
+		ActionReporter.title = title;
+	}
 
 	public static void setReportAfterInvocation(boolean reportAfterInvocation) {
 		ActionReporter.reportAfterInvocation = reportAfterInvocation;
