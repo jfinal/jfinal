@@ -30,37 +30,37 @@ import com.jfinal.core.paragetter.JsonRequest;
  * ActionReporter
  */
 public class ActionReporter {
-	
+
 	protected static final String title = "\nJFinal-" + Const.JFINAL_VERSION + " action report -------- ";
 	protected static final String[] BLANK_STRING_ARRAY = {""};
 	protected static boolean reportAfterInvocation = true;
 	protected static int maxOutputLengthOfParaValue = 512;
 	protected static Writer writer = new SystemOutWriter();
-	
+
 	protected static final ThreadLocal<SimpleDateFormat> sdf = new ThreadLocal<SimpleDateFormat>() {
 		protected SimpleDateFormat initialValue() {
-			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		}
 	};
-	
+
 	public static void setReportAfterInvocation(boolean reportAfterInvocation) {
 		ActionReporter.reportAfterInvocation = reportAfterInvocation;
 	}
-	
+
 	public static void setMaxOutputLengthOfParaValue(int maxOutputLengthOfParaValue) {
 		if (maxOutputLengthOfParaValue < 16) {
 			throw new IllegalArgumentException("maxOutputLengthOfParaValue must more than 16");
 		}
 		ActionReporter.maxOutputLengthOfParaValue = maxOutputLengthOfParaValue;
 	}
-	
+
 	public static void setWriter(Writer writer) {
 		if (writer == null) {
 			throw new IllegalArgumentException("writer can not be null");
 		}
 		ActionReporter.writer = writer;
 	}
-	
+
 	public boolean isReportAfterInvocation(HttpServletRequest request) {
 		if (reportAfterInvocation) {
 			return true;
@@ -73,7 +73,7 @@ public class ActionReporter {
 			}
 		}
 	}
-	
+
 	/**
 	 * Report the action
 	 */
@@ -83,12 +83,12 @@ public class ActionReporter {
 		Class<? extends Controller> cc = action.getControllerClass();
 		sb.append("Controller  : ").append(cc.getName()).append(".(").append(cc.getSimpleName()).append(".java:1)");
 		sb.append("\nMethod      : ").append(action.getMethodName()).append('\n');
-		
+
 		String urlParas = controller.getPara();
 		if (urlParas != null) {
 			sb.append("UrlPara     : ").append(urlParas).append('\n');
 		}
-		
+
 		Interceptor[] inters = action.getInterceptors();
 		if (inters.length > 0) {
 			sb.append("Interceptor : ");
@@ -101,7 +101,7 @@ public class ActionReporter {
 			}
 			sb.append('\n');
 		}
-		
+
 		// print all parameters
 		HttpServletRequest request = controller.getRequest();
 		if (request instanceof JsonRequest) {
@@ -109,23 +109,23 @@ public class ActionReporter {
 		} else {
 			buildPara(controller, sb);
 		}
-		
+
 		sb.append("--------------------------------------------------------------------------------\n");
-		
+
 		try {
 			writer.write(sb.toString());
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 	}
-	
-	private void buildJsonPara(Controller controller, StringBuilder sb) {
+
+	protected void buildJsonPara(Controller controller, StringBuilder sb) {
 		sb.append("Parameter   : ");
 		sb.append(controller.getRawData());
 		sb.append('\n');
 	}
-	
-	private void buildPara(Controller controller, StringBuilder sb) {
+
+	protected void buildPara(Controller controller, StringBuilder sb) {
 		Map<String, String[]> paraMap = controller.getRequest().getParameterMap();
 		if (paraMap != null && paraMap.size() > 0) {
 			sb.append("Parameter   : ");
@@ -135,7 +135,7 @@ public class ActionReporter {
 				if (values == null) {
 					values = BLANK_STRING_ARRAY;
 				}
-				
+
 				if (values.length == 1) {
 					sb.append(name).append('=');
 					if (values[0] != null && values[0].length() > maxOutputLengthOfParaValue) {
@@ -158,7 +158,7 @@ public class ActionReporter {
 			sb.append('\n');
 		}
 	}
-	
+
 	private static class SystemOutWriter extends Writer {
 		public void write(String str) throws IOException {
 			System.out.print(str);
