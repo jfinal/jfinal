@@ -89,7 +89,7 @@ public class EngineConfig {
 
 		// Add official directive of Template Engine
 		addDirective("render", RenderDirective.class, true);
-		addDirective("renderElse", RenderElseDirective.class, true);
+		addDirective("renderOrElse", RenderOrElseDirective.class, true);
 		addDirective("date", DateDirective.class, true);
 		addDirective("escape", EscapeDirective.class, true);
 		addDirective("random", RandomDirective.class, true);

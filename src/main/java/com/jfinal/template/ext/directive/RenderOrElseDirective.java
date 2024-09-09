@@ -27,23 +27,23 @@ import java.util.Map;
  * 界面上的自定义render渲染模版
  * 模版文件存在的时候渲染
  * 模版文件不存在的时渲染插槽内容
- * #renderElse("/_view/include/xxx.html")
+ * #renderOrElse("/_view/include/xxx.html")
  * <a href="/admin/xxx/edit/1">xxxx</a>
  * #end
  */
-public class RenderElseDirective extends Directive {
+public class RenderOrElseDirective extends Directive {
 	private String parentFileName;
-	private Map<String, RenderElseDirective.SubStat> subStatCache = new SyncWriteMap<String, RenderElseDirective.SubStat>(16, 0.5F);
+	private Map<String, RenderOrElseDirective.SubStat> subStatCache = new SyncWriteMap<String, RenderOrElseDirective.SubStat>(16, 0.5F);
 
 	public void setExprList(ExprList exprList) {
 		int len = exprList.length();
 		if (len == 0) {
-			throw new ParseException("The parameter of #render directive can not be blank", location);
+			throw new ParseException("The parameter of #renderOrElse directive can not be blank", location);
 		}
 		if (len > 1) {
 			for (int i = 1; i < len; i++) {
 				if (!(exprList.getExpr(i) instanceof Assign)) {
-					throw new ParseException("The " + (i + 1) + "th parameter of #render directive must be an assignment expression", location);
+					throw new ParseException("The " + (i + 1) + "th parameter of #renderOrElse directive must be an assignment expression", location);
 				}
 			}
 		}
@@ -77,13 +77,13 @@ public class RenderElseDirective extends Directive {
 
 		Object value = evalAssignExpressionAndGetFileName(scope);
 		if (!(value instanceof String)) {
-			throw new TemplateException("The parameter value of #render directive must be String", location);
+			throw new TemplateException("The parameter value of #renderOrElse directive must be String", location);
 		}
 		String subFileName = Include.getSubFileName((String)value, parentFileName);
 		String enjoyHtmlFilePath = PathKit.getWebRootPath() + subFileName;
 		File enjoyHtmlFile = new File(enjoyHtmlFilePath);
 		if(enjoyHtmlFile.exists()){
-			RenderElseDirective.SubStat subStat = subStatCache.get(subFileName);
+			RenderOrElseDirective.SubStat subStat = subStatCache.get(subFileName);
 			if (subStat == null) {
 				subStat = parseSubStat(env, subFileName);
 				subStatCache.put(subFileName, subStat);
@@ -104,26 +104,26 @@ public class RenderElseDirective extends Directive {
 
 	}
 
-	private RenderElseDirective.SubStat parseSubStat(Env env, String subFileName) {
+	private RenderOrElseDirective.SubStat parseSubStat(Env env, String subFileName) {
 		EngineConfig config = env.getEngineConfig();
 		// FileSource subFileSource = new FileSource(config.getBaseTemplatePath(), subFileName, config.getEncoding());
 		ISource subFileSource = config.getSourceFactory().getSource(config.getBaseTemplatePath(), subFileName, config.getEncoding());
 
 		try {
-			RenderElseDirective.SubEnv subEnv = new RenderElseDirective.SubEnv(env);
+			RenderOrElseDirective.SubEnv subEnv = new RenderOrElseDirective.SubEnv(env);
 			StatList subStatList = new Parser(subEnv, subFileSource.getContent(), subFileName).parse();
-			return new RenderElseDirective.SubStat(subEnv, subStatList.getActualStat(), subFileSource);
+			return new RenderOrElseDirective.SubStat(subEnv, subStatList.getActualStat(), subFileSource);
 		} catch (Exception e) {
 			throw new ParseException(e.getMessage(), location, e);
 		}
 	}
 
 	public static class SubStat extends Stat {
-		public RenderElseDirective.SubEnv env;
+		public RenderOrElseDirective.SubEnv env;
 		public Stat stat;
 		public ISource source;
 
-		public SubStat(RenderElseDirective.SubEnv env, Stat stat, ISource source) {
+		public SubStat(RenderOrElseDirective.SubEnv env, Stat stat, ISource source) {
 			this.env = env;
 			this.stat = stat;
 			this.source = source;
