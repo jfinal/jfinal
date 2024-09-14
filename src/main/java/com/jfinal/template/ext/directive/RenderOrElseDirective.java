@@ -79,10 +79,11 @@ public class RenderOrElseDirective extends Directive {
 		if (!(value instanceof String)) {
 			throw new TemplateException("The parameter value of #renderOrElse directive must be String", location);
 		}
+
 		String subFileName = Include.getSubFileName((String)value, parentFileName);
 		String enjoyHtmlFilePath = PathKit.getWebRootPath() + subFileName;
 		File enjoyHtmlFile = new File(enjoyHtmlFilePath);
-		if(enjoyHtmlFile.exists()){
+		if (enjoyHtmlFile.exists()) {
 			RenderOrElseDirective.SubStat subStat = subStatCache.get(subFileName);
 			if (subStat == null) {
 				subStat = parseSubStat(env, subFileName);
@@ -98,10 +99,9 @@ public class RenderOrElseDirective extends Directive {
 			subStat.exec(null, scope, writer);	// subStat.stat.exec(subStat.env, scope, writer);
 
 			scope.getCtrl().setJumpNone();
-		}else{
+		} else {
 			stat.exec(env, scope, writer);
 		}
-
 	}
 
 	private RenderOrElseDirective.SubStat parseSubStat(Env env, String subFileName) {
