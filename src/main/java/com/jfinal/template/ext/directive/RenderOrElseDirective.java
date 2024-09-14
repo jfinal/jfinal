@@ -81,6 +81,8 @@ public class RenderOrElseDirective extends Directive {
 		}
 
 		String subFileName = Include.getSubFileName((String)value, parentFileName);
+		// TODO 未考虑模板 source 为 classpath 的情况，也未考虑 baseTemplatePath 参数据，需参考以下代码进行改进
+		//      config.getSourceFactory().getSource(config.getBaseTemplatePath(), subFileName, ...)
 		String enjoyHtmlFilePath = PathKit.getWebRootPath() + subFileName;
 		File enjoyHtmlFile = new File(enjoyHtmlFilePath);
 		if (enjoyHtmlFile.exists()) {
