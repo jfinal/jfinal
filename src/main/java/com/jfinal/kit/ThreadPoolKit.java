@@ -76,8 +76,12 @@ import com.jfinal.log.Log;
  * 要等到队列装满 Integer.MAX_VALUE 任务之后 maximumPoolSize 才会起作用
  *
  * 补充：
+ * 0：JDK 21+ 虚拟线程用法（https://jfinal.com/share/2754）：
+ *       ThreadPoolKit.init(Executors.newVirtualThreadPerTaskExecutor())
+ *
  * 1：ScheduledExecutorService 的 schedule、scheduleAtFixedRate、scheduleWithFixedDelay
  *    在碰到异常时将停止调度，注意用 try catch 处理好
+ *
  * 2：综上，所有 ExecutorService 的调度方法都要使用 try catch 处理好异常，除非明确知道无需处理异常
  * </pre>
  */
