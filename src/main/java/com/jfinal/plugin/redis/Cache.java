@@ -1643,6 +1643,14 @@ public class Cache {
 	}
 
 	/**
+	 * redis 分布式锁。
+	 * @param maxLockTimeAndRetryTime "最大锁定时间 maxLockTime" 与 "获取锁的重试时间 retryTime" 使用相同的值。
+	 */
+	public boolean withLock(String name, double maxLockTimeAndRetryTime, F00 fun) {
+		return withLock(name, (int) Math.ceil(maxLockTimeAndRetryTime), maxLockTimeAndRetryTime, fun);
+	}
+
+	/**
 	 * redis 事务，返回值为非 null 时表示 redis 事务执行成功，否则执行失败
 	 * 被监视的 watchKey 值发生变化时，事务将会执行失败
 	 *
