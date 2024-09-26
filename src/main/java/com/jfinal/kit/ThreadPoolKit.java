@@ -204,6 +204,20 @@ public class ThreadPoolKit {
 	}
 
 	/**
+	 * 创建一个任务组
+	 */
+	public static ThreadPoolGroup newGroup() {
+		return new ThreadPoolGroup();
+	}
+
+	/**
+	 * 创建一个任务组
+	 */
+	public static ThreadPoolGroup newGroup(int initialCapacity) {
+		return new ThreadPoolGroup(initialCapacity);
+	}
+
+	/**
 	 * 等待正在执行的线程执行完毕以后，关闭线程池
 	 */
 	public static void shutdown() {
