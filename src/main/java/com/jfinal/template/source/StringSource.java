@@ -16,7 +16,6 @@
 
 package com.jfinal.template.source;
 
-import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.template.EngineConfig;
 
@@ -24,10 +23,10 @@ import com.jfinal.template.EngineConfig;
  * StringSource 用于从 String 变量中加载模板内容
  */
 public class StringSource implements ISource {
-	
+
 	private String cacheKey;
 	private StringBuilder content;
-	
+
 	/**
 	 * 构造 StringSource
 	 * @param content 模板内容
@@ -36,7 +35,7 @@ public class StringSource implements ISource {
 	public StringSource(String content, boolean cache) {
 		this(content, cache ? HashKit.md5(content) : null);
 	}
-	
+
 	/**
 	 * 构造 StringSource
 	 * @param content 模板内容
@@ -49,11 +48,11 @@ public class StringSource implements ISource {
 		this.content = new StringBuilder(content);
 		this.cacheKey = cacheKey;
 	}
-	
+
 	public StringSource(StringBuilder content, boolean cache) {
 		this(content, cache && content != null ? HashKit.md5(content.toString()) : null);
 	}
-	
+
 	public StringSource(StringBuilder content, String cacheKey) {
 		if (content == null || content.length() == 0) {
 			throw new IllegalArgumentException("content can not be blank");
@@ -61,23 +60,23 @@ public class StringSource implements ISource {
 		this.content = content;
 		this.cacheKey = cacheKey;			// cacheKey 值为 null 时不缓存
 	}
-	
+
 	public boolean isModified() {
 		return false;
 	}
-	
+
 	public String getCacheKey() {
 		return cacheKey;
 	}
-	
+
 	public StringBuilder getContent() {
 		return content;
 	}
-	
+
 	public String getEncoding() {
 		return EngineConfig.DEFAULT_ENCODING;
 	}
-	
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("cacheKey : ").append(cacheKey).append("\n");
