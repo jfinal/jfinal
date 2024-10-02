@@ -33,7 +33,7 @@ public class StringSource implements ISource {
 	 * @param cache true 则缓存 Template，否则不缓存
 	 */
 	public StringSource(String content, boolean cache) {
-		this(content, cache ? HashKit.md5(content) : null);
+		this(content, cache ? content : null);
 	}
 
 	/**
@@ -50,7 +50,7 @@ public class StringSource implements ISource {
 	}
 
 	public StringSource(StringBuilder content, boolean cache) {
-		this(content, cache && content != null ? HashKit.md5(content.toString()) : null);
+		this(content, cache && content != null ? content.toString() : null);
 	}
 
 	public StringSource(StringBuilder content, String cacheKey) {
