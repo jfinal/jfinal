@@ -25,8 +25,21 @@ import java.util.Set;
 @SuppressWarnings("rawtypes")
 public interface IContainerFactory extends Serializable {
 
+	/**
+	 * 用于存放 Model 属性的 Map
+	 * 警告：不能使用 ConcurrentHashMap，其无法存入 null 值，无法将 null 写入数据库
+	 */
 	Map getAttrsMap();
+
+	/**
+	 * 用于存放 Record 字段的 Map
+	 * 警告：不能使用 ConcurrentHashMap，其无法存入 null 值，无法将 null 写入数据库
+	 */
 	Map getColumnsMap();
+
+	/**
+	 * 用于存放 Model/Record 字段的修改标记
+	 */
 	Set getModifyFlagSet();
 
 	static final IContainerFactory defaultContainerFactory = new IContainerFactory() {
