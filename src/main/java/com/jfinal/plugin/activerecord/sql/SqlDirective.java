@@ -32,9 +32,9 @@ import com.jfinal.template.stat.Scope;
  * SqlDirective
  */
 public class SqlDirective extends Directive {
-	
+
 	private String id;
-	
+
 	public void setExprList(ExprList exprList) {
 		if (exprList.length() == 0) {
 			throw new ParseException("The parameter of #sql directive can not be blank", location);
@@ -47,10 +47,10 @@ public class SqlDirective extends Directive {
 		} else {
 			throw new ParseException("The parameter of #sql directive must be String", location);
 		}
-		
+
 		this.id = ((Const)expr).getStr();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void exec(Env env, Scope scope, Writer writer) {
 		String nameSpace = (String)scope.get(NameSpaceDirective.NAME_SPACE_KEY);
@@ -59,14 +59,12 @@ public class SqlDirective extends Directive {
 		if (sqlTemplateMap.containsKey(key)) {
 			throw new ParseException("Sql already exists with key : " + key, location);
 		}
-		
+
 		sqlTemplateMap.put(key, new Template(env, stat));
 	}
-	
+
 	public boolean hasEnd() {
 		return true;
 	}
 }
-
-
 

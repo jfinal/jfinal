@@ -30,11 +30,11 @@ import com.jfinal.template.stat.Scope;
  * NameSpaceDirective
  */
 public class NameSpaceDirective extends Directive {
-	
+
 	static final String NAME_SPACE_KEY = "_NAME_SPACE_";
-	
+
 	private String nameSpace;
-	
+
 	public void setExprList(ExprList exprList) {
 		if (exprList.length() == 0) {
 			throw new ParseException("The parameter of #namespace directive can not be blank", location);
@@ -47,10 +47,10 @@ public class NameSpaceDirective extends Directive {
 		} else {
 			throw new ParseException("The parameter of #namespace directive must be String", location);
 		}
-		
+
 		this.nameSpace = ((Const)expr).getStr();
 	}
-	
+
 	public void exec(Env env, Scope scope, Writer writer) {
 		if (scope.get(NAME_SPACE_KEY) != null) {
 			throw new TemplateException("#namespace directive can not be nested", location);
@@ -62,13 +62,9 @@ public class NameSpaceDirective extends Directive {
 			scope.remove(NAME_SPACE_KEY);
 		}
 	}
-	
+
 	public boolean hasEnd() {
 		return true;
 	}
 }
-
-
-
-
 
