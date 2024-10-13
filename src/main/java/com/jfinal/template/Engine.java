@@ -21,7 +21,6 @@ import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
-import com.jfinal.kit.HashKit;
 import com.jfinal.kit.StrKit;
 import com.jfinal.kit.SyncWriteMap;
 import com.jfinal.template.expr.ast.FieldGetter;
@@ -227,7 +226,7 @@ public class Engine {
 	/**
 	 * Get template by string content
 	 *
-	 * 重要：StringSource 中的 cacheKey = HashKit.md5(content)，也即 cacheKey
+	 * 重要：StringSource 中的 cacheKey = content，也即 cacheKey
 	 *     与 content 有紧密的对应关系，当 content 发生变化时 cacheKey 值也相应变化
 	 *     因此，原先 cacheKey 所对应的 Template 缓存对象已无法被获取，当 getTemplateByString(String)
 	 *     的 String 参数的数量不确定时会引发内存泄漏
@@ -243,7 +242,7 @@ public class Engine {
 			return buildTemplateBySource(new StringSource(content, cache));
 		}
 
-		String cacheKey = HashKit.md5(content);
+		String cacheKey = content;		// String cacheKey = HashKit.md5(content);
 		Template template = templateCache.get(cacheKey);
 		if (template == null) {
 			template = buildTemplateBySource(new StringSource(content, cacheKey));
