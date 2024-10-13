@@ -57,14 +57,14 @@ public class EngineConfig {
 
 	Compressor compressor = null;
 
-	private Map<String, Define> sharedFunctionMap = createSharedFunctionMap();		// new HashMap<String, Define>(512, 0.25F);
+	Map<String, Define> sharedFunctionMap = createSharedFunctionMap();		// new HashMap<String, Define>(512, 0.25F);
 	private List<ISource> sharedFunctionSourceList = new ArrayList<ISource>();		// for devMode only
 
 	Map<String, Object> sharedObjectMap = null;
 
 	private OutputDirectiveFactory outputDirectiveFactory = OutputDirectiveFactory.me;
 	private ISourceFactory sourceFactory = new FileSourceFactory();
-	private Map<String, Class<? extends Directive>> directiveMap = new HashMap<String, Class<? extends Directive>>(64, 0.5F);
+	Map<String, Class<? extends Directive>> directiveMap = new HashMap<String, Class<? extends Directive>>(64, 0.5F);
 	private SharedMethodKit sharedMethodKit = new SharedMethodKit();
 
 	// 保留指令所在行空白字符的指令

@@ -18,7 +18,9 @@ package com.jfinal.template;
 
 import java.lang.reflect.Method;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import com.jfinal.kit.StrKit;
@@ -776,6 +778,20 @@ public class Engine {
         config.setStaticFieldExpression(enable);
         return this;
     }
+
+	/**
+	 * 获取当前 Engine 对象所有指令名称
+	 */
+	public List<String> getDirectiveNames() {
+		return new ArrayList<>(config.directiveMap.keySet());
+	}
+
+	/**
+	 * 获取当前 Engine 对象所有共享模板函数名称
+	 */
+	public List<String> getSharedFunctionNames() {
+		return new ArrayList<>(config.sharedFunctionMap.keySet());
+	}
 }
 
 
