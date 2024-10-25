@@ -60,18 +60,18 @@ import com.jfinal.template.stat.Scope;
  *
  * 三、4.9.23 新增支持 like、in 子句
  *    ### 一般用法，第二个参数传入 "like"、"in" 参数即可
- *    select * from t title like #para(title, "like")
- *    select * from t title like #para(title, "in")
+ *    select * from t where title like #para(title, "like")
+ *    select * from t where title like #para(title, "in")
  *
  *    ### like 类型第一个参数支持 int 类型
- *    select * from t title like #para(0, "like")
+ *    select * from t where title like #para(0, "like")
  *
  *    ### like 支持左侧与右侧百分号用法
- *    select * from t title like #para(title, "%like")
- *    select * from t title like #para(title, "like%")
+ *    select * from t where title like #para(title, "%like")
+ *    select * from t where title like #para(title, "like%")
  *
  *    ### 警告：对于 in 子句，如果 #para 第一个参数是 int 型，并且 java 代码针对 Object... 参数传入的是数组
- *    select * from t id in #para(0, "in")
+ *    select * from t where id in #para(0, "in")
  *    ### 那么 java 代码中要将 Object... 处的参数强制转成 Object，否则参数传递不正确
  *    Integer[] idArray = {1, 2, 3};
       Db.template("findByIdArray", (Object)idArray).find();
