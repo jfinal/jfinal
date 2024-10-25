@@ -59,7 +59,6 @@ public class SseEmitter {
                 throw new RuntimeException(e);
             }
         }
-        System.out.println("Waiting finished");
     }
 
     /**
