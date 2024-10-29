@@ -35,20 +35,20 @@ import com.jfinal.plugin.activerecord.builder.TimestampProcessedRecordBuilder;
  * PostgreSqlDialect.
  */
 public class PostgreSqlDialect extends Dialect {
-	
+
 	public PostgreSqlDialect() {
 		this.modelBuilder = TimestampProcessedModelBuilder.me;
 		this.recordBuilder = TimestampProcessedRecordBuilder.me;
 	}
-	
+
 	public String forTableBuilderDoBuild(String tableName) {
 		return "select * from \"" + tableName + "\" where 1 = 2";
 	}
-	
+
 	public String forFindAll(String tableName) {
 		return "select * from \"" + tableName + "\"";
 	}
-	
+
 	public void forModelSave(Table table, Map<String, Object> attrs, StringBuilder sql, List<Object> paras) {
 		sql.append("insert into \"").append(table.getName()).append("\"(");
 		StringBuilder temp = new StringBuilder(") values(");
@@ -66,7 +66,7 @@ public class PostgreSqlDialect extends Dialect {
 		}
 		sql.append(temp.toString()).append(')');
 	}
-	
+
 	public String forModelDeleteById(Table table) {
 		String[] pKeys = table.getPrimaryKey();
 		StringBuilder sql = new StringBuilder(45);
@@ -81,7 +81,7 @@ public class PostgreSqlDialect extends Dialect {
 		}
 		return sql.toString();
 	}
-	
+
 	public void forModelUpdate(Table table, Map<String, Object> attrs, Set<String> modifyFlag, StringBuilder sql, List<Object> paras) {
 		sql.append("update \"").append(table.getName()).append("\" set ");
 		String[] pKeys = table.getPrimaryKey();
@@ -104,7 +104,7 @@ public class PostgreSqlDialect extends Dialect {
 			paras.add(attrs.get(pKeys[i]));
 		}
 	}
-	
+
 	public String forModelFindById(Table table, String columns) {
 		StringBuilder sql = new StringBuilder("select ");
 		columns = columns.trim();
@@ -120,7 +120,7 @@ public class PostgreSqlDialect extends Dialect {
 				sql.append('\"').append(arr[i].trim()).append('\"');
 			}
 		}
-		
+
 		sql.append(" from \"");
 		sql.append(table.getName());
 		sql.append("\" where ");
@@ -133,11 +133,11 @@ public class PostgreSqlDialect extends Dialect {
 		}
 		return sql.toString();
 	}
-	
+
 	public String forDbFindById(String tableName, String[] pKeys) {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
-		
+
 		StringBuilder sql = new StringBuilder("select * from \"").append(tableName).append("\" where ");
 		for (int i=0; i<pKeys.length; i++) {
 			if (i > 0) {
@@ -147,11 +147,11 @@ public class PostgreSqlDialect extends Dialect {
 		}
 		return sql.toString();
 	}
-	
+
 	public String forDbDeleteById(String tableName, String[] pKeys) {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
-		
+
 		StringBuilder sql = new StringBuilder("delete from \"").append(tableName).append("\" where ");
 		for (int i=0; i<pKeys.length; i++) {
 			if (i > 0) {
@@ -161,16 +161,16 @@ public class PostgreSqlDialect extends Dialect {
 		}
 		return sql.toString();
 	}
-	
+
 	public void forDbSave(String tableName, String[] pKeys, Record record, StringBuilder sql, List<Object> paras) {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
-		
+
 		sql.append("insert into \"");
 		sql.append(tableName).append("\"(");
 		StringBuilder temp = new StringBuilder();
 		temp.append(") values(");
-		
+
 		for (Entry<String, Object> e: record.getColumns().entrySet()) {
 			if (paras.size() > 0) {
 				sql.append(", ");
@@ -182,14 +182,14 @@ public class PostgreSqlDialect extends Dialect {
 		}
 		sql.append(temp.toString()).append(')');
 	}
-	
+
 	public void forDbUpdate(String tableName, String[] pKeys, Object[] ids, Record record, StringBuilder sql, List<Object> paras) {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
-		
+
 		// Record 新增支持 modifyFlag
 		Set<String> modifyFlag = CPI.getModifyFlag(record);
-		
+
 		sql.append("update \"").append(tableName).append("\" set ");
 		for (Entry<String, Object> e: record.getColumns().entrySet()) {
 			String colName = e.getKey();
@@ -210,25 +210,25 @@ public class PostgreSqlDialect extends Dialect {
 			paras.add(ids[i]);
 		}
 	}
-	
+
 	public String forPaginate(int pageNumber, int pageSize, StringBuilder findSql) {
 		int offset = pageSize * (pageNumber - 1);
 		findSql.append(" limit ").append(pageSize).append(" offset ").append(offset);
 		return findSql.toString();
 	}
-	
+
 	public void fillStatement(PreparedStatement pst, List<Object> paras) throws SQLException {
 		fillStatementHandleDateType(pst, paras);
 	}
-	
+
 	public void fillStatement(PreparedStatement pst, Object... paras) throws SQLException {
 		fillStatementHandleDateType(pst, paras);
 	}
-	
+
 	/**
 	 * 解决 PostgreSql 获取自增主键时 rs.getObject(1) 总是返回第一个字段的值，而非返回了 id 值
 	 * issue: https://www.oschina.net/question/2312705_2243354
-	 * 
+	 *
 	 * 相对于 Dialect 中的默认实现，仅将 rs.getXxx(1) 改成了 rs.getXxx(pKey)
 	 */
 	public void getModelGeneratedKey(Model<?> model, PreparedStatement pst, Table table) throws SQLException {
@@ -254,11 +254,11 @@ public class PostgreSqlDialect extends Dialect {
 		}
 		rs.close();
 	}
-	
+
 	/**
 	 * 解决 PostgreSql 获取自增主键时 rs.getObject(1) 总是返回第一个字段的值，而非返回了 id 值
 	 * issue: https://www.oschina.net/question/2312705_2243354
-	 * 
+	 *
 	 * 相对于 Dialect 中的默认实现，仅将 rs.getXxx(1) 改成了 rs.getXxx(pKey)
 	 */
 	public void getRecordGeneratedKey(PreparedStatement pst, Record record, String[] pKeys) throws SQLException {
@@ -273,3 +273,8 @@ public class PostgreSqlDialect extends Dialect {
 		rs.close();
 	}
 }
+
+
+
+
+

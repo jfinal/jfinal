@@ -32,16 +32,16 @@ import com.jfinal.plugin.activerecord.builder.TimestampProcessedRecordBuilder;
  * OracleDialect.
  */
 public class OracleDialect extends Dialect {
-	
+
 	public OracleDialect() {
 		this.modelBuilder = TimestampProcessedModelBuilder.me;
 		this.recordBuilder = TimestampProcessedRecordBuilder.me;
 	}
-	
+
 	public String forTableBuilderDoBuild(String tableName) {
 		return "select * from " + tableName + " where rownum < 1";
 	}
-	
+
 	// insert into table (id,name) values(seq.nextval, ？)
 	public void forModelSave(Table table, Map<String, Object> attrs, StringBuilder sql, List<Object> paras) {
 		sql.append("insert into ").append(table.getName()).append('(');
@@ -67,7 +67,7 @@ public class OracleDialect extends Dialect {
 		}
 		sql.append(temp.toString()).append(')');
 	}
-	
+
 	public String forModelDeleteById(Table table) {
 		String[] pKeys = table.getPrimaryKey();
 		StringBuilder sql = new StringBuilder(45);
@@ -82,7 +82,7 @@ public class OracleDialect extends Dialect {
 		}
 		return sql.toString();
 	}
-	
+
 	public void forModelUpdate(Table table, Map<String, Object> attrs, Set<String> modifyFlag, StringBuilder sql, List<Object> paras) {
 		sql.append("update ").append(table.getName()).append(" set ");
 		String[] pKeys = table.getPrimaryKey();
@@ -105,7 +105,7 @@ public class OracleDialect extends Dialect {
 			paras.add(attrs.get(pKeys[i]));
 		}
 	}
-	
+
 	public String forModelFindById(Table table, String columns) {
 		StringBuilder sql = new StringBuilder("select ").append(columns).append(" from ");
 		sql.append(table.getName());
@@ -119,11 +119,11 @@ public class OracleDialect extends Dialect {
 		}
 		return sql.toString();
 	}
-	
+
 	public String forDbFindById(String tableName, String[] pKeys) {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
-		
+
 		StringBuilder sql = new StringBuilder("select * from ").append(tableName).append(" where ");
 		for (int i=0; i<pKeys.length; i++) {
 			if (i > 0) {
@@ -133,11 +133,11 @@ public class OracleDialect extends Dialect {
 		}
 		return sql.toString();
 	}
-	
+
 	public String forDbDeleteById(String tableName, String[] pKeys) {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
-		
+
 		StringBuilder sql = new StringBuilder("delete from ").append(tableName).append(" where ");
 		for (int i=0; i<pKeys.length; i++) {
 			if (i > 0) {
@@ -147,16 +147,16 @@ public class OracleDialect extends Dialect {
 		}
 		return sql.toString();
 	}
-	
+
 	public void forDbSave(String tableName, String[] pKeys, Record record, StringBuilder sql, List<Object> paras) {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
-		
+
 		sql.append("insert into ");
 		sql.append(tableName).append('(');
 		StringBuilder temp = new StringBuilder();
 		temp.append(") values(");
-		
+
 		int count = 0;
 		for (Entry<String, Object> e: record.getColumns().entrySet()) {
 			String colName = e.getKey();
@@ -165,7 +165,7 @@ public class OracleDialect extends Dialect {
 				temp.append(", ");
 			}
 			sql.append(colName);
-			
+
 			Object value = e.getValue();
 			if (value instanceof String && isPrimaryKey(colName, pKeys) && ((String)value).endsWith(".nextval")) {
 			    temp.append(value);
@@ -176,14 +176,14 @@ public class OracleDialect extends Dialect {
 		}
 		sql.append(temp.toString()).append(')');
 	}
-	
+
 	public void forDbUpdate(String tableName, String[] pKeys, Object[] ids, Record record, StringBuilder sql, List<Object> paras) {
 		tableName = tableName.trim();
 		trimPrimaryKeys(pKeys);
-		
+
 		// Record 新增支持 modifyFlag
 		Set<String> modifyFlag = CPI.getModifyFlag(record);
-		
+
 		sql.append("update ").append(tableName).append(" set ");
 		for (Entry<String, Object> e: record.getColumns().entrySet()) {
 			String colName = e.getKey();
@@ -204,7 +204,7 @@ public class OracleDialect extends Dialect {
 			paras.add(ids[i]);
 		}
 	}
-	
+
 	public String forPaginate(int pageNumber, int pageSize, StringBuilder findSql) {
 		int start = (pageNumber - 1) * pageSize;
 		int end = pageNumber * pageSize;
@@ -215,20 +215,24 @@ public class OracleDialect extends Dialect {
 		ret.append(" where table_alias.rownum_ > ").append(start);
 		return ret.toString();
 	}
-	
+
 	public boolean isOracle() {
 		return true;
 	}
-	
+
 	public void fillStatement(PreparedStatement pst, List<Object> paras) throws SQLException {
 		fillStatementHandleDateType(pst, paras);
 	}
-	
+
 	public void fillStatement(PreparedStatement pst, Object... paras) throws SQLException {
 		fillStatementHandleDateType(pst, paras);
 	}
-	
+
 	public String getDefaultPrimaryKey() {
 		return "ID";
 	}
 }
+
+
+
+
