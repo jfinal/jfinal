@@ -270,7 +270,8 @@ public abstract class Dialect {
 	}
 
 	protected static class Holder {
-		// "order\\s+by\\s+[^,\\s]+(\\s+asc|\\s+desc)?(\\s*,\\s*[^,\\s]+(\\s+asc|\\s+desc)?)*";
+		// 支持 order by 简单嵌套
+		// "\\border\\s+by\\b\\s+[^;]+?(?=(\\b(limit|offset|fetch|union)\\b|$|;))",
 		private static final Pattern ORDER_BY_PATTERN = Pattern.compile(
 			"order\\s+by\\s+[^,\\s]+(\\s+asc|\\s+desc)?(\\s*,\\s*[^,\\s]+(\\s+asc|\\s+desc)?)*",
 			Pattern.CASE_INSENSITIVE | Pattern.MULTILINE);
