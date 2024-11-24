@@ -19,6 +19,7 @@ package com.jfinal.plugin.activerecord;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * IRow 支持统一的方式来处理 Model 和 Record
@@ -61,9 +62,14 @@ public interface IRow<M> {
     public <T> T get(String column, T defaultValue);
 
     /**
+     * Get column of any mysql type and convert type using converter
+     */
+    public <T> T get(String column, Function<Object, T> converter);
+
+    /**
      * Get column of any mysql type and convert type using converter. Returns defaultValue if null.
      */
-    public <T> T get(String column, T defaultValue, com.jfinal.kit.Func.F11<Object, T> converter);
+    public <T> T get(String column, T defaultValue, Function<Object, T> converter);
 
     /**
      * Get column of mysql type: varchar, char, enum, set, text, tinytext, mediumtext, longtext
