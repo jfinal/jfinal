@@ -19,6 +19,8 @@ package com.jfinal.kit;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
+
 import com.jfinal.json.Json;
 
 /**
@@ -94,9 +96,14 @@ public class Okv extends LinkedHashMap {
 		return ret != null ? (T) ret : defaultValue;
 	}
 
-	public <T> T getAs(Object key, T defaultValue, com.jfinal.kit.Func.F11<Object, T> converter) {
+	public <T> T getAs(Object key, Function<Object, T> converter) {
 		Object ret = get(key);
-		return ret != null ? converter.call(ret) : defaultValue;
+		return ret != null ? converter.apply(ret) : null;
+	}
+
+	public <T> T getAs(Object key, T defaultValue, Function<Object, T> converter) {
+		Object ret = get(key);
+		return ret != null ? converter.apply(ret) : defaultValue;
 	}
 
 	public String getStr(Object key) {
