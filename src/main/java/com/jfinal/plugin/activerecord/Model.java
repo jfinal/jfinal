@@ -335,11 +335,19 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 	}
 
 	/**
+	 * Get column of any mysql type and convert type using converter.
+	 */
+	public <T> T get(String attr, Function<Object, T> converter) {
+		Object result = attrs.get(attr);
+		return result != null ? converter.apply(result) : null;
+	}
+
+	/**
 	 * Get column of any mysql type and convert type using converter. Returns defaultValue if null.
 	 */
-	public <T> T get(String attr, T defaultValue, com.jfinal.kit.Func.F11<Object, T> converter) {
+	public <T> T get(String attr, T defaultValue, Function<Object, T> converter) {
 		Object result = attrs.get(attr);
-		return result != null ? converter.call(result) : defaultValue;
+		return result != null ? converter.apply(result) : defaultValue;
 	}
 
 	/**
