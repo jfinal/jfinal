@@ -62,7 +62,7 @@ public interface IRow<M> {
     public <T> T get(String column, T defaultValue);
 
     /**
-     * Get column of any mysql type and convert type using converter
+     * Get column of any mysql type and convert type using converter.
      */
     public <T> T get(String column, Function<Object, T> converter);
 

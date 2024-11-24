@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import com.jfinal.kit.TypeKit;
 
 /**
@@ -259,11 +260,19 @@ public class Record implements IRow<Record>, Serializable {
 	}
 
 	/**
+	 * Get column of any mysql type and convert type using converter.
+	 */
+	public <T> T get(String column, Function<Object, T> converter) {
+		Object result = getColumns().get(column);
+		return result != null ? converter.apply(result) : null;
+	}
+
+	/**
 	 * Get column of any mysql type and convert type using converter. Returns defaultValue if null.
 	 */
-	public <T> T get(String column, T defaultValue, com.jfinal.kit.Func.F11<Object, T> converter) {
+	public <T> T get(String column, T defaultValue, Function<Object, T> converter) {
 		Object result = getColumns().get(column);
-		return result != null ? converter.call(result) : defaultValue;
+		return result != null ? converter.apply(result) : defaultValue;
 	}
 
 	public Object getObject(String column) {
