@@ -983,7 +983,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 				ret.append(mf);
 			}
 		}
-		ret.append("]");
+		ret.append(']');
 
 		// data
 		ret.append("\ndata = {");
@@ -1004,7 +1004,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 			}
 			ret.append('\n');
 		}
-		return ret.append("}").toString();
+		return ret.append('}').toString();
 	}
 
 	// set 方法在影响 modifyFloag 的同时也会影响 attrs，所以比较 attrs 即可
