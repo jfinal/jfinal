@@ -454,7 +454,7 @@ public class Record implements IRow<Record>, Serializable {
 				if (value != null) {
 					value = value.toString();
 				}
-				ret.append("  ").append(e.getKey()).append(':').append(value);
+				ret.append("  ").append(e.getKey()).append(": ").append(value);
 			}
 			ret.append('\n');
 		}
