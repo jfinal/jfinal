@@ -1000,7 +1000,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 				if (value != null) {
 					value = value.toString();
 				}
-				ret.append("  ").append(e.getKey()).append(':').append(value);
+				ret.append("  ").append(e.getKey()).append(": ").append(value);
 			}
 			ret.append('\n');
 		}
