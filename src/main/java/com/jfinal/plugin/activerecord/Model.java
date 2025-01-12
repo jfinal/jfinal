@@ -966,24 +966,45 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 		return (M)this;
 	}
 
+	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append('{');
-		boolean first = true;
-		for (Entry<String, Object> e : attrs.entrySet()) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(", ");
+		StringBuilder ret = new StringBuilder(30 + size() * 50);
+
+		// modifyFlag
+		ret.append("modifyFlag = [");
+		if (modifyFlag != null) {
+			boolean first = true;
+			for (String mf : modifyFlag) {
+				if (first) {
+					first = false;
+				} else {
+					ret.append(", ");
+				}
+				ret.append(mf);
 			}
-			Object value = e.getValue();
-			if (value != null) {
-				value = value.toString();
-			}
-			sb.append(e.getKey()).append(':').append(value);
 		}
-		sb.append('}');
-		return sb.toString();
+		ret.append("]");
+
+		// data
+		ret.append("\ndata = {");
+		if (attrs != null) {
+			ret.append('\n');
+			boolean first = true;
+			for (Map.Entry<String, Object> e : attrs.entrySet()) {
+				if (first) {
+					first = false;
+				} else {
+					ret.append(",\n");
+				}
+				Object value = e.getValue();
+				if (value != null) {
+					value = value.toString();
+				}
+				ret.append("  ").append(e.getKey()).append(':').append(value);
+			}
+			ret.append('\n');
+		}
+		return ret.append("}").toString();
 	}
 
 	// set 方法在影响 modifyFloag 的同时也会影响 attrs，所以比较 attrs 即可
