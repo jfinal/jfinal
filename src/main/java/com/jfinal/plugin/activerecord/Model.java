@@ -987,7 +987,7 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 
 		// data
 		ret.append("\ndata = {");
-		if (attrs != null) {
+		if (attrs != null && attrs.size() != 0) {
 			ret.append('\n');
 			boolean first = true;
 			for (Map.Entry<String, Object> e : attrs.entrySet()) {
