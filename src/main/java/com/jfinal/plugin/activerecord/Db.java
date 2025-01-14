@@ -826,6 +826,46 @@ public class Db {
 	public static DbTemplate templateByString(String content, Object... paras) {
 		return MAIN.templateByString(content, paras);
 	}
+
+	// ---------
+
+	/**
+	 * 新版本事务处理，支持任意返回值、手动回滚事务、返回值指示回事务
+	 *
+	 * <pre>
+	 * 回滚事务的方法：
+	 * 1：调用 transaction 参数的 rollback 手动回滚，例如：
+	 *    Db.transaction( tx -> {
+	 *        tx.rollback(); 	// 手动回滚事务
+	 *    });
+	 *
+	 * 2：返回值类型实现 TransactionRollbackDecision 接口，例如：
+	 *    public class Ret implements TransactionRollbackDecision {
+	 *        int code;
+	 *        public boolean shouldRollback() {
+	 *            return code != 200;
+	 *        }
+	 *        // ... 其它代码省略
+	 *    }
+	 *
+	 *    Db.transaction( tx -> {
+	 *        return new Ret().code(500);
+	 *    });
+	 *
+	 * </pre>
+	 */
+	public static <R> R transaction(TransactionAtom<R> atom) {
+		return MAIN.transaction(atom);
+	}
+
+	/**
+	 * 新版本事务处理，支持任意返回值、手动回滚事务、返回值指示回事务
+	 *
+	 * 注意：事务回滚方式与 transaction(TransactionAtom<R> atom) 方法完全一样
+	 */
+	public static <R> R transaction(int transactionLevel, TransactionAtom<R> atom) {
+		return MAIN.transaction(transactionLevel, atom);
+	}
 }
 
 

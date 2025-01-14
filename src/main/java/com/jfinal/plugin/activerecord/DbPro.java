@@ -1496,7 +1496,7 @@ public class DbPro {
 	// ---------
 
 	/**
-	 * 新版本事务处理
+	 * 新版本事务处理，支持任意返回值、手动回滚事务、返回值指示回事务
 	 *
 	 * <pre>
 	 * 回滚事务的方法：
@@ -1525,7 +1525,8 @@ public class DbPro {
 	}
 
 	/**
-	 * 新版本事务处理
+	 * 新版本事务处理，支持任意返回值、手动回滚事务、返回值指示回事务
+	 *
 	 * 注意：事务回滚方式与 transaction(TransactionAtom<R> atom) 方法完全一样
 	 */
 	public <R> R transaction(int transactionLevel, TransactionAtom<R> atom) {
