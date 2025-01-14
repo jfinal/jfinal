@@ -27,7 +27,7 @@ public class TransactionExecutor {
 
     public <R> R execute(Config config, int transactionLevel, TransactionAtom<R> atom) {
         Connection conn = config.getThreadLocalConnection();
-        Transaction<R> tx = config.getTransaction();
+        Transaction<R> tx = config.getThreadLocalTransaction();
 
         if (conn != null) {	// Nested transaction support
             return handleNestedTransaction(conn, transactionLevel, tx, atom);
@@ -40,6 +40,9 @@ public class TransactionExecutor {
             config.setThreadLocalConnection(conn);
             conn.setTransactionIsolation(transactionLevel);
             conn.setAutoCommit(false);
+
+            tx = new Transaction<>();
+            config.setThreadLocalTransaction(tx);
 
             R ret = atom.run(tx);
             if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision)ret).shouldRollback()) {
