@@ -31,8 +31,9 @@ import com.jfinal.plugin.activerecord.sql.SqlKit;
 
 public class Config {
 
-	private final ThreadLocal<Connection> threadLocal = new ThreadLocal<Connection>();
+	private final ThreadLocal<Connection> threadLocal = new ThreadLocal<>();
 
+	private final ThreadLocal<Transaction<?>> transactionTL = new ThreadLocal<>();
 	private final ThreadLocal<Runnable> callbackAfterTxCommitTL = new ThreadLocal<>();
 
 	String name;
@@ -261,7 +262,7 @@ public class Config {
 	public void executeCallbackAfterTxCommit() {
 		Runnable runnable = callbackAfterTxCommitTL.get();
 		if (runnable != null) {
-			//  此处删除：改为在事务方法 tx 中调用，避免事务在回滚时不能被移除
+			// 此处删除：改为在事务方法 tx 中调用，避免事务在回滚时不能被移除
 			// callbackAfterTxCommitTL.remove();
 			try {
 				runnable.run();
@@ -271,6 +272,20 @@ public class Config {
 				com.jfinal.log.Log.getLog(Config.class).error(e.getMessage(), e);
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	<R> Transaction<R> getTransaction() {
+		Transaction<R> ret = (Transaction<R>) transactionTL.get();
+		if (ret == null) {
+			ret = new Transaction<>();
+			transactionTL.set(ret);
+		}
+		return ret;
+	}
+
+	void removeTransaction() {
+		transactionTL.remove();
 	}
 }
 
