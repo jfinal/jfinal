@@ -275,16 +275,18 @@ public class Config {
 	}
 
 	/**
-	 * 获取当前线程绑定的 Transaction 对象，如果为 null 则创建
+	 * 获取当前线程绑定的 Transaction 对象
 	 */
 	@SuppressWarnings("unchecked")
-	<R> Transaction<R> getTransaction() {
-		Transaction<R> ret = (Transaction<R>) transactionTL.get();
-		if (ret == null) {
-			ret = new Transaction<>();
-			transactionTL.set(ret);
-		}
-		return ret;
+	<R> Transaction<R> getThreadLocalTransaction() {
+		return (Transaction<R>) transactionTL.get();
+	}
+
+	/**
+	 * 当前线程绑定 Transaction 对象
+	 */
+	<R> void setThreadLocalTransaction(Transaction<R> tx) {
+		transactionTL.set(tx);
 	}
 
 	void removeTransaction() {
