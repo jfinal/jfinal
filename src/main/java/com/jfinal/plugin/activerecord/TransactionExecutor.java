@@ -34,7 +34,6 @@ public class TransactionExecutor {
         }
 
         Boolean autoCommit = null;
-
         try {
             conn = config.getConnection();
             autoCommit = conn.getAutoCommit();
@@ -94,7 +93,6 @@ public class TransactionExecutor {
             if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision)ret).shouldRollback()) {
                 tx.rollback();
             }
-
             return ret;
 
         } catch (SQLException e) {
