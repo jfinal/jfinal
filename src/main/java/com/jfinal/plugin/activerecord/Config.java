@@ -274,6 +274,9 @@ public class Config {
 		}
 	}
 
+	/**
+	 * 获取当前线程绑定的 Transaction 对象，如果为 null 则创建
+	 */
 	@SuppressWarnings("unchecked")
 	<R> Transaction<R> getTransaction() {
 		Transaction<R> ret = (Transaction<R>) transactionTL.get();
