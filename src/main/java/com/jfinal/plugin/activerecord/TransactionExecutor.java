@@ -54,17 +54,8 @@ public class TransactionExecutor {
                 tx.executeOnAfterCommit();
                 // config.executeCallbackAfterTxCommit();   // 支持 tx 中的 onAfterCommit 即可满足需求
             }
+
             return ret;
-
-        } catch (NestedTransactionHelpException e) {
-            if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}
-            LogKit.logNothing(e);
-
-            if (tx.getOnException() != null) {
-                return tx.getOnException().apply(e);
-            } else {
-                return null;
-            }
 
         } catch (Exception e) {
             if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}
@@ -102,12 +93,6 @@ public class TransactionExecutor {
             R ret = atom.run(tx);
             if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision)ret).shouldRollback()) {
                 tx.rollback();
-            }
-
-            // 嵌套事务无需要通过异常机制通知上层事务回滚事务。
-            // 注意需要使用 tx.rollback() 机制或让返回值实现 TransactionRollbackDecision 接口回滚事务
-            if (tx.shouldRollback()) {
-                throw new NestedTransactionHelpException("Notice the outer transaction that the nested transaction return false");	// important:can not return false
             }
 
             return ret;
