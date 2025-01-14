@@ -261,7 +261,8 @@ public class Config {
 	public void executeCallbackAfterTxCommit() {
 		Runnable runnable = callbackAfterTxCommitTL.get();
 		if (runnable != null) {
-			callbackAfterTxCommitTL.remove();
+			//  此处删除：改为在事务方法 tx 中调用，避免事务在回滚时不能被移除
+			// callbackAfterTxCommitTL.remove();
 			try {
 				runnable.run();
 			} catch (Exception e) {

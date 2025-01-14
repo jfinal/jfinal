@@ -872,6 +872,7 @@ public class DbPro {
 				LogKit.error(t.getMessage(), t);	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
 			} finally {
 				config.removeThreadLocalConnection();	// prevent memory leak
+				config.removeCallbackAfterTxCommit();
 			}
 		}
 	}

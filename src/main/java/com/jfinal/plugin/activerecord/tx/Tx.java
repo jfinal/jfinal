@@ -128,6 +128,7 @@ public class Tx implements Interceptor {
 			}
 			finally {
 				config.removeThreadLocalConnection();	// prevent memory leak
+				config.removeCallbackAfterTxCommit();
 			}
 		}
 	}
