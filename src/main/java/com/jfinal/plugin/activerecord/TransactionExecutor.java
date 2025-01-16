@@ -95,24 +95,24 @@ public class TransactionExecutor {
         }
     }
 
-    private <R> R handleNestedTransaction(Connection conn, int transactionLevel, Transaction<R> tx, TransactionAtom<R> atom, BiConsumer<Transaction<?>, Object> onBeforeCommit) {
+    private <R> R handleNestedTransaction(Connection conn, int transactionLevel, Transaction<R> transaction, TransactionAtom<R> atom, BiConsumer<Transaction<?>, Object> onBeforeCommit) {
         try {
             if (conn.getTransactionIsolation() < transactionLevel) {
                 conn.setTransactionIsolation(transactionLevel);
             }
 
-            R ret = atom.run(tx);
+            R ret = atom.run(transaction);
             if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision)ret).shouldRollback()) {
-                tx.rollback();
+                transaction.rollback();
             }
             // 内层、外层调用 onBeforeCommit 处理各自的 ret 返回值
-            if (!tx.shouldRollback() && onBeforeCommit != null) {
-                onBeforeCommit.accept(tx, ret);
+            if (!transaction.shouldRollback() && onBeforeCommit != null) {
+                onBeforeCommit.accept(transaction, ret);
             }
             return ret;
 
         } catch (Exception e) {
-            tx.rollback();
+            transaction.rollback();
             throw new ActiveRecordException(e);
         }
     }
