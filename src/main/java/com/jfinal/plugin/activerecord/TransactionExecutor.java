@@ -18,6 +18,7 @@ package com.jfinal.plugin.activerecord;
 
 import com.jfinal.kit.LogKit;
 import java.sql.Connection;
+import java.util.function.BiConsumer;
 
 /**
  * TransactionExecutor 支持新版本事务方法 transaction(...)，独立于原有事务方法 tx(...)
@@ -28,9 +29,10 @@ public class TransactionExecutor {
     public <R> R execute(Config config, int transactionLevel, TransactionAtom<R> atom) {
         Connection conn = config.getThreadLocalConnection();
         Transaction<R> tx = config.getThreadLocalTransaction();
+        BiConsumer<Transaction<?>, Object> onBeforeCommit = config.getOnBeforeTransactionCommit();
 
         if (conn != null) {	// Nested transaction support
-            return handleNestedTransaction(conn, transactionLevel, tx, atom);
+            return handleNestedTransaction(conn, transactionLevel, tx, atom, onBeforeCommit);
         }
 
         Boolean autoCommit = null;
@@ -47,6 +49,10 @@ public class TransactionExecutor {
             R ret = atom.run(tx);
             if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision)ret).shouldRollback()) {
                 tx.rollback();
+            }
+            // 内层、外层调用 onBeforeCommit 处理各自的 ret 返回值
+            if (! tx.shouldRollback() && onBeforeCommit != null) {
+                onBeforeCommit.accept(tx, ret);
             }
 
             if (tx.shouldRollback()) {
@@ -89,7 +95,7 @@ public class TransactionExecutor {
         }
     }
 
-    private <R> R handleNestedTransaction(Connection conn, int transactionLevel, Transaction<R> tx, TransactionAtom<R> atom) {
+    private <R> R handleNestedTransaction(Connection conn, int transactionLevel, Transaction<R> tx, TransactionAtom<R> atom, BiConsumer<Transaction<?>, Object> onBeforeCommit) {
         try {
             if (conn.getTransactionIsolation() < transactionLevel) {
                 conn.setTransactionIsolation(transactionLevel);
@@ -98,6 +104,10 @@ public class TransactionExecutor {
             R ret = atom.run(tx);
             if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision)ret).shouldRollback()) {
                 tx.rollback();
+            }
+            // 内层、外层调用 onBeforeCommit 处理各自的 ret 返回值
+            if (! tx.shouldRollback() && onBeforeCommit != null) {
+                onBeforeCommit.accept(tx, ret);
             }
             return ret;
 
