@@ -20,6 +20,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import javax.sql.DataSource;
 import com.jfinal.kit.LogKit;
 import com.jfinal.kit.StrKit;
@@ -35,6 +37,8 @@ public class Config {
 
 	private final ThreadLocal<Transaction<?>> transactionTL = new ThreadLocal<>();
 	private final ThreadLocal<Runnable> callbackAfterTxCommitTL = new ThreadLocal<>();
+	private Function<Exception, ?> onTransactionException;					// 事务抛出异常时的默认处理函数
+	private BiConsumer<Transaction<?>, Object> onBeforeTransactionCommit;	// 事务提交之前处理
 
 	String name;
 	DataSource dataSource;
@@ -291,6 +295,22 @@ public class Config {
 
 	void removeTransaction() {
 		transactionTL.remove();
+	}
+
+	public void setOnTransactionException(Function<Exception, ?> onTransactionException) {
+		this.onTransactionException = onTransactionException;
+	}
+
+	public Function<Exception, ?> getOnTransactionException() {
+		return onTransactionException;
+	}
+
+	public void setOnBeforeTransactionCommit(BiConsumer<Transaction<?>, Object> onBeforeTransactionCommit) {
+		this.onBeforeTransactionCommit = onBeforeTransactionCommit;
+	}
+
+	public BiConsumer<Transaction<?>, Object> getOnBeforeTransactionCommit() {
+		return onBeforeTransactionCommit;
 	}
 }
 
