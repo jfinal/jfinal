@@ -18,7 +18,6 @@ package com.jfinal.plugin.activerecord;
 
 import com.jfinal.kit.LogKit;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * TransactionExecutor 支持新版本事务方法 transaction(...)，独立于原有事务方法 tx(...)
@@ -98,7 +97,7 @@ public class TransactionExecutor {
             }
             return ret;
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
             tx.rollback();
             throw new ActiveRecordException(e);
         }

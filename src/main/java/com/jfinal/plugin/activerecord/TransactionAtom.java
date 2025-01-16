@@ -16,14 +16,12 @@
 
 package com.jfinal.plugin.activerecord;
 
-import java.sql.SQLException;
-
 /**
  * TransactionAtom 支持新版本事务方法 transaction(...)，独立于原有事务方法 tx(...)
  */
 @FunctionalInterface
 public interface TransactionAtom<R> {
-     R run(Transaction<R> transaction) throws SQLException;
+     R run(Transaction<R> transaction) throws Exception;
 }
 
 
