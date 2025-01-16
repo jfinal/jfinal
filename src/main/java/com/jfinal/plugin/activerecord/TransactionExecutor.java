@@ -51,7 +51,7 @@ public class TransactionExecutor {
                 tx.rollback();
             }
             // 内层、外层调用 onBeforeCommit 处理各自的 ret 返回值
-            if (! tx.shouldRollback() && onBeforeCommit != null) {
+            if (!tx.shouldRollback() && onBeforeCommit != null) {
                 onBeforeCommit.accept(tx, ret);
             }
 
@@ -106,7 +106,7 @@ public class TransactionExecutor {
                 tx.rollback();
             }
             // 内层、外层调用 onBeforeCommit 处理各自的 ret 返回值
-            if (! tx.shouldRollback() && onBeforeCommit != null) {
+            if (!tx.shouldRollback() && onBeforeCommit != null) {
                 onBeforeCommit.accept(tx, ret);
             }
             return ret;
