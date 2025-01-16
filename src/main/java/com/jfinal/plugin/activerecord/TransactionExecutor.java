@@ -47,6 +47,7 @@ public class TransactionExecutor {
             config.setThreadLocalTransaction(transaction);
 
             R ret = atom.run(transaction);
+            // 若返回值类型实现了 TransactionRollbackDecision 接口，可用于决定是否回滚事务
             if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision)ret).shouldRollback()) {
                 transaction.rollback();
             }
@@ -102,6 +103,7 @@ public class TransactionExecutor {
             }
 
             R ret = atom.run(transaction);
+            // 若返回值类型实现了 TransactionRollbackDecision 接口，可用于决定是否回滚事务
             if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision)ret).shouldRollback()) {
                 transaction.rollback();
             }
