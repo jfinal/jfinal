@@ -59,7 +59,7 @@ public class TransactionExecutor {
                 conn.rollback();
             } else {
                 conn.commit();
-                transaction.executeOnAfterCommit();                  // 用于新版本事务方法 transaction(...)
+                transaction.executeOnAfterCommit();         // 用于新版本事务方法 transaction(...)
                 // config.executeCallbackAfterTxCommit();   // 仅用于老版本事务方法 tx(...)
             }
 
