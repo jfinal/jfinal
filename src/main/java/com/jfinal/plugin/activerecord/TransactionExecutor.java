@@ -89,7 +89,7 @@ public class TransactionExecutor {
                 LogKit.error(t.getMessage(), t);	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
             } finally {
                 config.removeThreadLocalConnection();	// prevent memory leak
-                config.removeTransaction();
+                config.removeThreadLocalTransaction();
                 // config.removeCallbackAfterTxCommit();    // 仅用于老版本事务方法 tx(...)
             }
         }

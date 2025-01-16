@@ -293,7 +293,7 @@ public class Config {
 		transactionTL.set(tx);
 	}
 
-	void removeTransaction() {
+	void removeThreadLocalTransaction() {
 		transactionTL.remove();
 	}
 
