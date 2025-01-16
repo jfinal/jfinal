@@ -59,8 +59,8 @@ public class TransactionExecutor {
                 conn.rollback();
             } else {
                 conn.commit();
-                tx.executeOnAfterCommit();
-                // config.executeCallbackAfterTxCommit();   // 支持 tx 中的 onAfterCommit 即可满足需求
+                tx.executeOnAfterCommit();                  // 用于新版本事务方法 transaction(...)
+                // config.executeCallbackAfterTxCommit();   // 仅用于老版本事务方法 tx(...)
             }
 
             return ret;
@@ -90,7 +90,7 @@ public class TransactionExecutor {
             } finally {
                 config.removeThreadLocalConnection();	// prevent memory leak
                 config.removeTransaction();
-                // config.removeCallbackAfterTxCommit();    // 支持 tx 中的 onAfterCommit 即可满足需求
+                // config.removeCallbackAfterTxCommit();    // 仅用于老版本事务方法 tx(...)
             }
         }
     }
