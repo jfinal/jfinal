@@ -28,11 +28,11 @@ public class TransactionExecutor {
     @SuppressWarnings("unchecked")
     public <R> R execute(Config config, int transactionLevel, TransactionAtom<R> atom) {
         Connection conn = config.getThreadLocalConnection();
-        Transaction<R> tx = config.getThreadLocalTransaction();
+        Transaction<R> transaction = config.getThreadLocalTransaction();
         BiConsumer<Transaction<?>, Object> onBeforeCommit = config.getOnBeforeTransactionCommit();
 
         if (conn != null) {	// Nested transaction support
-            return handleNestedTransaction(conn, transactionLevel, tx, atom, onBeforeCommit);
+            return handleNestedTransaction(conn, transactionLevel, transaction, atom, onBeforeCommit);
         }
 
         Boolean autoCommit = null;
@@ -43,23 +43,23 @@ public class TransactionExecutor {
             conn.setTransactionIsolation(transactionLevel);
             conn.setAutoCommit(false);
 
-            tx = new Transaction<>();
-            config.setThreadLocalTransaction(tx);
+            transaction = new Transaction<>();
+            config.setThreadLocalTransaction(transaction);
 
-            R ret = atom.run(tx);
+            R ret = atom.run(transaction);
             if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision)ret).shouldRollback()) {
-                tx.rollback();
+                transaction.rollback();
             }
             // 内层、外层调用 onBeforeCommit 处理各自的 ret 返回值
-            if (!tx.shouldRollback() && onBeforeCommit != null) {
-                onBeforeCommit.accept(tx, ret);
+            if (!transaction.shouldRollback() && onBeforeCommit != null) {
+                onBeforeCommit.accept(transaction, ret);
             }
 
-            if (tx.shouldRollback()) {
+            if (transaction.shouldRollback()) {
                 conn.rollback();
             } else {
                 conn.commit();
-                tx.executeOnAfterCommit();                  // 用于新版本事务方法 transaction(...)
+                transaction.executeOnAfterCommit();                  // 用于新版本事务方法 transaction(...)
                 // config.executeCallbackAfterTxCommit();   // 仅用于老版本事务方法 tx(...)
             }
 
@@ -69,8 +69,8 @@ public class TransactionExecutor {
             if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}
 
             // 异常回调，局部回调优先级高于全局回调
-            if (tx.getOnException() != null) {
-                return tx.getOnException().apply(e);
+            if (transaction.getOnException() != null) {
+                return transaction.getOnException().apply(e);
             } else if (config.getOnTransactionException() != null) {
                 return (R) config.getOnTransactionException().apply(e);
             }
