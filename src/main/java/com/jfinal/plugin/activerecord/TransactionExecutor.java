@@ -24,6 +24,7 @@ import java.sql.Connection;
  */
 public class TransactionExecutor {
 
+    @SuppressWarnings("unchecked")
     public <R> R execute(Config config, int transactionLevel, TransactionAtom<R> atom) {
         Connection conn = config.getThreadLocalConnection();
         Transaction<R> tx = config.getThreadLocalTransaction();
@@ -61,8 +62,11 @@ public class TransactionExecutor {
         } catch (Exception e) {
             if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}
 
+            // 异常回调，局部回调优先级高于全局回调
             if (tx.getOnException() != null) {
                 return tx.getOnException().apply(e);
+            } else if (config.getOnTransactionException() != null) {
+                return (R) config.getOnTransactionException().apply(e);
             }
 
             throw e instanceof RuntimeException ? (RuntimeException)e : new ActiveRecordException(e);
