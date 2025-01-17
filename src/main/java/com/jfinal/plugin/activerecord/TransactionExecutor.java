@@ -16,7 +16,7 @@
 
 package com.jfinal.plugin.activerecord;
 
-import com.jfinal.kit.LogKit;
+import com.jfinal.log.Log;
 import java.sql.Connection;
 import java.util.function.BiConsumer;
 
@@ -24,6 +24,8 @@ import java.util.function.BiConsumer;
  * TransactionExecutor 支持新版本事务方法 transaction(...)，独立于原有事务方法 tx(...)
  */
 public class TransactionExecutor {
+
+    static Log log = Log.getLog(TransactionExecutor.class);
 
     @SuppressWarnings("unchecked")
     public <R> R execute(Config config, int transactionLevel, TransactionAtom<R> atom) {
@@ -67,12 +69,14 @@ public class TransactionExecutor {
             return ret;
 
         } catch (Exception e) {
-            if (conn != null) try {conn.rollback();} catch (Exception e1) {LogKit.error(e1.getMessage(), e1);}
+            if (conn != null) try {conn.rollback();} catch (Exception e1) {log.error(e1.getMessage(), e1);}
 
             // 异常回调，局部回调优先级高于全局回调
             if (transaction.getOnException() != null) {
+                log.error(e.getMessage(), e);   // 未向上抛出异常需做日志
                 return transaction.getOnException().apply(e);
             } else if (config.getOnTransactionException() != null) {
+                log.error(e.getMessage(), e);   // 未向上抛出异常需做日志
                 return (R) config.getOnTransactionException().apply(e);
             }
 
@@ -87,7 +91,7 @@ public class TransactionExecutor {
                     conn.close();
                 }
             } catch (Throwable t) {
-                LogKit.error(t.getMessage(), t);	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
+                log.error(t.getMessage(), t);	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
             } finally {
                 config.removeThreadLocalConnection();	// prevent memory leak
                 config.removeThreadLocalTransaction();
