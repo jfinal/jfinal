@@ -25,7 +25,7 @@ import java.util.function.BiConsumer;
  */
 public class TransactionExecutor {
 
-    static Log log = Log.getLog(TransactionExecutor.class);
+    static final Log log = Log.getLog(TransactionExecutor.class);
 
     @SuppressWarnings("unchecked")
     public <R> R execute(Config config, int transactionLevel, TransactionAtom<R> atom) {
