@@ -77,7 +77,7 @@ public class Transaction<R> {
      * 3：此回调异常不向外传播，保障事务提交成功后的主线流程不受影响
      * 4：此回调通常用于在事务提交后进行异步操作，例如更新缓存、发送通知等等
      */
-    private void executeOnAfterCommit() {
+    void executeOnAfterCommit() {
         if (onAfterCommit != null) {
             try {
                 Runnable callback = onAfterCommit;
