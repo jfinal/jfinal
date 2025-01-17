@@ -127,7 +127,7 @@ public class TransactionExecutor {
                 transaction.getOnException().apply(e);  // 注意不要 return，需在后面抛出异常
             }
 
-            throw new ActiveRecordException(e);
+            throw e instanceof RuntimeException ? (RuntimeException)e : new ActiveRecordException(e);
 
         } finally {
             transaction.onException(upperLevelOnException);
