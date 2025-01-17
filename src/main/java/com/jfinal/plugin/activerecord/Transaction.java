@@ -24,7 +24,7 @@ import java.util.function.Function;
  */
 public class Transaction<R> {
 
-    static Log log = Log.getLog(Transaction.class);
+    static final Log log = Log.getLog(Transaction.class);
 
     boolean shouldRollback = false;
 
