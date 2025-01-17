@@ -16,12 +16,15 @@
 
 package com.jfinal.plugin.activerecord;
 
+import com.jfinal.log.Log;
 import java.util.function.Function;
 
 /**
  * Transaction 支持新版本事务方法 transaction(...)，独立于原有事务方法 tx(...)
  */
 public class Transaction<R> {
+
+    static Log log = Log.getLog(Transaction.class);
 
     boolean shouldRollback = false;
 
@@ -74,14 +77,14 @@ public class Transaction<R> {
      * 3：此回调异常不向外传播，保障事务提交成功后的主线流程不受影响
      * 4：此回调通常用于在事务提交后进行异步操作，例如更新缓存、发送通知等等
      */
-    protected void executeOnAfterCommit() {
+    private void executeOnAfterCommit() {
         if (onAfterCommit != null) {
             try {
                 Runnable callback = onAfterCommit;
                 onAfterCommit = null;
                 callback.run();
             } catch (Exception e) {
-                e.printStackTrace(System.err);
+                log.error(e.getMessage(), e);
             }
         }
     }
