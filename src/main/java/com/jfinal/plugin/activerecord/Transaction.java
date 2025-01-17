@@ -56,6 +56,12 @@ public class Transaction<R> {
         return onException;
     }
 
+    public Function<Exception, R> removeOnException() {
+        Function<Exception, R> ret = onException;
+        onException = null;
+        return ret;
+    }
+
     /**
      * 设置当前事务提交后的回调函数
      * 警告：回调发生异常不会向外抛出，如需处理异常情况需在回调中自行 try catch

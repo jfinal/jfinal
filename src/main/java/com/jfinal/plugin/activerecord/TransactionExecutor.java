@@ -19,6 +19,7 @@ package com.jfinal.plugin.activerecord;
 import com.jfinal.log.Log;
 import java.sql.Connection;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * TransactionExecutor 支持新版本事务方法 transaction(...)，独立于原有事务方法 tx(...)
@@ -101,6 +102,8 @@ public class TransactionExecutor {
     }
 
     private <R> R handleNestedTransaction(Connection conn, int transactionLevel, Transaction<R> transaction, TransactionAtom<R> atom, BiConsumer<Transaction<?>, Object> onBeforeCommit) {
+        Function<Exception, R> upperLevelOnException = transaction.removeOnException();
+
         try {
             if (conn.getTransactionIsolation() < transactionLevel) {
                 conn.setTransactionIsolation(transactionLevel);
@@ -119,7 +122,15 @@ public class TransactionExecutor {
 
         } catch (Exception e) {
             transaction.rollback();
+
+            if (transaction.getOnException() != null) {
+                transaction.getOnException().apply(e);  // 注意不要 return，需在后面抛出异常
+            }
+
             throw new ActiveRecordException(e);
+
+        } finally {
+            transaction.onException(upperLevelOnException);
         }
     }
 }
