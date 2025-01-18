@@ -17,6 +17,8 @@
 package com.jfinal.plugin.activerecord;
 
 import com.jfinal.log.Log;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -28,7 +30,7 @@ public class Transaction<R> {
 
     boolean shouldRollback = false;
 
-    Runnable onAfterCommit;                 // 事务提交之后回调
+    List<Runnable> onAfterCommitList;       // 事务提交之后回调
     Function<Exception, R> onException;     // 异常产生之后回调
 
     /**
@@ -52,7 +54,7 @@ public class Transaction<R> {
         this.onException = onException;
     }
 
-    public Function<Exception, R> getOnException() {
+    Function<Exception, R> getOnException() {
         return onException;
     }
 
@@ -67,11 +69,12 @@ public class Transaction<R> {
      * 警告：回调发生异常不会向外抛出，如需处理异常情况需在回调中自行 try catch
      */
     public void onAfterCommit(Runnable onAfterCommit) {
-        this.onAfterCommit = onAfterCommit;
-    }
-
-    public Runnable getOnAfterCommit() {
-        return onAfterCommit;
+        if (onAfterCommit != null) {
+            if (onAfterCommitList == null) {
+                onAfterCommitList = new ArrayList<>(3);
+            }
+            onAfterCommitList.add(onAfterCommit);
+        }
     }
 
     /**
@@ -84,13 +87,13 @@ public class Transaction<R> {
      * 4：此回调通常用于在事务提交后进行异步操作，例如更新缓存、发送通知等等
      */
     void executeOnAfterCommit() {
-        if (onAfterCommit != null) {
-            try {
-                Runnable callback = onAfterCommit;
-                onAfterCommit = null;
-                callback.run();
-            } catch (Exception e) {
-                log.error(e.getMessage(), e);
+        if (onAfterCommitList != null) {
+            for (int i = onAfterCommitList.size() - 1; i >= 0; i--) {
+                try {
+                    onAfterCommitList.get(i).run();
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                }
             }
         }
     }
