@@ -55,7 +55,7 @@ public class TransactionExecutor {
                 transaction.rollback();
             }
             // 内层、外层调用 onBeforeCommit 处理各自的 ret 返回值
-            if (!transaction.shouldRollback() && onBeforeCommit != null) {
+            if (onBeforeCommit != null && !transaction.shouldRollback()) {
                 onBeforeCommit.accept(transaction, ret);
             }
 
@@ -73,7 +73,7 @@ public class TransactionExecutor {
             if (conn != null) try {conn.rollback();} catch (Exception e1) {log.error(e1.getMessage(), e1);}
 
             // 异常回调，局部回调优先级高于全局回调
-            if (transaction.getOnException() != null) {
+            if (transaction != null && transaction.getOnException() != null) {
                 log.error(e.getMessage(), e);   // 未向上抛出异常需做日志
                 return transaction.getOnException().apply(e);
             } else if (config.getOnTransactionException() != null) {
@@ -115,7 +115,7 @@ public class TransactionExecutor {
                 transaction.rollback();
             }
             // 内层、外层调用 onBeforeCommit 处理各自的 ret 返回值
-            if (!transaction.shouldRollback() && onBeforeCommit != null) {
+            if (onBeforeCommit != null && !transaction.shouldRollback()) {
                 onBeforeCommit.accept(transaction, ret);
             }
             return ret;
