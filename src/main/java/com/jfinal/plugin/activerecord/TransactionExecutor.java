@@ -34,7 +34,7 @@ public class TransactionExecutor {
         Transaction<R> transaction = config.getThreadLocalTransaction();
         BiConsumer<Transaction<?>, Object> onBeforeCommit = config.getOnBeforeTransactionCommit();
 
-        if (conn != null) {	// Nested transaction support
+        if (conn != null) {     // 嵌套事务
             return handleNestedTransaction(conn, transactionLevel, transaction, atom, onBeforeCommit);
         }
 
@@ -91,10 +91,10 @@ public class TransactionExecutor {
                     }
                     conn.close();
                 }
-            } catch (Throwable t) {
-                log.error(t.getMessage(), t);	// can not throw exception here, otherwise the more important exception in previous catch block can not be thrown
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
             } finally {
-                config.removeThreadLocalConnection();	// prevent memory leak
+                config.removeThreadLocalConnection();
                 config.removeThreadLocalTransaction();
                 // config.removeCallbackAfterTxCommit();    // 仅用于老版本事务方法 tx(...)
             }
