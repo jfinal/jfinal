@@ -37,8 +37,14 @@ public class Config {
 
 	private final ThreadLocal<Transaction<?>> transactionTL = new ThreadLocal<>();
 	private final ThreadLocal<Runnable> callbackAfterTxCommitTL = new ThreadLocal<>();
-	private Function<Exception, ?> onTransactionException;					// 事务抛出异常时的默认处理函数
-	private BiConsumer<Transaction<?>, Object> onBeforeTransactionCommit;	// 事务提交之前处理
+	// 事务抛出异常时的默认处理函数
+	private Function<Exception, ?> onTransactionException;
+	// 事务提交之前处理函数。默认实现兼容老版本通过 return false 回滚事务
+	private BiConsumer<Transaction<?>, Object> onBeforeTransactionCommit = (tx, ret) -> {
+		if (ret instanceof Boolean && !((Boolean) ret)) {
+			tx.rollback();
+		}
+	};
 
 	String name;
 	DataSource dataSource;
