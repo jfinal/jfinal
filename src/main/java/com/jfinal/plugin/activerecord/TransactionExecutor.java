@@ -35,6 +35,9 @@ public class TransactionExecutor {
         BiConsumer<Transaction<?>, Object> onBeforeCommit = config.getOnBeforeTransactionCommit();
 
         if (conn != null) {     // 嵌套事务
+            if (transaction == null) {
+                throw new RuntimeException("老版本事务方法 tx(...) 中不能嵌套调用新版本事务方法 transaction(...)");
+            }
             return handleNestedTransaction(conn, transactionLevel, transaction, atom, onBeforeCommit);
         }
 
