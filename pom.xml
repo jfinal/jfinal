@@ -354,6 +354,7 @@
 				<configuration>
 					<!-- 对应 maven settings.xml 中的 server 配置 -->
 					<publishingServerId>jfinal</publishingServerId>
+					<autoPublish>true</autoPublish>
 				</configuration>
 			</plugin>
 
