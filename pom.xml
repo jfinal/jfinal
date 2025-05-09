@@ -345,16 +345,15 @@
 				</executions>
 			</plugin>
 
+            <!-- 发布方式改为 Central Portal: https://central.sonatype.org/publish/publish-portal-maven/ -->
 			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.8</version>
+				<groupId>org.sonatype.central</groupId>
+				<artifactId>central-publishing-maven-plugin</artifactId>
+				<version>0.7.0</version>
 				<extensions>true</extensions>
 				<configuration>
 					<!-- 对应 maven settings.xml 中的 server 配置 -->
-					<serverId>jfinal</serverId>
-					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+					<publishingServerId>jfinal</publishingServerId>
 				</configuration>
 			</plugin>
 
