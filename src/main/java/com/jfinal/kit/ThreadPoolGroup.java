@@ -27,14 +27,23 @@ import java.util.concurrent.TimeUnit;
  * <br>
  * 比使用 ThreadPoolKit.getExecutor().invokeAll 简洁一些
  *
+ * 例1 提交完任务，等待执行完毕：
  * <pre>
  * ThreadPoolGroup group = ThreadPoolKit.newGroup(size);
  * group.submit(() -> System.out.println("hello1"));
  * group.submit(() -> System.out.println("hello2"));
  * group.waits();
  * </pre>
+ *
+ * 例2 提交完有返回值的任务，等待执行完毕并返回结果集：
+ * <pre>
+ * ThreadPoolGroup group = ThreadPoolKit.newGroup();
+ * group.submit(() -> Ret.ok());
+ * group.submit(() -> Ret.fail());
+ * List<Ret> ret = group.get();
+ * </pre>
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class ThreadPoolGroup {
 
     private final List<Future<?>> list;
@@ -90,6 +99,21 @@ public class ThreadPoolGroup {
     }
 
     /**
+     * 阻塞当前线程，等待所有任务执行完毕, 并返回所有任务的返回值
+     */
+    @SuppressWarnings("unchecked")
+    public <T> List<T> get(){
+        List<T> ret = new ArrayList<>(list.size());
+        for (Future<?> fu : list) {
+            try {
+                ret.add((T) fu.get());
+            } catch (Exception ignored) {
+            }
+        }
+        return ret;
+    }
+
+    /**
      * 阻塞当前线程，等待所有任务执行完毕，每一个任务都设置 等待超时
      */
     public void waits(long timeout, TimeUnit unit){
@@ -99,5 +123,20 @@ public class ThreadPoolGroup {
             } catch (Exception ignored) {
             }
         }
+    }
+
+    /**
+     * 阻塞当前线程，等待所有任务执行完毕，每一个任务都设置 等待超时, 并返回所有任务的返回值
+     */
+    @SuppressWarnings("unchecked")
+    public <T> List<T> get(long timeout, TimeUnit unit){
+        List<T> ret = new ArrayList<>(list.size());
+        for (Future<?> fu : list) {
+            try {
+                ret.add((T) fu.get(timeout, unit));
+            } catch (Exception ignored) {
+            }
+        }
+        return ret;
     }
 }
