@@ -84,10 +84,9 @@ public class JavaType {
 	public void addType(Class<?> type) {
 		strToType.put(type.getName(), type);
 	}
-	
-	@SuppressWarnings("unlikely-arg-type")
+
 	public void removeType(Class<?> type) {
-		strToType.remove(type);
+		strToType.remove(type.getName());
 	}
 	
 	public void addTypeMapping(Class<?> from, Class<?> to) {
