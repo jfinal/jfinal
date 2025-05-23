@@ -38,7 +38,7 @@ public class TransactionExecutor {
             if (transaction == null) {
                 throw new RuntimeException("老版本事务方法 tx(...) 中不能嵌套调用新版本事务方法 transaction(...)");
             }
-            return handleNestedTransaction(conn, transactionLevel, transaction, atom, onBeforeCommit);
+            return handleNestedTransaction(conn, transaction, transactionLevel, atom, onBeforeCommit);
         }
 
         Boolean autoCommit = null;
@@ -104,8 +104,8 @@ public class TransactionExecutor {
         }
     }
 
-    private <R> R handleNestedTransaction(Connection conn, int transactionLevel, Transaction<R> transaction, TransactionAtom<R> atom, BiConsumer<Transaction<?>, Object> onBeforeCommit) {
-        Function<Exception, R> upperLevelOnException = transaction.removeOnException();
+    private <R> R handleNestedTransaction(Connection conn, Transaction<R> transaction, int transactionLevel, TransactionAtom<R> atom, BiConsumer<Transaction<?>, Object> onBeforeCommit) {
+        Function<Exception, R> upperLevelOnException = transaction.getAndRemoveOnException();
 
         try {
             if (conn.getTransactionIsolation() < transactionLevel) {

@@ -58,7 +58,7 @@ public class Transaction<R> {
         return onException;
     }
 
-    Function<Exception, R> removeOnException() {
+    Function<Exception, R> getAndRemoveOnException() {
         Function<Exception, R> ret = onException;
         onException = null;
         return ret;
