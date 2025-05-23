@@ -41,10 +41,10 @@ public class TransactionExecutor {
             return handleNestedTransaction(conn, transaction, transactionLevel, atom, onBeforeCommit);
         }
 
-        Boolean autoCommit = null;
+        Boolean originalAutoCommit = null;
         try {
             conn = config.getConnection();
-            autoCommit = conn.getAutoCommit();
+            originalAutoCommit = conn.getAutoCommit();
             config.setThreadLocalConnection(conn);
             conn.setTransactionIsolation(transactionLevel);
             conn.setAutoCommit(false);
@@ -89,8 +89,8 @@ public class TransactionExecutor {
         } finally {
             try {
                 if (conn != null) {
-                    if (autoCommit != null) {
-                        conn.setAutoCommit(autoCommit);
+                    if (originalAutoCommit != null) {
+                        conn.setAutoCommit(originalAutoCommit);
                     }
                     conn.close();
                 }
