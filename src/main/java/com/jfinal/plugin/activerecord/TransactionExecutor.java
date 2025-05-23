@@ -29,7 +29,7 @@ public class TransactionExecutor {
     static final Log log = Log.getLog(TransactionExecutor.class);
 
     @SuppressWarnings("unchecked")
-    public <R> R execute(Config config, int transactionLevel, TransactionAtom<R> atom) {
+    public <R> R execute(Config config, int isolation, TransactionAtom<R> atom) {
         Connection conn = config.getThreadLocalConnection();
         Transaction<R> transaction = config.getThreadLocalTransaction();
         BiConsumer<Transaction<?>, Object> onBeforeCommit = config.getOnBeforeTransactionCommit();
@@ -38,7 +38,7 @@ public class TransactionExecutor {
             if (transaction == null) {
                 throw new RuntimeException("老版本事务方法 tx(...) 中不能嵌套调用新版本事务方法 transaction(...)");
             }
-            return handleNestedTransaction(conn, transaction, transactionLevel, atom, onBeforeCommit);
+            return handleNestedTransaction(conn, transaction, isolation, atom, onBeforeCommit);
         }
 
         Boolean originalAutoCommit = null;
@@ -46,7 +46,7 @@ public class TransactionExecutor {
             conn = config.getConnection();
             originalAutoCommit = conn.getAutoCommit();
             config.setThreadLocalConnection(conn);
-            conn.setTransactionIsolation(transactionLevel);
+            conn.setTransactionIsolation(isolation);
             conn.setAutoCommit(false);
 
             transaction = new Transaction<>();
@@ -54,7 +54,7 @@ public class TransactionExecutor {
 
             R ret = atom.run(transaction);
             // 若返回值类型实现了 TransactionRollbackDecision 接口，可用于决定是否回滚事务
-            if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision)ret).shouldRollback()) {
+            if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision) ret).shouldRollback()) {
                 transaction.rollback();
             }
             // 内层、外层调用 onBeforeCommit 处理各自的 ret 返回值
@@ -104,17 +104,17 @@ public class TransactionExecutor {
         }
     }
 
-    private <R> R handleNestedTransaction(Connection conn, Transaction<R> transaction, int transactionLevel, TransactionAtom<R> atom, BiConsumer<Transaction<?>, Object> onBeforeCommit) {
+    private <R> R handleNestedTransaction(Connection conn, Transaction<R> transaction, int isolation, TransactionAtom<R> atom, BiConsumer<Transaction<?>, Object> onBeforeCommit) {
         Function<Exception, R> upperLevelOnException = transaction.getAndRemoveOnException();
 
         try {
-            if (conn.getTransactionIsolation() < transactionLevel) {
-                conn.setTransactionIsolation(transactionLevel);
+            if (conn.getTransactionIsolation() < isolation) {
+                conn.setTransactionIsolation(isolation);
             }
 
             R ret = atom.run(transaction);
             // 若返回值类型实现了 TransactionRollbackDecision 接口，可用于决定是否回滚事务
-            if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision)ret).shouldRollback()) {
+            if (ret instanceof TransactionRollbackDecision && ((TransactionRollbackDecision) ret).shouldRollback()) {
                 transaction.rollback();
             }
             // 内层、外层调用 onBeforeCommit 处理各自的 ret 返回值
