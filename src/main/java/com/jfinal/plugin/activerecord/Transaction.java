@@ -41,6 +41,15 @@ public class Transaction<R> {
     }
 
     /**
+     * 若参数 condition 值为 true 则回滚事务
+     */
+    public void rollbackIf(boolean condition) {
+        if (condition) {
+            shouldRollback = true;
+        }
+    }
+
+    /**
      * 是否回滚事务
      */
     boolean shouldRollback() {
