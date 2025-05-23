@@ -41,11 +41,14 @@ public class TransactionExecutor {
             return handleNestedTransaction(conn, transaction, isolation, atom, onBeforeCommit);
         }
 
+        Integer originalIsolation = null;
         Boolean originalAutoCommit = null;
         try {
             conn = config.getConnection();
             originalAutoCommit = conn.getAutoCommit();
             config.setThreadLocalConnection(conn);
+
+            originalIsolation = conn.getTransactionIsolation();
             conn.setTransactionIsolation(isolation);
             conn.setAutoCommit(false);
 
@@ -92,6 +95,12 @@ public class TransactionExecutor {
                     if (originalAutoCommit != null) {
                         conn.setAutoCommit(originalAutoCommit);
                     }
+
+                    // 恢复为 originalIsolation
+                    if (originalIsolation != null && originalIsolation != conn.getTransactionIsolation()) {
+                        conn.setTransactionIsolation(originalIsolation);
+                    }
+
                     conn.close();
                 }
             } catch (Exception e) {
