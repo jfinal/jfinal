@@ -45,7 +45,6 @@ public class TransactionExecutor {
         Boolean originalAutoCommit = null;
         try {
             conn = config.getConnection();
-            originalAutoCommit = conn.getAutoCommit();
             config.setThreadLocalConnection(conn);
 
             originalIsolation = conn.getTransactionIsolation();
@@ -53,6 +52,7 @@ public class TransactionExecutor {
                 conn.setTransactionIsolation(isolation);
             }
 
+            originalAutoCommit = conn.getAutoCommit();
             conn.setAutoCommit(false);
 
             transaction = new Transaction<>();
