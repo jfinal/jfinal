@@ -93,6 +93,7 @@ public class TransactionExecutor {
             throw e instanceof RuntimeException ? (RuntimeException) e : new ActiveRecordException(e);
 
         } finally {
+            boolean closeOnException = true;
             try {
                 if (conn != null) {
                     if (originalAutoCommit != null) {
@@ -104,10 +105,20 @@ public class TransactionExecutor {
                         conn.setTransactionIsolation(originalIsolation);
                     }
 
+                    closeOnException = false;
                     conn.close();
                 }
+
             } catch (Exception e) {
+                if (conn != null && closeOnException) {
+                    try {
+                        conn.close();
+                    } catch (Exception e1) {
+                        log.error(e1.getMessage(), e1);
+                    }
+                }
                 log.error(e.getMessage(), e);
+
             } finally {
                 config.removeThreadLocalConnection();
                 config.removeThreadLocalTransaction();
