@@ -49,7 +49,10 @@ public class TransactionExecutor {
             config.setThreadLocalConnection(conn);
 
             originalIsolation = conn.getTransactionIsolation();
-            conn.setTransactionIsolation(isolation);
+            if (originalIsolation != isolation) {
+                conn.setTransactionIsolation(isolation);
+            }
+
             conn.setAutoCommit(false);
 
             transaction = new Transaction<>();
