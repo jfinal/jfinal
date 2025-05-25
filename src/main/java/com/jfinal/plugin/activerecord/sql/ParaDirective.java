@@ -61,7 +61,7 @@ import com.jfinal.template.stat.Scope;
  * 三、4.9.23 新增支持 like、in 子句
  *    ### 一般用法，第二个参数传入 "like"、"in" 参数即可
  *    select * from t where title like #para(title, "like")
- *    select * from t where title like #para(title, "in")
+ *    select * from t where title in #para(title, "in")
  *
  *    ### like 类型第一个参数支持 int 类型
  *    select * from t where title like #para(0, "like")
