@@ -28,16 +28,10 @@ public class Transactional implements Interceptor {
     @Override
     public void intercept(Invocation inv) {
         Db.transaction(tx -> {
-            try {
-                inv.invoke();
+            inv.invoke();
 
-                // 此处返回值实现 TransactionRollbackDecision 接口可决定是否回滚事务
-                return inv.getReturnValue();
-
-            } catch (Exception e) {
-                tx.rollback();
-                throw e;
-            }
+            // 此处返回值实现 TransactionRollbackDecision 接口可决定是否回滚事务
+            return inv.getReturnValue();
         });
     }
 }
