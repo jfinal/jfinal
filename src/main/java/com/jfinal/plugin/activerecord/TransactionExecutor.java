@@ -46,6 +46,7 @@ public class TransactionExecutor {
         Boolean originalAutoCommit = null;
         try {
             conn = config.getConnection();
+            // 新事务设计的 conn 需置入原有 ThreadLocal，否则新老事务在混合嵌套时无法合并为一个事务，无法保障原子性
             config.setThreadLocalConnection(conn);
 
             originalIsolation = conn.getTransactionIsolation();

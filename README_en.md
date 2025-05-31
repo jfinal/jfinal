@@ -25,7 +25,7 @@ JFinal is an ultra-fast WEB + ORM framework based on the Java language. Its core
 <dependency>
     <groupId>com.jfinal</groupId>
     <artifactId>jfinal</artifactId>
-    <version>5.2.5</version>
+    <version>5.2.6</version>
 </dependency>
 ```
 
