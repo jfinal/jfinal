@@ -41,6 +41,7 @@ public class TransactionExecutor {
             return handleNestedTransaction(conn, transaction, isolation, atom, onBeforeCommit);
         }
 
+        boolean active = true;
         Integer originalIsolation = null;
         Boolean originalAutoCommit = null;
         try {
@@ -69,9 +70,11 @@ public class TransactionExecutor {
             }
 
             if (transaction.shouldRollback()) {
+                active = false;                             // 必须前置，回滚异常时避免重复回滚
                 conn.rollback();
             } else {
                 conn.commit();
+                active = false;                             // 必须后置，提交失败仍需回滚事务
                 transaction.executeOnAfterCommit();         // 用于新版本事务方法 transaction(...)
                 // config.executeCallbackAfterTxCommit();   // 仅用于老版本事务方法 tx(...)
             }
@@ -79,7 +82,7 @@ public class TransactionExecutor {
             return ret;
 
         } catch (Exception e) {
-            if (conn != null) try {conn.rollback();} catch (Exception e1) {log.error(e1.getMessage(), e1);}
+            if (active && conn != null) try {conn.rollback();} catch (Exception e1) {log.error(e1.getMessage(), e1);}
 
             // 异常回调，局部回调优先级高于全局回调
             if (transaction != null && transaction.getOnException() != null) {
