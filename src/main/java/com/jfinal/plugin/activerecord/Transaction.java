@@ -24,9 +24,12 @@ import java.util.function.Function;
 /**
  * Transaction 支持新版本事务方法 transaction(...)，独立于原有事务方法 tx(...)
  *
- * <p>
- * 注意：新事务设计 connection 对象需 Config 内 ThreadLocal 持有，否则新老事务在混合
- *      嵌套时无法合并为一个事务，无法保障原子性
+ * <pre>
+ * 注意：新版本事务的 connection 对象需被 Config 内的 ThreadLocal 持有，否则新老版本事务
+ *      在混合嵌套调用时无法合并为一个事务，无法保障原子性。
+ *
+ *      目前仅支持新版本事务方法嵌套调用老版本事务方法，反之则抛出异常。
+ * </pre>
  */
 public class Transaction<R> {
 
