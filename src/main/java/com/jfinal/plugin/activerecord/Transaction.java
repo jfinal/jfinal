@@ -28,7 +28,7 @@ public class Transaction<R> {
 
     static final Log log = Log.getLog(Transaction.class);
 
-    boolean shouldRollback = false;
+    boolean rollbackOnly = false;
 
     List<Runnable> onAfterCommitList;       // 事务提交之后回调
     Function<Exception, R> onException;     // 异常产生之后回调
@@ -37,7 +37,7 @@ public class Transaction<R> {
      * 回滚事务
      */
     public void rollback() {
-        shouldRollback = true;
+        rollbackOnly = true;
     }
 
     /**
@@ -45,15 +45,32 @@ public class Transaction<R> {
      */
     public void rollbackIf(boolean condition) {
         if (condition) {
-            shouldRollback = true;
+            rollbackOnly = true;
         }
+    }
+
+    /**
+     * 判断事务是否可以提交，根据其返回的 boolean 值来决定事务的返回值。
+     *
+     * <pre>
+     * 例子:
+     *    rollbackIf(condition);
+     *
+     *    return tx.canCommit() ? Ret.ok("成功") : Ret.fail("失败");
+     *
+     * 注意:上例未使用 TransactionRollbackDecision 接口机制，回滚事务需要
+     *      明确调用 rollback() 或 rollbackIf(cond) 方法，或者抛出异常
+     * </pre>
+     */
+    public boolean canCommit() {
+        return !rollbackOnly;
     }
 
     /**
      * 是否回滚事务
      */
     boolean shouldRollback() {
-        return shouldRollback;
+        return rollbackOnly;
     }
 
     /**
