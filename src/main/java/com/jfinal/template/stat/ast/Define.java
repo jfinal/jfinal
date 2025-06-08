@@ -44,98 +44,98 @@ import com.jfinal.template.io.Writer;
  */
 public class Define extends Stat {
 
-	private static final String[] NULL_PARAMETER_NAMES = new String[0];
+    private static final String[] NULL_PARAMETER_NAMES = new String[0];
 
-	private String functionName;
-	private String[] parameterNames;
-	private Stat stat;
+    private String functionName;
+    private String[] parameterNames;
+    private Stat stat;
 
-	public Define(String functionName, ExprList exprList, StatList statList, Location location) {
-		setLocation(location);
-		this.functionName = functionName;
-		this.stat = statList.getActualStat();
+    public Define(String functionName, ExprList exprList, StatList statList, Location location) {
+        setLocation(location);
+        this.functionName = functionName;
+        this.stat = statList.getActualStat();
 
-		Expr[] exprArray = exprList.getExprArray();
-		if (exprArray.length == 0) {
-			this.parameterNames = NULL_PARAMETER_NAMES;
-			return ;
-		}
+        Expr[] exprArray = exprList.getExprArray();
+        if (exprArray.length == 0) {
+            this.parameterNames = NULL_PARAMETER_NAMES;
+            return ;
+        }
 
-		parameterNames = new String[exprArray.length];
-		for (int i=0; i<exprArray.length; i++) {
-			if (exprArray[i] instanceof Id) {
-				parameterNames[i] = ((Id)exprArray[i]).getId();
-			} else {
-				throw new ParseException("The parameter of template function definition must be identifier", location);
-			}
-		}
-	}
+        parameterNames = new String[exprArray.length];
+        for (int i=0; i<exprArray.length; i++) {
+            if (exprArray[i] instanceof Id) {
+                parameterNames[i] = ((Id)exprArray[i]).getId();
+            } else {
+                throw new ParseException("The parameter of template function definition must be identifier", location);
+            }
+        }
+    }
 
-	public String getFunctionName() {
-		return functionName;
-	}
+    public String getFunctionName() {
+        return functionName;
+    }
 
-	public String[] getParameterNames() {
-		return parameterNames;
-	}
+    public String[] getParameterNames() {
+        return parameterNames;
+    }
 
-	/**
-	 * Define 的继承类可以覆盖此方法实现一些 register 类的动作
-	 */
-	public void exec(Env env, Scope scope, Writer writer) {
+    /**
+     * Define 的继承类可以覆盖此方法实现一些 register 类的动作
+     */
+    public void exec(Env env, Scope scope, Writer writer) {
 
-	}
+    }
 
-	/**
-	 * 真正调用模板函数
-	 */
-	public void call(Env env, Scope scope, ExprList exprList, Writer writer) {
-		if (exprList.length() != parameterNames.length) {
-			throw new TemplateException("Wrong number of argument to call the template function, right number is: " + parameterNames.length, location);
-		}
+    /**
+     * 真正调用模板函数
+     */
+    public void call(Env env, Scope scope, ExprList exprList, Writer writer) {
+        if (exprList.length() != parameterNames.length) {
+            throw new TemplateException("Wrong number of argument to call the template function, right number is: " + parameterNames.length, location);
+        }
 
-		scope = new Scope(scope);
-		if (exprList.length() > 0) {
-			Object[] parameterValues = exprList.evalExprList(scope);
-			for (int i=0; i<parameterValues.length; i++) {
-				scope.setLocal(parameterNames[i], parameterValues[i]);	// 参数赋值
-			}
-		}
+        scope = new Scope(scope);
+        if (exprList.length() > 0) {
+            Object[] parameterValues = exprList.evalExprList(scope);
+            for (int i=0; i<parameterValues.length; i++) {
+                scope.setLocal(parameterNames[i], parameterValues[i]);	// 参数赋值
+            }
+        }
 
-		stat.exec(env, scope, writer);
-		scope.getCtrl().setJumpNone();	// #define 中的 return、continue、break 全部在此消化
-	}
+        stat.exec(env, scope, writer);
+        scope.getCtrl().setJumpNone();	// #define 中的 return、continue、break 全部在此消化
+    }
 
-	public String toString() {
-		StringBuilder ret = new StringBuilder();
-		ret.append("#define ").append(functionName).append("(");
-		for (int i=0; i<parameterNames.length; i++) {
-			if (i > 0) {
-				ret.append(", ");
-			}
-			ret.append(parameterNames[i]);
-		}
-		return ret.append(")").toString();
-	}
+    public String toString() {
+        StringBuilder ret = new StringBuilder();
+        ret.append("#define ").append(functionName).append("(");
+        for (int i=0; i<parameterNames.length; i++) {
+            if (i > 0) {
+                ret.append(", ");
+            }
+            ret.append(parameterNames[i]);
+        }
+        return ret.append(")").toString();
+    }
 
-	// -----------------------------------------------------------------------
+    // -----------------------------------------------------------------------
 
-	/**
-	 * envForDevMode 属性以及相关方法仅用于 devMode 判断当前 #define 指令所在资源是否被修改
-	 * 仅用于 EngineConfig 中处理 shared function 的逻辑
-	 */
-	private Env envForDevMode;
+    /**
+     * envForDevMode 属性以及相关方法仅用于 devMode 判断当前 #define 指令所在资源是否被修改
+     * 仅用于 EngineConfig 中处理 shared function 的逻辑
+     */
+    private Env envForDevMode;
 
-	public void setEnvForDevMode(Env envForDevMode) {
-		this.envForDevMode = envForDevMode;
-	}
+    public void setEnvForDevMode(Env envForDevMode) {
+        this.envForDevMode = envForDevMode;
+    }
 
-	public boolean isSourceModifiedForDevMode() {
-		if (envForDevMode == null) {
-			throw new IllegalStateException("Check engine config: setDevMode(...) must be invoked before addSharedFunction(...)");
-		}
-		return envForDevMode.isSourceListModified();
-	}
+    public boolean isSourceModifiedForDevMode() {
+        if (envForDevMode == null) {
+            throw new IllegalStateException("Check engine config: setDevMode(...) must be invoked before addSharedFunction(...)");
+        }
+        return envForDevMode.isSourceListModified();
+    }
 }
 
 

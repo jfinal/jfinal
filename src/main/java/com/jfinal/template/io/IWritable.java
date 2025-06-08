@@ -23,15 +23,15 @@ package com.jfinal.template.io;
  */
 public interface IWritable {
 
-	/**
-	 * 供 OutputStream 模式下的 ByteWrite 使用
-	 */
-	public byte[] getBytes();
+    /**
+     * 供 OutputStream 模式下的 ByteWrite 使用
+     */
+    public byte[] getBytes();
 
-	/**
-	 * 供 Writer 模式下的 CharWrite 使用
-	 */
-	public char[] getChars();
+    /**
+     * 供 Writer 模式下的 CharWrite 使用
+     */
+    public char[] getChars();
 }
 
 

@@ -30,62 +30,62 @@ import com.jfinal.template.stat.Scope;
  * #escape(value)
  */
 public class EscapeDirective extends Directive {
-	
-	public void exec(Env env, Scope scope, Writer writer) {
-		try {
-			Object value = exprList.eval(scope);
-			
-			if (value instanceof String) {
-				escape((String)value, writer);
-			} else if (value instanceof Number) {
-				Class<?> c = value.getClass();
-				if (c == Integer.class) {
-					writer.write((Integer)value);
-				} else if (c == Long.class) {
-					writer.write((Long)value);
-				} else if (c == Double.class) {
-					writer.write((Double)value);
-				} else if (c == Float.class) {
-					writer.write((Float)value);
-				} else {
-					writer.write(value.toString());
-				}
-			} else if (value != null) {
-				escape(value.toString(), writer);
-			}
-		} catch (TemplateException | ParseException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new TemplateException(e.getMessage(), location, e);
-		}
-	}
-	
-	private void escape(String str, Writer w) throws IOException {
-		for (int i = 0, len = str.length(); i < len; i++) {
-			char cur = str.charAt(i);
-			switch (cur) {
-			case '<':
-				w.write("&lt;");
-				break;
-			case '>':
-				w.write("&gt;");
-				break;
-			case '"':
-				w.write("&quot;");
-				break;
-			case '\'':
-				// w.write("&apos;");	// IE 不支持 &apos; 考虑 &#39;
-				w.write("&#39;");
-				break;
-			case '&':
-				w.write("&amp;");
-				break;
-			default:
-				w.write(str, i, 1);
-				break;
-			}
-		}
-	}
+
+    public void exec(Env env, Scope scope, Writer writer) {
+        try {
+            Object value = exprList.eval(scope);
+
+            if (value instanceof String) {
+                escape((String)value, writer);
+            } else if (value instanceof Number) {
+                Class<?> c = value.getClass();
+                if (c == Integer.class) {
+                    writer.write((Integer)value);
+                } else if (c == Long.class) {
+                    writer.write((Long)value);
+                } else if (c == Double.class) {
+                    writer.write((Double)value);
+                } else if (c == Float.class) {
+                    writer.write((Float)value);
+                } else {
+                    writer.write(value.toString());
+                }
+            } else if (value != null) {
+                escape(value.toString(), writer);
+            }
+        } catch (TemplateException | ParseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TemplateException(e.getMessage(), location, e);
+        }
+    }
+
+    private void escape(String str, Writer w) throws IOException {
+        for (int i = 0, len = str.length(); i < len; i++) {
+            char cur = str.charAt(i);
+            switch (cur) {
+            case '<':
+                w.write("&lt;");
+                break;
+            case '>':
+                w.write("&gt;");
+                break;
+            case '"':
+                w.write("&quot;");
+                break;
+            case '\'':
+                // w.write("&apos;");	// IE 不支持 &apos; 考虑 &#39;
+                w.write("&#39;");
+                break;
+            case '&':
+                w.write("&amp;");
+                break;
+            default:
+                w.write(str, i, 1);
+                break;
+            }
+        }
+    }
 }
 
 

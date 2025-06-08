@@ -31,33 +31,33 @@ import com.jfinal.template.stat.Scope;
  * 适用于极少数的在内层作用域中希望直接操作顶层作用域的场景
  */
 public class SetGlobal  extends Stat {
-	
-	private Expr expr;
-	
-	public SetGlobal(ExprList exprList, Location location) {
-		if (exprList.length() == 0) {
-			throw new ParseException("The parameter of #setGlobal directive can not be blank", location);
-		}
-		
-		/* 放开对表达式类型的限定
-		for (Expr expr : exprList.getExprArray()) {
-			if ( !(expr instanceof Assign || expr instanceof IncDec) ) {
-				throw new ParseException("#setGlobal directive only supports assignment expressions", location);
-			}
-		}*/
-		
-		this.expr = exprList.getActualExpr();
-	}
-	
-	public void exec(Env env, Scope scope, Writer writer) {
-		Ctrl ctrl = scope.getCtrl();
-		try {
-			ctrl.setGlobalAssignment();
-			expr.eval(scope);
-		} finally {
-			ctrl.setWisdomAssignment();
-		}
-	}
+    
+    private Expr expr;
+    
+    public SetGlobal(ExprList exprList, Location location) {
+        if (exprList.length() == 0) {
+            throw new ParseException("The parameter of #setGlobal directive can not be blank", location);
+        }
+        
+        /* 放开对表达式类型的限定
+        for (Expr expr : exprList.getExprArray()) {
+            if ( !(expr instanceof Assign || expr instanceof IncDec) ) {
+                throw new ParseException("#setGlobal directive only supports assignment expressions", location);
+            }
+        }*/
+        
+        this.expr = exprList.getActualExpr();
+    }
+    
+    public void exec(Env env, Scope scope, Writer writer) {
+        Ctrl ctrl = scope.getCtrl();
+        try {
+            ctrl.setGlobalAssignment();
+            expr.eval(scope);
+        } finally {
+            ctrl.setWisdomAssignment();
+        }
+    }
 }
 
 

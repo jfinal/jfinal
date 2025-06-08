@@ -27,7 +27,7 @@ package com.jfinal.template.source;
  */
 @FunctionalInterface
 public interface ISourceFactory {
-	ISource getSource(String baseTemplatePath, String fileName, String encoding);
+    ISource getSource(String baseTemplatePath, String fileName, String encoding);
 }
 
 

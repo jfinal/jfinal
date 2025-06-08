@@ -27,164 +27,164 @@ import com.jfinal.proxy.ProxyClassLoader;
  */
 public class FastFieldGetter extends FieldGetter {
 
-	protected static ProxyGenerator generator = new ProxyGenerator();
-	protected static ProxyCompiler compiler = new ProxyCompiler();
-	protected static ProxyClassLoader classLoader = new ProxyClassLoader();
-	protected static Map<Class<?>, Proxy> cache = new ConcurrentHashMap<>(512, 0.25F);
+    protected static ProxyGenerator generator = new ProxyGenerator();
+    protected static ProxyCompiler compiler = new ProxyCompiler();
+    protected static ProxyClassLoader classLoader = new ProxyClassLoader();
+    protected static Map<Class<?>, Proxy> cache = new ConcurrentHashMap<>(512, 0.25F);
 
-	protected static boolean outputCompileError = false;
+    protected static boolean outputCompileError = false;
 
-	protected Proxy proxy;
-	protected java.lang.reflect.Method getterMethod;
+    protected Proxy proxy;
+    protected java.lang.reflect.Method getterMethod;
 
-	public FastFieldGetter(Proxy proxy, java.lang.reflect.Method getterMethod) {
-		this.proxy = proxy;
-		this.getterMethod = getterMethod;
-	}
+    public FastFieldGetter(Proxy proxy, java.lang.reflect.Method getterMethod) {
+        this.proxy = proxy;
+        this.getterMethod = getterMethod;
+    }
 
-	/**
-	 * 仅用于配置 Engine.addFieldGetter(0, new FastFieldGetter());
-	 */
-	public FastFieldGetter() {
-		this(null, null);
-	}
+    /**
+     * 仅用于配置 Engine.addFieldGetter(0, new FastFieldGetter());
+     */
+    public FastFieldGetter() {
+        this(null, null);
+    }
 
-	public FieldGetter takeOver(Class<?> targetClass, String fieldName) {
-		if (MethodKit.isForbiddenClass(targetClass)) {
-			throw new RuntimeException("Forbidden class: " + targetClass.getName());
-		}
+    public FieldGetter takeOver(Class<?> targetClass, String fieldName) {
+        if (MethodKit.isForbiddenClass(targetClass)) {
+            throw new RuntimeException("Forbidden class: " + targetClass.getName());
+        }
 
-		String getterName = "get" + StrKit.firstCharToUpperCase(fieldName);
-		java.lang.reflect.Method[] methodArray = targetClass.getMethods();
-		for (java.lang.reflect.Method method : methodArray) {
-			if (method.getName().equals(getterName) && method.getParameterCount() == 0) {
+        String getterName = "get" + StrKit.firstCharToUpperCase(fieldName);
+        java.lang.reflect.Method[] methodArray = targetClass.getMethods();
+        for (java.lang.reflect.Method method : methodArray) {
+            if (method.getName().equals(getterName) && method.getParameterCount() == 0) {
 
-				Proxy proxy = cache.computeIfAbsent(targetClass, key -> {
-					try {
-						return createProxy(key, fieldName);
-					} catch (Throwable e) {
-						return null;
-					}
-				});
-				return proxy != null ? new FastFieldGetter(proxy, method) : null;
-				
-			}
-		}
+                Proxy proxy = cache.computeIfAbsent(targetClass, key -> {
+                    try {
+                        return createProxy(key, fieldName);
+                    } catch (Throwable e) {
+                        return null;
+                    }
+                });
+                return proxy != null ? new FastFieldGetter(proxy, method) : null;
 
-		return null;
-	}
+            }
+        }
 
-	public Object get(Object target, String fieldName) throws Exception {
-		// return getterMethod.invoke(target, ExprList.NULL_OBJECT_ARRAY);
-		return proxy.getValue(target, fieldName);
-	}
+        return null;
+    }
 
-	protected Proxy createProxy(Class<?> targetClass, String fieldName) {
-		ProxyClass proxyClass = new ProxyClass(targetClass);
-		String sourceCode = generator.generate(proxyClass);
-		// System.out.println(sourceCode);
+    public Object get(Object target, String fieldName) throws Exception {
+        // return getterMethod.invoke(target, ExprList.NULL_OBJECT_ARRAY);
+        return proxy.getValue(target, fieldName);
+    }
 
-		proxyClass.setSourceCode(sourceCode);
-		compiler.compile(proxyClass);
-		Class<?> retClass = classLoader.loadProxyClass(proxyClass);
-		proxyClass.setClazz(retClass);
-		try {
-			return (Proxy)retClass.newInstance();
-		} catch (ReflectiveOperationException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    protected Proxy createProxy(Class<?> targetClass, String fieldName) {
+        ProxyClass proxyClass = new ProxyClass(targetClass);
+        String sourceCode = generator.generate(proxyClass);
+        // System.out.println(sourceCode);
 
-	public String toString() {
-		return getterMethod.toString();
-	}
+        proxyClass.setSourceCode(sourceCode);
+        compiler.compile(proxyClass);
+        Class<?> retClass = classLoader.loadProxyClass(proxyClass);
+        proxyClass.setClazz(retClass);
+        try {
+            return (Proxy)retClass.newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	// ---------
+    public String toString() {
+        return getterMethod.toString();
+    }
 
-	/**
-	 * 代理接口
-	 */
-	public static interface Proxy {
-		public Object getValue(Object target, String fieldName);
-	}
+    // ---------
 
-	// ---------
+    /**
+     * 代理接口
+     */
+    public static interface Proxy {
+        public Object getValue(Object target, String fieldName);
+    }
 
-	/**
-	 * 代理类
-	 */
-	static class ProxyClass extends com.jfinal.proxy.ProxyClass {
+    // ---------
 
-		private String name;		// 类名
+    /**
+     * 代理类
+     */
+    static class ProxyClass extends com.jfinal.proxy.ProxyClass {
 
-		public ProxyClass(Class<?> target) {
-			super(target);
+        private String name;		// 类名
 
-			name = target.getSimpleName() + "$$EnhancerByJFinal_FieldGetter";
-		}
+        public ProxyClass(Class<?> target) {
+            super(target);
 
-		public String getName() {
-			return name;
-		}
-	}
+            name = target.getSimpleName() + "$$EnhancerByJFinal_FieldGetter";
+        }
 
-	// ---------
+        public String getName() {
+            return name;
+        }
+    }
 
-	/**
-	 * 代理生成器
-	 */
-	static class ProxyGenerator {
+    // ---------
 
-		String generate(ProxyClass proxyClass) {
-			StringBuilder ret = new StringBuilder(1024);
+    /**
+     * 代理生成器
+     */
+    static class ProxyGenerator {
 
-			Class<?> targetClass = proxyClass.getTarget();
-			String className = proxyClass.getName();
+        String generate(ProxyClass proxyClass) {
+            StringBuilder ret = new StringBuilder(1024);
 
-			ret.append("package ").append(proxyClass.getPkg()).append(";\n\n");
-			ret.append("import com.jfinal.template.expr.ast.FastFieldGetter.Proxy;\n\n");
-			ret.append("public class ").append(className).append(" implements Proxy {\n\n");
-			ret.append("\tpublic Object getValue(Object target, String fieldName) {\n");
-			ret.append("\t\tint hash = fieldName.hashCode();\n");
-			ret.append("\t\tswitch (hash) {\n");
+            Class<?> targetClass = proxyClass.getTarget();
+            String className = proxyClass.getName();
 
-			java.lang.reflect.Method[] methodArray = targetClass.getMethods();
-			for (java.lang.reflect.Method method : methodArray) {
-				String mn = method.getName();
-				if (method.getParameterCount() == 0 && mn.startsWith("get") && (!mn.equals("getClass"))) {
-					String fieldName = StrKit.firstCharToLowerCase(mn.substring(3));
-					ret.append("\t\tcase ").append(fieldName.hashCode()).append(" :\n");
-					ret.append("\t\t\treturn ((").append(targetClass.getName()).append(")target).").append(mn).append("();\n");
-				}
-			}
+            ret.append("package ").append(proxyClass.getPkg()).append(";\n\n");
+            ret.append("import com.jfinal.template.expr.ast.FastFieldGetter.Proxy;\n\n");
+            ret.append("public class ").append(className).append(" implements Proxy {\n\n");
+            ret.append("\tpublic Object getValue(Object target, String fieldName) {\n");
+            ret.append("\t\tint hash = fieldName.hashCode();\n");
+            ret.append("\t\tswitch (hash) {\n");
 
-			ret.append("\t\tdefault :\n");
-			ret.append("\t\t\tthrow new RuntimeException(\"Can not access the field \\\"\" + target.getClass().getName() + \".\" + fieldName + \"\\\"\");\n");
+            java.lang.reflect.Method[] methodArray = targetClass.getMethods();
+            for (java.lang.reflect.Method method : methodArray) {
+                String mn = method.getName();
+                if (method.getParameterCount() == 0 && mn.startsWith("get") && (!mn.equals("getClass"))) {
+                    String fieldName = StrKit.firstCharToLowerCase(mn.substring(3));
+                    ret.append("\t\tcase ").append(fieldName.hashCode()).append(" :\n");
+                    ret.append("\t\t\treturn ((").append(targetClass.getName()).append(")target).").append(mn).append("();\n");
+                }
+            }
 
-			ret.append("\t\t}\n");
-			ret.append("\t}\n");
-			ret.append("}\n");
+            ret.append("\t\tdefault :\n");
+            ret.append("\t\t\tthrow new RuntimeException(\"Can not access the field \\\"\" + target.getClass().getName() + \".\" + fieldName + \"\\\"\");\n");
 
-			return ret.toString();
-		}
-	}
+            ret.append("\t\t}\n");
+            ret.append("\t}\n");
+            ret.append("}\n");
 
-	// ---------
+            return ret.toString();
+        }
+    }
 
-	public static void setOutputCompileError(boolean outputCompileError) {
-		FastFieldGetter.outputCompileError = outputCompileError;
-	}
+    // ---------
 
-	/**
-	 * 代理编译器
-	 */
-	static class ProxyCompiler extends com.jfinal.proxy.ProxyCompiler {
-		@Override
-		protected void outputCompileError(Boolean result, javax.tools.DiagnosticCollector<javax.tools.JavaFileObject> collector) {
-			if (outputCompileError) {
-				super.outputCompileError(result, collector);
-			}
-		}
-	}
+    public static void setOutputCompileError(boolean outputCompileError) {
+        FastFieldGetter.outputCompileError = outputCompileError;
+    }
+
+    /**
+     * 代理编译器
+     */
+    static class ProxyCompiler extends com.jfinal.proxy.ProxyCompiler {
+        @Override
+        protected void outputCompileError(Boolean result, javax.tools.DiagnosticCollector<javax.tools.JavaFileObject> collector) {
+            if (outputCompileError) {
+                super.outputCompileError(result, collector);
+            }
+        }
+    }
 }
 

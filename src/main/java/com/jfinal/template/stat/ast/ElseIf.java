@@ -30,32 +30,32 @@ import com.jfinal.template.stat.Scope;
  */
 public class ElseIf extends Stat {
 
-	private Expr cond;
-	private Stat stat;
-	private Stat elseIfOrElse;
+    private Expr cond;
+    private Stat stat;
+    private Stat elseIfOrElse;
 
-	public ElseIf(ExprList cond, StatList statList, Location location) {
-		if (cond.length() == 0) {
-			throw new ParseException("The condition expression of #else if statement can not be blank", location);
-		}
-		this.cond = cond.getActualExpr();
-		this.stat = statList.getActualStat();
-	}
+    public ElseIf(ExprList cond, StatList statList, Location location) {
+        if (cond.length() == 0) {
+            throw new ParseException("The condition expression of #else if statement can not be blank", location);
+        }
+        this.cond = cond.getActualExpr();
+        this.stat = statList.getActualStat();
+    }
 
-	/**
-	 * take over setStat(...) method of super class
-	 */
-	public void setStat(Stat elseIfOrElse) {
-		this.elseIfOrElse = elseIfOrElse;
-	}
+    /**
+     * take over setStat(...) method of super class
+     */
+    public void setStat(Stat elseIfOrElse) {
+        this.elseIfOrElse = elseIfOrElse;
+    }
 
-	public void exec(Env env, Scope scope, Writer writer) {
-		if (Logic.isTrue(cond.eval(scope))) {
-			stat.exec(env, scope, writer);
-		} else if (elseIfOrElse != null) {
-			elseIfOrElse.exec(env, scope, writer);
-		}
-	}
+    public void exec(Env env, Scope scope, Writer writer) {
+        if (Logic.isTrue(cond.eval(scope))) {
+            stat.exec(env, scope, writer);
+        } else if (elseIfOrElse != null) {
+            elseIfOrElse.exec(env, scope, writer);
+        }
+    }
 }
 
 

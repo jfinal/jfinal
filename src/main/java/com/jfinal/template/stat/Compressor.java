@@ -39,67 +39,67 @@ package com.jfinal.template.stat;
  *    上例中的字符串 "hello  " 中的两个空格会被压缩为一个空格
  */
 public class Compressor {
-	
-	protected char separator = '\n';
-	
-	public Compressor() {}
-	
-	public Compressor(char separator) {
-		if (separator > ' ') {
-			throw new IllegalArgumentException("The parameter separator must be a separator character");
-		}
-		this.separator = separator;
-	}
-	
-	public StringBuilder compress(StringBuilder content) {
-		int len = content.length();
-		StringBuilder ret = new StringBuilder(len);
-		
-		char ch;
-		boolean hasLineFeed;
-		int begin = 0;
-		int forward = 0;
-		
-		while (forward < len) {
-			// 扫描空白字符
-			hasLineFeed = false;
-			while (forward < len) {
-				ch = content.charAt(forward);
-				if (ch <= ' ') {			// 包含换行字符在内的空白字符
-					if (ch == '\n') {		// 包含换行字符
-						hasLineFeed = true;
-					}
-					forward++;
-				} else {					// 非空白字符
-					break ;
-				}
-			}
-			
-			// 压缩空白字符
-			if (begin != forward) {
-				if (hasLineFeed) {
-					ret.append(separator);
-				} else {
-					ret.append(' ');
-				}
-			}
-			
-			// 复制非空白字符
-			while (forward < len) {
-				ch = content.charAt(forward);
-				if (ch > ' ') {
-					ret.append(ch);
-					forward++;
-				} else {
-					break ;
-				}
-			}
-			
-			begin = forward;
-		}
-		
-		return ret;
-	}
+
+    protected char separator = '\n';
+
+    public Compressor() {}
+
+    public Compressor(char separator) {
+        if (separator > ' ') {
+            throw new IllegalArgumentException("The parameter separator must be a separator character");
+        }
+        this.separator = separator;
+    }
+
+    public StringBuilder compress(StringBuilder content) {
+        int len = content.length();
+        StringBuilder ret = new StringBuilder(len);
+
+        char ch;
+        boolean hasLineFeed;
+        int begin = 0;
+        int forward = 0;
+
+        while (forward < len) {
+            // 扫描空白字符
+            hasLineFeed = false;
+            while (forward < len) {
+                ch = content.charAt(forward);
+                if (ch <= ' ') {			// 包含换行字符在内的空白字符
+                    if (ch == '\n') {		// 包含换行字符
+                        hasLineFeed = true;
+                    }
+                    forward++;
+                } else {					// 非空白字符
+                    break ;
+                }
+            }
+
+            // 压缩空白字符
+            if (begin != forward) {
+                if (hasLineFeed) {
+                    ret.append(separator);
+                } else {
+                    ret.append(' ');
+                }
+            }
+
+            // 复制非空白字符
+            while (forward < len) {
+                ch = content.charAt(forward);
+                if (ch > ' ') {
+                    ret.append(ch);
+                    forward++;
+                } else {
+                    break ;
+                }
+            }
+
+            begin = forward;
+        }
+
+        return ret;
+    }
 }
 
 

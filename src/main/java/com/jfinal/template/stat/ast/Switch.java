@@ -63,44 +63,44 @@ import com.jfinal.template.stat.Scope;
  * </pre>
  */
 public class Switch extends Stat implements CaseSetter {
-	
-	private Expr expr;
-	private Case nextCase;
-	private Default _default;
-	
-	public Switch(ExprList exprList, Location location) {
-		if (exprList.length() == 0) {
-			throw new ParseException("The parameter of #switch directive can not be blank", location);
-		}
-		this.expr = exprList.getActualExpr();
-	}
-	
-	public void setNextCase(Case nextCase) {
-		this.nextCase = nextCase;
-	}
-	
-	public void setDefault(Default _default, Location location) {
-		if (this._default != null) {
-			throw new ParseException("The #default case of #switch is already defined", location);
-		}
-		this._default = _default;
-	}
-	
-	public void exec(Env env, Scope scope, Writer writer) {
-		Object switchValue = expr.eval(scope);
-		
-		if (nextCase != null && nextCase.execIfMatch(switchValue, env, scope, writer)) {
-			return ;
-		}
-		
-		if (_default != null) {
-			_default.exec(env, scope, writer);
-		}
-	}
-	
-	public boolean hasEnd() {
-		return true;
-	}
+
+    private Expr expr;
+    private Case nextCase;
+    private Default _default;
+
+    public Switch(ExprList exprList, Location location) {
+        if (exprList.length() == 0) {
+            throw new ParseException("The parameter of #switch directive can not be blank", location);
+        }
+        this.expr = exprList.getActualExpr();
+    }
+
+    public void setNextCase(Case nextCase) {
+        this.nextCase = nextCase;
+    }
+
+    public void setDefault(Default _default, Location location) {
+        if (this._default != null) {
+            throw new ParseException("The #default case of #switch is already defined", location);
+        }
+        this._default = _default;
+    }
+
+    public void exec(Env env, Scope scope, Writer writer) {
+        Object switchValue = expr.eval(scope);
+
+        if (nextCase != null && nextCase.execIfMatch(switchValue, env, scope, writer)) {
+            return ;
+        }
+
+        if (_default != null) {
+            _default.exec(env, scope, writer);
+        }
+    }
+
+    public boolean hasEnd() {
+        return true;
+    }
 }
 
 

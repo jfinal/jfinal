@@ -24,15 +24,15 @@ import com.jfinal.template.stat.Scope;
  * Continue
  */
 public class Continue extends Stat {
-	
-	public static final Continue me = new Continue();
-	
-	private Continue() {
-	}
-	
-	public void exec(Env env, Scope scope, Writer writer) {
-		scope.getCtrl().setContinue();
-	}
+
+    public static final Continue me = new Continue();
+
+    private Continue() {
+    }
+
+    public void exec(Env env, Scope scope, Writer writer) {
+        scope.getCtrl().setContinue();
+    }
 }
 
 

@@ -23,10 +23,10 @@ package com.jfinal.template.source;
  *    FileSourceFactory 为模板引擎默认配置
  */
 public class FileSourceFactory implements ISourceFactory {
-	
-	public ISource getSource(String baseTemplatePath, String fileName, String encoding) {
-		return new FileSource(baseTemplatePath, fileName, encoding);
-	}
+
+    public ISource getSource(String baseTemplatePath, String fileName, String encoding) {
+        return new FileSource(baseTemplatePath, fileName, encoding);
+    }
 }
 
 

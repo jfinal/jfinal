@@ -24,14 +24,14 @@ import com.jfinal.template.stat.Scope;
  * NullStat
  */
 public class NullStat extends Stat {
-	
-	public static final NullStat me = new NullStat();
-	
-	private NullStat() {}
-	
-	public void exec(Env env, Scope scope, Writer writer) {
-		
-	}
+
+    public static final NullStat me = new NullStat();
+
+    private NullStat() {}
+
+    public void exec(Env env, Scope scope, Writer writer) {
+
+    }
 }
 
 

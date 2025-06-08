@@ -27,19 +27,19 @@ import java.nio.charset.CoderResult;
  * JdkEncoder
  */
 public class JdkEncoder implements Encoder {
-	
-	private CharsetEncoder ce;
-	
-	public JdkEncoder(Charset charset) {
-		this.ce = charset.newEncoder();
-	}
-	
-	public float maxBytesPerChar() {
-		return ce.maxBytesPerChar();
-	}
-	
-	public int encode(char[] chars, int offset, int len, byte[] bytes) {
-		ce.reset();
+
+    private CharsetEncoder ce;
+
+    public JdkEncoder(Charset charset) {
+        this.ce = charset.newEncoder();
+    }
+
+    public float maxBytesPerChar() {
+        return ce.maxBytesPerChar();
+    }
+
+    public int encode(char[] chars, int offset, int len, byte[] bytes) {
+        ce.reset();
         ByteBuffer bb = ByteBuffer.wrap(bytes);
         CharBuffer cb = CharBuffer.wrap(chars, offset, len);
         try {
@@ -53,9 +53,9 @@ public class JdkEncoder implements Encoder {
         } catch (CharacterCodingException x) {
             // Substitution is always enabled,
             // so this shouldn't happen
-        	throw new RuntimeException("Encode error: " + x.getMessage(), x);
+            throw new RuntimeException("Encode error: " + x.getMessage(), x);
         }
-	}
+    }
 }
 
 

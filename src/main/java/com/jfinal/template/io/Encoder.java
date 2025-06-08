@@ -20,9 +20,9 @@ package com.jfinal.template.io;
  * Encoder
  */
 public interface Encoder {
-	
-	public float maxBytesPerChar();
-	
-	public int encode(char[] chars, int offset, int len, byte[] bytes);
+
+    public float maxBytesPerChar();
+
+    public int encode(char[] chars, int offset, int len, byte[] bytes);
 }
 

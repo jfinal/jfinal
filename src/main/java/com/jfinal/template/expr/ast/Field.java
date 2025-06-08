@@ -34,72 +34,72 @@ import com.jfinal.template.stat.Scope;
  * 5：假如 user 为 Map，则调用 user.get("name")
  */
 public class Field extends Expr {
-	
-	private Expr expr;
-	private String fieldName;
-	private String getterName;
-	private long getterNameHash;
-	
-	// 可选链操作符 ?.
-	private boolean optionalChain;
-	
-	public Field(Expr expr, String fieldName, boolean optionalChain, Location location) {
-		if (expr == null) {
-			throw new ParseException("The object for field access can not be null", location);
-		}
-		this.expr = expr;
-		this.fieldName = fieldName;
-		this.getterName = "get" + StrKit.firstCharToUpperCase(fieldName);
-		// fnv1a64 hash 到比 String.hashCode() 更大的 long 值范围
-		this.getterNameHash = HashKit.fnv1a64(getterName);
-		this.optionalChain = optionalChain;
-		this.location = location;
-	}
-	
-	public Object eval(Scope scope) {
-		Object target = expr.eval(scope);
-		if (target == null) {
-			if (optionalChain) {
-				return null;
-			}
-			if (scope.getCtrl().isNullSafe()) {
-				return null;
-			}
-			if (expr instanceof Id) {
-				String id = ((Id)expr).getId();
-				throw new TemplateException("\"" + id + "\" can not be null for accessed by \"" + id + "." + fieldName + "\"", location);
-			}
-			throw new TemplateException("Can not accessed by \"" + fieldName + "\" field from null target", location);
-		}
-		
-		
-		try {
-			Class<?> targetClass = target.getClass();
-			Object key = FieldKeyBuilder.instance.getFieldKey(targetClass, getterNameHash);
-			FieldGetter fieldGetter = FieldKit.getFieldGetter(key, targetClass, fieldName);
-			if (fieldGetter.notNull()) {
-				return fieldGetter.get(target, fieldName);
-			}
-		} catch (TemplateException | ParseException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new TemplateException(e.getMessage(), location, e);
-		}
-		
-		
-		if (scope.getCtrl().isNullSafe()) {
-			return null;
-		}
-		if (expr instanceof Id) {
-			String id = ((Id)expr).getId();
-			throw new TemplateException("public field not found: \"" + id + "." + fieldName + "\" and public getter method not found: \"" + id + "." + getterName + "()\"", location);
-		}
-		throw new TemplateException("public field not found: \"" + fieldName + "\" and public getter method not found: \"" + getterName + "()\"", location);
-	}
-	
-	// private Long buildFieldKey(Class<?> targetClass) {
-		// return targetClass.getName().hashCode() ^ getterNameHash;
-	// }
+
+    private Expr expr;
+    private String fieldName;
+    private String getterName;
+    private long getterNameHash;
+
+    // 可选链操作符 ?.
+    private boolean optionalChain;
+
+    public Field(Expr expr, String fieldName, boolean optionalChain, Location location) {
+        if (expr == null) {
+            throw new ParseException("The object for field access can not be null", location);
+        }
+        this.expr = expr;
+        this.fieldName = fieldName;
+        this.getterName = "get" + StrKit.firstCharToUpperCase(fieldName);
+        // fnv1a64 hash 到比 String.hashCode() 更大的 long 值范围
+        this.getterNameHash = HashKit.fnv1a64(getterName);
+        this.optionalChain = optionalChain;
+        this.location = location;
+    }
+
+    public Object eval(Scope scope) {
+        Object target = expr.eval(scope);
+        if (target == null) {
+            if (optionalChain) {
+                return null;
+            }
+            if (scope.getCtrl().isNullSafe()) {
+                return null;
+            }
+            if (expr instanceof Id) {
+                String id = ((Id)expr).getId();
+                throw new TemplateException("\"" + id + "\" can not be null for accessed by \"" + id + "." + fieldName + "\"", location);
+            }
+            throw new TemplateException("Can not accessed by \"" + fieldName + "\" field from null target", location);
+        }
+
+
+        try {
+            Class<?> targetClass = target.getClass();
+            Object key = FieldKeyBuilder.instance.getFieldKey(targetClass, getterNameHash);
+            FieldGetter fieldGetter = FieldKit.getFieldGetter(key, targetClass, fieldName);
+            if (fieldGetter.notNull()) {
+                return fieldGetter.get(target, fieldName);
+            }
+        } catch (TemplateException | ParseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TemplateException(e.getMessage(), location, e);
+        }
+
+
+        if (scope.getCtrl().isNullSafe()) {
+            return null;
+        }
+        if (expr instanceof Id) {
+            String id = ((Id)expr).getId();
+            throw new TemplateException("public field not found: \"" + id + "." + fieldName + "\" and public getter method not found: \"" + id + "." + getterName + "()\"", location);
+        }
+        throw new TemplateException("public field not found: \"" + fieldName + "\" and public getter method not found: \"" + getterName + "()\"", location);
+    }
+
+    // private Long buildFieldKey(Class<?> targetClass) {
+        // return targetClass.getName().hashCode() ^ getterNameHash;
+    // }
 }
 
 

@@ -20,5 +20,5 @@ package com.jfinal.template.stat.ast;
  * CaseSetter
  */
 public interface CaseSetter {
-	public void setNextCase(Case nextCase);
+    public void setNextCase(Case nextCase);
 }

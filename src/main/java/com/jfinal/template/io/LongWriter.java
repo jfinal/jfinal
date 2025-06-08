@@ -8,16 +8,16 @@ package com.jfinal.template.io;
 import java.io.IOException;
 
 public class LongWriter {
-	
+
     private static final byte[] minValueBytes = "-9223372036854775808".getBytes();
     private static final char[] minValueChars = "-9223372036854775808".toCharArray();
     
-	public static void write(ByteWriter byteWriter, long value) throws IOException {
-		if (value == Long.MIN_VALUE) {
-			byteWriter.out.write(minValueBytes, 0, minValueBytes.length);
+    public static void write(ByteWriter byteWriter, long value) throws IOException {
+        if (value == Long.MIN_VALUE) {
+            byteWriter.out.write(minValueBytes, 0, minValueBytes.length);
             return ;
-		}
-		
+        }
+
         int size = (value < 0) ? stringSize(-value) + 1 : stringSize(value);
         char[] chars = byteWriter.chars;
         byte[] bytes = byteWriter.bytes;
@@ -27,24 +27,24 @@ public class LongWriter {
         // byteWriter.out.write(bytes, 0, len);
         
         for (int j=0; j<size; j++) {
-        	bytes[j] = (byte)chars[j];
+            bytes[j] = (byte)chars[j];
         }
         byteWriter.out.write(bytes, 0, size);
     }
-	
-	public static void write(CharWriter charWriter, long i) throws IOException {
-		if (i == Long.MIN_VALUE) {
+
+    public static void write(CharWriter charWriter, long i) throws IOException {
+        if (i == Long.MIN_VALUE) {
             charWriter.out.write(minValueChars, 0, minValueChars.length);
-			return ;
-		}
-		
+            return ;
+        }
+
         int size = (i < 0) ? stringSize(-i) + 1 : stringSize(i);
         char[] chars = charWriter.chars;
         getChars(i, size, chars);
         charWriter.out.write(chars, 0, size);
     }
-	
-	static int stringSize(long x) {
+
+    static int stringSize(long x) {
         long p = 10;
         for (int i=1; i<19; i++) {
             if (x < p)
@@ -53,8 +53,8 @@ public class LongWriter {
         }
         return 19;
     }
-	
-	static void getChars(long i, int index, char[] buf) {
+
+    static void getChars(long i, int index, char[] buf) {
         long q;
         int r;
         int charPos = index;

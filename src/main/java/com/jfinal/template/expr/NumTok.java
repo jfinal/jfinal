@@ -42,64 +42,64 @@ import com.jfinal.template.stat.ParseException;
  * 3： 科学计数法在本质上是 double，所以总结为一点 ---> 16 8 进制只支持整型数据
  */
 public class NumTok extends Tok {
-	
-	private Number value;
-	
-	NumTok(Sym sym, String s, int radix, boolean isScientificNotation, Location location) {
-		super(sym, location.getRow());
-		try {
-			typeConvert(sym, s, radix, isScientificNotation, location);
-		} catch (Exception e) {
-			throw new ParseException(e.getMessage(), location, e);
-		}
-	}
-	
-	private void typeConvert(Sym sym, String s, int radix, boolean isScientificNotation, Location location) {
-		switch (sym) {
-		case INT:
-			if (isScientificNotation) {
-				value = new BigDecimal(s).intValue();
-			} else {
-				value = Integer.valueOf(s, radix);		// 整型数据才支持 16 8 进制
-			}
-			break ;
-		case LONG:
-			if (isScientificNotation) {
-				value = new BigDecimal(s).longValue();
-			} else {
-				value = Long.valueOf(s, radix);			// 整型数据才支持 16 8 进制
-			}
-			break ;
-		case FLOAT:
-			if (isScientificNotation) {
-				value = new BigDecimal(s).floatValue();
-			} else {
-				value = Float.valueOf(s);				// 浮点数只支持 10 进制
-			}
-			break ;
-		case DOUBLE:
-			if (isScientificNotation) {
-				value = new BigDecimal(s).doubleValue();
-			} else {
-				value = Double.valueOf(s);				// 浮点数只支持 10 进制
-			}
-			break ;
-		default :
-			throw new ParseException("Unsupported type: " + sym.value(), location);
-		}
-	}
-	
-	public String value() {
-		return value.toString();
-	}
-	
-	public Object getNumberValue() {
-		return value;
-	}
-	
-	public String toString() {
-		return sym.value() + " : " + value;
-	}
+
+    private Number value;
+
+    NumTok(Sym sym, String s, int radix, boolean isScientificNotation, Location location) {
+        super(sym, location.getRow());
+        try {
+            typeConvert(sym, s, radix, isScientificNotation, location);
+        } catch (Exception e) {
+            throw new ParseException(e.getMessage(), location, e);
+        }
+    }
+
+    private void typeConvert(Sym sym, String s, int radix, boolean isScientificNotation, Location location) {
+        switch (sym) {
+        case INT:
+            if (isScientificNotation) {
+                value = new BigDecimal(s).intValue();
+            } else {
+                value = Integer.valueOf(s, radix);		// 整型数据才支持 16 8 进制
+            }
+            break ;
+        case LONG:
+            if (isScientificNotation) {
+                value = new BigDecimal(s).longValue();
+            } else {
+                value = Long.valueOf(s, radix);			// 整型数据才支持 16 8 进制
+            }
+            break ;
+        case FLOAT:
+            if (isScientificNotation) {
+                value = new BigDecimal(s).floatValue();
+            } else {
+                value = Float.valueOf(s);				// 浮点数只支持 10 进制
+            }
+            break ;
+        case DOUBLE:
+            if (isScientificNotation) {
+                value = new BigDecimal(s).doubleValue();
+            } else {
+                value = Double.valueOf(s);				// 浮点数只支持 10 进制
+            }
+            break ;
+        default :
+            throw new ParseException("Unsupported type: " + sym.value(), location);
+        }
+    }
+
+    public String value() {
+        return value.toString();
+    }
+
+    public Object getNumberValue() {
+        return value;
+    }
+
+    public String toString() {
+        return sym.value() + " : " + value;
+    }
 }
 
 

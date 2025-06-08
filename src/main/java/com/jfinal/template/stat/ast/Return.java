@@ -26,14 +26,14 @@ import com.jfinal.template.stat.Scope;
  */
 public class Return  extends Stat {
 
-	public static final Return me = new Return();
+    public static final Return me = new Return();
 
-	private Return() {
-	}
+    private Return() {
+    }
 
-	public void exec(Env env, Scope scope, Writer writer) {
-		scope.getCtrl().setReturn();
-	}
+    public void exec(Env env, Scope scope, Writer writer) {
+        scope.getCtrl().setReturn();
+    }
 }
 
 

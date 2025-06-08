@@ -22,13 +22,13 @@ package com.jfinal.template.stat;
  */
 @SuppressWarnings("serial")
 public class ParseException extends RuntimeException {
-	
-	public ParseException(String msg, Location loc) {
-		super(loc != null ? msg + loc : msg);
-	}
-	
-	public ParseException(String msg, Location loc, Throwable t) {
-		super(loc != null ? msg + loc : msg, t);
-	}
+
+    public ParseException(String msg, Location loc) {
+        super(loc != null ? msg + loc : msg);
+    }
+
+    public ParseException(String msg, Location loc, Throwable t) {
+        super(loc != null ? msg + loc : msg, t);
+    }
 }
 

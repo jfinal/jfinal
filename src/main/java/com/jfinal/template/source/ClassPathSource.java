@@ -38,139 +38,139 @@ import com.jfinal.template.EngineConfig;
  */
 public class ClassPathSource implements ISource {
 
-	protected String finalFileName;
-	protected String fileName;
-	protected String encoding;
+    protected String finalFileName;
+    protected String fileName;
+    protected String encoding;
 
-	protected boolean isInJar;
-	protected long lastModified;
-	protected ClassLoader classLoader;
-	protected URL url;
+    protected boolean isInJar;
+    protected long lastModified;
+    protected ClassLoader classLoader;
+    protected URL url;
 
-	public ClassPathSource(String fileName) {
-		this(null, fileName, EngineConfig.DEFAULT_ENCODING);
-	}
+    public ClassPathSource(String fileName) {
+        this(null, fileName, EngineConfig.DEFAULT_ENCODING);
+    }
 
-	public ClassPathSource(String baseTemplatePath, String fileName) {
-		this(baseTemplatePath, fileName, EngineConfig.DEFAULT_ENCODING);
-	}
+    public ClassPathSource(String baseTemplatePath, String fileName) {
+        this(baseTemplatePath, fileName, EngineConfig.DEFAULT_ENCODING);
+    }
 
-	public ClassPathSource(String baseTemplatePath, String fileName, String encoding) {
-		this.finalFileName = buildFinalFileName(baseTemplatePath, fileName);
-		this.fileName = fileName;
-		this.encoding= encoding;
-		this.classLoader = getClassLoader();
-		this.url = classLoader.getResource(finalFileName);
-		if (url == null) {
-			throw new IllegalArgumentException("File not found in CLASSPATH or JAR : \"" + finalFileName + "\"");
-		}
+    public ClassPathSource(String baseTemplatePath, String fileName, String encoding) {
+        this.finalFileName = buildFinalFileName(baseTemplatePath, fileName);
+        this.fileName = fileName;
+        this.encoding= encoding;
+        this.classLoader = getClassLoader();
+        this.url = classLoader.getResource(finalFileName);
+        if (url == null) {
+            throw new IllegalArgumentException("File not found in CLASSPATH or JAR : \"" + finalFileName + "\"");
+        }
 
-		processIsInJarAndlastModified();
-	}
+        processIsInJarAndlastModified();
+    }
 
-	protected void processIsInJarAndlastModified() {
-		if ("file".equalsIgnoreCase(url.getProtocol())) {
-			isInJar = false;
-			lastModified = new File(url.getFile()).lastModified();
-		} else {
-			isInJar = true;
-			lastModified = -1;
-		}
-	}
+    protected void processIsInJarAndlastModified() {
+        if ("file".equalsIgnoreCase(url.getProtocol())) {
+            isInJar = false;
+            lastModified = new File(url.getFile()).lastModified();
+        } else {
+            isInJar = true;
+            lastModified = -1;
+        }
+    }
 
-	protected ClassLoader getClassLoader() {
-		ClassLoader ret = Thread.currentThread().getContextClassLoader();
-		return ret != null ? ret : getClass().getClassLoader();
-	}
+    protected ClassLoader getClassLoader() {
+        ClassLoader ret = Thread.currentThread().getContextClassLoader();
+        return ret != null ? ret : getClass().getClassLoader();
+    }
 
-	protected String buildFinalFileName(String baseTemplatePath, String fileName) {
-		String finalFileName;
-		if (baseTemplatePath != null) {
-			char firstChar = fileName.charAt(0);
-			if (firstChar == '/' || firstChar == '\\') {
-				finalFileName = baseTemplatePath + fileName;
-			} else {
-				finalFileName = baseTemplatePath + "/" + fileName;
-			}
-		} else {
-			finalFileName = fileName;
-		}
+    protected String buildFinalFileName(String baseTemplatePath, String fileName) {
+        String finalFileName;
+        if (baseTemplatePath != null) {
+            char firstChar = fileName.charAt(0);
+            if (firstChar == '/' || firstChar == '\\') {
+                finalFileName = baseTemplatePath + fileName;
+            } else {
+                finalFileName = baseTemplatePath + "/" + fileName;
+            }
+        } else {
+            finalFileName = fileName;
+        }
 
-		if (finalFileName.charAt(0) == '/') {
-			finalFileName = finalFileName.substring(1);
-		}
+        if (finalFileName.charAt(0) == '/') {
+            finalFileName = finalFileName.substring(1);
+        }
 
-		return finalFileName;
-	}
+        return finalFileName;
+    }
 
-	public String getCacheKey() {
-		return fileName;
-	}
+    public String getCacheKey() {
+        return fileName;
+    }
 
-	public String getEncoding() {
-		return encoding;
-	}
+    public String getEncoding() {
+        return encoding;
+    }
 
-	protected long getLastModified() {
-		return new File(url.getFile()).lastModified();
-	}
+    protected long getLastModified() {
+        return new File(url.getFile()).lastModified();
+    }
 
-	/**
-	 * 模板文件在 jar 包文件之内则不支持热加载
-	 */
-	public boolean isModified() {
-		return isInJar ? false : lastModified != getLastModified();
-	}
+    /**
+     * 模板文件在 jar 包文件之内则不支持热加载
+     */
+    public boolean isModified() {
+        return isInJar ? false : lastModified != getLastModified();
+    }
 
-	public StringBuilder getContent() {
-		// 与 FileSorce 不同，ClassPathSource 在构造方法中已经初始化了 lastModified
-		// 下面的代码可以去掉，在此仅为了避免继承类忘了在构造中初始化 lastModified 的防卫式代码
-		if (!isInJar) {		// 如果模板文件不在 jar 包文件之中，则需要更新 lastModified 值
-			lastModified = getLastModified();
-		}
+    public StringBuilder getContent() {
+        // 与 FileSorce 不同，ClassPathSource 在构造方法中已经初始化了 lastModified
+        // 下面的代码可以去掉，在此仅为了避免继承类忘了在构造中初始化 lastModified 的防卫式代码
+        if (!isInJar) {		// 如果模板文件不在 jar 包文件之中，则需要更新 lastModified 值
+            lastModified = getLastModified();
+        }
 
-		InputStream inputStream = classLoader.getResourceAsStream(finalFileName);
-		if (inputStream == null) {
-			throw new RuntimeException("File not found : \"" + finalFileName + "\"");
-		}
+        InputStream inputStream = classLoader.getResourceAsStream(finalFileName);
+        if (inputStream == null) {
+            throw new RuntimeException("File not found : \"" + finalFileName + "\"");
+        }
 
-		return loadFile(inputStream, encoding);
-	}
+        return loadFile(inputStream, encoding);
+    }
 
-	public static StringBuilder loadFile(InputStream inputStream, String encoding) {
-		try (InputStreamReader isr = new InputStreamReader(inputStream, encoding)) {
-			StringBuilder ret = new StringBuilder();
-			char[] buf = new char[1024];
-			for (int num; (num = isr.read(buf, 0, buf.length)) != -1;) {
-				ret.append(buf, 0, num);
-			}
-			return ret;
+    public static StringBuilder loadFile(InputStream inputStream, String encoding) {
+        try (InputStreamReader isr = new InputStreamReader(inputStream, encoding)) {
+            StringBuilder ret = new StringBuilder();
+            char[] buf = new char[1024];
+            for (int num; (num = isr.read(buf, 0, buf.length)) != -1;) {
+                ret.append(buf, 0, num);
+            }
+            return ret;
 
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("In Jar File: ").append(isInJar).append("\n");
-		sb.append("File name: ").append(fileName).append("\n");
-		sb.append("Final file name: ").append(finalFileName).append("\n");
-		sb.append("Last modified: ").append(lastModified).append("\n");
-		return sb.toString();
-	}
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("In Jar File: ").append(isInJar).append("\n");
+        sb.append("File name: ").append(fileName).append("\n");
+        sb.append("Final file name: ").append(finalFileName).append("\n");
+        sb.append("Last modified: ").append(lastModified).append("\n");
+        return sb.toString();
+    }
 }
 
 
 /*
-	protected File getFile(URL url) {
-		try {
-			// return new File(url.toURI().getSchemeSpecificPart());
-			return new File(url.toURI());
-		} catch (URISyntaxException ex) {
-			// Fallback for URLs that are not valid URIs (should hardly ever happen).
-			return new File(url.getFile());
-		}
-	}
+    protected File getFile(URL url) {
+        try {
+            // return new File(url.toURI().getSchemeSpecificPart());
+            return new File(url.toURI());
+        } catch (URISyntaxException ex) {
+            // Fallback for URLs that are not valid URIs (should hardly ever happen).
+            return new File(url.getFile());
+        }
+    }
 */
 

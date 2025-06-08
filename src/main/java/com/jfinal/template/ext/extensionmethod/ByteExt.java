@@ -27,41 +27,41 @@ import java.math.BigInteger;
  */
 public class ByteExt {
 
-	public Boolean toBoolean(Byte self) {
-		return self != 0;
-	}
+    public Boolean toBoolean(Byte self) {
+        return self != 0;
+    }
 
-	public Integer toInt(Byte self) {
-		return self.intValue();
-	}
+    public Integer toInt(Byte self) {
+        return self.intValue();
+    }
 
-	public Long toLong(Byte self) {
-		return self.longValue();
-	}
+    public Long toLong(Byte self) {
+        return self.longValue();
+    }
 
-	public Float toFloat(Byte self) {
-		return self.floatValue();
-	}
+    public Float toFloat(Byte self) {
+        return self.floatValue();
+    }
 
-	public Double toDouble(Byte self) {
-		return self.doubleValue();
-	}
+    public Double toDouble(Byte self) {
+        return self.doubleValue();
+    }
 
-	public Short toShort(Byte self) {
-		return self.shortValue();
-	}
+    public Short toShort(Byte self) {
+        return self.shortValue();
+    }
 
-	public Byte toByte(Byte self) {
-		return self;
-	}
+    public Byte toByte(Byte self) {
+        return self;
+    }
 
-	public BigInteger toBigInteger(Byte self) {
-		return BigInteger.valueOf(self);
-	}
+    public BigInteger toBigInteger(Byte self) {
+        return BigInteger.valueOf(self);
+    }
 
-	public BigDecimal toBigDecimal(Byte self) {
-		return new BigDecimal(self);
-	}
+    public BigDecimal toBigDecimal(Byte self) {
+        return new BigDecimal(self);
+    }
 }
 
 

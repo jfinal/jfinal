@@ -28,14 +28,14 @@ import com.jfinal.template.stat.Scope;
  * 输出 int 型随机数
  */
 public class RandomDirective extends Directive {
-	
-	public void exec(Env env, Scope scope, Writer writer) {
-		try {
-			writer.write(ThreadLocalRandom.current().nextInt());
-		} catch (IOException e) {
-			throw new TemplateException(e.getMessage(), location, e);
-		}
-	}
+
+    public void exec(Env env, Scope scope, Writer writer) {
+        try {
+            writer.write(ThreadLocalRandom.current().nextInt());
+        } catch (IOException e) {
+            throw new TemplateException(e.getMessage(), location, e);
+        }
+    }
 }
 
 

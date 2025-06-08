@@ -48,56 +48,56 @@ import java.math.BigInteger;
  */
 public class StringExt {
 
-	/**
-	 * StringExt.toBoolean() 是数据类型转换，所以与 Logic.isTrue(String)
-	 * 中的逻辑不同，后者只要 String 值非 null 并且 length() > 0 即返回 true
-	 */
-	public Boolean toBoolean(String self) {
-		if (StrKit.isBlank(self)) {
-			return null;	// return Boolean.FALSE;
-		}
+    /**
+     * StringExt.toBoolean() 是数据类型转换，所以与 Logic.isTrue(String)
+     * 中的逻辑不同，后者只要 String 值非 null 并且 length() > 0 即返回 true
+     */
+    public Boolean toBoolean(String self) {
+        if (StrKit.isBlank(self)) {
+            return null;	// return Boolean.FALSE;
+        }
 
-		String value = self.trim().toLowerCase();
-		if ("true".equals(value) || "1".equals(value)) {	// 未来考虑 "yes"、"on"
-			return Boolean.TRUE;
-		} else if ("false".equals(value) || "0".equals(value)) {
-			return Boolean.FALSE;
-		} else {
-			throw new RuntimeException("Can not parse to boolean type of value: \"" + self + "\"");
-		}
-	}
+        String value = self.trim().toLowerCase();
+        if ("true".equals(value) || "1".equals(value)) {	// 未来考虑 "yes"、"on"
+            return Boolean.TRUE;
+        } else if ("false".equals(value) || "0".equals(value)) {
+            return Boolean.FALSE;
+        } else {
+            throw new RuntimeException("Can not parse to boolean type of value: \"" + self + "\"");
+        }
+    }
 
-	public Integer toInt(String self) {
-		return StrKit.isBlank(self) ? null : Integer.parseInt(self);
-	}
+    public Integer toInt(String self) {
+        return StrKit.isBlank(self) ? null : Integer.parseInt(self);
+    }
 
-	public Long toLong(String self) {
-		return StrKit.isBlank(self) ? null : Long.parseLong(self);
-	}
+    public Long toLong(String self) {
+        return StrKit.isBlank(self) ? null : Long.parseLong(self);
+    }
 
-	public Float toFloat(String self) {
-		return StrKit.isBlank(self) ? null : Float.parseFloat(self);
-	}
+    public Float toFloat(String self) {
+        return StrKit.isBlank(self) ? null : Float.parseFloat(self);
+    }
 
-	public Double toDouble(String self) {
-		return StrKit.isBlank(self) ? null : Double.parseDouble(self);
-	}
+    public Double toDouble(String self) {
+        return StrKit.isBlank(self) ? null : Double.parseDouble(self);
+    }
 
-	public Short toShort(String self) {
-		return StrKit.isBlank(self) ? null : Short.parseShort(self);
-	}
+    public Short toShort(String self) {
+        return StrKit.isBlank(self) ? null : Short.parseShort(self);
+    }
 
-	public Byte toByte(String self) {
-		return StrKit.isBlank(self) ? null : Byte.parseByte(self);
-	}
+    public Byte toByte(String self) {
+        return StrKit.isBlank(self) ? null : Byte.parseByte(self);
+    }
 
-	public BigInteger toBigInteger(String self) {
-		return StrKit.isBlank(self) ? null : new BigInteger(self);
-	}
+    public BigInteger toBigInteger(String self) {
+        return StrKit.isBlank(self) ? null : new BigInteger(self);
+    }
 
-	public BigDecimal toBigDecimal(String self) {
-		return StrKit.isBlank(self) ? null : new BigDecimal(self);
-	}
+    public BigDecimal toBigDecimal(String self) {
+        return StrKit.isBlank(self) ? null : new BigDecimal(self);
+    }
 }
 
 

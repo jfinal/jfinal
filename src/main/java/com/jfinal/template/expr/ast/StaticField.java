@@ -28,33 +28,33 @@ import java.lang.reflect.Field;
  * 用法：com.jfinal.core.Const::JFINAL_VERSION
  */
 public class StaticField extends Expr {
-	
-	private Class<?> clazz;
-	private String fieldName;
-	private Field field;
-	
-	public StaticField(String className, String fieldName, Location location) {
-		try {
-			this.clazz = Class.forName(className);
-			this.fieldName = fieldName;
-			this.field = clazz.getField(fieldName);
-			this.location = location;
-		} catch (Exception e) {
-			throw new ParseException(e.getMessage(), location, e);
-		}
-	}
-	
-	public Object eval(Scope scope) {
-		try {
-			return field.get(null);
-		} catch (Exception e) {
-			throw new TemplateException(e.getMessage(), location, e);
-		}
-	}
-	
-	public String toString() {
-		return clazz.getName() + "::" + fieldName;
-	}
+
+    private Class<?> clazz;
+    private String fieldName;
+    private Field field;
+
+    public StaticField(String className, String fieldName, Location location) {
+        try {
+            this.clazz = Class.forName(className);
+            this.fieldName = fieldName;
+            this.field = clazz.getField(fieldName);
+            this.location = location;
+        } catch (Exception e) {
+            throw new ParseException(e.getMessage(), location, e);
+        }
+    }
+
+    public Object eval(Scope scope) {
+        try {
+            return field.get(null);
+        } catch (Exception e) {
+            throw new TemplateException(e.getMessage(), location, e);
+        }
+    }
+
+    public String toString() {
+        return clazz.getName() + "::" + fieldName;
+    }
 }
 
 

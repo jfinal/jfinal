@@ -857,7 +857,7 @@ public class FloatingDecimal{
 
     // Per-thread buffer for string/stringbuffer conversion
     @SuppressWarnings("rawtypes")
-	private static ThreadLocal perThreadBuffer = new ThreadLocal() {
+    private static ThreadLocal perThreadBuffer = new ThreadLocal() {
             protected synchronized Object initialValue() {
                 return new char[26];
             }

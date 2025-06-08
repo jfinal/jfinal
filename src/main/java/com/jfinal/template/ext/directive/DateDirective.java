@@ -42,66 +42,66 @@ import com.jfinal.template.stat.Scope;
  */
 public class DateDirective extends Directive {
 
-	private Expr dateExpr;
-	private Expr patternExpr;
+    private Expr dateExpr;
+    private Expr patternExpr;
 
-	public void setExprList(ExprList exprList) {
-		int paraNum = exprList.length();
-		if (paraNum == 0) {
-			this.dateExpr = null;
-			this.patternExpr = null;
-		} else if (paraNum == 1) {
-			this.dateExpr = exprList.getExpr(0);
-			this.patternExpr = null;
-		} else if (paraNum == 2) {
-			this.dateExpr = exprList.getExpr(0);
-			this.patternExpr = exprList.getExpr(1);
-		} else {
-			throw new ParseException("Wrong number parameter of #date directive, two parameters allowed at most", location);
-		}
-	}
+    public void setExprList(ExprList exprList) {
+        int paraNum = exprList.length();
+        if (paraNum == 0) {
+            this.dateExpr = null;
+            this.patternExpr = null;
+        } else if (paraNum == 1) {
+            this.dateExpr = exprList.getExpr(0);
+            this.patternExpr = null;
+        } else if (paraNum == 2) {
+            this.dateExpr = exprList.getExpr(0);
+            this.patternExpr = exprList.getExpr(1);
+        } else {
+            throw new ParseException("Wrong number parameter of #date directive, two parameters allowed at most", location);
+        }
+    }
 
-	public void exec(Env env, Scope scope, Writer writer) {
-		Object date;
-		String pattern;
+    public void exec(Env env, Scope scope, Writer writer) {
+        Object date;
+        String pattern;
 
-		if (dateExpr != null) {
-			date = dateExpr.eval(scope);
-		} else {
-			date = new Date();
-		}
+        if (dateExpr != null) {
+            date = dateExpr.eval(scope);
+        } else {
+            date = new Date();
+        }
 
-		if (patternExpr != null) {
-			Object temp = patternExpr.eval(scope);
-			if (temp instanceof String) {
-				pattern = (String)temp;
-			} else {
-				throw new TemplateException("The second parameter datePattern of #date directive must be String", location);
-			}
-		} else {
-			pattern = env.getEngineConfig().getDatePattern();
-		}
+        if (patternExpr != null) {
+            Object temp = patternExpr.eval(scope);
+            if (temp instanceof String) {
+                pattern = (String)temp;
+            } else {
+                throw new TemplateException("The second parameter datePattern of #date directive must be String", location);
+            }
+        } else {
+            pattern = env.getEngineConfig().getDatePattern();
+        }
 
-		write(date, pattern, writer);
-	}
+        write(date, pattern, writer);
+    }
 
-	private void write(Object date, String pattern, Writer writer) {
-		try {
+    private void write(Object date, String pattern, Writer writer) {
+        try {
 
-			if (date instanceof Date) {
-				writer.write((Date)date, pattern);
-			} else if (date instanceof Temporal) {		// 输出 LocalDateTime、LocalDate、LocalTime
-				writer.write((Temporal)date, pattern);
-			} else if (date != null) {
-				throw new TemplateException("The first parameter of #date directive can not be " + date.getClass().getName(), location);
-			}
+            if (date instanceof Date) {
+                writer.write((Date)date, pattern);
+            } else if (date instanceof Temporal) {		// 输出 LocalDateTime、LocalDate、LocalTime
+                writer.write((Temporal)date, pattern);
+            } else if (date != null) {
+                throw new TemplateException("The first parameter of #date directive can not be " + date.getClass().getName(), location);
+            }
 
-		} catch (TemplateException | ParseException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new TemplateException(e.getMessage(), location, e);
-		}
-	}
+        } catch (TemplateException | ParseException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new TemplateException(e.getMessage(), location, e);
+        }
+    }
 }
 
 

@@ -23,20 +23,20 @@ import com.jfinal.template.EngineConfig;
  * EncoderFactory
  */
 public class EncoderFactory {
-	
-	protected Charset charset = Charset.forName(EngineConfig.DEFAULT_ENCODING);
-	
-	void setEncoding(String encoding) {
-		charset = Charset.forName(encoding);
-	}
-	
-	public Encoder getEncoder() {
-		if (Charset.forName("UTF-8").equals(charset)) {
-			return Utf8Encoder.me;
-		} else {
-			return new JdkEncoder(charset);
-		}
-	}
+
+    protected Charset charset = Charset.forName(EngineConfig.DEFAULT_ENCODING);
+
+    void setEncoding(String encoding) {
+        charset = Charset.forName(encoding);
+    }
+
+    public Encoder getEncoder() {
+        if (Charset.forName("UTF-8").equals(charset)) {
+            return Utf8Encoder.me;
+        } else {
+            return new JdkEncoder(charset);
+        }
+    }
 }
 
 

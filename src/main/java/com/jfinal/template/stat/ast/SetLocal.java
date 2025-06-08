@@ -33,32 +33,32 @@ import com.jfinal.template.stat.Scope;
  */
 public class SetLocal  extends Stat {
 
-	final Expr expr;
+    final Expr expr;
 
-	public SetLocal(ExprList exprList, Location location) {
-		if (exprList.length() == 0) {
-			throw new ParseException("The parameter of #setLocal directive can not be blank", location);
-		}
+    public SetLocal(ExprList exprList, Location location) {
+        if (exprList.length() == 0) {
+            throw new ParseException("The parameter of #setLocal directive can not be blank", location);
+        }
 
-		/* 放开对表达式类型的限定
-		for (Expr expr : exprList.getExprArray()) {
-			if ( !(expr instanceof Assign || expr instanceof IncDec) ) {
-				throw new ParseException("#setLocal directive only supports assignment expressions", location);
-			}
-		}*/
+        /* 放开对表达式类型的限定
+        for (Expr expr : exprList.getExprArray()) {
+            if ( !(expr instanceof Assign || expr instanceof IncDec) ) {
+                throw new ParseException("#setLocal directive only supports assignment expressions", location);
+            }
+        }*/
 
-		this.expr = exprList.getActualExpr();
-	}
+        this.expr = exprList.getActualExpr();
+    }
 
-	public void exec(Env env, Scope scope, Writer writer) {
-		Ctrl ctrl = scope.getCtrl();
-		try {
-			ctrl.setLocalAssignment();
-			expr.eval(scope);
-		} finally {
-			ctrl.setWisdomAssignment();
-		}
-	}
+    public void exec(Env env, Scope scope, Writer writer) {
+        Ctrl ctrl = scope.getCtrl();
+        try {
+            ctrl.setLocalAssignment();
+            expr.eval(scope);
+        } finally {
+            ctrl.setWisdomAssignment();
+        }
+    }
 }
 
 

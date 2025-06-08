@@ -49,12 +49,12 @@ import com.jfinal.template.stat.ast.Output;
  * engine.setOutputDirectiveFactory(new MyOutputDirectiveFactory())
  */
 public class OutputDirectiveFactory {
-	
-	public static final OutputDirectiveFactory me = new OutputDirectiveFactory();
-	
-	public Output getOutputDirective(ExprList exprList, Location location) {
-		return new Output(exprList, location);
-	}
+
+    public static final OutputDirectiveFactory me = new OutputDirectiveFactory();
+
+    public Output getOutputDirective(ExprList exprList, Location location) {
+        return new Output(exprList, location);
+    }
 }
 
 

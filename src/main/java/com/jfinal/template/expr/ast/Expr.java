@@ -23,10 +23,10 @@ import com.jfinal.template.stat.Scope;
  * Expr
  */
 public abstract class Expr {
-	
-	protected Location location;
-	
-	public abstract Object eval(Scope scope);
+
+    protected Location location;
+
+    public abstract Object eval(Scope scope);
 }
 
 

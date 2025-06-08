@@ -50,20 +50,20 @@ import com.jfinal.template.stat.Scope;
  * 3：可创建空 map，如： #(map = {})
  */
 public class Map extends Expr {
-	
-	private LinkedHashMap<Object, Expr> map;
-	
-	public Map(LinkedHashMap<Object, Expr> map) {
-		this.map = map;
-	}
-	
-	public Object eval(Scope scope) {
-		LinkedHashMap<Object, Object> valueMap = new LinkedHashMap<Object, Object>(map.size());
-		for (Entry<Object, Expr> e : map.entrySet()) {
-			valueMap.put(e.getKey(), e.getValue().eval(scope));
-		}
-		return valueMap;
-	}
+
+    private LinkedHashMap<Object, Expr> map;
+
+    public Map(LinkedHashMap<Object, Expr> map) {
+        this.map = map;
+    }
+
+    public Object eval(Scope scope) {
+        LinkedHashMap<Object, Object> valueMap = new LinkedHashMap<Object, Object>(map.size());
+        for (Entry<Object, Expr> e : map.entrySet()) {
+            valueMap.put(e.getKey(), e.getValue().eval(scope));
+        }
+        return valueMap;
+    }
 }
 
 

@@ -22,106 +22,106 @@ package com.jfinal.template.expr.ast;
  * 用于生成缓存 FieldGetter 的 key
  */
 public abstract class FieldKeyBuilder {
-	
-	public abstract Object getFieldKey(Class<?> targetClass, long fieldFnv1a64Hash);
-	
-	// 假定是超大规模项目，并且假定其 Map/Model/Record + field 组合数量超级庞大，默认使用 StrictFieldKeyBuilder
-	// static FieldKeyBuilder instance = new StrictFieldKeyBuilder();
-	static FieldKeyBuilder instance = new FastFieldKeyBuilder();
-	
-	public static FieldKeyBuilder getInstance() {
-		return instance;
-	}
-	
-	/**
-	 * 开启 FastFieldKeyBuilder，性能更高
-	 */
-	public static void setFastFieldKeyBuilder(boolean enable) {
-		if (enable) {
-			instance = new FastFieldKeyBuilder();
-		} else {
-			instance = new StrictFieldKeyBuilder();
-		}
-	}
-	
-	/**
-	 * 设置为自定义 FieldKeyBuilder
-	 */
-	public static void setFieldKeyBuilder(FieldKeyBuilder fieldKeyBuilder) {
-		if (fieldKeyBuilder == null) {
-			throw new IllegalArgumentException("fieldKeyBuilder can not be null");
-		}
-		instance = fieldKeyBuilder;
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * FastFieldKeyBuilder
-	 */
-	public static class FastFieldKeyBuilder extends FieldKeyBuilder {
-		public Object getFieldKey(Class<?> targetClass, long fieldFnv1a64Hash) {
-			return targetClass.getName().hashCode() ^ fieldFnv1a64Hash;
-		}
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * StrictFieldKeyBuilder
-	 */
-	public static class StrictFieldKeyBuilder extends FieldKeyBuilder {
-		public Object getFieldKey(Class<?> targetClass, long fieldFnv1a64Hash) {
-			return new FieldKey(targetClass.getName().hashCode(), fieldFnv1a64Hash);
-		}
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * FieldKey
-	 * 
-	 * FieldKey 用于封装 targetClass、fieldName 这两部分的 hash 值，
-	 * 确保不会出现 key 值碰撞
-	 * 
-	 * 这两部分 hash 值在不同 class 与 field 的组合下出现碰撞的
-	 * 概率完全可以忽略不计
-	 * 
-	 * 备忘：
-	 * 可以考虑用 ThreadLocal 重用 FieldKey 对象，但要注意放入 Map fieldGetterCache
-	 * 中的 FieldKey 对象需要 clone 出来，确保线程安全。由于 FieldKey 占用空间不大，
-	 * 所以 ThreadLocal 方案大概率并无优势，从 ThreadLocal 中获取数据时，除了耗时也无法
-	 * 避免创建对象
-	 */
-	public static class FieldKey {
-		
-		final int classHash;
-		final long fieldHash;
-		
-		public FieldKey(int classHash, long fieldHash) {
-			this.classHash = classHash;
-			this.fieldHash = fieldHash;
-		}
-		
-		public int hashCode() {
-			return classHash ^ (int)fieldHash;
-		}
-		
-		/**
-		 * FieldKey 的核心价值在于此 equals 方法通过比较两部分 hash 值，避免超大规模场景下可能的 key 值碰撞
-		 * 
-		 * 不必判断 if (fieldKey instanceof FieldKey)，因为所有 key 类型必须要相同
-		 * 不必判断 if (this == fieldKey)，因为每次用于取值的 FieldKey 都是新建的
-		 */
-		public boolean equals(Object fieldKey) {
-			FieldKey fk = (FieldKey)fieldKey;
-			return classHash == fk.classHash && fieldHash == fk.fieldHash;
-		}
-		
-		public String toString() {
-			return "classHash = " + classHash + "\nfieldHash = " + fieldHash;
-		}
-	}
+
+    public abstract Object getFieldKey(Class<?> targetClass, long fieldFnv1a64Hash);
+
+    // 假定是超大规模项目，并且假定其 Map/Model/Record + field 组合数量超级庞大，默认使用 StrictFieldKeyBuilder
+    // static FieldKeyBuilder instance = new StrictFieldKeyBuilder();
+    static FieldKeyBuilder instance = new FastFieldKeyBuilder();
+
+    public static FieldKeyBuilder getInstance() {
+        return instance;
+    }
+
+    /**
+     * 开启 FastFieldKeyBuilder，性能更高
+     */
+    public static void setFastFieldKeyBuilder(boolean enable) {
+        if (enable) {
+            instance = new FastFieldKeyBuilder();
+        } else {
+            instance = new StrictFieldKeyBuilder();
+        }
+    }
+
+    /**
+     * 设置为自定义 FieldKeyBuilder
+     */
+    public static void setFieldKeyBuilder(FieldKeyBuilder fieldKeyBuilder) {
+        if (fieldKeyBuilder == null) {
+            throw new IllegalArgumentException("fieldKeyBuilder can not be null");
+        }
+        instance = fieldKeyBuilder;
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * FastFieldKeyBuilder
+     */
+    public static class FastFieldKeyBuilder extends FieldKeyBuilder {
+        public Object getFieldKey(Class<?> targetClass, long fieldFnv1a64Hash) {
+            return targetClass.getName().hashCode() ^ fieldFnv1a64Hash;
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * StrictFieldKeyBuilder
+     */
+    public static class StrictFieldKeyBuilder extends FieldKeyBuilder {
+        public Object getFieldKey(Class<?> targetClass, long fieldFnv1a64Hash) {
+            return new FieldKey(targetClass.getName().hashCode(), fieldFnv1a64Hash);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * FieldKey
+     *
+     * FieldKey 用于封装 targetClass、fieldName 这两部分的 hash 值，
+     * 确保不会出现 key 值碰撞
+     *
+     * 这两部分 hash 值在不同 class 与 field 的组合下出现碰撞的
+     * 概率完全可以忽略不计
+     *
+     * 备忘：
+     * 可以考虑用 ThreadLocal 重用 FieldKey 对象，但要注意放入 Map fieldGetterCache
+     * 中的 FieldKey 对象需要 clone 出来，确保线程安全。由于 FieldKey 占用空间不大，
+     * 所以 ThreadLocal 方案大概率并无优势，从 ThreadLocal 中获取数据时，除了耗时也无法
+     * 避免创建对象
+     */
+    public static class FieldKey {
+
+        final int classHash;
+        final long fieldHash;
+
+        public FieldKey(int classHash, long fieldHash) {
+            this.classHash = classHash;
+            this.fieldHash = fieldHash;
+        }
+
+        public int hashCode() {
+            return classHash ^ (int)fieldHash;
+        }
+
+        /**
+         * FieldKey 的核心价值在于此 equals 方法通过比较两部分 hash 值，避免超大规模场景下可能的 key 值碰撞
+         *
+         * 不必判断 if (fieldKey instanceof FieldKey)，因为所有 key 类型必须要相同
+         * 不必判断 if (this == fieldKey)，因为每次用于取值的 FieldKey 都是新建的
+         */
+        public boolean equals(Object fieldKey) {
+            FieldKey fk = (FieldKey)fieldKey;
+            return classHash == fk.classHash && fieldHash == fk.fieldHash;
+        }
+
+        public String toString() {
+            return "classHash = " + classHash + "\nfieldHash = " + fieldHash;
+        }
+    }
 }
 
 

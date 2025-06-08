@@ -54,57 +54,57 @@ import com.jfinal.template.stat.Scope;
  * </pre>
  */
 public class NumberDirective extends Directive {
-	
-	private Expr valueExpr;
-	private Expr patternExpr;
-	
-	public void setExprList(ExprList exprList) {
-		int paraNum = exprList.length();
-		if (paraNum == 0) {
-			throw new ParseException("The parameter of #number directive can not be blank", location);
-		}
-		if (paraNum > 2) {
-			throw new ParseException("Wrong number parameter of #number directive, two parameters allowed at most", location);
-		}
-		
-		valueExpr = exprList.getExpr(0);
-		patternExpr = (paraNum == 1 ? null : exprList.getExpr(1));
-	}
-	
-	public void exec(Env env, Scope scope, Writer writer) {
-		Object value = valueExpr.eval(scope);
-		if (value == null) {
-			return ;
-		}
-		
-		RoundingMode roundingMode = env.getEngineConfig().getRoundingMode();
-		if (patternExpr == null) {
-			outputWithoutPattern(value, roundingMode, writer);
-		} else {
-			outputWithPattern(value, roundingMode, scope, writer);
-		}
-	}
-	
-	private void outputWithoutPattern(Object value, RoundingMode roundingMode, Writer writer) {
-		DecimalFormat df = new DecimalFormat();
-		df.setRoundingMode(roundingMode);
-		
-		String ret = df.format(value);
-		write(writer, ret);
-	}
-	
-	private void outputWithPattern(Object value, RoundingMode roundingMode, Scope scope, Writer writer) {
-		Object pattern = patternExpr.eval(scope);
-		if ( !(pattern instanceof String) ) {
-			throw new TemplateException("The sencond parameter pattern of #number directive must be String", location);
-		}
-		
-		DecimalFormat df = new DecimalFormat((String)pattern);
-		df.setRoundingMode(roundingMode);
-		
-		String ret = df.format(value);
-		write(writer, ret);
-	}
+
+    private Expr valueExpr;
+    private Expr patternExpr;
+
+    public void setExprList(ExprList exprList) {
+        int paraNum = exprList.length();
+        if (paraNum == 0) {
+            throw new ParseException("The parameter of #number directive can not be blank", location);
+        }
+        if (paraNum > 2) {
+            throw new ParseException("Wrong number parameter of #number directive, two parameters allowed at most", location);
+        }
+
+        valueExpr = exprList.getExpr(0);
+        patternExpr = (paraNum == 1 ? null : exprList.getExpr(1));
+    }
+
+    public void exec(Env env, Scope scope, Writer writer) {
+        Object value = valueExpr.eval(scope);
+        if (value == null) {
+            return ;
+        }
+
+        RoundingMode roundingMode = env.getEngineConfig().getRoundingMode();
+        if (patternExpr == null) {
+            outputWithoutPattern(value, roundingMode, writer);
+        } else {
+            outputWithPattern(value, roundingMode, scope, writer);
+        }
+    }
+
+    private void outputWithoutPattern(Object value, RoundingMode roundingMode, Writer writer) {
+        DecimalFormat df = new DecimalFormat();
+        df.setRoundingMode(roundingMode);
+
+        String ret = df.format(value);
+        write(writer, ret);
+    }
+
+    private void outputWithPattern(Object value, RoundingMode roundingMode, Scope scope, Writer writer) {
+        Object pattern = patternExpr.eval(scope);
+        if ( !(pattern instanceof String) ) {
+            throw new TemplateException("The sencond parameter pattern of #number directive must be String", location);
+        }
+
+        DecimalFormat df = new DecimalFormat((String)pattern);
+        df.setRoundingMode(roundingMode);
+
+        String ret = df.format(value);
+        write(writer, ret);
+    }
 }
 
 

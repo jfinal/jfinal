@@ -26,14 +26,14 @@ import com.jfinal.template.stat.Scope;
  * #switch 指令内部的 #default 指令
  */
 public class Default extends Stat {
-	
-	private Stat stat;
-	
-	public Default(StatList statList) {
-		this.stat = statList.getActualStat();
-	}
-	
-	public void exec(Env env, Scope scope, Writer writer) {
-		stat.exec(env, scope, writer);
-	}
+
+    private Stat stat;
+
+    public Default(StatList statList) {
+        this.stat = statList.getActualStat();
+    }
+
+    public void exec(Env env, Scope scope, Writer writer) {
+        stat.exec(env, scope, writer);
+    }
 }

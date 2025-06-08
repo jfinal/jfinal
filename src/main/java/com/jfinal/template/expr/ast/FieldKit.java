@@ -26,150 +26,150 @@ import com.jfinal.template.expr.ast.FieldGetters.*;
  * FieldKit
  */
 public class FieldKit {
-	
-	private static FieldGetter[] getters = init();
-	
-	private static final HashMap<Object, FieldGetter> fieldGetterCache = new SyncWriteMap<Object, FieldGetter>(1024, 0.25F);
-	
-	/**
-	 * 初始化官方默认 FieldGetter
-	 * 
-	 * 注意：
-	 * 默认不启用 IsMethodFieldGetter，用户可以通过下面的代码启用：
-	 * Engine.addLastFieldGetter(new FieldGetters.IsMethodFieldGetter());
-	 * 
-	 * 也可以通过直接调用 target.isXxx() 方法来达到与 target.xxx 表达式相同的目的
-	 */
-	private static FieldGetter[] init() {
-		LinkedList<FieldGetter> ret = new LinkedList<FieldGetter>();
-		
-		ret.addLast(new GetterMethodFieldGetter(null));
-		ret.addLast(new RealFieldGetter(null));
-		ret.addLast(new ModelFieldGetter());
-		ret.addLast(new RecordFieldGetter());
-		ret.addLast(new MapFieldGetter());
-		
-		// 挪到第二的位置，addSharedObject(..., modelObj) 用法可以获取到 model 中的 public 属性
-		// ret.addLast(new RealFieldGetter(null));
-		ret.addLast(new ArrayLengthGetter());
-		// ret.addLast(new IsMethodFieldGetter());
-		
-		return ret.toArray(new FieldGetter[ret.size()]);
-	}
-	
-	public static FieldGetter getFieldGetter(Object key, Class<?> targetClass, String fieldName) {
-		FieldGetter fieldGetter = fieldGetterCache.get(key);
-		if (fieldGetter == null) {
-			fieldGetter = doGetFieldGetter(targetClass, fieldName);	// 已确保不会返回 null
-			fieldGetterCache.putIfAbsent(key, fieldGetter);
-		}
-		return fieldGetter;
-	}
-	
-	private static FieldGetter doGetFieldGetter(Class<?> targetClass, String fieldName) {
-		FieldGetter ret;
-		for (FieldGetter fieldGetter : getters) {
-			ret = fieldGetter.takeOver(targetClass, fieldName);
-			if (ret != null) {
-				return ret;
-			}
-		}
-		return NullFieldGetter.me;
-	}
-	
-	public static void addFieldGetter(int index, FieldGetter fieldGetter) {
-		addFieldGetter(fieldGetter, index, true);
-	}
-	
-	public static void addFieldGetterToLast(FieldGetter fieldGetter) {
-		addFieldGetter(fieldGetter, null, true);
-	}
-	
-	public static void addFieldGetterToFirst(FieldGetter fieldGetter) {
-		addFieldGetter(fieldGetter, null, false);
-	}
-	
-	// 当 Integer index 不为 null 时，boolean addLast 为无效参数
-	private static synchronized void addFieldGetter(FieldGetter fieldGetter, Integer index, boolean addLast) {
-		checkParameter(fieldGetter);
-		
-		LinkedList<FieldGetter> ret = getCurrentFieldGetters();
-		if (index != null) {
-			ret.add(index, fieldGetter);
-		} else {
-			if (addLast) {
-				ret.addLast(fieldGetter);
-			} else {
-				ret.addFirst(fieldGetter);
-			}
-		}
-		getters = ret.toArray(new FieldGetter[ret.size()]);
-	}
-	
-	private static LinkedList<FieldGetter> getCurrentFieldGetters() {
-		LinkedList<FieldGetter> ret = new LinkedList<FieldGetter>();
-		for (FieldGetter fieldGetter : getters) {
-			ret.add(fieldGetter);
-		}
-		return ret;
-	}
-	
-	private static void checkParameter(FieldGetter fieldGetter) {
-		if (fieldGetter == null) {
-			throw new IllegalArgumentException("The parameter fieldGetter can not be null");
-		}
-		for (FieldGetter fg : getters) {
-			if (fg.getClass() == fieldGetter.getClass()) {
-				throw new RuntimeException("FieldGetter already exists : " + fieldGetter.getClass().getName());
-			}
-		}
-	}
-	
-	public static synchronized void removeFieldGetter(Class<? extends FieldGetter> fieldGetterClass) {
-		LinkedList<FieldGetter> ret = getCurrentFieldGetters();
-		
-		for (Iterator<FieldGetter> it = ret.iterator(); it.hasNext();) {
-			if (it.next().getClass() == fieldGetterClass) {
-				it.remove();
-			}
-		}
-		
-		getters = ret.toArray(new FieldGetter[ret.size()]);
-	}
-	
-	public static void clearCache() {
-		fieldGetterCache.clear();
-	}
-	
-	/**
-	 * 设置极速模式
-	 * 
-	 * 极速模式将生成代理对象来消除 java.lang.reflect.Method.invoke(...) 调用，
-	 * 性能提升 12.9%
-	 */
-	public static synchronized void setFastMode(boolean fastMode) {
-		if (fastMode) {
-			if ( !contains(FastFieldGetter.class) ) {
-				addFieldGetterToFirst(new FastFieldGetter());
-			}
-		} else {
-			if (contains(FastFieldGetter.class)) {
-				removeFieldGetter(FastFieldGetter.class);
-			}
-		}
-	}
-	
-	/**
-	 * 判断是否包含某个 FieldGetter
-	 */
-	public static boolean contains(Class<? extends FieldGetter> fieldGetterClass) {
-		for (FieldGetter fg : getters) {
-			if (fg.getClass() == fieldGetterClass) {
-				return true;
-			}
-		}
-		return false;
-	}
+
+    private static FieldGetter[] getters = init();
+
+    private static final HashMap<Object, FieldGetter> fieldGetterCache = new SyncWriteMap<Object, FieldGetter>(1024, 0.25F);
+
+    /**
+     * 初始化官方默认 FieldGetter
+     *
+     * 注意：
+     * 默认不启用 IsMethodFieldGetter，用户可以通过下面的代码启用：
+     * Engine.addLastFieldGetter(new FieldGetters.IsMethodFieldGetter());
+     *
+     * 也可以通过直接调用 target.isXxx() 方法来达到与 target.xxx 表达式相同的目的
+     */
+    private static FieldGetter[] init() {
+        LinkedList<FieldGetter> ret = new LinkedList<FieldGetter>();
+
+        ret.addLast(new GetterMethodFieldGetter(null));
+        ret.addLast(new RealFieldGetter(null));
+        ret.addLast(new ModelFieldGetter());
+        ret.addLast(new RecordFieldGetter());
+        ret.addLast(new MapFieldGetter());
+
+        // 挪到第二的位置，addSharedObject(..., modelObj) 用法可以获取到 model 中的 public 属性
+        // ret.addLast(new RealFieldGetter(null));
+        ret.addLast(new ArrayLengthGetter());
+        // ret.addLast(new IsMethodFieldGetter());
+
+        return ret.toArray(new FieldGetter[ret.size()]);
+    }
+
+    public static FieldGetter getFieldGetter(Object key, Class<?> targetClass, String fieldName) {
+        FieldGetter fieldGetter = fieldGetterCache.get(key);
+        if (fieldGetter == null) {
+            fieldGetter = doGetFieldGetter(targetClass, fieldName);	// 已确保不会返回 null
+            fieldGetterCache.putIfAbsent(key, fieldGetter);
+        }
+        return fieldGetter;
+    }
+
+    private static FieldGetter doGetFieldGetter(Class<?> targetClass, String fieldName) {
+        FieldGetter ret;
+        for (FieldGetter fieldGetter : getters) {
+            ret = fieldGetter.takeOver(targetClass, fieldName);
+            if (ret != null) {
+                return ret;
+            }
+        }
+        return NullFieldGetter.me;
+    }
+
+    public static void addFieldGetter(int index, FieldGetter fieldGetter) {
+        addFieldGetter(fieldGetter, index, true);
+    }
+
+    public static void addFieldGetterToLast(FieldGetter fieldGetter) {
+        addFieldGetter(fieldGetter, null, true);
+    }
+
+    public static void addFieldGetterToFirst(FieldGetter fieldGetter) {
+        addFieldGetter(fieldGetter, null, false);
+    }
+
+    // 当 Integer index 不为 null 时，boolean addLast 为无效参数
+    private static synchronized void addFieldGetter(FieldGetter fieldGetter, Integer index, boolean addLast) {
+        checkParameter(fieldGetter);
+
+        LinkedList<FieldGetter> ret = getCurrentFieldGetters();
+        if (index != null) {
+            ret.add(index, fieldGetter);
+        } else {
+            if (addLast) {
+                ret.addLast(fieldGetter);
+            } else {
+                ret.addFirst(fieldGetter);
+            }
+        }
+        getters = ret.toArray(new FieldGetter[ret.size()]);
+    }
+
+    private static LinkedList<FieldGetter> getCurrentFieldGetters() {
+        LinkedList<FieldGetter> ret = new LinkedList<FieldGetter>();
+        for (FieldGetter fieldGetter : getters) {
+            ret.add(fieldGetter);
+        }
+        return ret;
+    }
+
+    private static void checkParameter(FieldGetter fieldGetter) {
+        if (fieldGetter == null) {
+            throw new IllegalArgumentException("The parameter fieldGetter can not be null");
+        }
+        for (FieldGetter fg : getters) {
+            if (fg.getClass() == fieldGetter.getClass()) {
+                throw new RuntimeException("FieldGetter already exists : " + fieldGetter.getClass().getName());
+            }
+        }
+    }
+
+    public static synchronized void removeFieldGetter(Class<? extends FieldGetter> fieldGetterClass) {
+        LinkedList<FieldGetter> ret = getCurrentFieldGetters();
+
+        for (Iterator<FieldGetter> it = ret.iterator(); it.hasNext();) {
+            if (it.next().getClass() == fieldGetterClass) {
+                it.remove();
+            }
+        }
+
+        getters = ret.toArray(new FieldGetter[ret.size()]);
+    }
+
+    public static void clearCache() {
+        fieldGetterCache.clear();
+    }
+
+    /**
+     * 设置极速模式
+     *
+     * 极速模式将生成代理对象来消除 java.lang.reflect.Method.invoke(...) 调用，
+     * 性能提升 12.9%
+     */
+    public static synchronized void setFastMode(boolean fastMode) {
+        if (fastMode) {
+            if ( !contains(FastFieldGetter.class) ) {
+                addFieldGetterToFirst(new FastFieldGetter());
+            }
+        } else {
+            if (contains(FastFieldGetter.class)) {
+                removeFieldGetter(FastFieldGetter.class);
+            }
+        }
+    }
+
+    /**
+     * 判断是否包含某个 FieldGetter
+     */
+    public static boolean contains(Class<? extends FieldGetter> fieldGetterClass) {
+        for (FieldGetter fg : getters) {
+            if (fg.getClass() == fieldGetterClass) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 

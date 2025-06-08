@@ -27,20 +27,20 @@ import java.util.Map;
  *      ThreadLocal.get() 调用
  */
 public class DateFormats {
-	
-	/**
-	 * SimpleDateFormat 非线程安全，结合 WriterBuffer 中的 ThreadLocal 确保线程安全
-	 */
-	private Map<String, SimpleDateFormat> map = new HashMap<String, SimpleDateFormat>(16, 0.25F);
-	
-	public SimpleDateFormat getDateFormat(String datePattern) {
-		SimpleDateFormat ret = map.get(datePattern);
-		if (ret == null) {
-			ret = new SimpleDateFormat(datePattern);
-			map.put(datePattern, ret);
-		}
-		return ret;
-	}
+
+    /**
+     * SimpleDateFormat 非线程安全，结合 WriterBuffer 中的 ThreadLocal 确保线程安全
+     */
+    private Map<String, SimpleDateFormat> map = new HashMap<String, SimpleDateFormat>(16, 0.25F);
+
+    public SimpleDateFormat getDateFormat(String datePattern) {
+        SimpleDateFormat ret = map.get(datePattern);
+        if (ret == null) {
+            ret = new SimpleDateFormat(datePattern);
+            map.put(datePattern, ret);
+        }
+        return ret;
+    }
 }
 
 

@@ -8,7 +8,7 @@ package com.jfinal.template.io;
 import java.io.IOException;
 
 public class IntegerWriter {
-	
+
     final static int [] sizeTable = { 9, 99, 999, 9999, 99999, 999999, 9999999,
             99999999, 999999999, Integer.MAX_VALUE };
     
@@ -50,10 +50,10 @@ public class IntegerWriter {
     private static final byte[] minValueBytes = "-2147483648".getBytes();
     private static final char[] minValueChars = "-2147483648".toCharArray();
     
-	public static void write(ByteWriter byteWriter, int i) throws IOException {
+    public static void write(ByteWriter byteWriter, int i) throws IOException {
         if (i == Integer.MIN_VALUE) {
-        	byteWriter.out.write(minValueBytes, 0, minValueBytes.length);
-        	return ;
+            byteWriter.out.write(minValueBytes, 0, minValueBytes.length);
+            return ;
         }
         
         int size = (i < 0) ? stringSize(-i) + 1 : stringSize(i);
@@ -65,15 +65,15 @@ public class IntegerWriter {
         // byteWriter.out.write(bytes, 0, len);
         
         for (int j=0; j<size; j++) {
-        	bytes[j] = (byte)chars[j];
+            bytes[j] = (byte)chars[j];
         }
         byteWriter.out.write(bytes, 0, size);
     }
-	
-	public static void write(CharWriter charWriter, int i) throws IOException {
+
+    public static void write(CharWriter charWriter, int i) throws IOException {
         if (i == Integer.MIN_VALUE) {
-        	charWriter.out.write(minValueChars, 0, minValueChars.length);
-        	return ;
+            charWriter.out.write(minValueChars, 0, minValueChars.length);
+            return ;
         }
         
         int size = (i < 0) ? stringSize(-i) + 1 : stringSize(i);
@@ -81,7 +81,7 @@ public class IntegerWriter {
         getChars(i, size, chars);
         charWriter.out.write(chars, 0, size);
     }
-	
+
     static int stringSize(int x) {
         for (int i=0; ; i++)
             if (x <= sizeTable[i])

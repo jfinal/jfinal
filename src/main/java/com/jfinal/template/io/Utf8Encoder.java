@@ -25,14 +25,14 @@ package com.jfinal.template.io;
  * http://grepcode.com/search?query=ArrayEncoder&start=0&entity=type&n=
  */
 public class Utf8Encoder implements Encoder {
-	
-	public static final Utf8Encoder me = new Utf8Encoder();
-	
-	public float maxBytesPerChar() {
-		return 3.0F;
-	}
-	
-	public int encode(char[] chars, int offset, int len, byte[] bytes) {
+
+    public static final Utf8Encoder me = new Utf8Encoder();
+
+    public float maxBytesPerChar() {
+        return 3.0F;
+    }
+
+    public int encode(char[] chars, int offset, int len, byte[] bytes) {
         int sl = offset + len;
         int dp = 0;
         int dlASCII = dp + Math.min(len, bytes.length);

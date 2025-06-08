@@ -47,41 +47,41 @@ import java.math.BigInteger;
  */
 public class IntegerExt {
 
-	public Boolean toBoolean(Integer self) {
-		return self != 0;
-	}
+    public Boolean toBoolean(Integer self) {
+        return self != 0;
+    }
 
-	public Integer toInt(Integer self) {
-		return self;
-	}
+    public Integer toInt(Integer self) {
+        return self;
+    }
 
-	public Long toLong(Integer self) {
-		return self.longValue();
-	}
+    public Long toLong(Integer self) {
+        return self.longValue();
+    }
 
-	public Float toFloat(Integer self) {
-		return self.floatValue();
-	}
+    public Float toFloat(Integer self) {
+        return self.floatValue();
+    }
 
-	public Double toDouble(Integer self) {
-		return self.doubleValue();
-	}
+    public Double toDouble(Integer self) {
+        return self.doubleValue();
+    }
 
-	public Short toShort(Integer self) {
-		return self.shortValue();
-	}
+    public Short toShort(Integer self) {
+        return self.shortValue();
+    }
 
-	public Byte toByte(Integer self) {
-		return self.byteValue();
-	}
+    public Byte toByte(Integer self) {
+        return self.byteValue();
+    }
 
-	public BigInteger toBigInteger(Integer self) {
-		return BigInteger.valueOf(self);
-	}
+    public BigInteger toBigInteger(Integer self) {
+        return BigInteger.valueOf(self);
+    }
 
-	public BigDecimal toBigDecimal(Integer self) {
-		return new BigDecimal(self);
-	}
+    public BigDecimal toBigDecimal(Integer self) {
+        return new BigDecimal(self);
+    }
 }
 
 

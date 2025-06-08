@@ -34,27 +34,27 @@ import com.jfinal.template.stat.Scope;
  * 4：#set(x = 1+2, y = 3>4, ..., z = c ? a : b)
  */
 public class Set extends Stat {
-	
-	private Expr expr;
-	
-	public Set(ExprList exprList, Location location) {
-		if (exprList.length() == 0) {
-			throw new ParseException("The parameter of #set directive can not be blank", location);
-		}
-		
-		/* 放开对表达式类型的限定
-		for (Expr expr : exprList.getExprArray()) {
-			if ( !(expr instanceof Assign || expr instanceof IncDec) ) {
-				throw new ParseException("#set directive only supports assignment expressions", location);
-			}
-		}*/
-		
-		this.expr = exprList.getActualExpr();
-	}
-	
-	public void exec(Env env, Scope scope, Writer writer) {
-		scope.getCtrl().setWisdomAssignment();
-		expr.eval(scope);
-	}
+
+    private Expr expr;
+
+    public Set(ExprList exprList, Location location) {
+        if (exprList.length() == 0) {
+            throw new ParseException("The parameter of #set directive can not be blank", location);
+        }
+
+        /* 放开对表达式类型的限定
+        for (Expr expr : exprList.getExprArray()) {
+            if ( !(expr instanceof Assign || expr instanceof IncDec) ) {
+                throw new ParseException("#set directive only supports assignment expressions", location);
+            }
+        }*/
+
+        this.expr = exprList.getActualExpr();
+    }
+
+    public void exec(Env env, Scope scope, Writer writer) {
+        scope.getCtrl().setWisdomAssignment();
+        expr.eval(scope);
+    }
 }
 

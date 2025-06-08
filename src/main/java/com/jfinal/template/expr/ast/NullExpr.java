@@ -22,14 +22,14 @@ import com.jfinal.template.stat.Scope;
  * NullExpr
  */
 public class NullExpr extends Expr {
-	
-	public static final NullExpr me = new NullExpr();
-	
-	private NullExpr() {}
-	
-	public Object eval(Scope scope) {
-		return null;
-	}
+
+    public static final NullExpr me = new NullExpr();
+
+    private NullExpr() {}
+
+    public Object eval(Scope scope) {
+        return null;
+    }
 }
 
 

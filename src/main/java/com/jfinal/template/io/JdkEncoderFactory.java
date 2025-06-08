@@ -27,11 +27,11 @@ package com.jfinal.template.io;
  * </pre>
  */
 public class JdkEncoderFactory extends EncoderFactory {
-	
-	@Override
-	public Encoder getEncoder() {
-		return new JdkEncoder(charset);
-	}
+
+    @Override
+    public Encoder getEncoder() {
+        return new JdkEncoder(charset);
+    }
 }
 
 
