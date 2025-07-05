@@ -93,6 +93,14 @@ public class Aop {
 		return aopFactory.get(targetClass);
 	}
 
+	/**
+	 * 支持 Aop.get("serviceAaa")、Aop.get("serviceBbb")。
+	 * 需要先通过 addMapping(String, Class) 添加映射
+	 */
+	public static <T> T get(String name) {
+		return aopFactory.get(name);
+	}
+
 	public static <T> T inject(T targetObject) {
 		return aopFactory.inject(targetObject);
 	}
