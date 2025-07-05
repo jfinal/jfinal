@@ -188,5 +188,16 @@ public class AopManager {
 	public boolean isSingleton() {
 		return Aop.aopFactory.isSingleton();
 	}
+
+	/**
+	 * 支持 name 到实现类的映射
+	 */
+	public void addMapping(String name, Class<?> to) {
+		Aop.aopFactory.addMapping(name, to);
+	}
+
+	// public <T> void addMapping(String from, String to) {
+	//     throw new UnsupportedOperationException("TODO");
+	// }
 }
 
