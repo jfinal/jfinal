@@ -39,6 +39,9 @@ public class AopFactory {
 	// 父类到子类、接口到实现类之间的映射关系
 	protected HashMap<Class<?>, Class<?>> mapping = null;
 
+	// name 到实现类之间的映射关系
+	protected HashMap<String, Class<?>> mappingByName = null;
+
 	protected boolean singleton = true;					// 默认单例
 
 	protected boolean injectSuperClass = false;			// 默认不对超类进行注入
@@ -290,6 +293,37 @@ public class AopFactory {
 		} else {
 			return from;
 		}
+	}
+
+	/**
+	 * 支持 name 到实现类的映射
+	 */
+	public synchronized AopFactory addMapping(String name, Class<?> to) {
+		if (name == null || to == null) {
+			throw new IllegalArgumentException("The parameter `name` and `to` can not be null.");
+		}
+
+		if (mappingByName == null) {
+			mappingByName = new HashMap<>(128, 0.25F);
+		} else if (mappingByName.containsKey(name)) {
+			throw new RuntimeException("Class already mapped : " + name);
+		}
+
+		mappingByName.put(name, to);
+		return this;
+	}
+
+	/**
+	 * 支持 Aop.get("serviceAaa")、Aop.get("serviceBbb")。
+	 * 需要先通过 addMapping(String, Class) 添加映射
+	 */
+	public <T> T get(String name) {
+		@SuppressWarnings("unchecked")
+		Class<T> clazz = (Class<T>) mappingByName.get(name);
+		if (clazz == null) {
+			throw new IllegalArgumentException("Class mapping of \"" + name + "\" not exists.");
+		}
+		return get(clazz);
 	}
 }
 
