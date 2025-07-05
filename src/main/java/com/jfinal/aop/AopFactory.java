@@ -40,7 +40,7 @@ public class AopFactory {
 	protected HashMap<Class<?>, Class<?>> mapping = null;
 
 	// name 到实现类之间的映射关系
-	protected HashMap<String, Class<?>> mappingByName = null;
+	protected HashMap<String, Class<?>> mappingByName = new HashMap<>(128, 0.25F);
 
 	protected boolean singleton = true;					// 默认单例
 
@@ -302,10 +302,7 @@ public class AopFactory {
 		if (name == null || to == null) {
 			throw new IllegalArgumentException("The parameter `name` and `to` can not be null.");
 		}
-
-		if (mappingByName == null) {
-			mappingByName = new HashMap<>(128, 0.25F);
-		} else if (mappingByName.containsKey(name)) {
+		if (mappingByName.containsKey(name)) {
 			throw new RuntimeException("Class already mapped : " + name);
 		}
 
