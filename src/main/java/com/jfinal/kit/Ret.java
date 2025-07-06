@@ -264,6 +264,15 @@ public class Ret extends HashMap {
 		return this;
 	}
 
+	public Ret remove(Object key) {
+		super.remove(key);
+		return this;
+	}
+
+	/**
+	 * remove 方法已取代 delete
+	 */
+	@Deprecated
 	public Ret delete(Object key) {
 		super.remove(key);
 		return this;
