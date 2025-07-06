@@ -81,6 +81,15 @@ public class Okv extends LinkedHashMap {
 		return this;
 	}
 
+	public Okv remove(Object key) {
+		super.remove(key);
+		return this;
+	}
+
+	/**
+	 * remove 方法已取代 delete
+	 */
+	@Deprecated
 	public Okv delete(Object key) {
 		super.remove(key);
 		return this;
