@@ -78,6 +78,15 @@ public class Kv extends HashMap {
 		return this;
 	}
 
+	public Kv remove(Object key) {
+		super.remove(key);
+		return this;
+	}
+
+	/**
+	 * remove 方法已取代 delete
+	 */
+	@Deprecated
 	public Kv delete(Object key) {
 		super.remove(key);
 		return this;
