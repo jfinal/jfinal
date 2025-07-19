@@ -20,6 +20,6 @@ package com.jfinal.aop;
  * Interceptor.
  */
 public interface Interceptor {
-	void intercept(Invocation inv);
+    void intercept(Invocation inv);
 }
 

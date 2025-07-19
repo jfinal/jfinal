@@ -32,9 +32,9 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 public @interface Inject {
 
-	/**
-	 * 被注入类的类型
- 	 */
-	Class<?> value() default Void.class;
+    /**
+     * 被注入类的类型
+     */
+    Class<?> value() default Void.class;
 }
 

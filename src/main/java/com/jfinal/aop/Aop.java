@@ -87,28 +87,28 @@ package com.jfinal.aop;
  */
 public class Aop {
 
-	static AopFactory aopFactory = new AopFactory();
+    static AopFactory aopFactory = new AopFactory();
 
-	public static <T> T get(Class<T> targetClass) {
-		return aopFactory.get(targetClass);
-	}
+    public static <T> T get(Class<T> targetClass) {
+        return aopFactory.get(targetClass);
+    }
 
-	/**
-	 * 支持 Aop.get("serviceAaa")、Aop.get("serviceBbb")。
-	 * 需要先通过 addMapping(String, Class) 添加映射
-	 */
-	public static <T> T get(String name) {
-		return aopFactory.get(name);
-	}
+    /**
+     * 支持 Aop.get("serviceAaa")、Aop.get("serviceBbb")。
+     * 需要先通过 addMapping(String, Class) 添加映射
+     */
+    public static <T> T get(String name) {
+        return aopFactory.get(name);
+    }
 
-	public static <T> T inject(T targetObject) {
-		return aopFactory.inject(targetObject);
-	}
+    public static <T> T inject(T targetObject) {
+        return aopFactory.inject(targetObject);
+    }
 
-	/* 通过 AopManager.me().getAopFactory().inject(...) 可调用如下方法，不直接开放出来
-	public static <T> T inject(Class<T> targetClass, T targetObject) {
-		return aopFactory.inject(targetClass, targetObject);
-	}*/
+    /* 通过 AopManager.me().getAopFactory().inject(...) 可调用如下方法，不直接开放出来
+    public static <T> T inject(Class<T> targetClass, T targetObject) {
+        return aopFactory.inject(targetClass, targetObject);
+    }*/
 }
 
 
