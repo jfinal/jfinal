@@ -206,7 +206,7 @@
 		<dependency>
 			<groupId>org.apache.fury</groupId>
 			<artifactId>fury-core</artifactId>
-			<version>0.9.0</version>
+			<version>0.10.3</version>
 			<scope>provided</scope>
 		</dependency>
 
