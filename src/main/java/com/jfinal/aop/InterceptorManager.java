@@ -28,7 +28,7 @@ import com.jfinal.core.Controller;
  * 2：缓存业务层 Class 级拦截器数组。业务层拦截器被整体缓存在 ProxyMethod 中
  * 3：用于创建 Interceptor、组装 Interceptor
  * 4：除手动 new 出来的拦截器以外，其它所有拦截器均为单例
- * 
+ *
  * 无法使用 Method 或 Before 对象缓存业务层 Method 级拦截器：
  * 1：不同对象或相同对象获取同一个 Class 中同一个 Method 得到的对象 id 值不相同
  * 2：不同对象获取同一个 method 之上的 Before 得到的对象 id 值不相同

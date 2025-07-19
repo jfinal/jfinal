@@ -20,15 +20,15 @@ import com.jfinal.proxy.Proxy;
 
 /**
  * duang duang duang
- * 
+ *
  * <pre>
  * 自 jfinal 3.5 开始，新增了更强大的 Aop 工具，建议使用 Aop.get(...) 以及
  * Aop.inject(...) 来代替 Duang 的功能
- * 
+ *
  * 下一个版本所有 Aop 功能将会被 Aop.java 取代，并且为了拦截器的整体缓存不会再支持
  * Inject Interceptor 参数，所以删除了 Duang 中所有带 injectInters 参数
  * 的方法
- * 
+ *
  * 下一个版本的 Singleton 判别将由 @Singleton 注解以及 AopFactory 中的默认值决定，
  * 所以删除了 Duang 中所有带 singletonKey 参数的方法
  * </pre>
@@ -44,10 +44,10 @@ public class Duang {
 
     /**
      * 下一个版本的 aop 将不再支持 inject interceptor，所以本方法被 Deprecated
-    @Deprecated
-    public static <T> T duang(Class<T> targetClass, Interceptor... injectInters) {
-        return (T)Enhancer.enhance(targetClass, injectInters);
-    } */
+     @Deprecated
+     public static <T> T duang(Class<T> targetClass, Interceptor... injectInters) {
+     return (T)Enhancer.enhance(targetClass, injectInters);
+     } */
 }
 
 
