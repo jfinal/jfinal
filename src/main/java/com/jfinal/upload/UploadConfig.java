@@ -18,6 +18,7 @@ package com.jfinal.upload;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import com.jfinal.kit.PathKit;
@@ -122,6 +123,11 @@ public class UploadConfig {
 
 	public static String getEncoding() {
 		return encoding;
+	}
+
+	public static void setFileRenamePolicy(com.oreilly.servlet.multipart.FileRenamePolicy fileRenamePolicy) {
+		Objects.requireNonNull(fileRenamePolicy, "fileRenamePolicy can not be null.");
+		MultipartRequest.fileRenamePolicy = fileRenamePolicy;
 	}
 }
 
