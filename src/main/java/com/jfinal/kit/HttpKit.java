@@ -254,7 +254,7 @@ public class HttpKit {
 			String ce = request.getCharacterEncoding();
 			InputStreamReader isr = new InputStreamReader(request.getInputStream(), ce != null ? ce : CHARSET);
 			StringBuilder ret = new StringBuilder();
-			char[] buf = new char[1024];
+			char[] buf = new char[2048];
 			for (int num; (num = isr.read(buf, 0, buf.length)) != -1;) {
 				ret.append(buf, 0, num);
 			}
