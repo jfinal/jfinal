@@ -16,7 +16,6 @@
 package com.jfinal.core.paragetter;
 
 import java.math.BigDecimal;
-
 import com.jfinal.core.Action;
 import com.jfinal.core.ActionException;
 import com.jfinal.core.Controller;
