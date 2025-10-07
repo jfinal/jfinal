@@ -80,8 +80,8 @@ public class BeanGetter<T> extends ParaGetter<T> {
 			// 存在与 action 形参名相同的 request 参数则使用其 value 值进行转换
 			return jsonObj.getObject(paraName, beanClass);
 		} else {
-			//如果不是集合、数组、Map，则返回 null
-			if (List.class.isAssignableFrom(beanClass) || beanClass.isArray() || Map.class.isAssignableFrom(beanClass)) {
+			// 转换的目标类型是 List、数组返回 null，因为 JSONObject 无法转换为这两种类型
+			if (List.class.isAssignableFrom(beanClass) || beanClass.isArray() /* || Map.class.isAssignableFrom(beanClass) */) {
 				return null;
 			}
 			// 否则使用整个请求中的 json 进行转换
