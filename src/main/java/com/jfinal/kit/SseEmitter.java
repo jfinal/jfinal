@@ -39,7 +39,7 @@ public class SseEmitter {
     private void initResponse() {
         response.setContentType("text/event-stream");
         response.setCharacterEncoding(Const.DEFAULT_ENCODING);
-        response.setHeader("Content-Type", "text/event-stream; charset:utf-8");
+        response.setHeader("Content-Type", "text/event-stream; charset=utf-8");
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Connection", "keep-alive");
     }
