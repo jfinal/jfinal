@@ -1,365 +1,365 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.jfinal</groupId>
-	<artifactId>jfinal</artifactId>
-	<version>5.2.7</version>
-	<packaging>jar</packaging>
+    <groupId>com.jfinal</groupId>
+    <artifactId>jfinal</artifactId>
+    <version>5.2.7</version>
+    <packaging>jar</packaging>
 
-	<name>JFinal</name>
-	<description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
-	<url>https://jfinal.com</url>
+    <name>JFinal</name>
+    <description>JFinal is a simple, light, rapid,independent, extensible Java WEB + ORM framework. The feature of JFinal looks like ruby on rails especially ActiveRecord.</description>
+    <url>https://jfinal.com</url>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-	</properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+    </properties>
 
-	<issueManagement>
-		<system>Github Issue</system>
-		<url>https://gitee.com/jfinal/jfinal/issues</url>
-	</issueManagement>
+    <issueManagement>
+        <system>Github Issue</system>
+        <url>https://gitee.com/jfinal/jfinal/issues</url>
+    </issueManagement>
 
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://apache.org/licenses/LICENSE-2.0.txt</url>
-		</license>
-	</licenses>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
 
-	<developers>
-		<developer>
-			<id>jfinal</id>
-			<name>James</name>
-			<email>jfinal@126.com</email>
-			<url>https://jfinal.com/user/1</url>
-		</developer>
-	</developers>
+    <developers>
+        <developer>
+            <id>jfinal</id>
+            <name>James</name>
+            <email>jfinal@126.com</email>
+            <url>https://jfinal.com/user/1</url>
+        </developer>
+    </developers>
 
-	<scm>
-		<connection>scm:git:git@gitee.com:jfinal/jfinal.git</connection>
-		<developerConnection>scm:git:git@gitee.com:jfinal/jfinal.git</developerConnection>
-		<url>git@gitee.com:jfinal/jfinal.git</url>
-	</scm>
+    <scm>
+        <connection>scm:git:git@gitee.com:jfinal/jfinal.git</connection>
+        <developerConnection>scm:git:git@gitee.com:jfinal/jfinal.git</developerConnection>
+        <url>git@gitee.com:jfinal/jfinal.git</url>
+    </scm>
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>jfinal</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-		</snapshotRepository>
-		<repository>
-			<id>jfinal</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>jfinal</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>jfinal</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
-	<repositories>
-	</repositories>
+    <repositories>
+    </repositories>
 
-	<!--
-		所有 dependency 都仅仅是可选项，仅当实际用到第三方时才需要引入
-		注意在 copy 引入下面的依赖时，要去掉 <scope>provided</scope> 才能生效
-	 -->
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.2</version>
-			<scope>test</scope>
-		</dependency>
+    <!--
+        所有 dependency 都仅仅是可选项，仅当实际用到第三方时才需要引入
+        注意在 copy 引入下面的依赖时，要去掉 <scope>provided</scope> 才能生效
+     -->
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
 
-		<!-- slf4j 日志，配置方法：me.setLogFactory(new Slf4jLogFactory()) -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>2.0.7</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- slf4j 日志，配置方法：me.setLogFactory(new Slf4jLogFactory()) -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.7</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- jetty-server 仅用于开发，现已被 jfinal-undertow 项目所取代 -->
-		<dependency>
-			<groupId>com.jfinal</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>2019.3</version>
-			<scope>provided</scope>
-		</dependency>
-		<!-- dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
-			<scope>provided</scope>
-		</dependency -->
-		<!-- jetty-server 开发时支持 JSP -->
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-jsp</artifactId>
-			<version>9.2.26.v20180806</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- jetty-server 仅用于开发，现已被 jfinal-undertow 项目所取代 -->
+        <dependency>
+            <groupId>com.jfinal</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>2019.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency -->
+        <!-- jetty-server 开发时支持 JSP -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-jsp</artifactId>
+            <version>9.2.26.v20180806</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- cos 文件上传 -->
-		<dependency>
-			<groupId>com.jfinal</groupId>
-			<artifactId>cos</artifactId>
-			<version>2022.2</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- cos 文件上传 -->
+        <dependency>
+            <groupId>com.jfinal</groupId>
+            <artifactId>cos</artifactId>
+            <version>2022.2</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- common fileupload 文件上传 -->
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>1.5</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- common fileupload 文件上传 -->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.5</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- druid 数据源连接池
-		     注意：从 druid 1.2.5 版本开始，DruidStatViewHandler 中无法使用父类中的 username
-		          与 password，所以升级到比 1.2.4 更高版本时，druid 监控将无法无法通过 jfinal
-		          扩展的 DruidStatViewHandler 使用。可以通过 druid 内置配置方式使用
-		 -->
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>druid</artifactId>
-			<version>1.2.4</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- druid 数据源连接池
+             注意：从 druid 1.2.5 版本开始，DruidStatViewHandler 中无法使用父类中的 username
+                  与 password，所以升级到比 1.2.4 更高版本时，druid 监控将无法无法通过 jfinal
+                  扩展的 DruidStatViewHandler 使用。可以通过 druid 内置配置方式使用
+         -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.2.4</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- HikariCP 数据源连接池 -->
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-			<version>4.0.3</version><!-- 5.0.0 版本不支持 JDK 8 -->
-			<scope>provided</scope>
-		</dependency>
+        <!-- HikariCP 数据源连接池 -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>4.0.3</version><!-- 5.0.0 版本不支持 JDK 8 -->
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- c3p0 数据源连接池 -->
-		<dependency>
-			<groupId>com.mchange</groupId>
-			<artifactId>c3p0</artifactId>
-			<version>0.9.5.5</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- c3p0 数据源连接池 -->
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5.5</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- fastjson json 转换 -->
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>fastjson</artifactId>
-			<version>1.2.83</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- fastjson json 转换 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.83</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- ehcache 缓存 -->
-		<dependency>
-			<groupId>net.sf.ehcache</groupId>
-			<artifactId>ehcache-core</artifactId>
-			<version>2.6.11</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- ehcache 缓存 -->
+        <dependency>
+            <groupId>net.sf.ehcache</groupId>
+            <artifactId>ehcache-core</artifactId>
+            <version>2.6.11</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- freemarkder 模板引擎 -->
-		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-			<version>2.3.20</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- freemarkder 模板引擎 -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.20</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- log4j 日志 -->
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- log4j 日志 -->
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- log4j2 日志 -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>2.20.0</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- log4j2 日志 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.20.0</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- redis 客户端 -->
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-			<version>7.5.2</version>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>de.ruedigermoeller</groupId>
-			<artifactId>fst</artifactId>
-			<version>2.57</version><!-- 注意：更高版本不支持 jdk 8 -->
-			<scope>provided</scope>
+        <!-- redis 客户端 -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>7.5.2</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>de.ruedigermoeller</groupId>
+            <artifactId>fst</artifactId>
+            <version>2.57</version><!-- 注意：更高版本不支持 jdk 8 -->
+            <scope>provided</scope>
 
-			<exclusions>
-				<exclusion>
-					<groupId>com.fasterxml.jackson.core</groupId>
-					<artifactId>jackson-core</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-		<dependency>
-			<groupId>org.apache.fury</groupId>
-			<artifactId>fury-core</artifactId>
-			<version>0.10.3</version>
-			<scope>provided</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.apache.fury</groupId>
+            <artifactId>fury-core</artifactId>
+            <version>0.10.3</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!--
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.49</version>
-			<scope>provided</scope>
-		</dependency>
-		-->
+        <!--
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.49</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
 
-		<!-- jackson json 转换 -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.11.0</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- jackson json 转换 -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.11.0</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- cron4j 任务调度 -->
-		<dependency>
-			<groupId>it.sauronsoftware.cron4j</groupId>
-			<artifactId>cron4j</artifactId>
-			<version>2.2.5</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- cron4j 任务调度 -->
+        <dependency>
+            <groupId>it.sauronsoftware.cron4j</groupId>
+            <artifactId>cron4j</artifactId>
+            <version>2.2.5</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- zxing 二维码生成 -->
-		<dependency>
-			<groupId>com.google.zxing</groupId>
-			<artifactId>javase</artifactId>
-			<version>3.4.1</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- zxing 二维码生成 -->
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.4.1</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- javassist 扩展 JavassistProxyFactory extends ProxyFactory -->
-		<dependency>
+        <!-- javassist 扩展 JavassistProxyFactory extends ProxyFactory -->
+        <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
             <version>3.30.2-GA</version>
             <scope>provided</scope>
         </dependency>
 
-		<!-- cglib 扩展 CglibProxyFactory extends ProxyFactory -->
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib-nodep</artifactId>
-			<version>3.3.0</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- cglib 扩展 CglibProxyFactory extends ProxyFactory -->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>3.3.0</version>
+            <scope>provided</scope>
+        </dependency>
 
-		<!-- 支持在 spring 之中整合使用 jfinal -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>5.3.18</version>
-			<scope>provided</scope>
-		</dependency>
+        <!-- 支持在 spring 之中整合使用 jfinal -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>5.3.18</version>
+            <scope>provided</scope>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 
-	<build>
+    <build>
 
-		<resources>
-			<resource>
-				<directory>src/main/java</directory>
-				<includes>
-					<!-- **/* 前缀用法，可以匹配所有路径 -->
-					<include>**/*.jf</include>
-				</includes>
-				<filtering>false</filtering>
-			</resource>
-		</resources>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <!-- **/* 前缀用法，可以匹配所有路径 -->
+                    <include>**/*.jf</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
 
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<encoding>UTF-8</encoding>
-					<!-- <compilerArgs><arg>-parameters</arg></compilerArgs> -->
-				</configuration>
-			</plugin>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                    <!-- <compilerArgs><arg>-parameters</arg></compilerArgs> -->
+                </configuration>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.4</version>
-				<configuration>
-					<!-- 解决 java8  发布到 maven 异常 -->
-					<additionalparam>-Xdoclint:none</additionalparam>
-					<encoding>UTF-8</encoding>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <configuration>
+                    <!-- 解决 java8  发布到 maven 异常 -->
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<!-- 安装源码到本地仓库 -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.1.2</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+            <!-- 安装源码到本地仓库 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- 发布方式改为 Central Portal: https://central.sonatype.org/publish/publish-portal-maven/ -->
-			<plugin>
-				<groupId>org.sonatype.central</groupId>
-				<artifactId>central-publishing-maven-plugin</artifactId>
-				<version>0.9.0</version>
-				<extensions>true</extensions>
-				<configuration>
-					<!-- 对应 maven settings.xml 中的 server 配置 -->
-					<publishingServerId>jfinal</publishingServerId>
-					<autoPublish>true</autoPublish>
-					<!-- <waitUntil>published</waitUntil> -->
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.9.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <!-- 对应 maven settings.xml 中的 server 配置 -->
+                    <publishingServerId>jfinal</publishingServerId>
+                    <autoPublish>true</autoPublish>
+                    <!-- <waitUntil>published</waitUntil> -->
+                </configuration>
+            </plugin>
 
-		</plugins>
-	</build>
+        </plugins>
+    </build>
 </project>
 
