@@ -16,14 +16,8 @@
 
 package com.jfinal.plugin.redis;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Function;
 import com.jfinal.kit.Func.*;
 import com.jfinal.kit.StrKit;
@@ -31,10 +25,10 @@ import com.jfinal.plugin.redis.serializer.ISerializer;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPubSub;
-import redis.clients.jedis.ScanParams;
-import redis.clients.jedis.ScanResult;
 import redis.clients.jedis.Transaction;
+import redis.clients.jedis.params.ScanParams;
 import redis.clients.jedis.params.SetParams;
+import redis.clients.jedis.resps.ScanResult;
 import redis.clients.jedis.util.SafeEncoder;
 
 /**
@@ -1192,11 +1186,11 @@ public class Cache {
 	 * 如果你需要成员按 score 值递减(从大到小)来排列，请使用 ZREVRANGE 命令。
 	 */
 	@SuppressWarnings("rawtypes")
-	public Set zrange(Object key, long start, long end) {
+	public List zrange(Object key, long start, long end) {
 		Jedis jedis = getJedis();
 		try {
-			Set<byte[]> data = jedis.zrange(keyToBytes(key), start, end);
-			Set<Object> result = new LinkedHashSet<Object>();	// 有序集合必须 LinkedHashSet
+			List<byte[]> data = jedis.zrange(keyToBytes(key), start, end);
+			List<Object> result = new ArrayList<>();
 			valueSetFromBytesSet(data, result);
 			return result;
 		}
@@ -1210,11 +1204,11 @@ public class Cache {
 	 * 除了成员按 score 值递减的次序排列这一点外， ZREVRANGE 命令的其他方面和 ZRANGE 命令一样。
 	 */
 	@SuppressWarnings("rawtypes")
-	public Set zrevrange(Object key, long start, long end) {
+	public List zrevrange(Object key, long start, long end) {
 		Jedis jedis = getJedis();
 		try {
-			Set<byte[]> data = jedis.zrevrange(keyToBytes(key), start, end);
-			Set<Object> result = new LinkedHashSet<Object>();	// 有序集合必须 LinkedHashSet
+			List<byte[]> data = jedis.zrevrange(keyToBytes(key), start, end);
+			List<Object> result = new ArrayList<>();
 			valueSetFromBytesSet(data, result);
 			return result;
 		}
@@ -1226,11 +1220,11 @@ public class Cache {
 	 * 有序集成员按 score 值递增(从小到大)次序排列。
 	 */
 	@SuppressWarnings("rawtypes")
-	public Set zrangeByScore(Object key, double min, double max) {
+	public List zrangeByScore(Object key, double min, double max) {
 		Jedis jedis = getJedis();
 		try {
-			Set<byte[]> data = jedis.zrangeByScore(keyToBytes(key), min, max);
-			Set<Object> result = new LinkedHashSet<Object>();	// 有序集合必须 LinkedHashSet
+			List<byte[]> data = jedis.zrangeByScore(keyToBytes(key), min, max);
+			List<Object> result = new ArrayList<>();
 			valueSetFromBytesSet(data, result);
 			return result;
 		}
@@ -1494,7 +1488,7 @@ public class Cache {
 		return data;
 	}
 
-	protected void valueSetFromBytesSet(Set<byte[]> data, Set<Object> result) {
+	protected void valueSetFromBytesSet(Collection<byte[]> data, Collection<Object> result) {
 		for (byte[] valueBytes : data) {
 			result.add(valueFromBytes(valueBytes));
 		}
