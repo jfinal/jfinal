@@ -186,8 +186,8 @@
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
-			<version>3.6.3</version>
-			<scope>provided</scope>
+			<version>7.5.2</version>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>de.ruedigermoeller</groupId>
