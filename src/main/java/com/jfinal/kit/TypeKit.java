@@ -174,10 +174,11 @@ public class TypeKit {
 				return TimeKit.toDate((LocalTime)d);
 			}
 			if (d instanceof OffsetDateTime) {
-				return TimeKit.toDate(((OffsetDateTime)d).toLocalDateTime());
+				// OffsetDateTime 表示确定的时间点，不能先调用 toLocalDateTime() 丢弃 offset。
+				return java.util.Date.from(((OffsetDateTime) d).toInstant());
 			}
 			if (d instanceof ZonedDateTime) {
-				return TimeKit.toDate(((ZonedDateTime)d).toLocalDateTime());
+				return java.util.Date.from(((ZonedDateTime) d).toInstant());
 			}
 		}
 
