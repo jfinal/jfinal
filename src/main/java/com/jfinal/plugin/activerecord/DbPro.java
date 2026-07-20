@@ -253,7 +253,7 @@ public class DbPro {
                 return TimeKit.toDate((LocalDate)d);
             }
             // if (d instanceof LocalTime) {
-            // 	return TimeKit.toDate((LocalTime)d);
+            //     return TimeKit.toDate((LocalTime) d);
             // }
         }
 
@@ -274,7 +274,7 @@ public class DbPro {
             return ((LocalDate)d).atStartOfDay();
         }
         // if (d instanceof LocalTime) {
-        // 	return LocalDateTime.of(LocalDate.now(), (LocalTime)d);
+        //     return LocalDateTime.of(LocalDate.now(), (LocalTime) d);
         // }
         if (d instanceof java.util.Date) {
             return TimeKit.toLocalDateTime((java.util.Date)d);
