@@ -242,9 +242,8 @@ public class TimeKit {
      * java.util.Date --> java.time.LocalDateTime
      */
     public static LocalDateTime toLocalDateTime(Date date) {
-        // java.sql.Date 不支持 toInstant()，需要先转换成 java.util.Date
         if (date instanceof java.sql.Date) {
-            date = new Date(date.getTime());
+            return ((java.sql.Date) date).toLocalDate().atStartOfDay();
         } else if (date instanceof java.sql.Time) {
             throw new IllegalArgumentException("Cannot convert java.sql.Time to LocalDateTime without a date.");
         }
@@ -258,9 +257,8 @@ public class TimeKit {
      * java.util.Date --> java.time.LocalDate
      */
     public static LocalDate toLocalDate(Date date) {
-        // java.sql.Date 不支持 toInstant()，需要先转换成 java.util.Date
         if (date instanceof java.sql.Date) {
-            date = new Date(date.getTime());
+            return ((java.sql.Date) date).toLocalDate();
         } else if (date instanceof java.sql.Time) {
             throw new IllegalArgumentException("Cannot convert java.sql.Time to LocalDate without a date.");
         }
@@ -277,11 +275,8 @@ public class TimeKit {
     public static LocalTime toLocalTime(Date date) {
         if (date instanceof java.sql.Time) {
             return ((java.sql.Time) date).toLocalTime();
-        }
-
-        // java.sql.Date 不支持 toInstant()，需要先转换成 java.util.Date
-        if (date instanceof java.sql.Date) {
-            date = new Date(date.getTime());
+        } else if (date instanceof java.sql.Date) {
+            throw new IllegalArgumentException("Cannot convert java.sql.Date to LocalTime without a time.");
         }
 
         Instant instant = date.toInstant();
@@ -320,7 +315,7 @@ public class TimeKit {
     // }
 
     /**
-     * java.time.LocalTime --> java.util.Date
+     * java.time.LocalDate + java.time.LocalTime --> java.util.Date
      */
     public static Date toDate(LocalDate localDate, LocalTime localTime) {
         LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
