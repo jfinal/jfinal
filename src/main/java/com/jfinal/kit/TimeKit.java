@@ -64,18 +64,22 @@ public class TimeKit {
      */
     private static DateTimeFormatter createDateTimeFormatter(String pattern) {
         return new DateTimeFormatterBuilder()
-                .parseLenient()                                         // 作用于后续追加的解析规则，允许数字字段使用较少位数
+                // 作用于后续追加的解析规则，允许数字字段使用较少位数
+                .parseLenient()
                 .appendPattern(pattern)
-                .parseDefaulting(ChronoField.ERA, IsoEra.CE.getValue()) // yyyy 对应 YEAR_OF_ERA，严格模式下需要默认补充公元纪元
+                // yyyy 对应 YEAR_OF_ERA，严格模式下需要默认补充公元纪元
+                .parseDefaulting(ChronoField.ERA, IsoEra.CE.getValue())
                 .toFormatter()
-                .withResolverStyle(ResolverStyle.STRICT);               // 拒绝越界值和不存在的日期，如 "2020-2-30"
+                // 拒绝越界值和不存在的日期，如 "2020-2-30"
+                .withResolverStyle(ResolverStyle.STRICT);
     }
 
     public static SimpleDateFormat getSimpleDateFormat(String pattern) {
         SimpleDateFormat ret = TL.get().get(pattern);
         if (ret == null) {
             ret = new SimpleDateFormat(pattern);
-            ret.setLenient(false);                                      // 允许数字字段不补零，但拒绝越界值和不存在的日期
+            // 允许数字字段不补零，但拒绝越界值和不存在的日期
+            ret.setLenient(false);
             TL.get().put(pattern, ret);
         }
         return ret;
@@ -154,10 +158,49 @@ public class TimeKit {
     }
 
     /**
+     * 自动探测 pattern 将 String 转换成 Date
+     */
+    public static Date parse(String dateString) {
+        String pattern = detectDatePattern(dateString);
+        return parse(dateString, pattern);
+    }
+
+    private static String detectDatePattern(String dateString) {
+        int blankIndex = dateString.indexOf(' ');
+        if (blankIndex == -1) {
+            return "yyyy-MM-dd";
+        }
+        int firstColonIndex = dateString.indexOf(':', blankIndex + 1);
+        if (firstColonIndex == -1) {
+            return "yyyy-MM-dd HH";
+        }
+        int secondColonIndex = dateString.indexOf(':', firstColonIndex + 1);
+        if (secondColonIndex == -1) {
+            return "yyyy-MM-dd HH:mm";
+        }
+        int dotIndex = dateString.indexOf('.', secondColonIndex + 1);
+        if (dotIndex == -1) {
+            return "yyyy-MM-dd HH:mm:ss";
+        }
+        if (dateString.length() - dotIndex - 1 != 3) {
+            throw new IllegalArgumentException("Millisecond precision must contain exactly 3 digits: \"" + dateString + "\"");
+        }
+        return "yyyy-MM-dd HH:mm:ss.SSS";
+    }
+
+    /**
      * 按指定 pattern 将 String 转换成 LocalDateTime
      */
     public static LocalDateTime parseLocalDateTime(String localDateTimeString, String pattern) {
         return LocalDateTime.parse(localDateTimeString, getDateTimeFormatter(pattern));
+    }
+
+    /**
+     * 自动探测 pattern 将 String 转换成 LocalDateTime
+     */
+    public static LocalDateTime parseLocalDateTime(String localDateTimeString) {
+        String pattern = detectDatePattern(localDateTimeString);
+        return parseLocalDateTime(localDateTimeString, pattern);
     }
 
     /**
@@ -310,8 +353,3 @@ public class TimeKit {
         return Long.parseLong(TimeKit.format(localDateTime, pattern));
     }
 }
-
-
-
-
-
