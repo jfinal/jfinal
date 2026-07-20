@@ -352,4 +352,11 @@ public class TimeKit {
         }
         return Long.parseLong(TimeKit.format(localDateTime, pattern));
     }
+
+    /**
+     * 当前时间转换为 long 值。例如 nowToLong(7) 转换为 20260123112233123
+     */
+    public static long nowToLong(int type) {
+        return toLong(LocalDateTime.now(), type);
+    }
 }
