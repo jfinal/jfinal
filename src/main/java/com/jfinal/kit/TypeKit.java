@@ -18,11 +18,8 @@ package com.jfinal.kit;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
+import java.sql.Timestamp;
+import java.time.*;
 import java.time.temporal.Temporal;
 
 /**
@@ -165,20 +162,25 @@ public class TypeKit {
 
 		if (d instanceof Temporal) {
 			if (d instanceof LocalDateTime) {
-				return TimeKit.toDate((LocalDateTime)d);
+				// 按 JDBC 本地日期时间语义保留字段与纳秒，不先转换成 Instant。
+				return Timestamp.valueOf((LocalDateTime) d);
 			}
 			if (d instanceof LocalDate) {
-				return TimeKit.toDate((LocalDate)d);
+				// java.sql.Date 是 java.util.Date 的子类，同时保留 SQL DATE 语义。
+				return java.sql.Date.valueOf((LocalDate) d);
 			}
-			if (d instanceof LocalTime) {
-				return TimeKit.toDate((LocalTime)d);
+			if (d instanceof Instant) {
+				return Timestamp.from((Instant) d);
 			}
 			if (d instanceof OffsetDateTime) {
 				// OffsetDateTime 表示确定的时间点，不能先调用 toLocalDateTime() 丢弃 offset。
-				return java.util.Date.from(((OffsetDateTime) d).toInstant());
+				return Timestamp.from(((OffsetDateTime) d).toInstant());
 			}
 			if (d instanceof ZonedDateTime) {
-				return java.util.Date.from(((ZonedDateTime) d).toInstant());
+				return Timestamp.from(((ZonedDateTime) d).toInstant());
+			}
+			if (d instanceof LocalTime || d instanceof OffsetTime) {
+				throw new IllegalArgumentException("Cannot convert " + d.getClass().getSimpleName() + " to java.util.Date without a date.");
 			}
 		}
 
