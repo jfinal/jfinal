@@ -36,12 +36,16 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * TimeKit 用于简化 JDK 8 新增的时间 API
  *
+ * <pre>
  * 新旧日期转换通过桥梁 Instant 进行，转成 LocalDate、LocalTime 需要先转成 LocalDateTime：
  *   新转旧：LocalDateTime.atZone(ZoneId).toInstant() -> Instant -> Date.from(Instant)
  *   旧转新：Date.toInstant() -> Instant -> LocalDateTime.ofInstant(Instant, ZoneId)
  *
  * getDateTimeFormatter 返回的格式化器在解析数字字段时不强制匹配 pattern 的位数，例如
  * pattern 为 "yyyy-MM-dd HH:mm:ss" 时可以解析 "2026-1-2 3:4:5"，但会拒绝不存在的日期
+ *
+ * 备忘：不要提供 java.util.Date toDate(java.time.LocalTime)
+ * </pre>
  */
 public class TimeKit {
 
@@ -302,17 +306,6 @@ public class TimeKit {
         Instant instant = localDate.atStartOfDay(zone).toInstant();
         return Date.from(instant);
     }
-
-    // /**
-    //  * java.time.LocalTime --> java.util.Date
-    //  */
-    // public static Date toDate(LocalTime localTime) {
-    //     LocalDate localDate = LocalDate.now();
-    //     LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
-    //     ZoneId zone = ZoneId.systemDefault();
-    //     Instant instant = localDateTime.atZone(zone).toInstant();
-    //     return Date.from(instant);
-    // }
 
     /**
      * java.time.LocalDate + java.time.LocalTime --> java.util.Date
