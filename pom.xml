@@ -96,6 +96,20 @@
             <artifactId>jetty-jsp</artifactId>
             <version>9.2.26.v20180806</version>
             <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.glassfish</groupId>
+                    <artifactId>javax.el</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- 固定 javax.el 版本，避免解析动态版本范围 [3.0.0,) -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.el</artifactId>
+            <version>3.0.0</version>
+            <optional>true</optional>
         </dependency>
 
         <!-- cos 文件上传 -->
