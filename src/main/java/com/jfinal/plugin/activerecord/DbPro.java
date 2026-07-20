@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.List;
@@ -253,9 +252,9 @@ public class DbPro {
 			if (d instanceof LocalDate) {
 				return TimeKit.toDate((LocalDate)d);
 			}
-			if (d instanceof LocalTime) {
-				return TimeKit.toDate((LocalTime)d);
-			}
+			// if (d instanceof LocalTime) {
+			// 	return TimeKit.toDate((LocalTime)d);
+			// }
 		}
 
 		return (java.util.Date)d;
@@ -274,9 +273,9 @@ public class DbPro {
 		if (d instanceof LocalDate) {
 			return ((LocalDate)d).atStartOfDay();
 		}
-		if (d instanceof LocalTime) {
-			return LocalDateTime.of(LocalDate.now(), (LocalTime)d);
-		}
+		// if (d instanceof LocalTime) {
+		// 	return LocalDateTime.of(LocalDate.now(), (LocalTime)d);
+		// }
 		if (d instanceof java.util.Date) {
 			return TimeKit.toLocalDateTime((java.util.Date)d);
 		}
