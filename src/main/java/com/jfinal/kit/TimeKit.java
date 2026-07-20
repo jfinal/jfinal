@@ -16,7 +16,7 @@
 
 package com.jfinal.kit;
 
-import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -142,14 +142,15 @@ public class TimeKit {
     }
 
 	/**
-	 * 按指定 pattern 将 String 转换成 Date
+	 * 按指定 pattern 将整个 String 转换成 Date
 	 */
 	public static Date parse(String dateString, String pattern) {
-		try {
-			return getSimpleDateFormat(pattern).parse(dateString);
-		} catch (ParseException e) {
-			throw new RuntimeException(e);
+		ParsePosition position = new ParsePosition(0);
+		Date ret = getSimpleDateFormat(pattern).parse(dateString, position);
+		if (ret == null || position.getIndex() != dateString.length()) {
+			throw new IllegalArgumentException("Invalid date string \"" + dateString + "\" for pattern \"" + pattern + "\".");
 		}
+		return ret;
 	}
 
 	/**
@@ -201,6 +202,8 @@ public class TimeKit {
 		// java.sql.Date 不支持 toInstant()，需要先转换成 java.util.Date
 		if (date instanceof java.sql.Date) {
 			date = new Date(date.getTime());
+		} else if (date instanceof java.sql.Time) {
+			throw new IllegalArgumentException("Cannot convert java.sql.Time to LocalDateTime without a date.");
 		}
 
 		Instant instant = date.toInstant();
@@ -215,6 +218,8 @@ public class TimeKit {
 		// java.sql.Date 不支持 toInstant()，需要先转换成 java.util.Date
 		if (date instanceof java.sql.Date) {
 			date = new Date(date.getTime());
+		} else if (date instanceof java.sql.Time) {
+			throw new IllegalArgumentException("Cannot convert java.sql.Time to LocalDate without a date.");
 		}
 
 		Instant instant = date.toInstant();
@@ -227,6 +232,10 @@ public class TimeKit {
 	 * java.util.Date --> java.time.LocalTime
 	 */
 	public static LocalTime toLocalTime(Date date) {
+		if (date instanceof java.sql.Time) {
+			return ((java.sql.Time) date).toLocalTime();
+		}
+
 		// java.sql.Date 不支持 toInstant()，需要先转换成 java.util.Date
 		if (date instanceof java.sql.Date) {
 			date = new Date(date.getTime());
@@ -252,7 +261,7 @@ public class TimeKit {
 	 */
 	public static Date toDate(LocalDate localDate) {
 		ZoneId zone = ZoneId.systemDefault();
-		Instant instant = localDate.atStartOfDay().atZone(zone).toInstant();
+		Instant instant = localDate.atStartOfDay(zone).toInstant();
 		return Date.from(instant);
 	}
 
