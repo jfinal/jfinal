@@ -73,6 +73,8 @@ public class TimeKit {
                 .appendPattern(pattern)
                 // yyyy 对应 YEAR_OF_ERA，严格模式下需要默认补充公元纪元
                 .parseDefaulting(ChronoField.ERA, IsoEra.CE.getValue())
+                // 仅有日期时默认为当天零点，分、秒和纳秒由解析器自动补零
+                .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
                 .toFormatter()
                 // 拒绝越界值和不存在的日期，如 "2020-2-30"
                 .withResolverStyle(ResolverStyle.STRICT);
