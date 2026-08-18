@@ -36,7 +36,7 @@ public class TypeMapping {
         // Dialect 默认对 TIMESTAMP 使用 getTimestamp() 读取；生成类型为 java.util.Date，运行时值仍为 Timestamp
         put("java.sql.Timestamp", "java.util.Date");
 
-        /**
+        /*
          * 部分同学反馈使用原始的 Date 更常用，故默认使用原始 Date
          * 需要调整的通过可通过 Generator.addTypeMapping(...) 来覆盖默认映射
          *
