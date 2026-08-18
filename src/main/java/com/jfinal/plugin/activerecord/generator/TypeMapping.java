@@ -27,88 +27,88 @@ import java.util.Map;
  * 将时间型类型对应到 java.util.Date（java.sql.Time 除外）
  */
 public class TypeMapping {
-	
-	@SuppressWarnings("serial")
-	protected Map<String, String> map = new HashMap<String, String>(32) {{
-		// 普通 java.util.Date 表示毫秒精度的时间点，保持原类型
-		put("java.util.Date", "java.util.Date");
 
-		// Dialect 默认对 TIMESTAMP 使用 getTimestamp() 读取；生成类型为 java.util.Date，运行时值仍为 Timestamp
-		put("java.sql.Timestamp", "java.util.Date");
+    @SuppressWarnings("serial")
+    protected Map<String, String> map = new HashMap<String, String>(32) {{
+        // 普通 java.util.Date 表示毫秒精度的时间点，保持原类型
+        put("java.util.Date", "java.util.Date");
 
-		/**
-		 * 部分同学反馈使用原始的 Date 更常用，故默认使用原始 Date
-		 * 需要调整的通过可通过 Generator.addTypeMapping(...) 来覆盖默认映射
-		 *
-		 * 也可以通过 removeMapping(...) 来清除默认映射，让 JDBC 自动处理映射关系
-		 *
-		 * 注意：mysql 8 版本会将 datetime 字段类型映射为 LocalDateTime
-		 */
-		put("java.time.LocalDateTime", "java.util.Date");
+        // Dialect 默认对 TIMESTAMP 使用 getTimestamp() 读取；生成类型为 java.util.Date，运行时值仍为 Timestamp
+        put("java.sql.Timestamp", "java.util.Date");
 
-		// --------------------------------------------------------------------
-		// --------------------------------------------------------------------
+        /**
+         * 部分同学反馈使用原始的 Date 更常用，故默认使用原始 Date
+         * 需要调整的通过可通过 Generator.addTypeMapping(...) 来覆盖默认映射
+         *
+         * 也可以通过 removeMapping(...) 来清除默认映射，让 JDBC 自动处理映射关系
+         *
+         * 注意：mysql 8 版本会将 datetime 字段类型映射为 LocalDateTime
+         */
+        put("java.time.LocalDateTime", "java.util.Date");
 
-		put("java.sql.Date", "java.sql.Date");
-		put("java.sql.Time", "java.sql.Time");
+        // --------------------------------------------------------------------
+        // --------------------------------------------------------------------
 
-		put("java.time.LocalDate", "java.time.LocalDate");
-		put("java.time.LocalTime", "java.time.LocalTime");
+        put("java.sql.Date", "java.sql.Date");
+        put("java.sql.Time", "java.sql.Time");
 
-		// ---------
+        put("java.time.LocalDate", "java.time.LocalDate");
+        put("java.time.LocalTime", "java.time.LocalTime");
 
-		// binary, varbinary, tinyblob, blob, mediumblob, longblob
-		// qjd project: print_info.content varbinary(61800);
-		put("[B", "byte[]");
+        // ---------
 
-		// varchar, char, enum, set, text, tinytext, mediumtext, longtext
-		put("java.lang.String", "java.lang.String");
-		
-		// int, integer, tinyint, smallint, mediumint
-		put("java.lang.Integer", "java.lang.Integer");
-		
-		// bigint
-		put("java.lang.Long", "java.lang.Long");
-		
-		// real, double
-		put("java.lang.Double", "java.lang.Double");
-		
-		// float
-		put("java.lang.Float", "java.lang.Float");
-		
-		// bit
-		put("java.lang.Boolean", "java.lang.Boolean");
-		
-		// decimal, numeric
-		put("java.math.BigDecimal", "java.math.BigDecimal");
-		
-		// unsigned bigint
-		put("java.math.BigInteger", "java.math.BigInteger");
-		
-		// short
-		put("java.lang.Short", "java.lang.Short");
-		
-		// byte
-		put("java.lang.Byte", "java.lang.Byte");
-	}};
-	
-	public void addMapping(Class<?> from, Class<?> to) {
-		map.put(from.getName(), to.getName());
-	}
-	
-	public void addMapping(String from, String to) {
-		map.put(from, to);
-	}
-	
-	public void removeMapping(Class<?> from) {
-		map.remove(from.getName());
-	}
-	
-	public void removeMapping(String from) {
-		map.remove(from);
-	}
-	
-	public String getType(String typeString) {
-		return map.get(typeString);
-	}
+        // binary, varbinary, tinyblob, blob, mediumblob, longblob
+        // qjd project: print_info.content varbinary(61800);
+        put("[B", "byte[]");
+
+        // varchar, char, enum, set, text, tinytext, mediumtext, longtext
+        put("java.lang.String", "java.lang.String");
+
+        // int, integer, tinyint, smallint, mediumint
+        put("java.lang.Integer", "java.lang.Integer");
+
+        // bigint
+        put("java.lang.Long", "java.lang.Long");
+
+        // real, double
+        put("java.lang.Double", "java.lang.Double");
+
+        // float
+        put("java.lang.Float", "java.lang.Float");
+
+        // bit
+        put("java.lang.Boolean", "java.lang.Boolean");
+
+        // decimal, numeric
+        put("java.math.BigDecimal", "java.math.BigDecimal");
+
+        // unsigned bigint
+        put("java.math.BigInteger", "java.math.BigInteger");
+
+        // short
+        put("java.lang.Short", "java.lang.Short");
+
+        // byte
+        put("java.lang.Byte", "java.lang.Byte");
+    }};
+
+    public void addMapping(Class<?> from, Class<?> to) {
+        map.put(from.getName(), to.getName());
+    }
+
+    public void addMapping(String from, String to) {
+        map.put(from, to);
+    }
+
+    public void removeMapping(Class<?> from) {
+        map.remove(from.getName());
+    }
+
+    public void removeMapping(String from) {
+        map.remove(from);
+    }
+
+    public String getType(String typeString) {
+        return map.get(typeString);
+    }
 }
