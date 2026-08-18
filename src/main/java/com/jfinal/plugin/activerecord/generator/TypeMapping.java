@@ -28,7 +28,6 @@ import java.util.Map;
  */
 public class TypeMapping {
 
-    @SuppressWarnings("serial")
     protected Map<String, String> map = new HashMap<String, String>(32) {{
         // 普通 java.util.Date 表示毫秒精度的时间点，保持原类型
         put("java.util.Date", "java.util.Date");
