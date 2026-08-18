@@ -33,7 +33,7 @@ public class TypeMapping {
         // 普通 java.util.Date 表示毫秒精度的时间点，保持原类型
         put("java.util.Date", "java.util.Date");
 
-        // Dialect 默认对 TIMESTAMP 使用 getTimestamp() 读取；生成类型为 java.util.Date，运行时值仍为 Timestamp
+        // Timestamp 映射到父类 java.util.Date，运行时值仍为 Timestamp
         put("java.sql.Timestamp", "java.util.Date");
 
         /*
