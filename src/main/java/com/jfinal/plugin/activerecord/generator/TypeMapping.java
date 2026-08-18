@@ -30,27 +30,37 @@ public class TypeMapping {
 	
 	@SuppressWarnings("serial")
 	protected Map<String, String> map = new HashMap<String, String>(32) {{
-		// java.util.Data can not be returned
-		// java.sql.Date, java.sql.Time, java.sql.Timestamp all extends java.util.Data so getDate can return the three types data
+		// 普通 java.util.Date 表示毫秒精度的时间点，保持原类型
 		put("java.util.Date", "java.util.Date");
-		
-		// date, year
-		put("java.sql.Date", "java.util.Date");
-		
-		// time
-		// put("java.sql.Time", "java.util.Date");
-		// 生成器需要生成 java.sql.Time 类型的 getter/setter 方法，以便 getBean 能正常工作
-		put("java.sql.Time", "java.sql.Time");
-		
-		// timestamp, datetime
+
+		// Dialect 默认对 TIMESTAMP 使用 getTimestamp() 读取；生成类型为 java.util.Date，运行时值仍为 Timestamp
 		put("java.sql.Timestamp", "java.util.Date");
-		
+
+		/**
+		 * 部分同学反馈使用原始的 Date 更常用，故默认使用原始 Date
+		 * 需要调整的通过可通过 Generator.addTypeMapping(...) 来覆盖默认映射
+		 *
+		 * 也可以通过 removeMapping(...) 来清除默认映射，让 JDBC 自动处理映射关系
+		 *
+		 * 注意：mysql 8 版本会将 datetime 字段类型映射为 LocalDateTime
+		 */
+		put("java.time.LocalDateTime", "java.util.Date");
+
+		// --------------------------------------------------------------------
+		// --------------------------------------------------------------------
+
+		put("java.sql.Date", "java.sql.Date");
+		put("java.sql.Time", "java.sql.Time");
+
+		put("java.time.LocalDate", "java.time.LocalDate");
+		put("java.time.LocalTime", "java.time.LocalTime");
+
+		// ---------
+
 		// binary, varbinary, tinyblob, blob, mediumblob, longblob
 		// qjd project: print_info.content varbinary(61800);
 		put("[B", "byte[]");
-		
-		// ---------
-		
+
 		// varchar, char, enum, set, text, tinytext, mediumtext, longtext
 		put("java.lang.String", "java.lang.String");
 		
@@ -80,23 +90,6 @@ public class TypeMapping {
 		
 		// byte
 		put("java.lang.Byte", "java.lang.Byte");
-		
-		// 新增 java 8 的三种时间类型
-		// put("java.time.LocalDateTime", "java.time.LocalDateTime");
-		// put("java.time.LocalDate", "java.time.LocalDate");
-		// put("java.time.LocalTime", "java.time.LocalTime");
-
-		/**
-		 * 部分同学反馈使用原始的 Date 更常用，故默认使用原始 Date
-		 * 需要调整的通过可通过 Generator.addTypeMapping(...) 来覆盖默认映射
-		 * 
-		 * 也可以通过 removeMapping(...) 来清除默认映射，让 JDBC 自动处理映射关系
-		 * 
-		 * 注意：mysql 8 版本会将 datetime 字段类型映射为 LocalDateTime
-		 */
-		put("java.time.LocalDateTime", "java.util.Date");
-		put("java.time.LocalDate", "java.util.Date");
-		put("java.time.LocalTime", "java.sql.Time");
 	}};
 	
 	public void addMapping(Class<?> from, Class<?> to) {
