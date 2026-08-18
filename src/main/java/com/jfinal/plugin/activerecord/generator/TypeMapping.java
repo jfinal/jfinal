@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * TypeMapping 建立起 ResultSetMetaData.getColumnClassName(i)到 java类型的映射关系
  * 特别注意时间型类型映射为了 java.util.Date（java.sql.Time 除外），可通过继承扩展该类来调整映射满足特殊需求
- * 
+ *
  * 与 com.jfinal.plugin.activerecord.JavaType.java 类型映射不同之处在于
  * 将时间型类型对应到 java.util.Date（java.sql.Time 除外）
  */
