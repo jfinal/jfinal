@@ -4,7 +4,7 @@
 
     <groupId>com.jfinal</groupId>
     <artifactId>jfinal</artifactId>
-    <version>5.2.8</version>
+    <version>5.3.0</version>
     <packaging>jar</packaging>
 
     <name>JFinal</name>
@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.7</version>
+            <version>2.0.18</version>
             <optional>true</optional>
         </dependency>
 
@@ -152,15 +152,15 @@
         <dependency>
             <groupId>com.mchange</groupId>
             <artifactId>c3p0</artifactId>
-            <version>0.9.5.5</version>
+            <version>0.14.1</version>
             <optional>true</optional>
         </dependency>
 
-        <!-- fastjson json 转换 -->
+        <!-- fastjson2 json 转换 -->
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.84</version>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>2.0.64</version>
             <optional>true</optional>
         </dependency>
 
@@ -192,7 +192,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.20.0</version>
+            <version>2.26.1</version>
             <optional>true</optional>
         </dependency>
 
@@ -261,7 +261,7 @@
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>3.30.2-GA</version>
+            <version>3.32.0-GA</version>
             <optional>true</optional>
         </dependency>
 
