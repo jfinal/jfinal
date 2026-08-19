@@ -29,9 +29,6 @@ import java.util.Map;
 public class TypeMapping {
 
     protected Map<String, String> map = new HashMap<String, String>(32) {{
-        // 普通 java.util.Date 表示毫秒精度的时间点，保持原类型
-        put("java.util.Date", "java.util.Date");
-
         // Timestamp 映射到父类 java.util.Date，运行时值仍为 Timestamp
         put("java.sql.Timestamp", "java.util.Date");
 
@@ -45,14 +42,17 @@ public class TypeMapping {
          */
         put("java.time.LocalDateTime", "java.util.Date");
 
-        // --------------------------------------------------------------------
-        // --------------------------------------------------------------------
+        put("java.sql.Date", "java.time.LocalDate");
+        put("java.sql.Time", "java.time.LocalTime");
 
-        put("java.sql.Date", "java.sql.Date");
-        put("java.sql.Time", "java.sql.Time");
+        // --------------------------------------------------------------------
+        // --------------------------------------------------------------------
 
         put("java.time.LocalDate", "java.time.LocalDate");
         put("java.time.LocalTime", "java.time.LocalTime");
+
+        // 普通 java.util.Date 表示毫秒精度的时间点，保持原类型
+        put("java.util.Date", "java.util.Date");
 
         // ---------
 
