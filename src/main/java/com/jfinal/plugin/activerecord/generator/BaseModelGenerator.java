@@ -61,6 +61,8 @@ public class BaseModelGenerator {
 		// 新增两种可自动转换类型的 getter 方法
 		put("java.util.Date", "getDate");
 		put("java.time.LocalDateTime", "getLocalDateTime");
+		put("java.time.LocalDate", "getLocalDate");
+		put("java.time.LocalTime", "getLocalTime");
 
 		// 新增 TypeKit 转换类之后，支持了更多的类型
 		put("java.lang.Boolean", "getBoolean");
