@@ -17,7 +17,9 @@
 package com.jfinal.plugin.activerecord;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -98,6 +100,10 @@ public interface IRow<M> {
 
     public LocalDateTime getLocalDateTime(String column);
 
+    public LocalDate getLocalDate(String column);
+
+    public LocalTime getLocalTime(String column);
+
     /**
      * Get column of mysql type: time
      */
@@ -148,7 +154,7 @@ public interface IRow<M> {
      */
     public String toJson();
 
-    // isEmpty() 方法导致 Model、Record 在使用 fastjson 转化 json 时多出一个 empty 字段，改为 size() 方法
+    // isEmpty() 方法导致 Model、Record 在使用 fastjson2 转化 json 时多出一个 empty 字段，改为 size() 方法
     public int size();
 }
 
