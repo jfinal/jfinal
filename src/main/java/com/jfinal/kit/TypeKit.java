@@ -242,6 +242,75 @@ public class TypeKit {
 
 		return (LocalDateTime)ldt;
 	}
+
+	public static LocalDate toLocalDate(Object ld) {
+		if (ld instanceof LocalDate) {
+			return (LocalDate) ld;
+		} else if (ld == null) {
+			return null;
+		}
+
+		if (ld instanceof java.sql.Date) {
+			return ((java.sql.Date) ld).toLocalDate();
+		}
+		if (ld instanceof Timestamp) {
+			return ((Timestamp) ld).toLocalDateTime().toLocalDate();
+		}
+		if (ld instanceof java.sql.Time) {
+			throw new IllegalArgumentException("Cannot convert java.sql.Time to LocalDate without a date.");
+		}
+		if (ld instanceof java.util.Date) {
+			return TimeKit.toLocalDate((java.util.Date) ld);
+		}
+		if (ld instanceof LocalDateTime) {
+			return ((LocalDateTime) ld).toLocalDate();
+		}
+		if (ld instanceof LocalTime) {
+			throw new IllegalArgumentException("Cannot convert LocalTime to LocalDate without a date.");
+		}
+		if (ld instanceof String) {
+			return TimeKit.parseLocalDateTime((String) ld).toLocalDate();
+		}
+
+		throw new IllegalArgumentException("Cannot convert type " + ld.getClass().getName() + " to LocalDate.");
+	}
+
+	public static LocalTime toLocalTime(Object lt) {
+		if (lt instanceof LocalTime) {
+			return (LocalTime) lt;
+		} else if (lt == null) {
+			return null;
+		}
+
+		if (lt instanceof java.sql.Time) {
+			return ((java.sql.Time) lt).toLocalTime();
+		}
+		if (lt instanceof Timestamp) {
+			return ((Timestamp) lt).toLocalDateTime().toLocalTime();
+		}
+		if (lt instanceof java.sql.Date) {
+			throw new IllegalArgumentException("Cannot convert java.sql.Date to LocalTime without a time.");
+		}
+		if (lt instanceof java.util.Date) {
+			return TimeKit.toLocalTime((java.util.Date) lt);
+		}
+		if (lt instanceof LocalDateTime) {
+			return ((LocalDateTime) lt).toLocalTime();
+		}
+		if (lt instanceof LocalDate) {
+			throw new IllegalArgumentException("Cannot convert LocalDate to LocalTime without a time.");
+		}
+		if (lt instanceof OffsetTime || lt instanceof OffsetDateTime) {
+			throw new IllegalArgumentException("Cannot convert " + lt.getClass().getSimpleName() + " to LocalTime without discarding its offset.");
+		}
+		if (lt instanceof String) {
+			String s = (String) lt;
+			String pattern = s.length() <= "HH:mm:ss".length() ? "HH:mm:ss" : "HH:mm:ss.SSS";
+			return TimeKit.parseLocalTime(s, pattern);
+		}
+
+		throw new IllegalArgumentException("Cannot convert type " + lt.getClass().getName() + " to LocalTime.");
+	}
 }
 
 
