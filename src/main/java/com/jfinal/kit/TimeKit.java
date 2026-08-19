@@ -173,26 +173,52 @@ public class TimeKit {
     }
 
     private static String detectDatePattern(String dateString) {
-        int blankIndex = dateString.indexOf(' ');
-        if (blankIndex == -1) {
+        int space = dateString.indexOf(' ');
+        if (space == -1) {
             return "yyyy-MM-dd";
         }
-        int firstColonIndex = dateString.indexOf(':', blankIndex + 1);
-        if (firstColonIndex == -1) {
+        int firstColon = dateString.indexOf(':', space + 1);
+        if (firstColon == -1) {
             return "yyyy-MM-dd HH";
         }
-        int secondColonIndex = dateString.indexOf(':', firstColonIndex + 1);
-        if (secondColonIndex == -1) {
+        int secondColon = dateString.indexOf(':', firstColon + 1);
+        if (secondColon == -1) {
             return "yyyy-MM-dd HH:mm";
         }
-        int dotIndex = dateString.indexOf('.', secondColonIndex + 1);
-        if (dotIndex == -1) {
+        int dot = dateString.indexOf('.', secondColon + 1);
+        if (dot == -1) {
             return "yyyy-MM-dd HH:mm:ss";
         }
-        if (dateString.length() - dotIndex - 1 != 3) {
+        if (dateString.length() - dot - 1 != 3) {
             throw new IllegalArgumentException("Millisecond precision must contain exactly 3 digits: \"" + dateString + "\"");
         }
         return "yyyy-MM-dd HH:mm:ss.SSS";
+    }
+
+    private static String detectTimePattern(String timeString) {
+        int firstColon = timeString.indexOf(':');
+        if (firstColon == -1) {
+            return "HH";
+        }
+        int secondColon = timeString.indexOf(':', firstColon + 1);
+        if (secondColon == -1) {
+            return "HH:mm";
+        }
+        int dot = timeString.indexOf('.', secondColon + 1);
+        if (dot == -1) {
+            return "HH:mm:ss";
+        }
+
+        int fractionLength = timeString.length() - dot - 1;
+        if (fractionLength < 1 || fractionLength > 9) {
+            throw new IllegalArgumentException("Fractional second precision must contain 1 to 9 digits: \"" + timeString + "\"");
+        }
+
+        StringBuilder pattern = new StringBuilder("HH:mm:ss.");
+        for (int i = 0; i < fractionLength; i++) {
+            pattern.append('S');
+        }
+        return pattern.toString();
     }
 
     /**
@@ -222,6 +248,14 @@ public class TimeKit {
      */
     public static LocalTime parseLocalTime(String localTimeString, String pattern) {
         return LocalTime.parse(localTimeString, getDateTimeFormatter(pattern));
+    }
+
+    /**
+     * 自动探测 pattern 将 String 转换成 LocalTime，支持 1 至 9 位小数秒。
+     */
+    public static LocalTime parseLocalTime(String localTimeString) {
+        String pattern = detectTimePattern(localTimeString);
+        return parseLocalTime(localTimeString, pattern);
     }
 
     /**
