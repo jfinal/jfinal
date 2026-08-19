@@ -304,16 +304,11 @@ public class TypeKit {
 			throw new IllegalArgumentException("Cannot convert " + lt.getClass().getSimpleName() + " to LocalTime without discarding its offset.");
 		}
 		if (lt instanceof String) {
-			String s = (String) lt;
-			String pattern = s.length() <= "HH:mm:ss".length() ? "HH:mm:ss" : "HH:mm:ss.SSS";
-			return TimeKit.parseLocalTime(s, pattern);
+			return TimeKit.parseLocalTime((String) lt);
 		}
 
 		throw new IllegalArgumentException("Cannot convert type " + lt.getClass().getName() + " to LocalTime.");
 	}
 }
-
-
-
 
 
