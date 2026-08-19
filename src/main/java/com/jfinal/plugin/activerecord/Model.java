@@ -23,7 +23,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -409,6 +411,14 @@ public abstract class Model<M extends Model> implements IRow<M>, Serializable {
 
 	public LocalDateTime getLocalDateTime(String attr) {
 		return TypeKit.toLocalDateTime(attrs.get(attr));
+	}
+
+	public LocalDate getLocalDate(String attr) {
+		return TypeKit.toLocalDate(attrs.get(attr));
+	}
+
+	public LocalTime getLocalTime(String attr) {
+		return TypeKit.toLocalTime(attrs.get(attr));
 	}
 
 	/**
