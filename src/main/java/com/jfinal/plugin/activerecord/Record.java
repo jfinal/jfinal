@@ -19,7 +19,9 @@ package com.jfinal.plugin.activerecord;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -343,6 +345,14 @@ public class Record implements IRow<Record>, Serializable {
 
 	public LocalDateTime getLocalDateTime(String column) {
 		return TypeKit.toLocalDateTime(getColumns().get(column));
+	}
+
+	public LocalDate getLocalDate(String column) {
+		return TypeKit.toLocalDate(getColumns().get(column));
+	}
+
+	public LocalTime getLocalTime(String column) {
+		return TypeKit.toLocalTime(getColumns().get(column));
 	}
 
 	/**
