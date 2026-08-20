@@ -147,6 +147,11 @@ public class MultipartRequest extends HttpServletRequestWrapper {
 			if (UploadConfig.whitelist.contains(extName)) {
 				return true;
 			}
+
+			// 白名单关闭时只限制 jsp、jspx。白名单默认开启
+			if (!UploadConfig.whitelistEnabled) {
+				return !"jsp".equalsIgnoreCase(extName) && !"jspx".equalsIgnoreCase(extName);
+			}
 		}
 
 		try {

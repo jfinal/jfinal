@@ -33,6 +33,8 @@ public class UploadConfig {
 	static long maxPostSize;
 	static String encoding;
 
+	static boolean whitelistEnabled = true;
+
 	// 允许上传的文件扩展名白名单
 	static Set<String> whitelist = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 
@@ -84,6 +86,14 @@ public class UploadConfig {
 	 */
 	public static void clearWhitelist() {
 		whitelist.clear();
+	}
+
+	/**
+	 * 设置白名单是否启用，默认为 true
+	 * @param enabled true 启用白名单校验，false 关闭白名单校验，允许所有文件类型上传
+	 */
+	public static void setWhitelistEnabled(boolean enabled) {
+		whitelistEnabled = enabled;
 	}
 
 	public static void init(String uploadPath, long maxPostSize, String encoding) {
