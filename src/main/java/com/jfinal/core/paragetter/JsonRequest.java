@@ -43,6 +43,7 @@ import javax.servlet.http.Part;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
+import com.alibaba.fastjson2.JSONWriter;
 
 /**
  * JsonRequest 包装 json 请求，从底层接管所有 parameter 操作
@@ -131,7 +132,7 @@ public class JsonRequest implements HttpServletRequest {
 			Object value = e.getValue();
 			// 只转换最外面一层 json 数据，如果存在多层 json 结构，仅将其视为 String 留给后续流程转换
 			if (value instanceof JSONObject || value instanceof JSONArray) {
-				newPara.put(key, new String[]{JSON.toJSONString(value)});
+				newPara.put(key, new String[]{JSON.toJSONString(value, JSONWriter.Feature.ReferenceDetection)});
 			} else if (value != null) {
 				newPara.put(key, new String[]{value.toString()});
 			} else {
@@ -152,7 +153,7 @@ public class JsonRequest implements HttpServletRequest {
 		if (jsonObject != null && jsonObject.containsKey(name)) {
 			Object value = jsonObject.get(name);
 			if (value instanceof JSONObject || value instanceof JSONArray) {
-				return JSON.toJSONString(value);
+				return JSON.toJSONString(value, JSONWriter.Feature.ReferenceDetection);
 			} else if (value != null) {
 				return value.toString();
 			} else {
