@@ -24,7 +24,7 @@
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
-            <url>http://apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
@@ -172,7 +172,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- freemarkder 模板引擎 -->
+        <!-- freemarker 模板引擎 -->
         <dependency>
             <groupId>org.freemarker</groupId>
             <artifactId>freemarker</artifactId>
