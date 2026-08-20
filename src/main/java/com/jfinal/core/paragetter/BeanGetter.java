@@ -20,6 +20,8 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.jfinal.core.Action;
 import com.jfinal.core.ActionHandler;
 import com.jfinal.core.Controller;
@@ -61,7 +63,7 @@ public class BeanGetter<T> extends ParaGetter<T> {
 	}
 
 	private T resolveJson(JsonRequest req) {
-		com.alibaba.fastjson.JSONObject jsonObj = req.getJSONObject();
+		JSONObject jsonObj = req.getJSONObject();
 		if (jsonObj != null) {
 			return toBean(jsonObj);
 		} else {
@@ -69,7 +71,7 @@ public class BeanGetter<T> extends ParaGetter<T> {
 		}
 	}
 
-	private T toBean(com.alibaba.fastjson.JSONObject jsonObj) {
+	private T toBean(JSONObject jsonObj) {
 		String paraName = this.getParameterName();
 		if (jsonObj.containsKey(paraName)) {
 			if (List.class.isAssignableFrom(beanClass)) {
@@ -90,7 +92,7 @@ public class BeanGetter<T> extends ParaGetter<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private T toList(com.alibaba.fastjson.JSONArray jsonArr) {
+	private T toList(JSONArray jsonArr) {
 		if (jsonArr == null) {
 			return null;
 		}

@@ -15,8 +15,8 @@
  */
 package com.jfinal.core.paragetter;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.jfinal.core.Action;
 import com.jfinal.core.ActionHandler;
 import com.jfinal.core.Controller;
@@ -37,7 +37,7 @@ public class KvGetter extends ParaGetter<Kv> {
 			JsonRequest jsonRequest = (JsonRequest) c.getRequest();
 			JSONObject jsonObject = jsonRequest.getJSONObject();
 			if (jsonObject != null && jsonObject.containsKey(paraName)) {
-				ret = Kv.create().set(jsonObject.getJSONObject(paraName).getInnerMap());
+				ret = Kv.create().set(jsonObject.getJSONObject(paraName));
 			}
 		} else {
 			ret = to(c.getPara(paraName));
@@ -51,7 +51,7 @@ public class KvGetter extends ParaGetter<Kv> {
 	@Override
 	protected Kv to(String v) {
 		if (StrKit.notBlank(v)) {
-			return Kv.create().set(JSON.parseObject(v).getInnerMap());
+			return Kv.create().set(JSON.parseObject(v));
 		}
 		return null;
 	}

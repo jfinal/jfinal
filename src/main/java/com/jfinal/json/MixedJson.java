@@ -17,11 +17,11 @@
 package com.jfinal.json;
 
 /**
- * JFinalJson 与 FastJson 混合做 json 转换
+ * JFinalJson 与 FastJson(fastjson2) 混合做 json 转换
  * toJson 用 JFinalJson，parse 用 FastJson
  * 
  * 注意：
- * 1：需要添加 fastjson 相关 jar 包
+ * 1：需要添加 fastjson2 相关 jar 包
  * 2：parse 方法转对象依赖于 setter 方法
  */
 public class MixedJson extends Json {

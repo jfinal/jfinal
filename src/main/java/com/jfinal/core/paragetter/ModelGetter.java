@@ -16,6 +16,7 @@
 package com.jfinal.core.paragetter;
 
 import java.util.Map;
+import com.alibaba.fastjson2.JSONObject;
 import com.jfinal.core.Action;
 import com.jfinal.core.ActionHandler;
 import com.jfinal.core.Controller;
@@ -46,7 +47,7 @@ public class ModelGetter<T> extends ParaGetter<T> {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private T resolveJson(JsonRequest req) {
-		com.alibaba.fastjson.JSONObject jsonObj = req.getJSONObject();
+		JSONObject jsonObj = req.getJSONObject();
 		if (jsonObj == null) {
 			return null;
 		}

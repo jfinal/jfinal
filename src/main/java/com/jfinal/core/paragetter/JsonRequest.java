@@ -40,6 +40,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 
 /**
  * JsonRequest 包装 json 请求，从底层接管所有 parameter 操作
@@ -47,8 +50,8 @@ import javax.servlet.http.Part;
 public class JsonRequest implements HttpServletRequest {
 
 	// 缓存 JSONObject、JSONArray 对象
-	private com.alibaba.fastjson.JSONObject jsonObject;
-	private com.alibaba.fastjson.JSONArray jsonArray;
+	private JSONObject jsonObject;
+	private JSONArray jsonArray;
 
 	// 包装请求对象
 	private HttpServletRequest req;
@@ -57,11 +60,11 @@ public class JsonRequest implements HttpServletRequest {
 	private HashMap<String, String[]> paraMap;
 
 	public JsonRequest(String jsonString, HttpServletRequest req) {
-		Object json = com.alibaba.fastjson.JSON.parse(jsonString);
-		if (json instanceof com.alibaba.fastjson.JSONObject) {
-			jsonObject = (com.alibaba.fastjson.JSONObject)json;
-		} else if (json instanceof com.alibaba.fastjson.JSONArray) {
-			jsonArray = (com.alibaba.fastjson.JSONArray)json;
+		Object json = JSON.parse(jsonString);
+		if (json instanceof JSONObject) {
+			jsonObject = (JSONObject)json;
+		} else if (json instanceof JSONArray) {
+			jsonArray = (JSONArray)json;
 		}
 
 		this.req = req;
@@ -70,11 +73,11 @@ public class JsonRequest implements HttpServletRequest {
 	/**
 	 * 第一个版本只做简单转换，用户获取 JSONObject 与 JSONArray 后可以进一步进行复杂转换
 	 */
-	public com.alibaba.fastjson.JSONObject getJSONObject() {
+	public JSONObject getJSONObject() {
 		return jsonObject;
 	}
 
-	public com.alibaba.fastjson.JSONArray getJSONArray() {
+	public JSONArray getJSONArray() {
 		return jsonArray;
 	}
 
@@ -114,7 +117,7 @@ public class JsonRequest implements HttpServletRequest {
 		return paraMap;
 	}
 
-	private HashMap<String, String[]> createParaMap(com.alibaba.fastjson.JSONObject jsonPara) {
+	private HashMap<String, String[]> createParaMap(JSONObject jsonPara) {
 		HashMap<String, String[]> newPara = new HashMap<>();
 
 		// 先读取 parameter，否则后续从流中读取 rawData 后将无法读取 parameter（部分 servlet 容器）
@@ -127,8 +130,8 @@ public class JsonRequest implements HttpServletRequest {
 			String key = e.getKey();
 			Object value = e.getValue();
 			// 只转换最外面一层 json 数据，如果存在多层 json 结构，仅将其视为 String 留给后续流程转换
-			if (value instanceof com.alibaba.fastjson.JSON) {
-				newPara.put(key, new String[]{((com.alibaba.fastjson.JSON)value).toJSONString()});
+			if (value instanceof JSONObject || value instanceof JSONArray) {
+				newPara.put(key, new String[]{JSON.toJSONString(value)});
 			} else if (value != null) {
 				newPara.put(key, new String[]{value.toString()});
 			} else {
@@ -148,8 +151,8 @@ public class JsonRequest implements HttpServletRequest {
 		// 优化性能，避免调用 getParaMap() 触发调用 createParaMap()，从而大概率避免对整个 jsonObject 进行转换
 		if (jsonObject != null && jsonObject.containsKey(name)) {
 			Object value = jsonObject.get(name);
-			if (value instanceof com.alibaba.fastjson.JSON) {
-				return ((com.alibaba.fastjson.JSON)value).toJSONString();
+			if (value instanceof JSONObject || value instanceof JSONArray) {
+				return JSON.toJSONString(value);
 			} else if (value != null) {
 				return value.toString();
 			} else {

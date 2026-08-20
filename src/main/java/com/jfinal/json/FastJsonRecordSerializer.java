@@ -16,21 +16,21 @@
 
 package com.jfinal.json;
 
-import java.io.IOException;
 import java.lang.reflect.Type;
-import com.alibaba.fastjson.serializer.JSONSerializer;
-import com.alibaba.fastjson.serializer.ObjectSerializer;
+import com.alibaba.fastjson2.JSONWriter;
+import com.alibaba.fastjson2.writer.ObjectWriter;
 import com.jfinal.plugin.activerecord.Record;
 
 /**
  * FastJsonRecordSerializer 支持序列化 activerecord 的 Record 类型
  */
-public class FastJsonRecordSerializer implements ObjectSerializer {
+public class FastJsonRecordSerializer implements ObjectWriter<Record> {
 	
-	public void write(JSONSerializer serializer, Object object, Object fieldName, Type fieldType, int features) throws IOException {
-		if (object != null) {
-			Record record = (Record)object;
-			serializer.write(record.getColumns());
+	public void write(JSONWriter jsonWriter, Object object, Object fieldName, Type fieldType, long features) {
+		if (object == null) {
+			jsonWriter.writeNull();
+		} else {
+			jsonWriter.writeAny(((Record)object).getColumns());
 		}
 	}
 }

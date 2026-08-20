@@ -16,18 +16,18 @@
 
 package com.jfinal.json;
 
-import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson2.JSON;
 import com.jfinal.plugin.activerecord.Record;
 
 /**
- * IJsonFactory 的 fastjson 实现.
+ * IJsonFactory 的 fastjson2 实现.
  */
 public class FastJsonFactory implements IJsonFactory {
 	
 	private static final FastJsonFactory me = new FastJsonFactory();
 	
 	public FastJsonFactory() {
-		// 尽早触发 fastjson 的配置代码
+		// 尽早触发 fastjson2 的配置代码
 		new FastJson();
 	}
 	
@@ -38,13 +38,13 @@ public class FastJsonFactory implements IJsonFactory {
 	public Json getJson() {
 		return new FastJson();
 	}
-	
+
 	/**
 	 * 移除 FastJsonRecordSerializer
 	 * 仅为了与 jfinal 3.3 版本之前版本的行为保持一致
 	 */
 	public void removeRecordSerializer() {
-		SerializeConfig.getGlobalInstance().put(Record.class, null);
+		JSON.register(Record.class, (com.alibaba.fastjson2.writer.ObjectWriter<?>) null);
 	}
 }
 

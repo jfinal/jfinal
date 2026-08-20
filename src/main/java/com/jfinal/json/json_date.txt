@@ -1,12 +1,8 @@
 设置 date pattern 为 "yyyy-MM-dd HH:mm:ss"，与不设置时三种转换工具的行为总结：
 
-1： fastjson
-fastjson 只要配置了date format，所有值全一样：Date、time、timestamp，"yyyy-MM-dd 格式同样适用
-Fastjson:{"date":"2015-12-16 22:57:50"}
-Fastjson:{"date":"2015-12-16 22:58:25"}
-Fastjson:{"date":"2015-12-16 22:58:37"}
-Fastjson:{"date":"2015-12-16 22:58:49"}
-如果没有设置，则全部值为一个 long 值如： Fastjson:{"date":1450278036638}
+1： fastjson2
+fastjson2 只要配置了 date format，Date、Time、Timestamp 会使用相同的格式进行转换，"yyyy-MM-dd" 格式同样适用。
+未配置时使用 fastjson2 自身的默认日期转换策略。
 
 2：jackson
 类型次序：util.Date  sql.Date  Timestamp  Time，java.sql.Date 比较意外没有时间精度，

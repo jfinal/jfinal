@@ -17,29 +17,19 @@
 package com.jfinal.json;
 
 import java.lang.reflect.Type;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.parser.ParserConfig;
-import com.alibaba.fastjson.serializer.ObjectSerializer;
-import com.alibaba.fastjson.serializer.SerializeConfig;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONWriter;
+import com.alibaba.fastjson2.writer.ObjectWriter;
 import com.jfinal.plugin.activerecord.Record;
 
 /**
- * Json 转换 fastjson 实现.
+ * Json 转换 fastjson2 实现.
  */
 public class FastJson extends Json {
 	
 	static {
 		// 支持序列化 ActiveRecord 的 Record 类型
-		SerializeConfig.getGlobalInstance().put(Record.class, new FastJsonRecordSerializer());
-		
-		// 完全禁用 autoType，提升安全性
-		try {
-			ParserConfig.getGlobalInstance().setSafeMode(true);
-		} catch (Throwable e) {
-			// 老版本 fastjson 无 setSafeMode(boolean) 方法
-			com.jfinal.kit.LogKit.logNothing(e);
-		}
+		JSON.register(Record.class, new FastJsonRecordSerializer());
 	}
 	
 	public static FastJson getJson() {
@@ -52,22 +42,22 @@ public class FastJson extends Json {
 		if (dp == null) {
 			return JSON.toJSONString(object);
 		} else {
-			return JSON.toJSONStringWithDateFormat(object, dp, SerializerFeature.WriteDateUseDateFormat);	// return JSON.toJSONString(object, SerializerFeature.WriteDateUseDateFormat);
+			return JSON.toJSONString(object, dp);
 		}
 	}
 	
 	/**
-	 * 支持传入更多 SerializerFeature
+	 * 支持传入更多 JSONWriter.Feature
 	 * 
 	 * 例如：
-	 *    SerializerFeature.WriteMapNullValue 支持对 null 值字段的转换
+	 *    JSONWriter.Feature.WriteMapNullValue 支持对 null 值字段的转换
 	 */
-	public String toJson(Object object, SerializerFeature... features) {
+	public String toJson(Object object, JSONWriter.Feature... features) {
 		String dp = datePattern != null ? datePattern : getDefaultDatePattern();
 		if (dp == null) {
-			return JSON.toJSONString(object);
+			return JSON.toJSONString(object, features);
 		} else {
-			return JSON.toJSONStringWithDateFormat(object, dp, features);
+			return JSON.toJSONString(object, dp, features);
 		}
 	}
 	
@@ -75,13 +65,8 @@ public class FastJson extends Json {
 		return JSON.parseObject(jsonString, type);
 	}
 	
-	public static void setSafeMode(boolean safeMode) {
-		ParserConfig.getGlobalInstance().setSafeMode(safeMode);
-	}
-	
-	public static void addSerializer(Type type, ObjectSerializer value) {
-		SerializeConfig.getGlobalInstance().put(type, value);
+	public static void addSerializer(Type type, ObjectWriter<?> value) {
+		JSON.register(type, value);
 	}
 }
-
 
