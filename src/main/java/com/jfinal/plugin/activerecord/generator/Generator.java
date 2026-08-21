@@ -201,11 +201,11 @@ public class Generator {
 	 *
 	 * <pre>
 	 * 例如：
-	 *    generator.addTypeMaping(LocalDateTime.class, LocalDateTime.class)
-	 *    generator.addTypeMaping(LocalDate.class, LocalDate.class)
+	 *    generator.addTypeMapping(LocalDateTime.class, LocalDateTime.class)
+	 *    generator.addTypeMapping(LocalDate.class, LocalDate.class)
 	 *
 	 * 例如：
-	 *    generator.addTypeMaping(java.sql.Date.class, LocalDateTime.class)
+	 *    generator.addTypeMapping(java.sql.Date.class, LocalDateTime.class)
 	 * </pre>
 	 * 以上配置在生成 base model 时碰到 Date 类型时会生成为 LocalDateTime 类型
 	 */
@@ -218,10 +218,10 @@ public class Generator {
 	}
 
 	/**
-	 * 与 addTypeMaping(Class<?> from, Class<?> to) 功能一致，保是参数类型不同
+	 * 与 addTypeMapping(Class<?> from, Class<?> to) 功能一致，保是参数类型不同
 	 *
 	 * 示例：
-	 *    generator.addTypeMaping("java.sql.Date", "java.time.LocalDateTime")
+	 *    generator.addTypeMapping("java.sql.Date", "java.time.LocalDateTime")
 	 */
 	public void addTypeMapping(String from, String to) {
 		this.metaBuilder.typeMapping.addMapping(from, to);
