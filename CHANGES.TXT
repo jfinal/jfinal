@@ -1,3 +1,156 @@
+jfinal 5.3.0 changelog（包含 5.1.2 至 5.3.0）
+
+1: Db、DbPro 新增 transaction(...) 系列事务方法，支持任意类型返回值，且事务体允许抛出 Exception，例如：
+     Ret ret = Db.transaction(tx -> {
+        ...
+        return Ret.ok();
+     });
+
+2: 新增 Transaction 类灵活控制事务：rollback() 手动回滚、rollbackIf(boolean) 条件回滚、canCommit() 判断能否提交
+
+3: Transaction 新增 onException(...) 回调，事务异常时以其返回值作为 transaction(...) 的返回值，避免向外抛异常
+
+4: Transaction 新增 onAfterCommit(Runnable) 回调，在事务提交成功后执行，支持嵌套事务
+
+5: 新增 TransactionRollbackDecision 接口，transaction(...) 的返回值实现该接口即可决定是否回滚事务
+
+6: 新增 Transactional 拦截器支持声明式事务，配合 @Before(Transactional.class) 使用
+
+7: Config 新增 setOnTransactionException(...)、setOnBeforeTransactionCommit(...)，支持数据源级别的事务回调配置
+
+8: 新版本事务方法 transaction(...) 相互嵌套时共享同一事务，内层异常将回滚整体事务。注意老版本 tx(...) 中不能嵌套调用 transaction(...)
+
+9: Config 新增 setCallbackAfterTxCommit(Runnable)，支持在事务方法内注册事务提交成功后的回调
+
+10: Controller 新增 getProgressFile(...) 系方法，文件上传支持进度回调，新增 UploadProgress 封装进度数据
+
+11: 新增 ProgressUploadFileConfig 配置进度上传的文件 rename 策略，默认基于时间，可选 UUID、计数策略
+
+12: 带进度文件上传拆分为 ProgressUploadFileKit，消除 jfinal 内核对 commons-fileupload 的强制依赖
+
+13: 文件上传添加白名单机制，默认仅允许白名单内的文件类型，UploadConfig 新增 addWhitelist(...)、removeWhitelist(...)、clearWhitelist()
+
+14: UploadConfig 新增 setWhitelistEnabled(boolean)，支持关闭文件上传类型白名单
+
+15: UploadConfig 新增 setFileRenamePolicy(...)，支持自定义 cos 文件重命名策略
+
+16: AopManager 新增 addMapping(String name, Class<?> to) 支持 name 到实现类的映射，配合 Aop.get(String name) 获取对象
+
+17: @Inject 注解新增 remote 属性，可配置远程服务名称，扩展 AopFactory 生成代理，以调用方法的方式访问远程服务
+
+18: ThreadPoolKit 新增 ThreadPoolGroup 任务组，通过 newGroup() 创建，submit(...) 提交任务，waits()、get() 等待全部完成并获取各任务返回值
+
+19: DbKit 新增 batchListSave、batchListUpdate 分组批量插入与更新，按 model 字段状态分组生成 sql 分批执行
+
+20: Enjoy 新增 #renderOrElse 指令，模板文件存在时渲染该模板，否则渲染指令与 #end 之间包裹的内容
+
+21: Enjoy 新增 BigIntegerExt、BigDecimalExt 扩展，模板中 BigInteger、BigDecimal 支持 toInt()、toLong()、toBoolean() 等转换方法
+
+22: Enjoy 数值与 String 扩展方法新增 toBigInteger()、toBigDecimal()
+
+23: Enjoy 的 BigDecimalExt 新增 halfUp(newScale)，支持四舍五入到指定小数位
+
+24: Engine 新增 getDirectiveNames()、getSharedFunctionNames()，获取当前 engine 全部指令名与共享模板函数名
+
+25: 新增 Log4j2Log、Log4j2LogFactory 支持 log4j2 日志，日志方法支持 {} 占位符，需自行引入 log4j-core 依赖
+
+26: 新增 LineNumberActionReporter，action report 可输出 Controller 真实源码行号，建议开发模式使用
+
+27: ActionReporter 新增 setTitle(...)，时间格式精确到毫秒，buildPara、buildJsonPara 改为 protected 便于二次开发
+
+28: Jackson 初始化 ObjectMapper 时添加 findAndRegisterModules()，自动发现并注册可用的 jackson 模块
+
+29: action 参数注入增强，形参支持 Kv、Map、List<XXX>、数组类型，json 请求按同名 key 取值转换，例如：
+     public void demo(Kv cond, String[] names, List<User> users)
+
+30: action 形参为 Map 类型时可直接接收整个 json 请求体
+
+31: I18n 的 locale 字符串支持 variant 三段式（如 zh_CN_GB），并新增携带 ResourceBundle.Control 参数的方法支持自定义 Control
+
+32: RedisPlugin 分布式锁的超时时间参数由 int 改为 double，在支持秒的基础上支持毫秒
+
+33: Redis 的 Cache 新增 withLock 重载，maxLockTime 与 retryTime 使用相同的值
+
+34: Redis 模块新增 FurySerializer 支持 fury 序列化，需自行引入 fury 依赖
+
+35: Model、Record 新增 get(String attr, Function<Object, T> converter) 与 get(String attr, T defaultValue, Function<Object, T> converter)，取值时支持自定义转换函数
+
+36: Ret、Kv、Okv 新增 getAs(Object key, Function<Object, T> converter) 系方法，同上
+
+37: Kv、Okv 的 getStr、getInt、getLong 等 get 系方法新增默认值重载，value 为 null 时返回默认值
+
+38: Kv、Okv 新增 notBlank(Object key)、isBlank(Object key)
+
+39: Kv、Okv、Ret 新增 remove(Object key) 删除指定 key，返回 this 支持链式调用
+
+40: ActiveRecordPlugin 新增 setAutoConfigDialect(boolean)，开启后根据 jdbcUrl 自动识别并配置数据库方言
+
+41: HikariCpPlugin 新增 setKeepaliveTime(...)、setPrintLog(...)、newHikariConfig()，支持连接保活与 SQL 日志配置
+
+42: TimeKit 新增 now()、nowWithMillisecond()，以字符串格式返回当前时间
+
+43: TimeKit 新增 toLong(LocalDateTime, int type) 与 nowToLong(int type)，type 取值 1 至 7 分别表示年、月、日、时、分、秒、毫秒精度
+
+44: TimeKit 新增 parse(String)、parseLocalDateTime(String)、parseLocalTime(String)，自动探测 pattern 无需手写
+
+45: TypeKit 新增 toLocalDate(Object)、toLocalTime(Object) 类型转换
+
+46: Model、Record 新增 getLocalDate(String)、getLocalTime(String)
+
+47: TypeKit.toDate(...) 支持 OffsetDateTime、ZonedDateTime 类型转换
+
+48: BaseModelGenerator、ModelGenerator、MappingKitGenerator 新增 getEngine()，便于在配置方法中定制 engine
+
+49: 生成器内部 engine 开启静态方法/字段表达式，代码生成模板可直接使用
+
+50: 生成器 TypeMapping 类型映射调整：java.sql.Date 映射为 LocalDate、java.sql.Time 映射为 LocalTime、LocalDateTime 映射为 java.util.Date，重新生成代码时注意 getter 返回类型变化
+
+51: IContainerFactory 继承 Serializable 支持序列化
+
+52: CaptchaRender 输出验证码时 cookie 添加 httpOnly，提升安全性
+
+53: Cron4jPlugin 的 taskDaemon 默认值由 true 改为 false
+
+54: CaseInsensitiveContainerFactory 的 toLowerCase 去除 static，多数据源可分别配置大小写策略
+
+55: FastStringWriter 去除 throws IOException，缩减使用时的代码量
+
+56: Engine.getTemplate(String) 不再自动追加前缀字符 "/"，前缀不同的相同文件不共用缓存
+
+57: 字符串模板缓存 key 改为直接使用内容本身，省去 MD5 计算
+
+58: ScheduledKit 调度方法的 task 参数由第一个移至最后一个
+
+59: MultipartRequest.isSafeFile()、handleIllegalUpload() 改为 protected，便于继承扩展
+
+60: TimeKit 解析日期更严格：数字段位数宽松匹配，但拒绝不存在的日期（如 2026-02-31）
+
+61: TimeKit 移除 toDate(LocalTime)，toLocalDateTime(...)、toLocalDate(...) 不再支持 java.sql.Time 转换
+
+62: Db 的 queryDate(...)、queryLocalDateTime(...) 不再支持 LocalTime
+
+63: ModelBuilder 改进 clob 字段读取方式，解决内容较多时后半部分乱码的问题
+
+64: Enjoy 的 MethodKit 禁用列表去除 java.lang.Compiler，支持 JDK 21
+
+65: HttpKit.readData 读取 buffer 由 1024 调整为 2048
+
+66: fastjson 升级为 fastjson2 2.0.64，默认兼容 fastjson 1 的循环引用与智能字段匹配，定制过 FastJson 的项目需调整相关 API 参数类型
+
+67: jedis 由 3.6.3 升级到 7.5.2，Cache 的 zrange、zrevrange、zrangeByScore 返回值由 Set 改为 List，使用 RedisPlugin 的项目需同步升级 jedis
+
+68: fury 依赖迁移为 org.apache.fury:fury-core 并升级至 0.10.3
+
+69: javassist 升级至 3.30.2-GA，解决 Method.setAccessible(...) 抛出异常问题
+
+70: 可选依赖统一由 provided 改为 optional true，copy 依赖到自己项目时需去除 optional 标签方可生效
+
+71: 固定 javax.el 版本为 3.0.0，避免动态版本范围带来的不确定性
+
+72: 移除 redis 模块的 JdkSerializer
+
+-------------------------------------------------------------------------------
+
 jfinal 5.1.1 changelog（包含 5.0.0 至 5.1.1）
 
 1：新增 SseEmitter 使用 sse 实现 chat gpt 打字机效果，方便开发 chat gpt 应用项目
