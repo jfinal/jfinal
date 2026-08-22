@@ -31,6 +31,8 @@ public class TypeMapping {
     protected Map<String, String> map = new HashMap<String, String>(32) {{
         // Timestamp 映射到父类 java.util.Date，运行时值仍为 Timestamp
         put("java.sql.Timestamp", "java.util.Date");
+        put("java.sql.Date", "java.time.LocalDate");
+        put("java.sql.Time", "java.time.LocalTime");
 
         /*
          * 部分同学反馈使用原始的 Date 更常用，故默认使用原始 Date
@@ -41,9 +43,6 @@ public class TypeMapping {
          * 注意：mysql 8 版本会将 datetime 字段类型映射为 LocalDateTime
          */
         put("java.time.LocalDateTime", "java.util.Date");
-
-        put("java.sql.Date", "java.time.LocalDate");
-        put("java.sql.Time", "java.time.LocalTime");
 
         // --------------------------------------------------------------------
         // --------------------------------------------------------------------
