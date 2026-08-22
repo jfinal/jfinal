@@ -30,6 +30,7 @@ public class FastJsonRecordSerializer implements ObjectWriter<Record> {
         if (object == null) {
             jsonWriter.writeNull();
         } else {
+            // 此处使用 writeAny(...) 优于 write(...)
             jsonWriter.writeAny(((Record) object).getColumns());
         }
     }
