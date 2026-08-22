@@ -25,14 +25,14 @@ import com.jfinal.plugin.activerecord.Record;
  * FastJsonRecordSerializer 支持序列化 activerecord 的 Record 类型
  */
 public class FastJsonRecordSerializer implements ObjectWriter<Record> {
-	
-	public void write(JSONWriter jsonWriter, Object object, Object fieldName, Type fieldType, long features) {
-		if (object == null) {
-			jsonWriter.writeNull();
-		} else {
-			jsonWriter.writeAny(((Record)object).getColumns());
-		}
-	}
+
+    public void write(JSONWriter jsonWriter, Object object, Object fieldName, Type fieldType, long features) {
+        if (object == null) {
+            jsonWriter.writeNull();
+        } else {
+            jsonWriter.writeAny(((Record) object).getColumns());
+        }
+    }
 }
 
 
