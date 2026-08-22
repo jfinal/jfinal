@@ -25,40 +25,40 @@ package com.jfinal.json;
  * 2：parse 方法转对象依赖于 setter 方法
  */
 public class MixedJson extends Json {
-	
-	private JFinalJson jFinalJson;
-	private FastJson fastJson;
-	
-	public static MixedJson getJson() {
-		return new MixedJson();
-	}
-	
-	public String toJson(Object object) {
-		return getJFinalJson().toJson(object);
-	}
-	
-	public <T> T parse(String jsonString, Class<T> type) {
-		return getFastJson().parse(jsonString, type);
-	}
-	
-	private JFinalJson getJFinalJson() {
-		if (jFinalJson == null) {
-			jFinalJson = JFinalJson.getJson();
-		}
-		if (datePattern != null) {
-			jFinalJson.setDatePattern(datePattern);
-		}
-		return jFinalJson;
-	}
-	
-	private FastJson getFastJson() {
-		if (fastJson == null) {
-			fastJson = FastJson.getJson();
-		}
-		if (datePattern != null) {
-			fastJson.setDatePattern(datePattern);
-		}
-		return fastJson;
-	}
+
+    private JFinalJson jFinalJson;
+    private FastJson fastJson;
+
+    public static MixedJson getJson() {
+        return new MixedJson();
+    }
+
+    public String toJson(Object object) {
+        return getJFinalJson().toJson(object);
+    }
+
+    public <T> T parse(String jsonString, Class<T> type) {
+        return getFastJson().parse(jsonString, type);
+    }
+
+    private JFinalJson getJFinalJson() {
+        if (jFinalJson == null) {
+            jFinalJson = JFinalJson.getJson();
+        }
+        if (datePattern != null) {
+            jFinalJson.setDatePattern(datePattern);
+        }
+        return jFinalJson;
+    }
+
+    private FastJson getFastJson() {
+        if (fastJson == null) {
+            fastJson = FastJson.getJson();
+        }
+        if (datePattern != null) {
+            fastJson.setDatePattern(datePattern);
+        }
+        return fastJson;
+    }
 }
 

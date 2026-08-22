@@ -23,29 +23,29 @@ import com.jfinal.plugin.activerecord.Record;
  * IJsonFactory 的 fastjson2 实现.
  */
 public class FastJsonFactory implements IJsonFactory {
-	
-	private static final FastJsonFactory me = new FastJsonFactory();
-	
-	public FastJsonFactory() {
-		// 尽早触发 fastjson2 的配置代码
-		new FastJson();
-	}
-	
-	public static FastJsonFactory me() {
-		return me;
-	}
-	
-	public Json getJson() {
-		return new FastJson();
-	}
 
-	/**
-	 * 移除 FastJsonRecordSerializer
-	 * 仅为了与 jfinal 3.3 版本之前版本的行为保持一致
-	 */
-	public void removeRecordSerializer() {
-		JSON.register(Record.class, (com.alibaba.fastjson2.writer.ObjectWriter<?>) null);
-	}
+    private static final FastJsonFactory me = new FastJsonFactory();
+
+    public FastJsonFactory() {
+        // 尽早触发 fastjson2 的配置代码
+        new FastJson();
+    }
+
+    public static FastJsonFactory me() {
+        return me;
+    }
+
+    public Json getJson() {
+        return new FastJson();
+    }
+
+    /**
+     * 移除 FastJsonRecordSerializer
+     * 仅为了与 jfinal 3.3 版本之前版本的行为保持一致
+     */
+    public void removeRecordSerializer() {
+        JSON.register(Record.class, (com.alibaba.fastjson2.writer.ObjectWriter<?>) null);
+    }
 }
 
 
