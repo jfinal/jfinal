@@ -12,6 +12,10 @@
     <url>https://jfinal.com</url>
 
     <properties>
+        <!-- 使用 JDK 21 构建时，限定语法、字节码和 JDK API 三者均为 Java 8 -->
+        <maven.compiler.release>8</maven.compiler.release>
+        <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
     </properties>
@@ -300,12 +304,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <release>${maven.compiler.release}</release>
                     <encoding>UTF-8</encoding>
-                    <!-- <compilerArgs><arg>-parameters</arg></compilerArgs> -->
+                    <!-- 保留方法参数名，用于运行时反射读取 -->
+                    <parameters>true</parameters>
                 </configuration>
             </plugin>
 
