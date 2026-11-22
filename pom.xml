@@ -124,6 +124,30 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- fastjson2 json 转换 -->
+        <dependency>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>2.0.66</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- javassist 扩展 JavassistProxyFactory extends ProxyFactory -->
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+            <version>3.33.0-GA</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- cglib 扩展 CglibProxyFactory extends ProxyFactory -->
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>3.3.0</version>
+            <optional>true</optional>
+        </dependency>
+
         <!-- common fileupload 文件上传 -->
         <dependency>
             <groupId>commons-fileupload</groupId>
@@ -160,14 +184,6 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- fastjson2 json 转换 -->
-        <dependency>
-            <groupId>com.alibaba.fastjson2</groupId>
-            <artifactId>fastjson2</artifactId>
-            <version>2.0.66</version>
-            <optional>true</optional>
-        </dependency>
-
         <!-- ehcache 缓存 -->
         <dependency>
             <groupId>net.sf.ehcache</groupId>
@@ -200,6 +216,13 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.fury</groupId>
+            <artifactId>fury-core</artifactId>
+            <version>0.10.3</version>
+            <optional>true</optional>
+        </dependency>
+
         <!-- redis 客户端 -->
         <dependency>
             <groupId>redis.clients</groupId>
@@ -219,13 +242,6 @@
                     <artifactId>jackson-core</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.fury</groupId>
-            <artifactId>fury-core</artifactId>
-            <version>0.10.3</version>
-            <optional>true</optional>
         </dependency>
 
         <!--
@@ -258,22 +274,6 @@
             <groupId>com.google.zxing</groupId>
             <artifactId>javase</artifactId>
             <version>3.4.1</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- javassist 扩展 JavassistProxyFactory extends ProxyFactory -->
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-            <version>3.33.0-GA</version>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- cglib 扩展 CglibProxyFactory extends ProxyFactory -->
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>3.3.0</version>
             <optional>true</optional>
         </dependency>
 
