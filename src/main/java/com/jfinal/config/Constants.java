@@ -169,30 +169,14 @@ final public class Constants {
      *   <dependency>
      *     <groupId>org.javassist</groupId>
      *     <artifactId>javassist</artifactId>
-     *     <version>3.29.2-GA</version>
+     *     <version>3.33.0-GA</version>
      *   </dependency>
      * </pre>
 	 */
 	public void setToJavassistProxyFactory() {
         setProxyFactory(new com.jfinal.ext.proxy.JavassistProxyFactory());
     }
-	
-	/**
-	 * proxy 模块需要 JDK 环境，如果运行环境为 JRE，可以调用本配置方法支持
-	 * 
-	 * 该配置需要引入 cglib-nodep 依赖：
-	 * <pre>
-	 *   <dependency>
-   	 *     <groupId>cglib</groupId>
-   	 *     <artifactId>cglib-nodep</artifactId>
-   	 *     <version>3.2.5</version>
-	 *   </dependency>
-	 * </pre>
-	 */
-	public void setToCglibProxyFactory() {
-		setProxyFactory(new com.jfinal.ext.proxy.CglibProxyFactory());
-	}
-	
+
 	/**
 	 * Set encoding. The default encoding is UTF-8.
 	 * @param encoding the encoding
